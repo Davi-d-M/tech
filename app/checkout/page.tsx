@@ -210,23 +210,23 @@ export default function CheckoutPage() {
         </div>
 
         <div className="space-y-6 text-left">
-          <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white p-6 sticky top-8 text-left">
-            <CardHeader className="px-0 pb-6 border-b border-white/10 text-left">
+          <Card className="rounded-[2.5rem] border-none shadow-xl bg-slate-50 text-slate-900 p-6 sticky top-8 text-left">
+            <CardHeader className="px-0 pb-6 border-b border-slate-200 text-left">
               <CardTitle className="text-xl font-black uppercase tracking-widest text-primary text-left">Summary</CardTitle>
             </CardHeader>
             <CardContent className="px-0 py-8 space-y-6 text-left">
               <div className="space-y-4 text-left">
-                <div className="flex justify-between text-sm font-bold uppercase tracking-widest text-slate-400">
+                <div className="flex justify-between text-sm font-bold uppercase tracking-widest text-slate-500">
                   <span>Subtotal ({itemCount} items)</span>
-                  <span className="text-white">{formatPrice(subtotal)}</span>
+                  <span className="text-slate-900">{formatPrice(subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-sm font-bold uppercase tracking-widest text-slate-400 text-left">
+                <div className="flex justify-between text-sm font-bold uppercase tracking-widest text-slate-500 text-left">
                   <span>Delivery</span>
-                  <span className="text-emerald-400">FREE</span>
+                  <span className="text-emerald-600">FREE</span>
                 </div>
               </div>
 
-              <Separator className="bg-white/10" />
+              <Separator className="bg-slate-200" />
 
               <div className="flex justify-between text-2xl font-black uppercase tracking-tighter text-left">
                 <span>Total</span>
@@ -235,7 +235,7 @@ export default function CheckoutPage() {
 
               <Button
                 size="lg"
-                className="w-full bg-white text-slate-900 hover:bg-slate-100 py-8 rounded-[1.5rem] font-black uppercase tracking-widest text-xs mt-8 shadow-2xl disabled:bg-slate-700"
+                className="w-full bg-slate-900 text-white hover:bg-slate-800 py-8 rounded-[1.5rem] font-black uppercase tracking-widest text-xs mt-8 shadow-2xl disabled:bg-slate-200"
                 onClick={handlePlaceOrder}
                 disabled={isPlacingOrder || checkoutStatus.type === 'success'}
               >
