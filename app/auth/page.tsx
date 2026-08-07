@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import AuthForm from '@/src/components/AuthForm';
+import AuthForm from '@/components/auth/AuthForm';
 
 interface AuthPageProps {
   searchParams: Promise<{ mode?: string }>;
