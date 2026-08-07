@@ -27,6 +27,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import RestockRadar from "@/components/product/RestockRadar";
@@ -218,11 +219,13 @@ export default function Product() {
       <div className="grid lg:grid-cols-2 gap-12 mb-16 text-left">
         <div className="space-y-4">
           <div className="w-full max-w-[500px] mx-auto flex flex-col items-center">
-            <div className="rounded-3xl shadow-sm overflow-hidden mb-4 w-full bg-slate-50 border border-slate-100 p-8 flex items-center justify-center aspect-square text-left">
-              <img
+            <div className="rounded-3xl shadow-sm overflow-hidden mb-4 w-full bg-slate-50 border border-slate-100 p-8 flex items-center justify-center aspect-square text-left relative">
+              <Image
                 src={product.image_url || product.image}
                 alt={product.name}
-                className="max-h-[400px] w-auto object-contain transform hover:scale-105 transition-transform duration-500"
+                fill
+                className="object-contain transform hover:scale-105 transition-transform duration-500 p-8"
+                priority
               />
             </div>
           </div>

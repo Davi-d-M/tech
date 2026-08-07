@@ -41,8 +41,8 @@ export default function RiderOnboarding() {
                 if (otpError) throw otpError;
                 setStep('otp');
             }
-        } catch (err: any) {
-            setError(err.message || "Failed to send OTP.");
+        } catch (err: unknown) {
+            setError((err as Error).message || "Failed to send OTP.");
         } finally {
             setLoading(false);
         }
@@ -66,8 +66,8 @@ export default function RiderOnboarding() {
                 if (verifyError) throw verifyError;
                 setStep('biometrics');
             }
-        } catch (err: any) {
-            setError(err.message || "Verification failed.");
+        } catch (err: unknown) {
+            setError((err as Error).message || "Verification failed.");
         } finally {
             setLoading(false);
         }

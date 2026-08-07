@@ -295,7 +295,7 @@ function CheckoutContent() {
 
       if (paymentMethod === "M-Pesa") {
         // 1. Save order as Pending first (Persistence)
-        const orderId = await saveOrder(checkoutRequestId, dbProducts, true);
+        const orderId = await saveOrder(checkoutRequestId, dbProducts);
         if (!orderId) return;
 
         // 2. Launch Paystack
@@ -333,7 +333,7 @@ function CheckoutContent() {
         handler.openIframe();
       } else {
         // COD - Save immediately
-        const orderId = await saveOrder(null, dbProducts, false);
+        const orderId = await saveOrder(null, dbProducts);
         if (orderId) finalizeOrder(orderId);
       }
     } catch (error: unknown) {
@@ -344,7 +344,7 @@ function CheckoutContent() {
     }
   };
 
-  const saveOrder = async (requestId: string | null, products: DBProduct[], isInitialMpesa = false) => {
+  const saveOrder = async (requestId: string | null, products: DBProduct[]) => {
     const client = supabase;
     if (!client) return null;
     try {

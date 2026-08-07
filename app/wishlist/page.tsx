@@ -3,6 +3,7 @@
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingCart, Trash2, Heart, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils';
@@ -52,11 +53,12 @@ export default function WishlistPage() {
           <div className="grid gap-4">
             {wishlist.map((item) => (
               <div key={item.id} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 sm:gap-6 group text-left">
-                <div className="h-24 w-24 sm:h-32 sm:w-32 bg-slate-50 rounded-xl overflow-hidden shrink-0 border border-slate-50">
-                  <img
+                <div className="h-24 w-24 sm:h-32 sm:w-32 bg-slate-50 rounded-xl overflow-hidden shrink-0 border border-slate-50 relative">
+                  <Image
                     src={item.image || '/placeholder.jpg'}
                     alt={item.name}
-                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
 

@@ -6,7 +6,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
 import { MapPin, Navigation, CheckCircle2, Loader2, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 // 🛡️ Fix for Leaflet default icon issues in Next.js
 const fixLeafletIcons = () => {

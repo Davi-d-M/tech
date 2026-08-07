@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Calendar, Share2, Zap, ShieldCheck } from 'lucide-react';
 
 interface BlogPost {
@@ -97,8 +98,14 @@ export default function BlogDetailPage() {
             </div>
         </header>
 
-        <div className="rounded-[3rem] overflow-hidden border border-slate-100 shadow-xl mb-16">
-            <img src={post.image_url} alt={post.title} className="w-full h-auto" />
+        <div className="rounded-[3rem] overflow-hidden border border-slate-100 shadow-xl mb-16 relative aspect-video">
+            <Image
+              src={post.image_url}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+            />
         </div>
 
         <article className="prose prose-slate prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-strong:text-foreground text-slate-600 font-medium leading-relaxed mb-24">

@@ -7,6 +7,7 @@ import PersonalizedFeed from "@/components/home/PersonalizedFeed";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -89,8 +90,13 @@ function HomeContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {posts.length > 0 ? posts.map((post) => (
                       <Link key={post.slug as string} href={`/blog/${post.slug}`} className="group relative rounded-[2.5rem] overflow-hidden bg-slate-100 aspect-[16/9] shadow-2xl transition-all hover:-translate-y-2 border border-slate-200">
-                          <div className="w-full h-full flex items-center justify-center bg-slate-50 text-slate-300 overflow-hidden">
-                              <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          <div className="w-full h-full flex items-center justify-center bg-slate-50 text-slate-300 overflow-hidden relative">
+                              <Image
+                                src={post.image_url}
+                                alt={post.title}
+                                fill
+                                className="object-cover group-hover:scale-110 transition-transform duration-700"
+                              />
                           </div>
                           <div className="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-white/90 to-transparent">
                               <h3 className="text-2xl font-black text-foreground uppercase tracking-tight mb-2">{post.title}</h3>

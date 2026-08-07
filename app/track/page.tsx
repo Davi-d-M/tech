@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Search, Package, Truck, CheckCircle, Clock, AlertCircle, MapPin, ShieldCheck, MessageSquare } from 'lucide-react';
 import { formatPrice, cn } from '@/lib/utils';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useSettings } from '@/lib/useSettings';
 
 interface OrderDetails {

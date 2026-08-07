@@ -44,7 +44,7 @@ export default function RewardInteractive({ userId }: { userId: string }) {
             } else {
                 throw new Error(data.error);
             }
-        } catch (err: unknown) {
+        } catch {
             setError("Tactical link offline. Try again later, bro!");
             setStatus('idle');
         }

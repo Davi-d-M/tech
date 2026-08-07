@@ -7,6 +7,7 @@ import { ShoppingCart, ArrowRight, Loader2, Sparkles, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from '@/context/CartContext';
 
 interface RecommendedProduct {
@@ -82,10 +83,11 @@ export default function Recommendations() {
         {products.map((product) => (
           <Card key={String(product.id)} className="group rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-2xl hover:border-primary/20 transition-all overflow-hidden flex flex-col">
             <Link href={`/product/${product.id}`} className="block aspect-square bg-slate-50 relative overflow-hidden">
-                <img
+                <Image
                     src={product.image_url}
                     alt={product.name}
-                    className="w-full h-full object-contain p-8 group-hover:scale-110 transition-transform duration-500"
+                    fill
+                    className="object-contain p-8 group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute top-4 right-4 h-8 w-8 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center text-primary shadow-sm">
                     <Zap size={14} className="fill-current" />

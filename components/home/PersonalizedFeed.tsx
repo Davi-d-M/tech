@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from './ProductCard';
-import { Sparkles, History, ArrowRight } from 'lucide-react';
+import { History, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 

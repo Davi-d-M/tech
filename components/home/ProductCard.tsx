@@ -6,6 +6,7 @@ import { useCart } from "@/context/CartContext";
 import { cn, formatPrice } from "@/lib/utils";
 import { Check, Eye, Heart, ShoppingCart, X, ArrowUpDown, MessageSquare, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import RestockNotifyButton from "@/components/product/RestockNotifyButton";
 import { useWishlist } from "@/context/WishlistContext";
@@ -144,10 +145,11 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <Link href={`/shop/${product.id}`} className="block relative w-full h-full">
             {!imageError ? (
-              <img
+              <Image
                 src={imageUrl}
                 alt={product.name}
-                className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
+                fill
+                className="object-contain transition-transform duration-700 group-hover:scale-110"
                 onError={() => setImageError(true)}
               />
             ) : (
@@ -270,12 +272,13 @@ export default function ProductCard({ product }: { product: Product }) {
           <CardContent className="p-8 space-y-8 text-left">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-left">
               {/* Product Image */}
-              <div className="aspect-square overflow-hidden rounded-3xl bg-slate-50 flex items-center justify-center p-8 border border-slate-100">
+              <div className="aspect-square overflow-hidden rounded-3xl bg-slate-50 flex items-center justify-center p-8 border border-slate-100 relative">
                 {!imageError ? (
-                  <img
+                  <Image
                     src={imageUrl}
                     alt={product.name}
-                    className="max-h-full w-auto object-contain hover:scale-110 transition-transform duration-500"
+                    fill
+                    className="object-contain hover:scale-110 transition-transform duration-500 p-8"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-300 font-black">IMAGE MISSING</div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, User, ArrowRight, BookOpen } from 'lucide-react';
@@ -77,7 +78,12 @@ export default function BlogListPage() {
               <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
                 <article className="space-y-6">
                   <div className="aspect-[16/10] rounded-[2.5rem] bg-slate-50 overflow-hidden border border-slate-100 shadow-sm relative group-hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-2">
-                      <img src={post.image_url} alt={post.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                      <Image
+                        src={post.image_url}
+                        alt={post.title}
+                        fill
+                        className="object-cover transform group-hover:scale-110 transition-transform duration-700"
+                      />
                       <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border border-white/50">
                           Tech Tips
                       </div>

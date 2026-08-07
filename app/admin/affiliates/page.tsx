@@ -53,6 +53,7 @@ interface AffiliateOrder {
     total_price: number;
     referred_by_code: string | null;
     status: string;
+    created_at: string;
 }
 
 export default function AdminAffiliates() {

@@ -65,7 +65,7 @@ export async function generateProductCatalog(month: string) {
             3: { halign: 'right', fontStyle: 'bold' },
             4: { halign: 'center' }
         },
-        didDrawPage: (data) => {
+        didDrawPage: () => {
             // Footer
             doc.setFontSize(8);
             doc.setTextColor(150);

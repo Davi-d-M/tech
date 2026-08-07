@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Button } from "../ui/button";
-import { X, Zap, Crown, ShieldCheck, TrendingUp, ArrowRight, UserPlus } from "lucide-react";
+import { X, Zap, Crown, ShieldCheck, TrendingUp, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 

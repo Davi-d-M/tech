@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export default function CountdownTimer({ targetDate }: { targetDate: string }) {
     const [timeLeft, setTimeLeft] = useState<{ hours: string, mins: string, secs: string } | null>(null);

@@ -55,6 +55,7 @@ import { Card } from '@/components/ui/card';
 import { formatPrice, cn, getReferralLink } from '@/lib/utils';
 import { useSettings } from '@/lib/useSettings';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import PointsLedger from '@/components/profile/PointsLedger';
@@ -546,7 +547,7 @@ export default function ProfilePage() {
                             <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar pb-2">
                                 {([] as { id: string; icon: React.ElementType; color: string; label: string }[]).map((badge) => (
                                     <div key={badge.id} className="flex items-center gap-2 px-3 py-2 bg-white rounded-2xl border border-slate-100 shadow-sm shrink-0 hover:border-primary/20 transition-all cursor-default group/badge">
-                                        <badge.icon className={cn("h-3 w-3", `text-${badge.color === 'primary' ? 'primary' : badge.color + '-500'}`)} />
+                                        <badge.icon className={cn("h-3 w-3", badge.color === 'primary' ? 'text-primary' : 'text-slate-400')} />
                                         <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 group-hover/badge:text-primary transition-colors">{badge.label}</span>
                                     </div>
                                 ))}
@@ -756,7 +757,7 @@ export default function ProfilePage() {
                                 { level: 'Gold', icon: 'Crown' },
                                 { level: 'Elite', icon: 'Gem' },
                                 { level: 'Legend', icon: 'Trophy' },
-                            ]).map((step: any) => {
+                            ] as { label?: string; level?: string; icon: string }[]).map((step) => {
                                 const Icon = IconMap[step.icon] || Star;
                                 const label = step.label || step.level;
                                 return (
@@ -785,8 +786,13 @@ export default function ProfilePage() {
                         <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
                             {purchasedItems.map(item => (
                                 <Link key={item.id} href={`/shop/${item.id}`} className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all shrink-0 w-48 text-center group">
-                                    <div className="h-24 w-24 bg-slate-50 rounded-2xl mx-auto flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <img src={item.image} alt={item.name} className="max-h-full w-auto object-contain" />
+                                    <div className="h-24 w-24 bg-slate-50 rounded-2xl mx-auto flex items-center justify-center mb-4 group-hover:scale-110 transition-transform relative overflow-hidden">
+                                        <Image
+                                          src={item.image}
+                                          alt={item.name}
+                                          fill
+                                          className="object-contain p-2"
+                                        />
                                     </div>
                                     <p className="text-[10px] font-black text-foreground uppercase truncate mb-1">{item.name}</p>
                                     <p className="text-sm font-black text-primary mb-3">{formatPrice(item.price)}</p>

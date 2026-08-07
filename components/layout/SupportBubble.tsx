@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MessageCircle, X, Zap, MessageSquare, ChevronRight, Package, ArrowLeft, Search, Loader2, CheckCircle, Send } from 'lucide-react';
+import { MessageCircle, X, Zap, ChevronRight, Package, ArrowLeft, Search, Loader2, CheckCircle, Send } from 'lucide-react';
 import { useSettings } from '@/lib/useSettings';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';

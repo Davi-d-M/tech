@@ -95,9 +95,9 @@ export default async function Page({ params }: Props) {
       .eq('category', product.category || 'electronics')
       .neq('id', id)
       .limit(4);
-    related = (data || []).map((p: any) => ({
-        ...p,
-        image_url: p.image_url || '/placeholder.jpg'
+    related = (data || []).map((p) => ({
+        ...(p as Record<string, unknown>),
+        image_url: (p as Record<string, unknown>).image_url || '/placeholder.jpg'
     })) as unknown as Product[];
   }
 

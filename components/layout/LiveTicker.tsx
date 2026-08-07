@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { Sparkles, Truck, Gift, TrendingUp, Zap, Megaphone } from 'lucide-react';
+import { Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/lib/useSettings';
 

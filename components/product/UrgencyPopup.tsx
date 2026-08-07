@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flame, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 export default function UrgencyPopup({ stock }: { stock: number }) {
     const [isVisible, setIsVisible] = useState(false);

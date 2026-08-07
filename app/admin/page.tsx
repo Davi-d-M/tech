@@ -62,12 +62,19 @@ interface ProductRecord {
   category?: string;
 }
 
+interface AuditLog {
+    id: string;
+    action: string;
+    staff_email: string;
+    created_at: string;
+}
+
 // ENTERPRISE HUD 2.0 - Stabilized
 export default function AdminDashboard() {
   useAdmin();
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [products, setProducts] = useState<ProductRecord[]>([]);
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [latency, setLatency] = useState(0);

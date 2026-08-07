@@ -1,58 +1,54 @@
-# Implementation Plan - Total Purge of Black Color ☀️🎨
+# Implementation Plan - Production Build Fix & Linting Cleanup 🚀☀️
 
-This plan systematically removes all black and near-black colors from the codebase to ensure a strictly light, high-contrast, and "pure white" user experience as requested.
+This plan fixes the critical TypeScript build error in the Affiliates page and addresses various ESLint warnings across the codebase to ensure a smooth deployment on Render.com.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Color Rebranding**: All instances of `slate-900`, `slate-950`, and `black` will be replaced with lighter alternatives (like `slate-700/800` for text and `white` for backgrounds).
-> - **Hex Conversion**: I will transition from `oklch` to standard Hex codes in `globals.css` to prevent any rendering issues that might cause fallback to dark colors.
-> - **Force Light Mode**: I will add explicit `color-scheme: light` and ensure no system-level dark mode can override the UI.
+> - **Type Error Fix**: I will update the `AffiliateOrder` interface in `app/admin/affiliates/page.tsx` to include the missing `created_at` property.
+> - **Linting Cleanup**: I will remove unused variables, fix `any` types where possible, and replace `<img>` tags with Next.js `<Image />` components or add `alt` tags to comply with best practices.
 
 ## Proposed Changes
 
-### 1. Global Style Hardening
+### 1. Admin & Core Logic
 
-#### [MODIFY] [globals.css](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/globals.css)
-- Replace `oklch` variables with Hex:
-    - `--background`: `#ffffff` (Pure White)
-    - `--foreground`: `#334155` (Slate-700 - Deep Gray, but not black)
-    - `--card`: `#ffffff`
-    - `--border`: `#e2e8f0` (Lighter gray)
-    - `--secondary`: `#f8fafc`
-- Add `color-scheme: light;` to `:root`.
-- Remove any remaining dark mode logic or variables.
+#### [MODIFY] [affiliates/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/affiliates/page.tsx)
+- Update `AffiliateOrder` interface to include `created_at: string`.
 
-### 2. Codebase-wide Color Purge
+#### [MODIFY] [admin/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/page.tsx)
+- Replace `any` type with a more specific interface or `unknown`.
 
-#### [MODIFY] Systematic Search & Replace
-I will run a comprehensive replacement across all components and pages:
-- **Backgrounds**:
-    - `bg-slate-900`, `bg-slate-950`, `bg-black`, `bg-gray-900` -> `bg-white` or `bg-background`.
-- **Text**:
-    - `text-slate-900`, `text-slate-950`, `text-black`, `text-gray-900` -> `text-slate-800` or `text-foreground`.
-- **Borders**:
-    - `border-slate-900`, `border-black` -> `border-border`.
+#### [MODIFY] [catalogService.ts](file:///C:/Users/hp/AndroidStudioProjects/theapp/lib/catalogService.ts)
+- Remove unused `data` variable.
 
-### 3. Specific Component Refinement
+### 2. Frontend & UI Components
 
 #### [MODIFY] [AuthForm.js](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/auth/AuthForm.js)
-- Change "Log In" / "Sign Up" buttons from `bg-slate-900` to `bg-primary` (Orange).
-- Ensure all text uses `text-slate-800` instead of `text-slate-900`.
+- Remove unused `signInLocal` and `signUpLocal` imports.
 
-#### [MODIFY] [auth/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/auth/page.tsx)
-- Explicitly set `bg-white` on the `main` container to guarantee light mode.
-- Update button styles to avoid dark backgrounds.
+#### [MODIFY] Various Components (Purge Unused Imports/Vars)
+- Remove unused imports (like `cn`, `Sparkles`, `Truck`, etc.) in:
+    - `components/home/CountdownTimer.tsx`
+    - `components/home/PersonalizedFeed.tsx`
+    - `components/layout/LiveTicker.tsx`
+    - `components/layout/SupportBubble.tsx`
+    - `components/product/UrgencyPopup.tsx`
+    - `app/track/page.tsx`
+    - `app/warranty/page.tsx`
 
-#### [MODIFY] [layout-client.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/layout-client.tsx)
-- Ensure the sidebar and header are strictly white.
+#### [MODIFY] Various Pages (Image Optimization)
+- Replace `<img>` with `<Image />` or add `alt` props in:
+    - `app/blog/[slug]/page.tsx`
+    - `app/blog/page.tsx`
+    - `app/page.tsx`
+    - `app/product/[productId]/page.tsx`
+    - `components/home/ProductCard.tsx`
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure no syntax errors.
+- Run `npm run build` locally to verify all TypeScript and ESLint issues are resolved.
 
 ### Manual Verification
-1.  **Visual Sweep**: Open the Auth page, Admin Dashboard, and Storefront. Confirm ZERO black background sections exist.
-2.  **Contrast Check**: Ensure all text remains readable against the new white/light backgrounds.
-3.  **System Preference Test**: Change OS theme to dark and verify the app STAYS light.
+- Check the Affiliates dashboard chart to ensure it correctly renders data based on the `created_at` property.
+- Verify the Auth page loads correctly after removing unused imports.

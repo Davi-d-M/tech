@@ -7,7 +7,7 @@ import Link from "next/link";
 import CountdownTimer from "./CountdownTimer";
 
 export default function PromotionalBanner() {
-  const { settings, loading } = useSettings();
+  const { settings } = useSettings();
 
   // For this demo, we'll keep the 48-hour logic but use the dynamic text
   const saleEndDate = new Date(new Date().getTime() + 48 * 60 * 60 * 1000).toISOString();

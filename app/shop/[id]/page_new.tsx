@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { useCart } from '@/context/CartContext';
@@ -135,11 +136,13 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start mb-20 text-left">
           
-          <div className="bg-slate-50 rounded-[2rem] p-6 flex items-center justify-center aspect-square border border-slate-100 overflow-hidden sticky top-8">
-            <img 
+          <div className="bg-slate-50 rounded-[2rem] p-6 flex items-center justify-center aspect-square border border-slate-100 overflow-hidden sticky top-8 relative">
+            <Image
               src={product.image_url || "/placeholder.jpg"}
               alt={product.name}
-              className="max-h-[380px] w-auto object-contain transform hover:scale-110 transition-transform duration-500 ease-out"
+              fill
+              className="object-contain transform hover:scale-110 transition-transform duration-500 ease-out p-6"
+              priority
             />
           </div>
 
@@ -220,11 +223,12 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {relatedProducts.map((item) => (
               <Link key={item.id} href={`/shop/${item.id}`} className="group block text-left">
-                <div className="bg-slate-50 rounded-[1.5rem] aspect-square flex items-center justify-center p-6 mb-3 border border-transparent group-hover:border-slate-100 transition-all shadow-sm">
-                  <img 
+                <div className="bg-slate-50 rounded-[1.5rem] aspect-square flex items-center justify-center p-6 mb-3 border border-transparent group-hover:border-slate-100 transition-all shadow-sm relative overflow-hidden">
+                  <Image
                     src={item.image_url || "/placeholder.jpg"}
                     alt={item.name} 
-                    className="max-h-[140px] w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="object-contain transform group-hover:scale-105 transition-transform duration-300 p-4"
                   />
                 </div>
                 <h3 className="text-[11px] font-black text-foreground uppercase tracking-widest truncate">{item.name}</h3>

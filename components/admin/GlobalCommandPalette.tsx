@@ -5,6 +5,7 @@ import { Search, ShoppingBag, Truck, Users, Package, ArrowRight, X, Loader2, Zap
 import { supabase } from '@/lib/supabaseClient';
 import { formatPrice, cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -165,7 +166,7 @@ export default function GlobalCommandPalette({ isOpen, setIsOpen }: CommandPalet
                                         {result.type === 'order' ? <ShoppingBag className="h-5 w-5" /> :
                                          result.type === 'rider' ? <Truck className="h-5 w-5" /> :
                                          result.type === 'product' ? (
-                                             result.image ? <img src={result.image} className="h-8 w-8 object-contain" alt={result.title || ""} /> : <Package className="h-5 w-5" />
+                                             result.image ? <div className="h-8 w-8 relative"><Image src={result.image} fill className="object-contain" alt={result.title || ""} /></div> : <Package className="h-5 w-5" />
                                          ) : <Users className="h-5 w-5" />}
                                     </div>
                                     <div className="flex-1 min-w-0">
