@@ -10,10 +10,19 @@ import { formatPrice, getReferralLink } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { useSettings } from "@/lib/useSettings";
 
+interface Order {
+    id: number;
+    customer_name: string;
+    total_price: number;
+    status: string;
+    user_id: string | null;
+    session_id: string | null;
+}
+
 function SuccessContent() {
     const searchParams = useSearchParams();
     const orderId = searchParams.get("orderId");
-    const [order, setOrder] = useState<Record<string, unknown> | null>(null);
+    const [order, setOrder] = useState<Order | null>(null);
     const [referralCode, setReferralCode] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const { settings } = useSettings();
@@ -41,7 +50,7 @@ function SuccessContent() {
                         return;
                     }
 
-                    if (oData) setOrder(oData);
+                    if (oData) setOrder(oData as unknown as Order);
                 }
 
                 // 2. Fetch User Referral Code

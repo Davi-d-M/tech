@@ -12,3 +12,5 @@
 - `[x]` 5. Fix critical TypeScript error in Affiliates page
 - `[x]` 6. Resolve ESLint warnings (unused vars, Image components, any types)
 - `[x]` 7. Verify build and push to GitHub
+- `[x]` 8. Fix fatal toggleDarkMode build error in Admin Layout
+- `[x]` 9. Resolve remaining ESLint warnings in ExitIntentPopup and EarningsCenter
