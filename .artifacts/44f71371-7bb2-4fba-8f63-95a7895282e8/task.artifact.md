@@ -1,0 +1,11 @@
+- `[x]` 1. Final check and cleanup of `app/globals.css`
+- `[x]` 2. Refactor `app/admin/layout-client.tsx` to remove theme state, logic, and Moon/Sun toggles
+- `[x]` 3. Purge `dark:` classes from:
+    - `[x]` `app/admin/page.tsx`
+    - `[x]` `app/admin/dispatch/page.tsx`
+    - `[x]` `app/admin/staff/page.tsx`
+    - `[x]` `app/admin/settings/page.tsx`
+    - `[x]` `app/admin/affiliates/page.tsx`
+    - `[x]` `components/admin/LiveActivitySidebar.tsx`
+    - `[x]` `components/admin/GlobalCommandPalette.tsx`
+- `[x]` 4. Final visual audit and walkthrough

@@ -1,0 +1,20 @@
+# Apexstores Tech Kenya
+
+> Premium electronics and mobile accessories engineered for excellence. Authentic tech with fast dispatch across Nairobi.
+
+Apexstores is Kenya's elite destination for high-performance audio, high-speed charging, and mobile protection. We provide verified, high-quality gadgets including AirPods, MagSafe chargers, and premium cases.
+
+## Core Categories
+- [AirPods & Audio](https://tech-paxv.onrender.com/shop/category/airpods): High-fidelity wireless audio and noise cancellation gadgets.
+- [Power & Charging](https://tech-paxv.onrender.com/shop/category/chargers): Fast-charging blocks, cables, and MagSafe accessories.
+- [Protection & Style](https://tech-paxv.onrender.com/shop/category/cases): Impact-resistant cases and screen protectors.
+- [Smart Watches](https://tech-paxv.onrender.com/shop/category/watches): Elite wearable tech for tracking and connectivity.
+
+## Brand Benefits
+- **Verified Tech:** 100% authentic gadgets with zero-defect guarantee.
+- **Fast Dispatch:** Same-day delivery within Nairobi and 24h upcountry.
+- **Apex Club:** Loyalty points on every purchase and referral rewards.
+
+## Support & Tracking
+- [Track Your Order](https://tech-paxv.onrender.com/track): Real-time visibility into your delivery.
+- [Technical Support](https://tech-paxv.onrender.com/contact): Instant help with your gadgets.
