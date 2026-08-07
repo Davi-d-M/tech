@@ -196,7 +196,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                     />
                 ) : (
                     <Image
-                      src={hasVideo ? allImages[activeImageIndex - 1] : allImages[activeImageIndex]}
+                      src={(hasVideo ? allImages[activeImageIndex - 1] : allImages[activeImageIndex]) || '/placeholder.jpg'}
                       alt={product.name}
                       fill
                       className="object-contain p-10 transform hover:scale-110 transition-transform duration-700 ease-out"
