@@ -7,7 +7,7 @@ import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 
-export default function EarningsCenter({ balance, totalEarned, orders = [] }: { balance: number, totalEarned: number, orders?: Record<string, any>[] }) {
+export default function EarningsCenter({ balance, totalEarned, orders = [] }: { balance: number, totalEarned: number, orders?: Record<string, unknown>[] }) {
     const [requesting, setRequesting] = useState(false);
 
     const chartData = useMemo(() => {
@@ -113,7 +113,7 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
                             </Bar>
                             <Tooltip
                                 cursor={{ fill: 'transparent' }}
-                                content={({ active, payload }: { active?: boolean; payload?: Record<string, any>[] }) => {
+                                content={({ active, payload }: { active?: boolean; payload?: Record<string, unknown>[] }) => {
                                     if (active && payload && payload.length) {
                                         return (
                                             <div className="bg-background text-foreground px-4 py-2 rounded-xl shadow-2xl border-none text-[10px] font-black uppercase">

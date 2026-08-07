@@ -9,3 +9,6 @@
     - `[x]` `components/admin/LiveActivitySidebar.tsx`
     - `[x]` `components/admin/GlobalCommandPalette.tsx`
 - `[x]` 4. Final visual audit and walkthrough
+- `[x]` 5. Fix critical TypeScript error in Affiliates page
+- `[x]` 6. Resolve ESLint warnings (unused vars, Image components, any types)
+- `[x]` 7. Verify build and push to GitHub

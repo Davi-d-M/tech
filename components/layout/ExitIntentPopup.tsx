@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { X, Gift, ArrowRight, Zap } from 'lucide-react';
 import { Button } from '../ui/button';
-import { cn } from '@/lib/utils';
 
 export default function ExitIntentPopup() {
     const [isVisible, setIsVisible] = useState(false);

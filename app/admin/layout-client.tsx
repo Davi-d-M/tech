@@ -28,8 +28,6 @@ import {
   Search,
   Bell,
   Plus,
-  Moon,
-  Sun,
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react';
@@ -144,7 +142,7 @@ export default function AdminLayoutClient({
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
             </div>
         ) : (
-            <div className="min-h-screen bg-background flex flex-col md:flex-row text-left transition-colors duration-500">
+            <div className="min-h-screen bg-background flex flex-col md:flex-row text-left">
 
           <GlobalCommandPalette isOpen={isSearchOpen} setIsOpen={setIsSearchOpen} />
           <LiveActivitySidebar isOpen={isActivityOpen} setIsOpen={setIsActivityOpen} />
@@ -272,10 +270,6 @@ export default function AdminLayoutClient({
                       </Button>
 
                       <div className="h-6 w-px bg-border mx-2"></div>
-
-                      <Button onClick={toggleDarkMode} variant="ghost" size="icon" className="h-12 w-12 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5">
-                          {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                      </Button>
 
                       <Link href="/admin/upload">
                           <Button className="h-12 px-6 rounded-2xl bg-primary text-white font-black uppercase text-[9px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
