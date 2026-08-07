@@ -788,7 +788,7 @@ export default function ProfilePage() {
                                 <Link key={item.id} href={`/shop/${item.id}`} className="p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all shrink-0 w-48 text-center group">
                                     <div className="h-24 w-24 bg-slate-50 rounded-2xl mx-auto flex items-center justify-center mb-4 group-hover:scale-110 transition-transform relative overflow-hidden">
                                         <Image
-                                          src={item.image}
+                                          src={item.image || '/placeholder.jpg'}
                                           alt={item.name}
                                           fill
                                           className="object-contain p-2"

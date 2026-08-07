@@ -76,11 +76,11 @@ export default function BundleUpsell({ mainProduct, bundleProductId, discountPer
                 <div className="flex flex-col items-center gap-6">
                     <div className="flex items-center gap-4">
                         <div className="h-24 w-24 rounded-2xl bg-white border border-slate-100 p-4 flex items-center justify-center shadow-sm relative">
-                            <Image src={mainProduct.image_url} alt={mainProduct.name} fill className="object-contain p-2" />
+                            <Image src={mainProduct.image_url || '/placeholder.jpg'} alt={mainProduct.name} fill className="object-contain p-2" />
                         </div>
                         <Plus className="h-6 w-6 text-slate-300" />
                         <div className="h-24 w-24 rounded-2xl bg-white border border-slate-100 p-4 flex items-center justify-center shadow-sm relative">
-                            <Image src={bundleProduct.image_url} alt={bundleProduct.name} fill className="object-contain p-2" />
+                            <Image src={bundleProduct.image_url || '/placeholder.jpg'} alt={bundleProduct.name} fill className="object-contain p-2" />
                         </div>
                     </div>
 

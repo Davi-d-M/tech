@@ -100,7 +100,7 @@ export default function BlogDetailPage() {
 
         <div className="rounded-[3rem] overflow-hidden border border-slate-100 shadow-xl mb-16 relative aspect-video">
             <Image
-              src={post.image_url}
+              src={post.image_url || '/placeholder.jpg'}
               alt={post.title}
               fill
               className="object-cover"

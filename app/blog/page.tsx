@@ -79,7 +79,7 @@ export default function BlogListPage() {
                 <article className="space-y-6">
                   <div className="aspect-[16/10] rounded-[2.5rem] bg-slate-50 overflow-hidden border border-slate-100 shadow-sm relative group-hover:shadow-2xl transition-all duration-500 group-hover:-translate-y-2">
                       <Image
-                        src={post.image_url}
+                        src={post.image_url || '/placeholder.jpg'}
                         alt={post.title}
                         fill
                         className="object-cover transform group-hover:scale-110 transition-transform duration-700"
