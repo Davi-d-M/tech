@@ -751,13 +751,13 @@ export default function ProfilePage() {
                     <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Loyalty Pathway</h2>
                     <div className="bg-white rounded-[3rem] border border-slate-100 p-10 shadow-sm relative overflow-hidden">
                         <div className="relative z-10 flex justify-between items-center px-4 overflow-x-auto no-scrollbar gap-8">
-                            {(gamification?.tiers || [
+                            {((gamification?.tiers as { label?: string; level?: string; icon: string }[]) || [
                                 { level: 'Explorer', icon: 'Star' },
                                 { level: 'Silver', icon: 'ShieldCheck' },
                                 { level: 'Gold', icon: 'Crown' },
                                 { level: 'Elite', icon: 'Gem' },
                                 { level: 'Legend', icon: 'Trophy' },
-                            ] as { label?: string; level?: string; icon: string }[]).map((step) => {
+                            ]).map((step) => {
                                 const Icon = IconMap[step.icon] || Star;
                                 const label = step.label || step.level;
                                 return (
