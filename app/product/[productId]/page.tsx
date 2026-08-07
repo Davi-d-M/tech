@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { supabase } from "@/lib/supabaseClient";
+import { type User } from "@supabase/supabase-js";
 import { cn, formatPrice } from "@/lib/utils";
 import type { Product as ProductType } from "@/types/product";
 import {
@@ -45,7 +46,7 @@ export default function Product() {
   const { productId } = useParams();
   const { settings } = useSettings();
   const router = useRouter();
-  const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
