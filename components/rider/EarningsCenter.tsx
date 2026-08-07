@@ -7,7 +7,7 @@ import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 
-export default function EarningsCenter({ balance, totalEarned, orders = [] }: { balance: number, totalEarned: number, orders?: Record<string, unknown>[] }) {
+export default function EarningsCenter({ balance, totalEarned, orders = [] }: { balance: number, totalEarned: number, orders?: any[] }) {
     const [requesting, setRequesting] = useState(false);
 
     const chartData = useMemo(() => {
