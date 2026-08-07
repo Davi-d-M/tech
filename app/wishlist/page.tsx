@@ -27,7 +27,7 @@ export default function WishlistPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8 text-left">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900">Your Wishlist</h1>
+            <h1 className="text-3xl font-black tracking-tight text-foreground">Your Wishlist</h1>
             <p className="text-slate-500 text-sm mt-1 font-medium">Saved items you love.</p>
           </div>
           <Link href="/">
@@ -42,7 +42,7 @@ export default function WishlistPage() {
             <div className="h-16 w-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 text-rose-500">
               <Heart className="h-8 w-8" />
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Your wishlist is empty</h2>
+            <h2 className="text-xl font-bold text-foreground mb-2">Your wishlist is empty</h2>
             <p className="text-slate-500 mb-8 max-w-xs mx-auto text-sm">You haven&apos;t added any products to your wishlist yet. Start exploring and save your favorites!</p>
             <Link href="/">
               <Button className="rounded-xl px-8 py-6 font-bold shadow-lg">Discover Products</Button>
@@ -61,7 +61,7 @@ export default function WishlistPage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-900 text-lg truncate">{item.name}</h3>
+                  <h3 className="font-bold text-foreground text-lg truncate">{item.name}</h3>
                   <p className="text-primary font-black text-lg mt-1">{formatPrice(item.price)}</p>
 
                   <div className="flex flex-wrap gap-2 mt-4">

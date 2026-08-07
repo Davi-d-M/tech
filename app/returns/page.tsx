@@ -10,7 +10,7 @@ export default function ReturnsAndExchangesPage() {
         
         {/* Header Section */}
         <div className="border-b pb-6 mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Returns & Exchanges Policy</h1>
+          <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Returns & Exchanges Policy</h1>
           <p className="text-sm text-slate-400 mt-2">Last Updated: {lastUpdated}</p>
           <p className="text-slate-600 mt-4 leading-relaxed">
             Thank you for shopping at <strong>Apexstores</strong>. To maintain our commitment to offering highly competitive local pricing, rapid dispatch turnarounds, and authentic gadgets, we operate under a strict structural retail policy regarding order modifications.

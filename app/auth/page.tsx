@@ -11,7 +11,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
   const mode = resolvedSearchParams.mode === 'signup' ? 'signup' : 'signin';
 
   return (
-    <main className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-white px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-5xl gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
         <div className="space-y-5">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">

@@ -116,7 +116,7 @@ export default function AdminCustomersPage() {
       return (
           <div className="p-24 flex flex-col items-center justify-center text-center">
               <ShieldAlert className="h-16 w-16 text-rose-500 mb-6" />
-              <h2 className="text-2xl font-black uppercase text-slate-900">Access Denied</h2>
+              <h2 className="text-2xl font-black uppercase text-foreground">Access Denied</h2>
               <p className="text-slate-500 mt-2">Only senior management can view the customer directory.</p>
           </div>
       );
@@ -127,7 +127,7 @@ export default function AdminCustomersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl uppercase">Customer Directory</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl uppercase">Customer Directory</h1>
           <p className="text-slate-500 text-sm font-medium">Track your most loyal shoppers and their purchase history.</p>
         </div>
         <div className="relative w-full sm:w-64">
@@ -149,7 +149,7 @@ export default function AdminCustomersPage() {
           </div>
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total Customers</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-2 uppercase tracking-tighter">{customers.length}</h3>
+            <h3 className="text-2xl font-black text-foreground mt-2 uppercase tracking-tighter">{customers.length}</h3>
           </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-6">
@@ -158,7 +158,7 @@ export default function AdminCustomersPage() {
           </div>
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Avg. Spend</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-2 uppercase tracking-tighter">
+            <h3 className="text-2xl font-black text-foreground mt-2 uppercase tracking-tighter">
               {formatPrice(customers.length > 0 ? customers.reduce((s, c) => s + c.totalSpend, 0) / customers.length : 0)}
             </h3>
           </div>
@@ -169,7 +169,7 @@ export default function AdminCustomersPage() {
           </div>
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Returning</p>
-            <h3 className="text-2xl font-black text-slate-900 mt-2 uppercase tracking-tighter">
+            <h3 className="text-2xl font-black text-foreground mt-2 uppercase tracking-tighter">
               {customers.filter(c => c.totalOrders > 1).length}
             </h3>
           </div>
@@ -199,10 +199,10 @@ export default function AdminCustomersPage() {
                   <tr key={customer.phone} className="hover:bg-slate-50 transition-colors group cursor-pointer" onClick={() => router.push(`/admin/customers/${customer.phone}`)}>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-900 font-black text-[10px] uppercase shadow-sm">
+                        <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-foreground font-black text-[10px] uppercase shadow-sm">
                           {customer.name.substring(0, 2)}
                         </div>
-                        <p className="font-black text-slate-900 uppercase text-xs tracking-tight group-hover:text-primary transition-colors">{customer.name}</p>
+                        <p className="font-black text-foreground uppercase text-xs tracking-tight group-hover:text-primary transition-colors">{customer.name}</p>
                       </div>
                     </td>
                     <td className="px-8 py-6">
@@ -239,7 +239,7 @@ export default function AdminCustomersPage() {
                         ) : null}
                       </div>
                     </td>
-                    <td className="px-8 py-6 font-black text-slate-900">
+                    <td className="px-8 py-6 font-black text-foreground">
                       {formatPrice(customer.totalSpend)}
                     </td>
                     <td className="px-8 py-6 text-right">

@@ -443,7 +443,7 @@ export default function AdminOrdersPage() {
       return (
           <div className="p-24 flex flex-col items-center justify-center text-center">
               <ShieldAlert className="h-16 w-16 text-primary mb-6" />
-              <h2 className="text-2xl font-black uppercase text-slate-900">Access Denied</h2>
+              <h2 className="text-2xl font-black uppercase text-foreground">Access Denied</h2>
               <p className="text-slate-500 mt-2">You don&apos;t have permission to manage orders, bro.</p>
           </div>
       );
@@ -453,7 +453,7 @@ export default function AdminOrdersPage() {
     <div className="p-4 sm:p-8 space-y-8 bg-slate-50 min-h-screen text-left">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl text-balance uppercase tracking-tighter">Order Control</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl text-balance uppercase tracking-tighter">Order Control</h1>
           <p className="text-slate-500 text-sm font-medium">Manage dispatch status and generate customer receipts.</p>
         </div>
         <div className="flex gap-2">
@@ -483,7 +483,7 @@ export default function AdminOrdersPage() {
           </div>
           <div>
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Net Revenue</p>
-            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">
+            <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">
                 {canSeeMoney ? formatPrice(summary.totalRevenue) : 'HIDDEN'}
             </h3>
           </div>
@@ -494,7 +494,7 @@ export default function AdminOrdersPage() {
           </div>
           <div>
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Pending Orders</p>
-            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">{summary.pending}</h3>
+            <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{summary.pending}</h3>
           </div>
         </div>
         <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-6 text-left group hover:shadow-xl transition-all">
@@ -503,7 +503,7 @@ export default function AdminOrdersPage() {
           </div>
           <div>
             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Delivered Total</p>
-            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">{summary.delivered}</h3>
+            <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{summary.delivered}</h3>
           </div>
         </div>
       </div>
@@ -511,7 +511,7 @@ export default function AdminOrdersPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm sticky top-8">
-            <h2 className="text-lg font-black text-slate-900 mb-8 flex items-center gap-2 uppercase tracking-tighter">
+            <h2 className="text-lg font-black text-foreground mb-8 flex items-center gap-2 uppercase tracking-tighter">
               <Plus className="h-5 w-5 text-primary" /> Log Manual Order
             </h2>
             <form onSubmit={handleManualOrderSubmit} className="space-y-4">
@@ -598,7 +598,7 @@ export default function AdminOrdersPage() {
                 <div className="bg-white/90 backdrop-blur-2xl p-6 flex items-center justify-between z-30 animate-in slide-in-from-top-2 border-b border-slate-100 shrink-0">
                     <div className="flex items-center gap-4 ml-4">
                         <div className="h-2 w-2 rounded-full bg-primary animate-ping"></div>
-                        <p className="text-[11px] font-black uppercase text-slate-900 tracking-[0.2em]">{selectedOrders.length} Orders Selected</p>
+                        <p className="text-[11px] font-black uppercase text-foreground tracking-[0.2em]">{selectedOrders.length} Orders Selected</p>
                     </div>
                     <div className="flex gap-3">
                         {statusOptions.map(s => (
@@ -607,7 +607,7 @@ export default function AdminOrdersPage() {
                                 size="sm"
                                 disabled={isBulkUpdating}
                                 onClick={() => handleBulkStatusUpdate(s)}
-                                className="h-10 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-900 font-black uppercase text-[9px] tracking-widest border border-slate-100 transition-all hover:scale-105 active:scale-95"
+                                className="h-10 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 text-foreground font-black uppercase text-[9px] tracking-widest border border-slate-100 transition-all hover:scale-105 active:scale-95"
                             >
                                 Set {s}
                             </Button>
@@ -673,7 +673,7 @@ export default function AdminOrdersPage() {
                                 </td>
                                 <td className="px-8 py-6">
                                 <div className="flex flex-col text-left">
-                                    <span className="font-black text-slate-900 flex items-center gap-2 uppercase text-xs tracking-tight">
+                                    <span className="font-black text-foreground flex items-center gap-2 uppercase text-xs tracking-tight">
                                     <User className="h-3 w-3 text-slate-300" /> {order.customer_name}
                                     </span>
                                     <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest flex items-center gap-2 mt-1">
@@ -683,7 +683,7 @@ export default function AdminOrdersPage() {
                                 </td>
                                 <td className="px-8 py-6">
                                 <div className="flex flex-col text-left min-w-[150px]">
-                                    <span className="font-black text-slate-900 uppercase text-[11px] truncate">
+                                    <span className="font-black text-foreground uppercase text-[11px] truncate">
                                     {(order.product_id || order.shoe_id) ? productNameMap.get((order.product_id || order.shoe_id)!) || `Item #${order.product_id || order.shoe_id}` : 'Manual Entry'}
                                     </span>
                                     <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-1">
@@ -789,12 +789,12 @@ export default function AdminOrdersPage() {
                                             {isSelected ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5 text-slate-200" />}
                                         </button>
                                         <div>
-                                            <p className="font-black text-slate-900 uppercase text-xs">#{order.id} â€” {order.customer_name}</p>
+                                            <p className="font-black text-foreground uppercase text-xs">#{order.id} â€” {order.customer_name}</p>
                                             <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5">{order.customer_phone}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-black text-slate-900 text-sm">{formatPrice(order.total_price)}</p>
+                                        <p className="font-black text-foreground text-sm">{formatPrice(order.total_price)}</p>
                                         <p className="text-[8px] font-black text-primary uppercase mt-1 tracking-widest">{order.payment_method}</p>
                                     </div>
                                 </div>
@@ -834,7 +834,7 @@ export default function AdminOrdersPage() {
       {assigningRiderId && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-500/10 backdrop-blur-md p-4">
               <div className="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95">
-                  <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900 mb-6">Assign Elite Rider</h3>
+                  <h3 className="text-xl font-black uppercase tracking-tighter text-foreground mb-6">Assign Elite Rider</h3>
                   <div className="space-y-4">
                       <div className="space-y-1">
                           <label className="text-[9px] font-black uppercase text-slate-400 ml-1">Rider Name</label>

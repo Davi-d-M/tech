@@ -138,7 +138,7 @@ export default function SalesPopup() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Live Feed</p>
+                    <p className="text-[11px] font-black text-foreground uppercase tracking-tight leading-none mb-1">Live Feed</p>
                     <p className="text-[10px] text-slate-500 font-medium leading-tight">
                         <span className="font-bold text-slate-700">{currentSale.name}</span> bought <span className="text-primary font-black uppercase italic">{currentSale.item}</span>
                     </p>

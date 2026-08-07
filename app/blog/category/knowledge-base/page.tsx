@@ -24,7 +24,7 @@ export default function KnowledgeBase() {
               </Link>
               <div className="max-w-3xl space-y-6">
                 <Badge className="bg-primary/10 text-primary border-none font-black uppercase text-[10px] tracking-widest px-4 py-2 rounded-full">Elite Knowledge Base</Badge>
-                <h1 className="text-5xl lg:text-7xl font-black text-slate-900 uppercase tracking-tighter leading-none">
+                <h1 className="text-5xl lg:text-7xl font-black text-foreground uppercase tracking-tighter leading-none">
                     Common <span className="text-primary italic">Intelligence.</span>
                 </h1>
                 <p className="text-slate-500 text-lg font-medium leading-relaxed italic">
@@ -42,7 +42,7 @@ export default function KnowledgeBase() {
                       <div className="flex items-center gap-4">
                           <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-primary shadow-inner"><cat.icon className="h-6 w-6" /></div>
                           <div>
-                              <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">{cat.title}</h2>
+                              <h2 className="text-xl font-black text-foreground uppercase tracking-tight">{cat.title}</h2>
                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{cat.count} Artifacts Found</p>
                           </div>
                       </div>
@@ -50,7 +50,7 @@ export default function KnowledgeBase() {
                           {cat.questions.map((q: string) => (
                               <Link key={q} href="/blog" className="block p-6 rounded-3xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-2xl hover:border-primary/20 transition-all group">
                                   <div className="flex justify-between items-center">
-                                      <p className="text-xs font-black text-slate-900 uppercase leading-snug pr-4">{q}</p>
+                                      <p className="text-xs font-black text-foreground uppercase leading-snug pr-4">{q}</p>
                                       <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-all" />
                                   </div>
                               </Link>
@@ -66,7 +66,7 @@ export default function KnowledgeBase() {
           </div>
 
           {/* AI Mission Banner */}
-          <div className="mt-32 p-12 lg:p-20 rounded-[4rem] bg-primary/5 text-slate-900 relative overflow-hidden border border-primary/10 shadow-sm">
+          <div className="mt-32 p-12 lg:p-20 rounded-[4rem] bg-primary/5 text-foreground relative overflow-hidden border border-primary/10 shadow-sm">
               <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6">
                       <div className="h-12 w-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary animate-pulse"><Zap className="h-6 w-6 fill-current" /></div>

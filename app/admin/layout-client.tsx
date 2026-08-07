@@ -204,7 +204,7 @@ export default function AdminLayoutClient({
                       isSidebarCollapsed ? "justify-center p-3.5" : "gap-4 px-5 py-3.5",
                       isActive(item.href)
                         ? "bg-primary/10 text-primary shadow-sm"
-                        : "text-slate-400 hover:bg-slate-50 hover:text-slate-900"
+                        : "text-slate-400 hover:bg-slate-50 hover:text-foreground"
                     )}
                   >
                     <item.icon className={cn(

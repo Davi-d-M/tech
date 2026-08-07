@@ -135,7 +135,7 @@ export default function AdminReportsPage() {
         <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Executive Reports</h1>
+                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Executive Reports</h1>
                     <p className="text-slate-500 text-sm font-medium mt-1 italic">High-fidelity data exports for strategic business review.</p>
                 </div>
                 <Button onClick={fetchData} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest transition-all hover:shadow-lg">
@@ -154,7 +154,7 @@ export default function AdminReportsPage() {
                         <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-2xl sm:rounded-3xl bg-primary/10 flex items-center justify-center text-primary mb-4 sm:mb-6 transition-transform group-hover:scale-110 group-hover:rotate-6">
                             <r.icon className="h-6 w-6 sm:h-8 sm:w-8" />
                         </div>
-                        <h3 className="font-black text-slate-900 uppercase tracking-tight text-sm sm:text-lg mb-1 sm:mb-2">{r.label}</h3>
+                        <h3 className="font-black text-foreground uppercase tracking-tight text-sm sm:text-lg mb-1 sm:mb-2">{r.label}</h3>
                         <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6 sm:mb-8">{r.desc}</p>
 
                         <Button
@@ -169,7 +169,7 @@ export default function AdminReportsPage() {
             </div>
 
             <div className="grid lg:grid-cols-3 gap-12 pt-8">
-                <Card className="lg:col-span-2 rounded-[3rem] p-12 border-2 border-primary/10 bg-white text-slate-900 relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all">
+                <Card className="lg:col-span-2 rounded-[3rem] p-12 border-2 border-primary/10 bg-white text-foreground relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all">
                     <div className="relative z-10 flex flex-col h-full justify-between gap-12 text-left">
                         <div className="space-y-4">
                             <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/10">
@@ -181,7 +181,7 @@ export default function AdminReportsPage() {
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex-1 text-left">
                                 <p className="text-[8px] font-black text-slate-400 uppercase mb-1 tracking-widest leading-none">Last Sent</p>
-                                <p className="text-sm font-black text-slate-900 uppercase">Awaiting First Dispatch</p>
+                                <p className="text-sm font-black text-foreground uppercase">Awaiting First Dispatch</p>
                             </div>
                             <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex-1 text-left">
                                 <p className="text-[8px] font-black text-slate-400 uppercase mb-1 tracking-widest leading-none">Status</p>
@@ -235,7 +235,7 @@ export default function AdminReportsPage() {
                         </div>
                     </div>
 
-                    <div className="bg-slate-50 border border-slate-100 rounded-[2.5rem] p-8 text-slate-900 shadow-inner relative overflow-hidden">
+                    <div className="bg-slate-50 border border-slate-100 rounded-[2.5rem] p-8 text-foreground shadow-inner relative overflow-hidden">
                         <h4 className="text-[10px] font-black uppercase tracking-widest mb-2 text-primary">Pro Tip</h4>
                         <p className="text-sm font-bold leading-relaxed italic text-slate-500">&quot;Always check the Inventory Health report before placing orders with suppliers to avoid dead stock.&quot;</p>
                         <ShieldCheck className="absolute -bottom-4 -right-4 h-24 w-24 text-primary/5 rotate-12" />

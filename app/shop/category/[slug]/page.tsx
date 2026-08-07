@@ -77,7 +77,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 text-left min-h-screen bg-white">
       <div className="border-b border-slate-100 pb-8 mb-12">
-        <h1 className="text-4xl font-black tracking-tight text-slate-900 uppercase">
+        <h1 className="text-4xl font-black tracking-tight text-foreground uppercase">
           {displayTitle} {!displayTitle.toLowerCase().includes('arrivals') && 'Items'}
         </h1>
         <p className="mt-2 text-slate-500 font-medium">

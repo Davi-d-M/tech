@@ -494,7 +494,7 @@ export default function ProfilePage() {
                         <div className="flex items-center gap-4">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><ShoppingBag className="h-5 w-5" /></div>
                             <div>
-                                <p className="text-xs font-black uppercase text-slate-900 tracking-tight">You left items in your bag!</p>
+                                <p className="text-xs font-black uppercase text-foreground tracking-tight">You left items in your bag!</p>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">Restore your {formatPrice(abandonedBag.total_price)} bag to get a loyalty bonus.</p>
                             </div>
                         </div>
@@ -508,7 +508,7 @@ export default function ProfilePage() {
                 <div className="space-y-6">
                     <div className="flex items-center gap-6 animate-in slide-in-from-left-4 duration-500">
                         <div className="relative">
-                            <div className="h-28 w-24 rounded-[2rem] bg-white border border-slate-200 flex items-center justify-center text-slate-900 text-3xl font-black uppercase shadow-sm relative z-10">
+                            <div className="h-28 w-24 rounded-[2rem] bg-white border border-slate-200 flex items-center justify-center text-foreground text-3xl font-black uppercase shadow-sm relative z-10">
                                 {profile?.full_name?.substring(0, 2) || user?.email?.substring(0, 2)}
                             </div>
                             {/* Profile Completion Ring */}
@@ -540,7 +540,7 @@ export default function ProfilePage() {
                                     </div>
                                 )}
                             </div>
-                            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-slate-900 uppercase">{profile?.full_name?.split(' ')[0] || 'Member'} 👋</h1>
+                            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-foreground uppercase">{profile?.full_name?.split(' ')[0] || 'Member'} 👋</h1>
 
                             {/* Achievement Badges Row 2.0 */}
                             <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar pb-2">
@@ -582,7 +582,7 @@ export default function ProfilePage() {
                                 <item.icon className="h-4 w-4 fill-current" />
                             </div>
                             <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-0.5">{item.label}</p>
-                            <p className="text-lg font-black text-slate-900 uppercase tracking-tighter">{item.val}</p>
+                            <p className="text-lg font-black text-foreground uppercase tracking-tighter">{item.val}</p>
                         </button>
                     ))}
                 </div>
@@ -603,7 +603,7 @@ export default function ProfilePage() {
                 <div className="space-y-4 text-left">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Trophy className="h-5 w-5" /></div>
-                        <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">Mission Control</h2>
+                        <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground leading-none">Mission Control</h2>
                     </div>
                     <p className="text-slate-500 font-medium text-lg max-w-2xl leading-relaxed italic">&quot;Execute daily tech assignments to accelerate your rank and unlock elite rewards.&quot;</p>
                 </div>
@@ -620,16 +620,16 @@ export default function ProfilePage() {
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3 text-left">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm group-hover:scale-105 transition-transform"><Wallet className="h-5 w-5" /></div>
-                        <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900">Wallet</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Wallet</h3>
                     </div>
                     <button onClick={() => document.getElementById('points-ledger-section')?.scrollIntoView({ behavior: 'smooth' })} className="text-[8px] font-black uppercase text-primary hover:underline underline-offset-4">Transaction History</button>
                 </div>
                 <div>
-                    <p className="text-4xl font-black tracking-tighter text-slate-900 leading-none">{formatPrice(profile?.wallet_balance || 0)}</p>
+                    <p className="text-4xl font-black tracking-tighter text-foreground leading-none">{formatPrice(profile?.wallet_balance || 0)}</p>
                     <p className="text-[9px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Global Account Credit</p>
                 </div>
                 <div className="grid grid-cols-2 gap-2 pt-2">
-                    <Button onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}?text=Hello! I want to top up my Apex Wallet.`, '_blank')} className="h-12 rounded-xl bg-slate-50 text-slate-900 hover:bg-slate-100 font-black uppercase text-[8px] border border-slate-100 transition-all active:scale-95">Add Funds</Button>
+                    <Button onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}?text=Hello! I want to top up my Apex Wallet.`, '_blank')} className="h-12 rounded-xl bg-slate-50 text-foreground hover:bg-slate-100 font-black uppercase text-[8px] border border-slate-100 transition-all active:scale-95">Add Funds</Button>
                     <Button onClick={() => { const code = prompt("Enter your redemption code:"); if(code) alert("Code validated. Points will be added shortly!"); }} className="h-12 rounded-xl bg-primary text-white font-black uppercase text-[8px] shadow-lg shadow-primary/20 active:scale-95">Redeem Code</Button>
                 </div>
             </Card>
@@ -638,7 +638,7 @@ export default function ProfilePage() {
             <Card className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-6 group hover:shadow-xl transition-all">
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary"><StatsIcon className="h-5 w-5" /></div>
-                    <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900">Elite Insights</h3>
+                    <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Elite Insights</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-4 border-b border-slate-50 pb-4">
                     <div>
@@ -647,7 +647,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="text-right">
                         <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Orders</p>
-                        <p className="text-xl font-black text-slate-900">{orders.length}</p>
+                        <p className="text-xl font-black text-foreground">{orders.length}</p>
                     </div>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400">
@@ -665,7 +665,7 @@ export default function ProfilePage() {
                             <DealsCountdown hours={14} />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter leading-none">Flash Vouchers</h3>
+                            <h3 className="text-xl font-black text-foreground uppercase tracking-tighter leading-none">Flash Vouchers</h3>
                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">{coupons.length} Active Codes</p>
                         </div>
                         <div className="space-y-2">
@@ -693,13 +693,13 @@ export default function ProfilePage() {
                 {/* DELIVERY TRACKER & TIMELINE */}
                 {orders.length > 0 && orders[0].status !== 'Delivered' && (
                     <section className="space-y-6">
-                        <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900">Latest Delivery</h2>
+                        <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Latest Delivery</h2>
                         <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl relative overflow-hidden">
                             <div className="flex flex-col sm:flex-row justify-between items-center gap-8 text-center sm:text-left relative z-10">
                                 <div className="space-y-2">
                                     <p className="text-[10px] font-black uppercase text-primary tracking-[0.4em]">En Route</p>
-                                    <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Order #{orders[0].id}</h3>
-                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Estimated Arrival: <span className="text-slate-900">Today</span></p>
+                                    <h3 className="text-3xl font-black text-foreground uppercase tracking-tighter">Order #{orders[0].id}</h3>
+                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Estimated Arrival: <span className="text-foreground">Today</span></p>
                                 </div>
                                 <div className="flex-1 w-full max-w-sm">
                                     <div className="flex justify-between mb-4 text-[8px] font-black uppercase text-slate-400">
@@ -724,7 +724,7 @@ export default function ProfilePage() {
                 {/* REGISTERED TECH (DEVICE INVENTORY) */}
                 <section className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900">My Devices</h2>
+                        <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">My Devices</h2>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                         {devices.length > 0 ? devices.map((device: Device) => (
@@ -733,7 +733,7 @@ export default function ProfilePage() {
                                     <device.icon className="h-6 w-6" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight">{device.name}</p>
+                                    <p className="text-[10px] font-black text-foreground uppercase tracking-tight">{device.name}</p>
                                     <p className="text-[8px] font-bold text-slate-400 uppercase mt-1">{device.model}</p>
                                 </div>
                             </div>
@@ -747,7 +747,7 @@ export default function ProfilePage() {
 
                 {/* LOYALTY ROADMAP (Explorer -> Legend) */}
                 <section id="loyalty-pathway-section" className="space-y-6 scroll-mt-24">
-                    <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900">Loyalty Pathway</h2>
+                    <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Loyalty Pathway</h2>
                     <div className="bg-white rounded-[3rem] border border-slate-100 p-10 shadow-sm relative overflow-hidden">
                         <div className="relative z-10 flex justify-between items-center px-4 overflow-x-auto no-scrollbar gap-8">
                             {(gamification?.tiers || [
@@ -779,7 +779,7 @@ export default function ProfilePage() {
                 {purchasedItems.length > 0 && (
                     <section className="space-y-6 scroll-mt-24" id="buy-again-section">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900">Buy Again</h2>
+                            <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Buy Again</h2>
                             <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">Fast restock for your tech</p>
                         </div>
                         <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
@@ -788,7 +788,7 @@ export default function ProfilePage() {
                                     <div className="h-24 w-24 bg-slate-50 rounded-2xl mx-auto flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                         <img src={item.image} alt={item.name} className="max-h-full w-auto object-contain" />
                                     </div>
-                                    <p className="text-[10px] font-black text-slate-900 uppercase truncate mb-1">{item.name}</p>
+                                    <p className="text-[10px] font-black text-foreground uppercase truncate mb-1">{item.name}</p>
                                     <p className="text-sm font-black text-primary mb-3">{formatPrice(item.price)}</p>
                                     <Button onClick={(e) => { e.preventDefault(); addToCart({ ...item, quantity: 1 } as CartItem); router.push('/cart'); }} className="w-full h-10 rounded-xl bg-primary text-white font-black uppercase text-[8px] active:scale-95 shadow-lg shadow-primary/20">One-Tap Order</Button>
                                 </Link>
@@ -799,7 +799,7 @@ export default function ProfilePage() {
 
                 {/* AI TECH ASSISTANT HUB */}
                 <section className="space-y-6">
-                    <Card className="rounded-[3.5rem] bg-slate-50 border border-slate-100 p-10 text-slate-900 relative overflow-hidden shadow-inner group text-left">
+                    <Card className="rounded-[3.5rem] bg-slate-50 border border-slate-100 p-10 text-foreground relative overflow-hidden shadow-inner group text-left">
                         <div className="relative z-10 grid sm:grid-cols-2 gap-10 items-center">
                             <div className="space-y-6 text-left">
                                 <div className="flex items-center gap-3">
@@ -811,7 +811,7 @@ export default function ProfilePage() {
                                     <Input
                                         ref={assistantInputRef}
                                         placeholder="Which charger fits my iPhone 13?"
-                                        className="h-14 rounded-2xl bg-white border-slate-100 text-slate-900 placeholder:text-slate-300 font-bold pl-12 pr-12 focus:ring-4 focus:ring-primary/5 transition-all shadow-sm"
+                                        className="h-14 rounded-2xl bg-white border-slate-100 text-foreground placeholder:text-slate-300 font-bold pl-12 pr-12 focus:ring-4 focus:ring-primary/5 transition-all shadow-sm"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 const val = (e.target as HTMLInputElement).value;
@@ -845,7 +845,7 @@ export default function ProfilePage() {
                 {/* 🛡️ SERVICE & REPAIR HUB */}
                 <section className="space-y-6">
                     <div className="flex items-center justify-between px-2">
-                        <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900">Service Center</h2>
+                        <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Service Center</h2>
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{serviceRequests.length} Active Tickets</span>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-6">
@@ -862,7 +862,7 @@ export default function ProfilePage() {
                                         onClick={() => type.href.startsWith('http') ? window.open(type.href, '_blank') : router.push(type.href)}
                                         className="w-full flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all group"
                                     >
-                                        <span className="text-[10px] font-black uppercase text-slate-900">{type.label}</span>
+                                        <span className="text-[10px] font-black uppercase text-foreground">{type.label}</span>
                                         <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all" />
                                     </button>
                                 ))}
@@ -871,7 +871,7 @@ export default function ProfilePage() {
                         <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-center text-left group hover:border-primary/20 transition-all">
                             <div className="relative z-10 space-y-4">
                                 <Headphones className="h-10 w-10 text-primary" />
-                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-slate-900">Global <br /> <span className="text-primary italic">Support Hub</span></h3>
+                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-foreground">Global <br /> <span className="text-primary italic">Support Hub</span></h3>
                                 <p className="text-[10px] text-slate-400 font-medium italic">&quot;Real-time technical extraction. No bots, just elite engineers.&quot;</p>
                                 <Button
                                     onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}`, '_blank')}
@@ -887,12 +887,12 @@ export default function ProfilePage() {
 
                 {/* 📜 WARRANTY & INVOICE CENTER */}
                 <section id="warranty-section" className="space-y-6 scroll-mt-24">
-                    <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900">Tech Insurance & Documents</h2>
+                    <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Tech Insurance & Documents</h2>
                     <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden text-left">
                         <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <ShieldCheck className="h-6 w-6 text-primary" />
-                                <h3 className="text-lg font-black uppercase text-slate-900">Active Warranties</h3>
+                                <h3 className="text-lg font-black uppercase text-foreground">Active Warranties</h3>
                             </div>
                             <span className="text-[10px] font-black uppercase text-slate-400">{warranties.length} Products Protected</span>
                         </div>
@@ -908,7 +908,7 @@ export default function ProfilePage() {
                                         <div className="flex items-center gap-4">
                                             <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors"><Package className="h-5 w-5" /></div>
                                             <div>
-                                                <p className="text-xs font-black uppercase text-slate-900 leading-none">{w.product_name}</p>
+                                                <p className="text-xs font-black uppercase text-foreground leading-none">{w.product_name}</p>
                                                 <p className="text-[9px] font-bold text-primary uppercase mt-1">Expires: {new Date(w.expiry_date).toLocaleDateString()}</p>
                                             </div>
                                         </div>
@@ -925,7 +925,7 @@ export default function ProfilePage() {
 
                 {/* 📚 YOUR TECH LIBRARY */}
                 <section className="space-y-6">
-                    <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900">Elite Accomplishments</h2>
+                    <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Elite Accomplishments</h2>
                     {achievements.length > 0 ? <AchievementBadges userId={user?.id || ''} /> : (
                         <div className="py-12 text-center bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-100">
                              <Trophy className="h-10 w-10 text-slate-200 mx-auto mb-4" />
@@ -939,7 +939,7 @@ export default function ProfilePage() {
             <div className="flex flex-col gap-10">
 
                 {/* 🎮 REWARDS GAMIFICATION CARD 2.0 */}
-                <section className="bg-white rounded-[3rem] p-10 border-2 border-primary/10 text-slate-900 relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all text-left">
+                <section className="bg-white rounded-[3rem] p-10 border-2 border-primary/10 text-foreground relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all text-left">
                     <div className="relative z-10 space-y-8 text-left">
                         <div className="flex justify-between items-start">
                             <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
@@ -953,7 +953,7 @@ export default function ProfilePage() {
 
                         <div className="space-y-3">
                             <div className="flex justify-between items-end mb-2">
-                                <p className="text-3xl font-black tracking-tighter leading-none text-slate-900">{stats.points.toLocaleString()} <span className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">XP</span></p>
+                                <p className="text-3xl font-black tracking-tighter leading-none text-foreground">{stats.points.toLocaleString()} <span className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">XP</span></p>
                                 <p className="text-[10px] font-black text-primary uppercase tracking-widest">Target: {stats.nextTier}</p>
                             </div>
                             <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200 p-0.5">
@@ -972,7 +972,7 @@ export default function ProfilePage() {
                             <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm"><Gift className="h-5 w-5" /></div>
                             <div>
                                 <p className="text-[9px] font-black uppercase text-slate-400">Current Perk</p>
-                                <p className="text-xs font-bold text-slate-900 uppercase">{stats.level === 'Explorer' ? 'No perks unlocked' : 'Free Dispatch Unlocked'}</p>
+                                <p className="text-xs font-bold text-foreground uppercase">{stats.level === 'Explorer' ? 'No perks unlocked' : 'Free Dispatch Unlocked'}</p>
                             </div>
                         </div>
 
@@ -1004,7 +1004,7 @@ export default function ProfilePage() {
                 {/* 🔔 NOTIFICATION CENTER */}
                 <Card className="p-8 rounded-[3rem] border border-slate-100 bg-white shadow-sm space-y-6 text-left">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-3">
+                        <h3 className="text-lg font-black uppercase tracking-tighter text-foreground flex items-center gap-3">
                             <Bell className="h-5 w-5 text-primary" /> Notifications
                         </h3>
                         <span className="h-2 w-2 rounded-full bg-primary animate-ping"></span>
@@ -1014,7 +1014,7 @@ export default function ProfilePage() {
                             <div key={i} className="flex gap-4 items-start p-4 bg-slate-50 rounded-2xl group hover:bg-white hover:shadow-xl transition-all">
                                 <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center text-primary shadow-inner shrink-0 group-hover:scale-110 transition-transform"><Check className="h-4 w-4" /></div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase text-slate-900">{n.title}</p>
+                                    <p className="text-[10px] font-black uppercase text-foreground">{n.title}</p>
                                     <p className="text-[9px] font-medium text-slate-500 mt-1 leading-snug">{n.text}</p>
                                 </div>
                             </div>
@@ -1023,7 +1023,7 @@ export default function ProfilePage() {
                 </Card>
 
                 {/* 🎂 BIRTHDAY REWARDS */}
-                <Card className="p-8 rounded-[3rem] bg-slate-50 border border-slate-100 text-slate-900 shadow-inner relative overflow-hidden group text-left">
+                <Card className="p-8 rounded-[3rem] bg-slate-50 border border-slate-100 text-foreground shadow-inner relative overflow-hidden group text-left">
                     <div className="relative z-10 space-y-6">
                         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                             <Gift className="h-6 w-6 text-primary" />
@@ -1034,7 +1034,7 @@ export default function ProfilePage() {
                         </div>
                         {profile?.birth_date ? (
                             <div className="p-4 bg-white rounded-2xl text-center border border-slate-100 shadow-sm">
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-900">{profile.birth_date}</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground">{profile.birth_date}</p>
                                 <p className="text-[8px] font-bold text-primary uppercase mt-1">Gifts initialized for your day</p>
                             </div>
                         ) : (
@@ -1066,7 +1066,7 @@ export default function ProfilePage() {
                                 )}
                             </div>
                             <div className="text-left">
-                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-2 text-slate-900">Tactical <br /> <span className="text-primary italic">Drop Point</span></h3>
+                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-2 text-foreground">Tactical <br /> <span className="text-primary italic">Drop Point</span></h3>
                                 <p className="text-slate-500 text-[10px] font-medium leading-relaxed italic opacity-80">
                                     {profile?.latitude ? "Precision coordinates updated. Your rider will extract your tech at this exact pin." : "Pin your exact delivery location on the map for zero-delay dispatch."}
                                 </p>
@@ -1085,10 +1085,10 @@ export default function ProfilePage() {
                     className="bg-white rounded-[3rem] border border-slate-100 p-10 shadow-sm space-y-8 text-left cursor-pointer hover:border-primary/20 transition-all group"
                 >
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-black text-slate-900 uppercase flex items-center gap-3">
+                        <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3">
                             <CircleCheck className="h-5 w-5 text-primary" /> Digital Profile
                         </h2>
-                        <span className="text-lg font-black text-slate-900 group-hover:text-primary transition-colors">{stats.completion}%</span>
+                        <span className="text-lg font-black text-foreground group-hover:text-primary transition-colors">{stats.completion}%</span>
                     </div>
 
                     <div className="space-y-4">
@@ -1125,7 +1125,7 @@ export default function ProfilePage() {
                             { label: 'Returns', count: 0, color: 'primary', href: '/returns' },
                         ].map(stat => (
                             <Link key={stat.label} href={stat.href} className="bg-white p-5 rounded-2xl border border-slate-100 text-center space-y-1 hover:border-primary/20 transition-all hover:shadow-lg active:scale-95">
-                                <p className="text-2xl font-black text-slate-900 tracking-tighter">{stat.count}</p>
+                                <p className="text-2xl font-black text-foreground tracking-tighter">{stat.count}</p>
                                 <p className={cn("text-[8px] font-black uppercase tracking-widest", `text-${stat.color === 'primary' ? 'primary' : stat.color + '-500'}`)}>{stat.label}</p>
                             </Link>
                         ))}
@@ -1135,7 +1135,7 @@ export default function ProfilePage() {
                 {/* 💬 REVIEWER REPUTATION HUB */}
                 <Card className="bg-white rounded-[3rem] border border-slate-100 p-10 shadow-sm space-y-8 group hover:border-amber-100 transition-all text-left">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-black text-slate-900 uppercase flex items-center gap-3">
+                        <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3">
                             <MessageSquare className="h-5 w-5 text-amber-500" /> Reviewer Rank
                         </h2>
                         <div className="flex text-amber-400 text-xs">
@@ -1148,11 +1148,11 @@ export default function ProfilePage() {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
                             <p className="text-[10px] font-black uppercase text-slate-400">Total Reviews</p>
-                            <p className="text-2xl font-black text-slate-900">7</p>
+                            <p className="text-2xl font-black text-foreground">7</p>
                         </div>
                         <div className="space-y-1 text-right">
                             <p className="text-[10px] font-black uppercase text-primary">Helpful Votes</p>
-                            <p className="text-2xl font-black text-slate-900">29</p>
+                            <p className="text-2xl font-black text-foreground">29</p>
                         </div>
                     </div>
 
@@ -1161,7 +1161,7 @@ export default function ProfilePage() {
                     </div>
                 </Card>
                 {/* VIRAL SHARE (Cash-back Focused) */}
-                <div className="bg-white rounded-[3rem] p-10 border-2 border-primary/10 text-slate-900 relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all text-left">
+                <div className="bg-white rounded-[3rem] p-10 border-2 border-primary/10 text-foreground relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all text-left">
                     <div className="relative z-10 space-y-6 text-left">
                         <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary border border-primary/10 group-hover:scale-110 transition-transform"><Users className="h-6 w-6" /></div>
                         <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Invite Friends <br/> <span className="text-primary italic">Earn Ksh 200</span></h3>
@@ -1182,7 +1182,7 @@ export default function ProfilePage() {
 
                 {/* STICKY QUICK ACTIONS (DESKTOP) */}
                 <Card className="bg-white rounded-[3rem] border border-slate-100 p-10 shadow-sm space-y-8 sticky top-24 hidden lg:block text-left">
-                    <h2 className="text-lg font-black text-slate-900 uppercase flex items-center gap-3">
+                    <h2 className="text-lg font-black text-foreground uppercase flex items-center gap-3">
                         <HelpCircle className="h-5 w-5 text-primary" /> Need Help?
                     </h2>
                     <div className="space-y-4 text-left">

@@ -20,7 +20,7 @@ export default function CompareBar() {
                     <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-white">
                         <ArrowUpDown className="h-3 w-3" />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-900">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-foreground">
                         {compareList.length} Items Selected
                     </span>
                 </div>

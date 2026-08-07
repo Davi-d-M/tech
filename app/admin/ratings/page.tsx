@@ -71,7 +71,7 @@ export default function AdminRatingsPage() {
       <div className="mx-auto flex max-w-4xl flex-col gap-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase">
+            <h1 className="text-3xl font-black tracking-tighter text-foreground uppercase">
               Trust Control
             </h1>
             <p className="text-slate-500 text-sm font-medium mt-1">
@@ -109,7 +109,7 @@ export default function AdminRatingsPage() {
                 ) : (
                   products.map((product) => (
                     <tr key={product.id} className="hover:bg-slate-50 transition-colors group">
-                      <td className="px-8 py-6 font-black text-slate-900 uppercase text-xs tracking-tight">{product.name}</td>
+                      <td className="px-8 py-6 font-black text-foreground uppercase text-xs tracking-tight">{product.name}</td>
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-3">
                           <div className="flex gap-1.5">

@@ -10,7 +10,7 @@ export default function CookiePolicyPage() {
         
         {/* Header Section */}
         <div className="border-b pb-6 mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight uppercase">Cookie Policy</h1>
+          <h1 className="text-3xl font-extrabold text-foreground tracking-tight uppercase">Cookie Policy</h1>
           <p className="text-sm text-slate-400 mt-2">Last Updated: {lastUpdated}</p>
           <p className="text-slate-600 mt-4 leading-relaxed font-medium">
             At <strong>Apexstores</strong>, we believe in being completely clear and transparent about how we collect and process data. This Cookie Policy explains what cookies are, how we use them on our tech storefront, and how you can manage your preferences.

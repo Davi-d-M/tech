@@ -73,7 +73,7 @@ export default function BlogDetailPage() {
                 <span className="flex items-center gap-2 text-slate-400"><Calendar className="h-3 w-3" /> {new Date(post.created_at).toLocaleDateString()}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl font-black text-slate-900 uppercase tracking-tighter leading-none">
+            <h1 className="text-4xl sm:text-6xl font-black text-foreground uppercase tracking-tighter leading-none">
                 {post.title}
             </h1>
 
@@ -87,7 +87,7 @@ export default function BlogDetailPage() {
                         {post.author.substring(0, 2)}
                     </div>
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">{post.author}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-foreground">{post.author}</p>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Certified Tech Analyst</p>
                     </div>
                 </div>
@@ -101,14 +101,14 @@ export default function BlogDetailPage() {
             <img src={post.image_url} alt={post.title} className="w-full h-auto" />
         </div>
 
-        <article className="prose prose-slate prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-strong:text-slate-900 text-slate-600 font-medium leading-relaxed mb-24">
+        <article className="prose prose-slate prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-strong:text-foreground text-slate-600 font-medium leading-relaxed mb-24">
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </article>
 
         {/* Footer Trust Badges */}
         <section className="bg-slate-50 rounded-[2.5rem] p-12 flex flex-col sm:flex-row gap-12 items-center justify-between border border-slate-100 shadow-inner">
             <div className="flex-1 text-center sm:text-left space-y-4">
-                <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Powering Your Tech Journey</h3>
+                <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">Powering Your Tech Journey</h3>
                 <p className="text-slate-500 font-medium text-sm leading-relaxed">At Apexstores Tech, we don&apos;t just sell gadgets—we test them. All information provided in our guides is verified by elite hardware analysts.</p>
             </div>
             <div className="flex gap-4">

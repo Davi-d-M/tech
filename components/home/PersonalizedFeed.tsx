@@ -79,14 +79,14 @@ export default function PersonalizedFeed() {
                     <Badge className="bg-amber-50 text-amber-600 border-none font-black uppercase text-[9px] px-3 py-1 rounded-full">
                         <History className="h-3 w-3 mr-2" /> Recently Viewed
                     </Badge>
-                    <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
+                    <h2 className="text-4xl font-black tracking-tighter text-foreground uppercase leading-none">
                         Suggested <span className="text-primary italic">for You.</span>
                     </h2>
                     <p className="text-slate-500 font-medium text-lg max-w-xl">
                         Because you looked at these gadgets, we think you&apos;ll love our premium collection.
                     </p>
                 </div>
-                <Link href="/shop" className="text-[10px] font-black text-primary underline underline-offset-4 uppercase tracking-widest hover:text-slate-900 transition-colors flex items-center gap-2">
+                <Link href="/shop" className="text-[10px] font-black text-primary underline underline-offset-4 uppercase tracking-widest hover:text-foreground transition-colors flex items-center gap-2">
                     Back to Catalog <ArrowRight className="h-4 w-4" />
                 </Link>
             </div>

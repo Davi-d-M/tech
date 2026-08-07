@@ -102,7 +102,7 @@ export default function DailyMissions({ userId, referralCode }: { userId: string
                         </div>
 
                         <div>
-                            <p className="text-[10px] font-black uppercase text-slate-900 mb-2 truncate">{config.label}</p>
+                            <p className="text-[10px] font-black uppercase text-foreground mb-2 truncate">{config.label}</p>
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden border border-slate-50 p-0.5">
                                     <div

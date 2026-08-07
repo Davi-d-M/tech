@@ -154,7 +154,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
   };
 
   return (
-    <div className="bg-white min-h-screen text-slate-900 font-sans antialiased text-left">
+    <div className="bg-white min-h-screen text-foreground font-sans antialiased text-left">
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
 
         <div className="mb-8">
@@ -207,13 +207,13 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                     <>
                         <button
                             onClick={() => setActiveImageIndex(i => (i === 0 ? (allImages.length + (hasVideo ? 1 : 0)) - 1 : i - 1))}
-                            className="absolute left-6 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm shadow-xl flex items-center justify-center text-slate-900 opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
+                            className="absolute left-6 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm shadow-xl flex items-center justify-center text-foreground opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
                         >
                             <ChevronLeft className="h-6 w-6" />
                         </button>
                         <button
                             onClick={() => setActiveImageIndex(i => (i === (allImages.length + (hasVideo ? 1 : 0)) - 1 ? 0 : i + 1))}
-                            className="absolute right-6 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm shadow-xl flex items-center justify-center text-slate-900 opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
+                            className="absolute right-6 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/80 backdrop-blur-sm shadow-xl flex items-center justify-center text-foreground opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
                         >
                             <ChevronRight className="h-6 w-6" />
                         </button>
@@ -264,7 +264,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                 )}
               </div>
 
-              <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-slate-900 mb-6 leading-none uppercase text-left">
+              <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-foreground mb-6 leading-none uppercase text-left">
                 {product.name}
               </h1>
 
@@ -280,7 +280,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
               </div>
 
               <div className="flex items-baseline gap-4 mb-10 text-left">
-                <span className="text-5xl font-black text-slate-900 tracking-tighter">{formatPrice(product.price)}</span>
+                <span className="text-5xl font-black text-foreground tracking-tighter">{formatPrice(product.price)}</span>
                 {product.old_price && (
                   <span className="text-2xl text-slate-300 line-through font-bold">{formatPrice(product.old_price)}</span>
                 )}
@@ -302,7 +302,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                         {Object.entries(product.tech_specs).map(([key, value]) => (
                             <div key={key} className="flex justify-between items-center p-4 rounded-2xl bg-slate-50 border border-slate-100">
                                 <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">{key}</span>
-                                <span className="text-xs font-black text-slate-900">{String(value)}</span>
+                                <span className="text-xs font-black text-foreground">{String(value)}</span>
                             </div>
                         ))}
                     </div>
@@ -349,7 +349,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Quantity</span>
                 <div className="flex items-center border-2 border-slate-100 rounded-[1.5rem] overflow-hidden bg-white shadow-inner">
                   <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="h-12 w-12 hover:bg-slate-50 font-black text-slate-400 border-r-2 border-slate-50 transition-colors">-</button>
-                  <span className="px-10 font-black text-slate-900">{quantity}</span>
+                  <span className="px-10 font-black text-foreground">{quantity}</span>
                   <button onClick={() => setQuantity(q => q + 1)} className="h-12 w-12 hover:bg-slate-50 font-black text-slate-400 border-l-2 border-slate-50 transition-colors">+</button>
                 </div>
               </div>
@@ -371,7 +371,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                         <Button onClick={handleWhatsAppOrder} className="h-20 rounded-[1.5rem] bg-primary/5 text-primary border-2 border-primary/10 font-black uppercase tracking-widest text-xs hover:bg-primary/10 shadow-sm active:scale-95 transition-all">
                             <MessageSquare className="h-5 w-5 mr-3" /> Quick WhatsApp
                         </Button>
-                        <Button onClick={handleBuyNow} className="h-20 rounded-[1.5rem] bg-white text-slate-900 border-2 border-slate-100 font-black uppercase tracking-widest text-xs hover:bg-slate-50 shadow-sm sm:col-span-2 active:scale-95 transition-all">
+                        <Button onClick={handleBuyNow} className="h-20 rounded-[1.5rem] bg-white text-foreground border-2 border-slate-100 font-black uppercase tracking-widest text-xs hover:bg-slate-50 shadow-sm sm:col-span-2 active:scale-95 transition-all">
                             Instant Checkout
                         </Button>
                       </>
@@ -398,12 +398,12 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                     }}
                     className={cn(
                         "text-[11px] font-black uppercase tracking-widest transition-colors flex items-center gap-3",
-                        isInWishlist(product.id) ? "text-rose-500" : "text-slate-400 hover:text-slate-900"
+                        isInWishlist(product.id) ? "text-rose-500" : "text-slate-400 hover:text-foreground"
                     )}
                 >
                     {isInWishlist(product.id) ? '❤️ Saved' : '🤍 Wishlist'}
                 </button>
-                <button onClick={() => handleShare('copy')} className="text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 flex items-center gap-3 transition-colors">
+                <button onClick={() => handleShare('copy')} className="text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground flex items-center gap-3 transition-colors">
                     <Share2 className="h-4 w-4" /> Share Tech
                 </button>
             </div>
@@ -416,7 +416,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
         <section className="border-t border-slate-100 pt-24 mb-24 text-left">
             <div className="flex items-center gap-3 mb-16">
                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><MessageSquare className="h-5 w-5" /></div>
-                <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase">Tech Questions</h2>
+                <h2 className="text-4xl font-black tracking-tighter text-foreground uppercase">Tech Questions</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-8">
                 {[
@@ -446,14 +446,14 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
 
         {relatedProducts.length > 0 && (
           <section className="border-t border-slate-100 pt-24 mb-32 text-left">
-            <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase mb-16">You Might Also Need</h2>
+            <h2 className="text-4xl font-black tracking-tighter text-foreground uppercase mb-16">You Might Also Need</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {relatedProducts.map((item) => (
                 <Link key={item.id} href={`/shop/${item.id}`} className="group block text-left">
                   <div className="bg-slate-50 rounded-[2.5rem] aspect-square flex items-center justify-center p-8 mb-6 border border-transparent group-hover:border-slate-100 transition-all relative overflow-hidden shadow-sm hover:shadow-2xl">
                     <Image src={item.image_url || '/placeholder.jpg'} alt={item.name} fill className="object-contain p-8 transform group-hover:scale-110 transition-transform duration-500" />
                   </div>
-                  <h3 className="text-[13px] font-black text-slate-900 uppercase tracking-widest truncate group-hover:text-primary transition-colors">{item.name}</h3>
+                  <h3 className="text-[13px] font-black text-foreground uppercase tracking-widest truncate group-hover:text-primary transition-colors">{item.name}</h3>
                   <p className="text-sm font-black text-slate-400 mt-2">{formatPrice(item.price)}</p>
                 </Link>
               ))}

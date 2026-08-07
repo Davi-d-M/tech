@@ -51,7 +51,7 @@ export default function RewardInteractive({ userId }: { userId: string }) {
     };
 
     return (
-        <div className="bg-white rounded-[3.5rem] p-10 text-slate-900 border border-slate-100 relative overflow-hidden shadow-sm min-h-[500px] flex flex-col items-center justify-center text-center">
+        <div className="bg-white rounded-[3.5rem] p-10 text-foreground border border-slate-100 relative overflow-hidden shadow-sm min-h-[500px] flex flex-col items-center justify-center text-center">
             {/* Header Tabs */}
             <div className="absolute top-8 left-1/2 -translate-x-1/2 flex bg-slate-50 p-1.5 rounded-2xl border border-slate-100 z-20">
                 <button
@@ -106,7 +106,7 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                         </div>
 
                         <div className="space-y-4 max-w-xs mx-auto">
-                            <h4 className="text-2xl font-black uppercase tracking-tighter text-slate-900">Daily Tech Crate</h4>
+                            <h4 className="text-2xl font-black uppercase tracking-tighter text-foreground">Daily Tech Crate</h4>
                             <p className="text-slate-500 text-[10px] font-medium leading-relaxed">
                                 Contains random XP boosts or secret store credits. Refreshes every 24 hours.
                             </p>
@@ -139,7 +139,7 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                         </div>
 
                         <div className="space-y-4 max-w-xs mx-auto">
-                            <h4 className="text-2xl font-black uppercase tracking-tighter text-slate-900">Elite Wheel</h4>
+                            <h4 className="text-2xl font-black uppercase tracking-tighter text-foreground">Elite Wheel</h4>
                             <p className="text-slate-500 text-[10px] font-medium leading-relaxed">
                                 One spin, total power. High probability of XP, low probability of vouchers.
                             </p>

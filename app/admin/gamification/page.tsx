@@ -140,7 +140,7 @@ export default function AdminGamificationPage() {
         <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Reward Engine</h1>
+                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Reward Engine</h1>
                     <p className="text-slate-500 text-sm font-medium mt-1">Configure user engagement loops and automated loyalty triggers.</p>
                 </div>
                 <div className="flex gap-2">
@@ -176,7 +176,7 @@ export default function AdminGamificationPage() {
                         onClick={() => setActiveTab(tab.id as 'streaks' | 'missions' | 'rewards' | 'tiers')}
                         className={cn(
                             "flex items-center gap-3 px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border-2 border-transparent",
-                            activeTab === tab.id ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-400 hover:bg-slate-50 hover:text-slate-900"
+                            activeTab === tab.id ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-400 hover:bg-slate-50 hover:text-foreground"
                         )}
                     >
                         <tab.icon className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default function AdminGamificationPage() {
 
                     {activeTab === 'streaks' && (
                         <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
-                            <h2 className="text-xl font-black text-slate-900 uppercase flex items-center gap-3"><Flame className="h-5 w-5 text-rose-500" /> Streak Logic</h2>
+                            <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Flame className="h-5 w-5 text-rose-500" /> Streak Logic</h2>
                             <div className="grid sm:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-slate-400">Milestone Days</label>
@@ -224,7 +224,7 @@ export default function AdminGamificationPage() {
 
                     {activeTab === 'missions' && (
                         <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
-                             <h2 className="text-xl font-black text-slate-900 uppercase flex items-center gap-3"><Target className="h-5 w-5 text-primary" /> Active Missions</h2>
+                             <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Target className="h-5 w-5 text-primary" /> Active Missions</h2>
                              <div className="space-y-4">
                                  {config.missions.map((m, i) => (
                                      <div key={m.type} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 grid sm:grid-cols-3 gap-6 items-end group">
@@ -263,7 +263,7 @@ export default function AdminGamificationPage() {
                             {/* Loyalty Tiers Editor */}
                             <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-xl font-black text-slate-900 uppercase flex items-center gap-3"><Crown className="h-5 w-5 text-primary" /> Loyalty Pathway</h2>
+                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Crown className="h-5 w-5 text-primary" /> Loyalty Pathway</h2>
                                     <Button onClick={() => setConfig({...config, tiers: [...config.tiers, { id: 'new', label: 'New Rank', threshold: 0, icon: 'Star' }]})} variant="outline" className="h-10 rounded-xl text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-2" /> Add Tier</Button>
                                 </div>
                                 <div className="space-y-6">
@@ -318,7 +318,7 @@ export default function AdminGamificationPage() {
                             {/* Achievement Badges Editor */}
                             <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-xl font-black text-slate-900 uppercase flex items-center gap-3"><Trophy className="h-5 w-5 text-amber-500" /> Achievement Badges</h2>
+                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Trophy className="h-5 w-5 text-amber-500" /> Achievement Badges</h2>
                                     <Button onClick={() => setConfig({...config, badges: [...config.badges, { key: 'new', label: 'New Badge', icon: 'Rocket', desc: 'Badge description here.' }]})} variant="outline" className="h-10 rounded-xl text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-2" /> Add Badge</Button>
                                 </div>
                                 <div className="grid sm:grid-cols-2 gap-6">
@@ -377,13 +377,13 @@ export default function AdminGamificationPage() {
                 </div>
 
                 <div className="lg:col-span-4 space-y-8 text-left">
-                    <Card className="p-8 rounded-[3rem] bg-white text-slate-900 border border-slate-100 shadow-xl relative overflow-hidden group">
+                    <Card className="p-8 rounded-[3rem] bg-white text-foreground border border-slate-100 shadow-xl relative overflow-hidden group">
                         <div className="relative z-10 space-y-6">
                             <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em]">Engine Status</h3>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center py-4 border-b border-slate-50">
                                     <span className="text-[10px] font-black uppercase text-slate-400">Total Users Tracked</span>
-                                    <span className="text-lg font-black text-slate-900">---</span>
+                                    <span className="text-lg font-black text-foreground">---</span>
                                 </div>
                                 <div className="flex justify-between items-center py-4 border-b border-slate-50">
                                     <span className="text-[10px] font-black uppercase text-slate-400">XP Inflation</span>
@@ -391,7 +391,7 @@ export default function AdminGamificationPage() {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] font-black uppercase text-slate-400">Voucher Burn</span>
-                                    <span className="text-xs font-black text-slate-900 italic">0.0% Daily</span>
+                                    <span className="text-xs font-black text-foreground italic">0.0% Daily</span>
                                 </div>
                             </div>
                         </div>
@@ -400,7 +400,7 @@ export default function AdminGamificationPage() {
 
                     <div className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-4">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><SettingsIcon className="h-5 w-5" /></div>
-                        <h4 className="text-lg font-black uppercase tracking-tighter text-slate-900">Optimization Tip</h4>
+                        <h4 className="text-lg font-black uppercase tracking-tighter text-foreground">Optimization Tip</h4>
                         <p className="text-[10px] text-slate-500 font-medium leading-relaxed italic">
                             &quot;Keep the Milestone reward high and the interaction odds balanced to maximize user retention without draining margins.&quot;
                         </p>

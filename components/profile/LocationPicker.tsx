@@ -98,7 +98,7 @@ export default function LocationPicker({ initialLat, initialLng, onConfirm, onCl
                         <Button
                             onClick={handleDetectLocation}
                             disabled={detecting}
-                            className="h-14 w-14 rounded-2xl bg-white text-slate-900 shadow-2xl hover:bg-slate-50 border-none transition-all active:scale-95"
+                            className="h-14 w-14 rounded-2xl bg-white text-foreground shadow-2xl hover:bg-slate-50 border-none transition-all active:scale-95"
                         >
                             {detecting ? <Loader2 className="h-6 w-6 animate-spin" /> : <Navigation className="h-6 w-6" />}
                         </Button>
@@ -118,7 +118,7 @@ export default function LocationPicker({ initialLat, initialLng, onConfirm, onCl
                         <div className="space-y-2">
                             <div className="flex items-center gap-3">
                                 <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><MapPin className="h-4 w-4 sm:h-5 sm:w-5" /></div>
-                                <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-slate-900 leading-none">Drop Point</h2>
+                                <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Drop Point</h2>
                             </div>
                             <p className="text-slate-400 text-[8px] sm:text-[10px] font-black uppercase tracking-widest leading-relaxed mt-2">&quot;Initialize tactical delivery coordinates. Drop a pin exactly where you want your tech extraction.&quot;</p>
                         </div>
@@ -126,11 +126,11 @@ export default function LocationPicker({ initialLat, initialLng, onConfirm, onCl
                         <div className="grid grid-cols-2 sm:grid-cols-1 gap-4 pt-4 sm:pt-6 border-t border-slate-50">
                             <div className="space-y-1">
                                 <p className="text-[7px] sm:text-[8px] font-black uppercase text-slate-400 tracking-[0.2em]">Latitude</p>
-                                <p className="text-xs sm:text-sm font-mono font-bold text-slate-900">{pos[0].toFixed(6)}</p>
+                                <p className="text-xs sm:text-sm font-mono font-bold text-foreground">{pos[0].toFixed(6)}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-[7px] sm:text-[8px] font-black uppercase text-slate-400 tracking-[0.2em]">Longitude</p>
-                                <p className="text-xs sm:text-sm font-mono font-bold text-slate-900">{pos[1].toFixed(6)}</p>
+                                <p className="text-xs sm:text-sm font-mono font-bold text-foreground">{pos[1].toFixed(6)}</p>
                             </div>
                         </div>
 

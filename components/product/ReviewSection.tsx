@@ -177,9 +177,9 @@ export default function ReviewSection({ productId, isLive = true }: { productId:
         {/* Review Summary & Form */}
         <div className="lg:col-span-1 space-y-8">
           <div>
-            <h2 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Customer Reviews</h2>
+            <h2 className="text-2xl font-black tracking-tight text-foreground uppercase">Customer Reviews</h2>
             <div className="flex items-center gap-4 mt-4">
-              <div className="text-5xl font-black text-slate-900">
+              <div className="text-5xl font-black text-foreground">
                 {reviews.length > 0
                   ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
                   : '5.0'}
@@ -199,7 +199,7 @@ export default function ReviewSection({ productId, isLive = true }: { productId:
                     <div className="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 mb-4 shadow-sm">
                         <ShieldCheck className="h-6 w-6" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2">Legacy Mode Active</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground mb-2">Legacy Mode Active</p>
                     <p className="text-[9px] text-slate-500 font-medium leading-relaxed italic">
                         &quot;Reviews are temporarily disabled for legacy gadgets. They will be enabled once synced to the Apex Cloud.&quot;
                     </p>
@@ -313,7 +313,7 @@ export default function ReviewSection({ productId, isLive = true }: { productId:
                     </div>
                     <div>
                       <div className="flex items-center gap-3">
-                        <p className="font-black text-slate-900 uppercase text-xs tracking-tight">{review.customer_name}</p>
+                        <p className="font-black text-foreground uppercase text-xs tracking-tight">{review.customer_name}</p>
                         {review.photo_urls && review.photo_urls.length > 0 && (
                             <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase border border-emerald-100 shadow-sm">
                                 <ShieldCheck className="h-2.5 w-2.5 fill-current" /> Verified Authentic

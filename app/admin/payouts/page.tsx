@@ -91,7 +91,7 @@ export default function AdminPayoutsPage() {
                         <ArrowLeft className="h-4 w-4" /> Back to Intelligence
                     </Link>
                     <div>
-                        <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Payout Queue</h1>
+                        <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Payout Queue</h1>
                         <p className="text-slate-500 text-sm font-medium mt-1">Authorize commission withdrawals and manage network liquidity.</p>
                     </div>
                 </div>
@@ -107,14 +107,14 @@ export default function AdminPayoutsPage() {
                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6"><DollarSign className="h-5 w-5" /></div>
                     <div>
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Payouts</p>
-                        <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">{formatPrice(payouts.filter(p => p.status === 'Paid').reduce((s, p) => s + p.amount, 0))}</h3>
+                        <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{formatPrice(payouts.filter(p => p.status === 'Paid').reduce((s, p) => s + p.amount, 0))}</h3>
                     </div>
                 </Card>
                 <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all">
                     <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 mb-6"><Clock className="h-5 w-5" /></div>
                     <div>
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Pending Volume</p>
-                        <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">{formatPrice(payouts.filter(p => p.status === 'Pending').reduce((s, p) => s + p.amount, 0))}</h3>
+                        <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{formatPrice(payouts.filter(p => p.status === 'Pending').reduce((s, p) => s + p.amount, 0))}</h3>
                     </div>
                 </Card>
             </div>
@@ -126,7 +126,7 @@ export default function AdminPayoutsPage() {
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
-                                className={cn("px-6 py-3 rounded-lg text-[9px] font-black uppercase transition-all", filter === f ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600")}
+                                className={cn("px-6 py-3 rounded-lg text-[9px] font-black uppercase transition-all", filter === f ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600")}
                             >
                                 {f}
                             </button>
@@ -159,16 +159,16 @@ export default function AdminPayoutsPage() {
                                 <tr key={p.id} className="hover:bg-slate-50/50 transition-all group">
                                     <td className="px-10 py-8">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-900 font-black uppercase text-[10px] shadow-inner">
+                                            <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-foreground font-black uppercase text-[10px] shadow-inner">
                                                 {p.profiles?.full_name?.substring(0, 2) || '??'}
                                             </div>
                                             <div>
-                                                <span className="font-black text-slate-900 uppercase text-xs tracking-tight block">{p.profiles?.full_name || 'Anonymous'}</span>
+                                                <span className="font-black text-foreground uppercase text-xs tracking-tight block">{p.profiles?.full_name || 'Anonymous'}</span>
                                                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{p.profiles?.phone_number}</span>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-10 py-8 text-center font-black text-slate-900 text-lg">{formatPrice(p.amount)}</td>
+                                    <td className="px-10 py-8 text-center font-black text-foreground text-lg">{formatPrice(p.amount)}</td>
                                     <td className="px-10 py-8 text-center">
                                         <span className="text-[10px] font-black uppercase bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
                                             {p.payment_method}

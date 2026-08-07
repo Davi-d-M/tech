@@ -139,14 +139,14 @@ export default function RewardsShop() {
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
                             <Gift className="h-3 w-3" /> Elite Rewards Shop
                         </div>
-                        <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none">The Apex <br/> <span className="text-primary italic">Exchange</span></h1>
+                        <h1 className="text-5xl font-black text-foreground tracking-tighter uppercase leading-none">The Apex <br/> <span className="text-primary italic">Exchange</span></h1>
                         <p className="text-slate-500 font-medium max-w-md italic">&quot;Trade your battlefield points for elite gear and store credits. No games, just gains.&quot;</p>
                     </div>
 
-                    <div className="bg-white rounded-[2.5rem] p-8 border-2 border-primary/10 text-slate-900 relative overflow-hidden shadow-2xl min-w-[280px] group hover:border-primary/30 transition-all">
+                    <div className="bg-white rounded-[2.5rem] p-8 border-2 border-primary/10 text-foreground relative overflow-hidden shadow-2xl min-w-[280px] group hover:border-primary/30 transition-all">
                         <div className="relative z-10">
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Your Power Level</p>
-                            <h3 className="text-5xl font-black tracking-tighter text-slate-900">{points.toLocaleString()}</h3>
+                            <h3 className="text-5xl font-black tracking-tighter text-foreground">{points.toLocaleString()}</h3>
                             <p className="text-[9px] font-black text-primary uppercase mt-2 tracking-widest">Available Apex Points</p>
                         </div>
                         <Zap className="absolute -bottom-6 -right-6 h-24 w-24 text-primary/5 rotate-12" />
@@ -163,7 +163,7 @@ export default function RewardsShop() {
                                 <h2 className="text-3xl font-black uppercase tracking-tighter">Voucher Unlocked</h2>
                                 <p className="text-white/80 font-medium">Use this code at checkout for your discount.</p>
                             </div>
-                            <div className="bg-white text-slate-900 px-10 py-6 rounded-2xl border-4 border-dashed border-emerald-600/30 shadow-xl">
+                            <div className="bg-white text-foreground px-10 py-6 rounded-2xl border-4 border-dashed border-emerald-600/30 shadow-xl">
                                 <p className="text-[10px] font-black uppercase text-slate-400 mb-1 text-center">Your Promo Code</p>
                                 <p className="text-3xl font-black tracking-widest font-mono select-all cursor-pointer">{claimedVoucher}</p>
                             </div>
@@ -187,7 +187,7 @@ export default function RewardsShop() {
                                     <Ticket className="h-7 w-7" />
                                 </div>
 
-                                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">Ksh {v.value.toLocaleString()} <br/> Voucher</h3>
+                                <h3 className="text-xl font-black text-foreground uppercase tracking-tighter leading-none mb-2">Ksh {v.value.toLocaleString()} <br/> Voucher</h3>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-8">Store Credit</p>
 
                                 <div className="mt-auto pt-6 border-t border-slate-50">
@@ -221,7 +221,7 @@ export default function RewardsShop() {
                     <section className="mt-20 space-y-8">
                         <div className="flex items-center gap-3">
                             <Ticket className="h-6 w-6 text-primary" />
-                            <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">My Active Vouchers</h2>
+                            <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">My Active Vouchers</h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {myVouchers.map((v, i) => (
@@ -229,7 +229,7 @@ export default function RewardsShop() {
                                     <div className="flex items-center gap-4">
                                         <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors"><CheckCircle2 className="h-5 w-5" /></div>
                                         <div>
-                                            <p className="text-[11px] font-black text-slate-900 uppercase">{v.value} Voucher</p>
+                                            <p className="text-[11px] font-black text-foreground uppercase">{v.value} Voucher</p>
                                             <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">{new Date(v.date).toLocaleDateString()}</p>
                                         </div>
                                     </div>
@@ -240,7 +240,7 @@ export default function RewardsShop() {
                     </section>
                 )}
 
-                <div className="mt-16 bg-white rounded-[3rem] p-12 text-center border-2 border-primary/10 text-slate-900 relative overflow-hidden group hover:border-primary/30 transition-all shadow-2xl">
+                <div className="mt-16 bg-white rounded-[3rem] p-12 text-center border-2 border-primary/10 text-foreground relative overflow-hidden group hover:border-primary/30 transition-all shadow-2xl">
                     <div className="relative z-10">
                         <Flame className="h-10 w-10 text-primary mx-auto mb-6 animate-pulse fill-current" />
                         <h2 className="text-3xl font-black uppercase tracking-tighter mb-4">The Apex Elite League</h2>
@@ -255,7 +255,7 @@ export default function RewardsShop() {
                             ].map(benefit => (
                                 <div key={benefit.label} className="space-y-1">
                                     <p className="text-primary font-black text-2xl tracking-tighter">+{benefit.pts}</p>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">{benefit.label}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground">{benefit.label}</p>
                                     <p className="text-[8px] font-bold text-slate-400 uppercase">{benefit.desc}</p>
                                 </div>
                             ))}

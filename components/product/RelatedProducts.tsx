@@ -60,7 +60,7 @@ export default function RelatedProducts({ product }: RelatedProductsProps) {
                 <Sparkles className="h-4 w-4 text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Elite Curations</span>
             </div>
-            <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Complete Your Setup</h2>
+            <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter">Complete Your Setup</h2>
         </div>
         <Link href="/shop" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors mb-2">
             View All Collections →
@@ -89,7 +89,7 @@ export default function RelatedProducts({ product }: RelatedProductsProps) {
                         disabled={addingId === p.id}
                         className={cn(
                             "rounded-2xl h-12 px-6 font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all",
-                            addingId === p.id ? "bg-emerald-500 text-white" : "bg-white text-slate-900 hover:bg-slate-50"
+                            addingId === p.id ? "bg-emerald-500 text-white" : "bg-white text-foreground hover:bg-slate-50"
                         )}
                       >
                           {addingId === p.id ? <Check className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
@@ -98,7 +98,7 @@ export default function RelatedProducts({ product }: RelatedProductsProps) {
                   </div>
                 </div>
                 <CardContent className="p-6 space-y-3">
-                  <h3 className="font-black text-slate-900 uppercase text-xs tracking-tight line-clamp-1 group-hover:text-primary transition-colors">
+                  <h3 className="font-black text-foreground uppercase text-xs tracking-tight line-clamp-1 group-hover:text-primary transition-colors">
                     {p.name}
                   </h3>
                   <div className="flex items-center justify-between">

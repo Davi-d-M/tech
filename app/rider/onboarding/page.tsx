@@ -102,7 +102,7 @@ export default function RiderOnboarding() {
                         <Truck className="h-10 w-10" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black uppercase tracking-tighter text-slate-900 leading-none">TechPax <span className="text-primary italic">Driver</span></h1>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground leading-none">TechPax <span className="text-primary italic">Driver</span></h1>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Move • Deliver • Earn</p>
                     </div>
                 </div>
@@ -114,7 +114,7 @@ export default function RiderOnboarding() {
                         {step === 'welcome' && (
                             <div className="space-y-8 text-center animate-in slide-in-from-bottom-4 duration-500">
                                 <div className="space-y-2">
-                                    <h2 className="text-2xl font-black text-slate-900 uppercase leading-tight">Welcome to <br/> the Fleet</h2>
+                                    <h2 className="text-2xl font-black text-foreground uppercase leading-tight">Welcome to <br/> the Fleet</h2>
                                     <p className="text-sm text-slate-500 font-medium italic">&quot;Trusted by thousands of riders. Start your tactical mission today.&quot;</p>
                                 </div>
                                 <Button onClick={() => setStep('phone')} className="w-full h-18 rounded-[1.8rem] bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
@@ -126,7 +126,7 @@ export default function RiderOnboarding() {
                         {step === 'phone' && (
                             <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-left">
                                 <div className="space-y-2">
-                                    <h3 className="text-xl font-black text-slate-900 uppercase">Identity Link</h3>
+                                    <h3 className="text-xl font-black text-foreground uppercase">Identity Link</h3>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enter Mobile Number</p>
                                 </div>
                                 <div className="relative">
@@ -147,7 +147,7 @@ export default function RiderOnboarding() {
                         {step === 'otp' && (
                             <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-center">
                                 <div className="space-y-2">
-                                    <h3 className="text-xl font-black text-slate-900 uppercase">Verification</h3>
+                                    <h3 className="text-xl font-black text-foreground uppercase">Verification</h3>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sent to {phone}</p>
                                 </div>
                                 <div className="flex justify-between gap-2">
@@ -181,7 +181,7 @@ export default function RiderOnboarding() {
                                     <Fingerprint className="h-12 w-12 animate-pulse" />
                                 </div>
                                 <div className="space-y-2">
-                                    <h2 className="text-2xl font-black text-slate-900 uppercase">Bio-Lock</h2>
+                                    <h2 className="text-2xl font-black text-foreground uppercase">Bio-Lock</h2>
                                     <p className="text-sm text-slate-500 font-medium italic">&quot;Enable fingerprint or Face ID for zero-delay future logins.&quot;</p>
                                 </div>
                                 <div className="space-y-3">
@@ -199,7 +199,7 @@ export default function RiderOnboarding() {
                                     <CheckCircle2 className="h-12 w-12" />
                                 </div>
                                 <div className="space-y-2">
-                                    <h2 className="text-2xl font-black text-slate-900 uppercase">Grid Online</h2>
+                                    <h2 className="text-2xl font-black text-foreground uppercase">Grid Online</h2>
                                     <p className="text-sm text-slate-500 font-medium italic">&quot;Tactical link established. Welcome to TechPax Logistics, bro.&quot;</p>
                                 </div>
                                 <Link href="/rider/dashboard" className="block">

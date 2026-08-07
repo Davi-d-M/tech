@@ -76,7 +76,7 @@ function SuccessContent() {
                 <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6 animate-pulse">
                     <CheckCircle2 className="h-12 w-12" />
                 </div>
-                <h1 className="text-5xl font-black uppercase tracking-tighter text-slate-900 mb-2">Order Confirmed</h1>
+                <h1 className="text-5xl font-black uppercase tracking-tighter text-foreground mb-2">Order Confirmed</h1>
                 <p className="text-slate-500 font-medium italic">Your tech is officially secured. Preparing for dispatch.</p>
             </div>
 
@@ -85,7 +85,7 @@ function SuccessContent() {
                     <div className="bg-slate-50 p-8 border-b border-slate-100 flex items-center justify-between text-left">
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Order ID</p>
-                            <h3 className="text-xl font-black text-slate-900">#{order?.id || 'Pending'}</h3>
+                            <h3 className="text-xl font-black text-foreground">#{order?.id || 'Pending'}</h3>
                         </div>
                         <div className="text-right">
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status</p>
@@ -102,7 +102,7 @@ function SuccessContent() {
                                 <Smartphone className="h-6 w-6" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-slate-900">Tech Secured</h4>
+                                <h4 className="font-bold text-foreground">Tech Secured</h4>
                                 <p className="text-sm text-slate-500">We&apos;ve received your payment and are validating the items.</p>
                             </div>
                         </div>
@@ -112,7 +112,7 @@ function SuccessContent() {
                                 <Truck className="h-6 w-6" />
                             </div>
                             <div>
-                                <h4 className="font-bold text-slate-900">Fast Dispatch</h4>
+                                <h4 className="font-bold text-foreground">Fast Dispatch</h4>
                                 <p className="text-sm text-slate-500">Our rider will contact you within 1-3 hours for delivery.</p>
                             </div>
                         </div>
@@ -120,7 +120,7 @@ function SuccessContent() {
                         <div className="pt-6 border-t border-dashed border-slate-200">
                             <div className="flex justify-between items-center mb-6">
                                 <span className="text-slate-500 font-medium">Total Amount Paid</span>
-                                <span className="text-2xl font-black text-slate-900">{formatPrice(order?.total_price || 0)}</span>
+                                <span className="text-2xl font-black text-foreground">{formatPrice(order?.total_price || 0)}</span>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -153,7 +153,7 @@ function SuccessContent() {
                             <Zap className="h-8 w-8 fill-current" />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-black uppercase tracking-tighter text-slate-900 leading-none mb-2">Invite Friends, <br /> <span className="text-primary italic">Earn Ksh 200</span></h3>
+                            <h3 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none mb-2">Invite Friends, <br /> <span className="text-primary italic">Earn Ksh 200</span></h3>
                             <p className="text-slate-500 text-xs font-medium leading-relaxed italic">&quot;Help your squad level up their gear. Both of you get Ksh 200 credit upon their first tech mission.&quot;</p>
                         </div>
                         <Button
@@ -177,7 +177,7 @@ function SuccessContent() {
                 <div className="flex items-center gap-2">
                     <Package className="h-4 w-4 text-primary" /> Original Tech
                 </div>
-                <div className="flex items-center gap-2 text-slate-900">
+                <div className="flex items-center gap-2 text-foreground">
                     <Heart className="h-4 w-4 text-rose-500 fill-rose-500" /> Thanks for choosing Apex
                 </div>
             </div>

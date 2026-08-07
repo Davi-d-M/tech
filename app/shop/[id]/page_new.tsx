@@ -114,7 +114,7 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
   if (!product) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 text-center">
-        <h1 className="text-2xl font-black text-slate-900 mb-2">Item Not Found</h1>
+        <h1 className="text-2xl font-black text-foreground mb-2">Item Not Found</h1>
         <p className="text-slate-500 text-sm max-w-sm mb-6">The product profile you are looking for does not exist or has been modified.</p>
         <Link href="/">
           <Button variant="outline" className="rounded-xl">Return to Catalog</Button>
@@ -124,7 +124,7 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
   }
 
   return (
-    <div className="bg-white min-h-screen text-slate-900 font-sans antialiased text-left">
+    <div className="bg-white min-h-screen text-foreground font-sans antialiased text-left">
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         
         <div className="mb-6">
@@ -145,14 +145,14 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
 
           <div className="flex flex-col justify-between h-full pt-4 text-left">
             <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 mb-2 uppercase">{product.name}</h1>
+              <h1 className="text-3xl font-black tracking-tight text-foreground mb-2 uppercase">{product.name}</h1>
               
               <div className="flex items-center space-x-2 mb-4">
                 <span className="text-amber-500 font-bold text-base">★ ★ ★ ★ ☆</span>
                 <span className="text-xs font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded ml-2 uppercase">Verified Tech</span>
               </div>
 
-              <div className="text-2xl font-black text-slate-900 mb-6">
+              <div className="text-2xl font-black text-foreground mb-6">
                 {formatPrice(product.price)}
               </div>
 
@@ -167,7 +167,7 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
                   >
                     -
                   </button>
-                  <span className="px-6 font-black text-sm text-slate-900">{quantity}</span>
+                  <span className="px-6 font-black text-sm text-foreground">{quantity}</span>
                   <button 
                     onClick={() => setQuantity(p => p + 1)}
                     className="px-4 py-2 bg-slate-50 hover:bg-slate-100 font-black border-l border-slate-100"
@@ -213,7 +213,7 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
 
         <section className="border-t border-slate-100 pt-16 mt-12 text-left">
           <div className="flex justify-between items-baseline mb-8">
-            <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase">Related Items</h2>
+            <h2 className="text-2xl font-black text-foreground tracking-tighter uppercase">Related Items</h2>
             <Link href="/" className="text-[10px] font-black text-primary underline uppercase tracking-widest">View All</Link>
           </div>
 
@@ -227,7 +227,7 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
                     className="max-h-[140px] w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-                <h3 className="text-[11px] font-black text-slate-900 uppercase tracking-widest truncate">{item.name}</h3>
+                <h3 className="text-[11px] font-black text-foreground uppercase tracking-widest truncate">{item.name}</h3>
                 <p className="text-[11px] font-black text-slate-400 mt-1">{formatPrice(item.price)}</p>
               </Link>
             ))}

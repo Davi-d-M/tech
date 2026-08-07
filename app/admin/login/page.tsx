@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
           <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4">
               <Lock className="h-6 w-6" />
           </div>
-          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Control Center</h1>
+          <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Control Center</h1>
           <p className="mt-2 text-sm text-slate-500 font-medium italic">
             Authorize your access to continue.
           </p>
@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
                 onClick={() => setMode('pin')}
                 className={cn(
                     "flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                    mode === 'pin' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                    mode === 'pin' ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600"
                 )}
             >
                 Owner PIN
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
                 onClick={() => setMode('email')}
                 className={cn(
                     "flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                    mode === 'email' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                    mode === 'email' ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600"
                 )}
             >
                 Staff Login

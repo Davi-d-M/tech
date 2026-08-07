@@ -44,7 +44,7 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
 
     return (
         <section className="space-y-6 text-left">
-            <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900 px-2">Financial Intel</h2>
+            <h2 className="text-xl font-black uppercase tracking-tighter text-foreground px-2">Financial Intel</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 💳 WALLET CARD */}
@@ -56,7 +56,7 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
                             </div>
                             <div className="text-right">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Available Balance</p>
-                                <p className="text-4xl font-black text-slate-900 tracking-tighter">{formatPrice(balance)}</p>
+                                <p className="text-4xl font-black text-foreground tracking-tighter">{formatPrice(balance)}</p>
                             </div>
                         </div>
                         <Button
@@ -73,7 +73,7 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
                 {/* 📊 LIFETIME EARNINGS */}
                 <Card className="p-8 rounded-[3rem] bg-slate-50 border-none shadow-inner flex flex-col justify-center gap-2">
                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Pipeline Earnings</p>
-                    <p className="text-3xl font-black text-slate-900 tracking-tighter">{formatPrice(totalEarned)}</p>
+                    <p className="text-3xl font-black text-foreground tracking-tighter">{formatPrice(totalEarned)}</p>
                 </Card>
             </div>
 
@@ -81,7 +81,7 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
             <Card className="p-8 rounded-[3.5rem] bg-white border border-slate-100 shadow-sm overflow-hidden">
                 <div className="flex justify-between items-center mb-10">
                     <div>
-                        <h3 className="text-sm font-black uppercase tracking-widest text-slate-900">Earning Cycle</h3>
+                        <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Earning Cycle</h3>
                         <p className="text-[10px] font-bold text-slate-400 uppercase">Weekly Performance Log</p>
                     </div>
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg text-[9px] font-black uppercase text-slate-500">
@@ -116,7 +116,7 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
                                 content={({ active, payload }: { active?: boolean; payload?: any[] }) => {
                                     if (active && payload && payload.length) {
                                         return (
-                                            <div className="bg-slate-900 text-white px-4 py-2 rounded-xl shadow-2xl border-none text-[10px] font-black uppercase">
+                                            <div className="bg-background text-foreground px-4 py-2 rounded-xl shadow-2xl border-none text-[10px] font-black uppercase">
                                                 KSh {payload[0].value}
                                             </div>
                                         );

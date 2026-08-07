@@ -10,7 +10,7 @@ export default function TermsAndConditionsPage() {
         
         {/* Header Header */}
         <div className="border-b pb-6 mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight uppercase">Terms & Conditions</h1>
+          <h1 className="text-3xl font-extrabold text-foreground tracking-tight uppercase">Terms & Conditions</h1>
           <p className="text-sm text-slate-400 mt-2">Last Updated: {lastUpdated}</p>
           <p className="text-slate-600 mt-4 leading-relaxed font-medium">
             Welcome to <strong>Apexstores</strong>. By accessing our platform, utilizing our services, or purchasing gadgets from our catalog, you explicitly agree to comply with and be bound by the following contractual terms. Please review them carefully before placing an order.

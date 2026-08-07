@@ -57,7 +57,7 @@ function HomeContent() {
             <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none font-black uppercase tracking-widest text-[10px] px-3 py-1.5 rounded-full">
                 Tech Catalog
             </Badge>
-            <h2 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">Latest Gadgets</h2>
+            <h2 className="text-4xl font-black tracking-tighter text-foreground uppercase leading-none">Latest Gadgets</h2>
             <p className="text-slate-500 font-medium text-lg max-w-2xl leading-relaxed">
               Precision engineered electronics designed to simplify your life. Discover the latest in authentic mobile technology.
             </p>
@@ -81,9 +81,9 @@ function HomeContent() {
               <div className="flex justify-between items-end mb-12">
                   <div className="space-y-3">
                       <Badge className="bg-primary/5 text-primary border-none font-black uppercase text-[9px] px-3 py-1 rounded-full">Tech Library</Badge>
-                      <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">Expert Guides</h2>
+                      <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">Expert Guides</h2>
                   </div>
-                  <Link href="/blog" className="text-[10px] font-black text-primary underline underline-offset-4 uppercase tracking-widest hover:text-slate-900">Explore Library</Link>
+                  <Link href="/blog" className="text-[10px] font-black text-primary underline underline-offset-4 uppercase tracking-widest hover:text-foreground">Explore Library</Link>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -93,7 +93,7 @@ function HomeContent() {
                               <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           </div>
                           <div className="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-white/90 to-transparent">
-                              <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight mb-2">{post.title}</h3>
+                              <h3 className="text-2xl font-black text-foreground uppercase tracking-tight mb-2">{post.title}</h3>
                               <p className="text-slate-600 text-sm font-medium line-clamp-1">{post.excerpt}</p>
                           </div>
                       </Link>
@@ -110,7 +110,7 @@ function HomeContent() {
       {/* 6. Fast Power CTA */}
       <section className="bg-slate-50 py-32 overflow-hidden relative border-t border-slate-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-              <h2 className="text-5xl lg:text-8xl font-black text-slate-900 uppercase tracking-tighter mb-8 leading-[0.85]">
+              <h2 className="text-5xl lg:text-8xl font-black text-foreground uppercase tracking-tighter mb-8 leading-[0.85]">
                   Need Fast <br /><span className="text-primary italic">Power?</span>
               </h2>
               <p className="text-slate-500 text-xl font-medium max-w-2xl mx-auto mb-12 leading-relaxed">

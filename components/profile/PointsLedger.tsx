@@ -42,7 +42,7 @@ export default function PointsLedger({ profileId }: { profileId: string }) {
     <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm text-left">
       <div className="flex items-center gap-3 mb-8">
         <History className="h-5 w-5 text-primary" />
-        <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Points History</h2>
+        <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">Points History</h2>
       </div>
 
       {entries.length === 0 ? (
@@ -61,7 +61,7 @@ export default function PointsLedger({ profileId }: { profileId: string }) {
                   {entry.amount > 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
                 </div>
                 <div>
-                  <p className="font-black text-slate-900 uppercase text-[11px] tracking-tight">{entry.description}</p>
+                  <p className="font-black text-foreground uppercase text-[11px] tracking-tight">{entry.description}</p>
                   <p className="text-[9px] font-bold text-slate-400 uppercase flex items-center gap-1 mt-0.5">
                     <Clock className="h-2 w-2" /> {new Date(entry.created_at).toLocaleDateString()}
                   </p>

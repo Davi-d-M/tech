@@ -161,7 +161,7 @@ export default function AdminAffiliates() {
         <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Network Intelligence</h1>
+                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Network Intelligence</h1>
                     <p className="text-slate-500 text-sm font-medium mt-1">Manage global partners, track conversion funnels, and authorize payouts.</p>
                 </div>
                 <div className="flex gap-2">
@@ -189,7 +189,7 @@ export default function AdminAffiliates() {
                                 <item.icon className="h-5 w-5" />
                             </div>
                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{item.label}</p>
-                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">{item.val}</h3>
+                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{item.val}</h3>
                         </div>
                         <p className="text-[8px] font-bold text-slate-400 uppercase mt-4">{item.sub}</p>
                     </Card>
@@ -199,13 +199,13 @@ export default function AdminAffiliates() {
             <div className="grid lg:grid-cols-12 gap-10">
                 <Card className="lg:col-span-8 rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 h-full">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-black text-slate-900 uppercase flex items-center gap-3"><Activity className="h-5 w-5 text-primary" /> Growth Metrics</h2>
+                        <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Activity className="h-5 w-5 text-primary" /> Growth Metrics</h2>
                         <div className="flex bg-slate-50 p-1 rounded-xl border border-slate-100">
                             {(['7d', '30d', 'all'] as const).map(r => (
                                 <button
                                     key={r}
                                     onClick={() => setFilterRange(r)}
-                                    className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all", filterRange === r ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600")}
+                                    className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all", filterRange === r ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600")}
                                 >
                                     {r}
                                 </button>
@@ -238,7 +238,7 @@ export default function AdminAffiliates() {
                 <div className="lg:col-span-4 space-y-8">
                     <Card className="rounded-[3rem] border border-slate-100 overflow-hidden bg-white shadow-sm flex flex-col h-full">
                         <div className="p-8 border-b border-slate-50 flex items-center justify-between">
-                            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Top Earners</h2>
+                            <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">Top Earners</h2>
                             <Trophy className="h-5 w-5 text-amber-500" />
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
@@ -254,12 +254,12 @@ export default function AdminAffiliates() {
                                             </div>
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[10px] font-black text-slate-900 uppercase truncate leading-none mb-1">{aff.full_name || 'Anonymous'}</p>
+                                            <p className="text-[10px] font-black text-foreground uppercase truncate leading-none mb-1">{aff.full_name || 'Anonymous'}</p>
                                             <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{aff.order_count} Sales</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-xs font-black text-slate-900">{formatPrice(aff.total_sales)}</p>
+                                        <p className="text-xs font-black text-foreground">{formatPrice(aff.total_sales)}</p>
                                     </div>
                                 </div>
                             ))}
@@ -272,7 +272,7 @@ export default function AdminAffiliates() {
                     </Card>
 
                     <Card className="rounded-[3rem] border border-slate-100 p-8 bg-white shadow-sm space-y-6">
-                        <h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter flex items-center gap-3"><Zap className="h-5 w-5 text-primary" /> Assets</h2>
+                        <h2 className="text-lg font-black text-foreground uppercase tracking-tighter flex items-center gap-3"><Zap className="h-5 w-5 text-primary" /> Assets</h2>
                         <div className="grid grid-cols-2 gap-3">
                             {[
                                 { label: 'IG Posters', icon: Camera, href: '/admin/media?tab=posters' },
@@ -281,7 +281,7 @@ export default function AdminAffiliates() {
                                 <Link key={asset.label} href={asset.href}>
                                     <button className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-lg transition-all text-left group">
                                         <asset.icon className="h-4 w-4 mb-3 text-primary" />
-                                        <p className="text-[9px] font-black uppercase text-slate-900">{asset.label}</p>
+                                        <p className="text-[9px] font-black uppercase text-foreground">{asset.label}</p>
                                     </button>
                                 </Link>
                             ))}
@@ -310,7 +310,7 @@ export default function AdminAffiliates() {
                     <div className="p-8 sm:p-10 border-b border-slate-50 flex flex-col gap-6 lg:flex-row lg:justify-between lg:items-center">
                         <div className="flex items-center gap-4">
                             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Users className="h-5 w-5" /></div>
-                            <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Partner Directory</h2>
+                            <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Partner Directory</h2>
                         </div>
                         <div className="relative w-full lg:w-96">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
@@ -342,7 +342,7 @@ export default function AdminAffiliates() {
                                                     {aff.full_name?.substring(0, 2) || '??'}
                                                 </div>
                                                 <div>
-                                                    <span className="font-black text-slate-900 uppercase text-xs tracking-tight block">{aff.full_name || 'Anonymous'}</span>
+                                                    <span className="font-black text-foreground uppercase text-xs tracking-tight block">{aff.full_name || 'Anonymous'}</span>
                                                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{aff.email}</span>
                                                 </div>
                                             </div>
@@ -352,9 +352,9 @@ export default function AdminAffiliates() {
                                                 {aff.referral_code}
                                             </span>
                                         </td>
-                                        <td className="px-10 py-8 text-center font-black text-slate-900">{aff.referral_clicks?.toLocaleString() || 0}</td>
+                                        <td className="px-10 py-8 text-center font-black text-foreground">{aff.referral_clicks?.toLocaleString() || 0}</td>
                                         <td className="px-10 py-8 text-center">
-                                            <p className="font-black text-slate-900">{formatPrice(aff.total_sales)}</p>
+                                            <p className="font-black text-foreground">{formatPrice(aff.total_sales)}</p>
                                             <p className="text-[8px] font-black text-emerald-500 uppercase">{aff.order_count} Orders</p>
                                         </td>
                                         <td className="px-10 py-8 text-right">
@@ -371,7 +371,7 @@ export default function AdminAffiliates() {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-10 w-10 rounded-xl text-slate-200 hover:text-slate-900 hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                                                        className="h-10 w-10 rounded-xl text-slate-200 hover:text-foreground hover:bg-white transition-all shadow-sm opacity-0 group-hover:opacity-100"
                                                     >
                                                         <ChevronRight className="h-4 w-4" />
                                                     </Button>

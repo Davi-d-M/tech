@@ -159,7 +159,7 @@ function RiderDashboardContent() {
                         <div className="h-20 w-20 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary mx-auto shadow-sm group-hover:scale-110 transition-transform">
                             <Truck className="h-10 w-10" />
                         </div>
-                        <h1 className="text-3xl font-black uppercase tracking-tighter text-slate-900 leading-none">Rider Command</h1>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground leading-none">Rider Command</h1>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Identify to Begin Missions</p>
                     </div>
 
@@ -210,7 +210,7 @@ function RiderDashboardContent() {
                         <div>
                             <div className="flex items-center gap-2">
                                 <Star className="h-3 w-3 text-amber-500 fill-current" />
-                                <span className="text-xs font-black text-slate-900">{stats.rating}</span>
+                                <span className="text-xs font-black text-foreground">{stats.rating}</span>
                             </div>
                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{stats.tier} Operator</p>
                         </div>
@@ -250,9 +250,9 @@ function RiderDashboardContent() {
                                     </span>
                                     Tactical Mission
                                 </p>
-                                <h2 className="text-4xl font-black uppercase tracking-tighter text-slate-900 leading-[0.9]">Deliver to <br/><span className="text-primary">{activeMission.customer_name}</span></h2>
+                                <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground leading-[0.9]">Deliver to <br/><span className="text-primary">{activeMission.customer_name}</span></h2>
                             </div>
-                            <div className="h-20 w-20 rounded-[2.5rem] bg-slate-50 flex flex-col items-center justify-center text-slate-900 border-2 border-slate-100 shadow-inner">
+                            <div className="h-20 w-20 rounded-[2.5rem] bg-slate-50 flex flex-col items-center justify-center text-foreground border-2 border-slate-100 shadow-inner">
                                 <p className="text-[8px] font-black uppercase text-slate-400">PIN</p>
                                 <p className="text-2xl font-black tabular-nums">4281</p>
                             </div>
@@ -261,7 +261,7 @@ function RiderDashboardContent() {
                         <div className="grid grid-cols-2 gap-4">
                             <Button
                                 onClick={() => window.open(`tel:${activeMission.customer_phone}`, '_self')}
-                                className="group h-20 rounded-3xl bg-slate-50 hover:bg-slate-100 text-slate-900 font-black uppercase text-[10px] tracking-widest border border-slate-100 shadow-sm transition-all overflow-hidden relative"
+                                className="group h-20 rounded-3xl bg-slate-50 hover:bg-slate-100 text-foreground font-black uppercase text-[10px] tracking-widest border border-slate-100 shadow-sm transition-all overflow-hidden relative"
                             >
                                 <div className="relative z-10 flex items-center gap-3">
                                     <MessageCircle className="h-5 w-5 group-hover:scale-110 transition-transform" /> Chat
@@ -300,7 +300,7 @@ function RiderDashboardContent() {
                                     <Search className={cn("h-10 w-10 text-slate-200 transition-all", isOnline && "animate-pulse text-primary")} />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-3xl font-black uppercase tracking-tighter text-slate-900 leading-none">
+                                    <h3 className="text-3xl font-black uppercase tracking-tighter text-foreground leading-none">
                                         {isOnline ? "Scanning Grid" : "Link Terminated"}
                                     </h3>
                                     <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest px-10">

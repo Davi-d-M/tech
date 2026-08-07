@@ -26,7 +26,7 @@ export default function DynamicHero() {
                 </span>
             </div>
 
-            <h1 className="text-5xl lg:text-7xl font-black tracking-tighter text-slate-900 uppercase leading-[0.9]">
+            <h1 className="text-5xl lg:text-7xl font-black tracking-tighter text-foreground uppercase leading-[0.9]">
               {loading ? <div className="h-20 w-64 bg-slate-100 animate-pulse rounded-2xl"></div> : (
                   <>
                     {(settings?.branding?.hero_title || '').split('.')?.[0] || 'Premium Tech'}. <br />
@@ -57,19 +57,19 @@ export default function DynamicHero() {
                     <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                         <Zap className="h-4 w-4" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-tighter text-slate-900">Fast Dispatch</p>
+                    <p className="text-[10px] font-black uppercase tracking-tighter text-foreground">Fast Dispatch</p>
                 </div>
                 <div className="space-y-2">
                     <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
                         <ShieldCheck className="h-4 w-4" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-tighter text-slate-900">100% Authentic</p>
+                    <p className="text-[10px] font-black uppercase tracking-tighter text-foreground">100% Authentic</p>
                 </div>
                 <div className="space-y-2">
                     <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
                         <Trophy className="h-4 w-4" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-tighter text-slate-900">Elite Tech</p>
+                    <p className="text-[10px] font-black uppercase tracking-tighter text-foreground">Elite Tech</p>
                 </div>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function DynamicHero() {
                   {/* Floating Price Tag */}
                   <div className="absolute bottom-10 right-10 bg-white p-6 rounded-3xl shadow-2xl border border-slate-50 animate-bounce delay-1000">
                       <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Starting from</p>
-                      <p className="text-2xl font-black text-slate-900 tracking-tighter">
+                      <p className="text-2xl font-black text-foreground tracking-tighter">
                           {loading ? "..." : formatPrice(settings?.homepage?.hero_starting_price || 1500)}
                       </p>
                   </div>

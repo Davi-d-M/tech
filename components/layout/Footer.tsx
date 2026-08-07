@@ -147,7 +147,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 text-left">
             <div className="lg:col-span-2">
               <Link
-                className="text-2xl tracking-tighter font-black text-gray-900 hover:text-primary transition-colors uppercase"
+                className="text-2xl tracking-tighter font-black text-foreground hover:text-primary transition-colors uppercase"
                 href="/"
                 aria-label="Apexstores Home"
               >

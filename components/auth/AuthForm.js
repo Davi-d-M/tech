@@ -136,7 +136,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
 
   return (
     <div className="max-w-md w-full mx-auto p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-      <h2 className="text-2xl font-bold text-slate-900 text-center mb-6">
+      <h2 className="text-2xl font-bold text-foreground text-center mb-6">
         {showAdminPin ? '🔐 Admin Access' : isSignUp ? 'Create an Account' : 'Welcome Back'}
       </h2>
 
@@ -149,7 +149,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
               required
               value={adminPin}
               onChange={(e) => setAdminPin(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 text-slate-900"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 text-foreground"
               placeholder="Enter your secret PIN"
               autoComplete="current-password"
             />
@@ -158,7 +158,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-50"
+            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-50"
           >
             {loading ? 'Verifying...' : 'Access Dashboard'}
           </button>
@@ -172,7 +172,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 text-slate-900"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 text-foreground"
               placeholder="you@example.com"
             />
           </div>
@@ -184,7 +184,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 text-slate-900"
+              className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 text-foreground"
               placeholder="••••••••"
             />
           </div>
@@ -192,7 +192,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
           <button
             type="submit"
             disabled={loading || (isSignUp && cooldownSeconds > 0)}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-50"
+            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-50"
           >
             {loading
               ? 'Processing...'
@@ -219,7 +219,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
               setMessage('')
               setAdminPin('')
             }}
-            className="block w-full text-center text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 p-2.5 rounded-xl transition-colors"
+            className="block w-full text-center text-sm font-medium text-slate-600 hover:text-foreground hover:bg-slate-50 p-2.5 rounded-xl transition-colors"
           >
             🔐 Admin Access
           </button>
@@ -231,7 +231,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
               setMessage('')
               setAdminPin('')
             }}
-            className="block w-full text-center text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 p-2.5 rounded-xl transition-colors"
+            className="block w-full text-center text-sm font-medium text-slate-600 hover:text-foreground hover:bg-slate-50 p-2.5 rounded-xl transition-colors"
           >
             ← Back to Login
           </button>

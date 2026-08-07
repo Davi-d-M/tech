@@ -79,7 +79,7 @@ export default function AchievementBadges({ userId }: { userId: string }) {
                         </div>
 
                         <div className="space-y-1">
-                            <p className={cn("text-[10px] font-black uppercase tracking-widest", isUnlocked ? "text-slate-900" : "text-slate-400")}>{badge.label}</p>
+                            <p className={cn("text-[10px] font-black uppercase tracking-widest", isUnlocked ? "text-foreground" : "text-slate-400")}>{badge.label}</p>
                             <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter max-w-[100px] leading-tight">{badge.desc}</p>
                         </div>
 

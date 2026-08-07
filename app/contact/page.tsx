@@ -271,7 +271,7 @@ export default function Contact() {
                         <info.icon className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-slate-900 text-sm uppercase tracking-tight">
+                        <h3 className="font-bold text-foreground text-sm uppercase tracking-tight">
                           {info.title}
                         </h3>
                         {info.details.map((detail, idx) => (
@@ -302,7 +302,7 @@ export default function Contact() {
                           <feature.icon className="h-4 w-4" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-slate-900 text-sm uppercase tracking-tight">
+                          <h4 className="font-bold text-foreground text-sm uppercase tracking-tight">
                             {feature.title}
                           </h4>
                           <p className="text-xs text-slate-500 font-medium">
@@ -322,13 +322,13 @@ export default function Contact() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-white text-slate-900 border-t border-slate-100">
+      <section className="py-16 lg:py-24 bg-white text-foreground border-t border-slate-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-left">
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-6 border-slate-200 text-slate-400 font-black uppercase tracking-widest text-[10px]">
               FAQ
             </Badge>
-            <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-slate-900">
+            <h2 className="text-4xl lg:text-5xl font-black uppercase tracking-tighter text-foreground">
               Common Questions
             </h2>
           </div>

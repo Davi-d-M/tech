@@ -55,7 +55,7 @@ export default function BlogListPage() {
       <section className="bg-slate-50 py-24 border-b border-slate-100 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
               <Badge className="mb-6 bg-primary/10 text-primary border-none font-black uppercase text-[10px] tracking-widest px-4 py-2 rounded-full">Apex Library</Badge>
-              <h1 className="text-5xl lg:text-7xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-8">
+              <h1 className="text-5xl lg:text-7xl font-black text-foreground uppercase tracking-tighter leading-none mb-8">
                   Tech <span className="text-primary italic">Guides.</span>
               </h1>
               <p className="text-slate-500 text-lg font-medium max-w-2xl mx-auto">
@@ -87,7 +87,7 @@ export default function BlogListPage() {
                         <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> {new Date(post.created_at).toLocaleDateString()}</span>
                         <span className="flex items-center gap-1.5"><User className="h-3 w-3" /> {post.author}</span>
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-tight group-hover:text-primary transition-colors">{post.title}</h2>
+                    <h2 className="text-2xl font-black text-foreground uppercase tracking-tight leading-tight group-hover:text-primary transition-colors">{post.title}</h2>
                     <p className="text-slate-500 text-sm font-medium line-clamp-2 leading-relaxed italic">{post.excerpt}</p>
                     <div className="pt-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary group-hover:gap-4 transition-all">
                         Read Full Guide <ArrowRight className="h-4 w-4" />
@@ -101,7 +101,7 @@ export default function BlogListPage() {
       </div>
 
       {/* CTA section */}
-      <section className="bg-slate-50 py-24 text-center text-slate-900 border-t border-slate-100">
+      <section className="bg-slate-50 py-24 text-center text-foreground border-t border-slate-100">
           <h2 className="text-4xl font-black uppercase tracking-tighter mb-4">Want the latest tech news?</h2>
           <p className="text-slate-500 font-medium mb-10 max-w-sm mx-auto">Join 1,000+ shoppers getting weekly elite gadget tips.</p>
           <div className="flex justify-center">

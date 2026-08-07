@@ -128,7 +128,7 @@ export default function SupportBubble() {
                         {(userProfile?.full_name as string)?.substring(0, 1) || settings.branding.owner_name.substring(0, 1)}
                     </div>
                     <div className="text-left">
-                        <p className="font-black text-slate-900 uppercase text-[10px] tracking-tight">{userProfile?.full_name || settings.branding.owner_name}</p>
+                        <p className="font-black text-foreground uppercase text-[10px] tracking-tight">{userProfile?.full_name || settings.branding.owner_name}</p>
                         <p className="text-slate-400 text-[9px] font-bold uppercase tracking-widest mt-0.5">
                             {userProfile?.full_name ? `Need help with your tech, ${userProfile.full_name.split(' ')[0]}?` : "Need help with tech, bro?"}
                         </p>
@@ -154,21 +154,21 @@ export default function SupportBubble() {
                                 <button onClick={() => setMode('ai')} className="w-full p-4 rounded-2xl bg-primary/5 hover:bg-primary/10 border border-primary/10 transition-all text-left flex items-center justify-between group">
                                     <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm"><Zap className="h-4 w-4" /></div>
-                                        <span className="text-[10px] font-black uppercase text-slate-900">Apex AI Finder</span>
+                                        <span className="text-[10px] font-black uppercase text-foreground">Apex AI Finder</span>
                                     </div>
                                     <ChevronRight className="h-4 w-4 text-primary/30" />
                                 </button>
                                 <button onClick={() => setMode('track')} className="w-full p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-100 transition-all text-left flex items-center justify-between group">
                                     <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors shadow-sm"><Package className="h-4 w-4" /></div>
-                                        <span className="text-[10px] font-black uppercase text-slate-900">Track My Order</span>
+                                        <span className="text-[10px] font-black uppercase text-foreground">Track My Order</span>
                                     </div>
                                     <ChevronRight className="h-4 w-4 text-slate-300" />
                                 </button>
                                 <button onClick={handleChat} className="w-full p-4 rounded-2xl bg-primary/5 hover:bg-primary/10 border border-primary/10 transition-all text-left flex items-center justify-between group">
                                     <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm"><MessageCircle className="h-4 w-4" /></div>
-                                        <span className="text-[10px] font-black uppercase text-slate-900">Speak to Sales</span>
+                                        <span className="text-[10px] font-black uppercase text-foreground">Speak to Sales</span>
                                     </div>
                                     <ChevronRight className="h-4 w-4 text-primary/30" />
                                 </button>
@@ -191,7 +191,7 @@ export default function SupportBubble() {
                                             chat.role === 'user' ? "bg-white border-slate-100 ml-6" : "bg-primary/5 border-primary/10 mr-6"
                                         )}>
                                             <p className="text-[8px] font-black uppercase text-slate-400 mb-1">{chat.role === 'user' ? 'You' : 'Apex AI'}</p>
-                                            <p className="text-[10px] font-medium text-slate-900 leading-relaxed whitespace-pre-wrap">{chat.text}</p>
+                                            <p className="text-[10px] font-medium text-foreground leading-relaxed whitespace-pre-wrap">{chat.text}</p>
                                         </div>
                                     ))}
 
@@ -243,7 +243,7 @@ export default function SupportBubble() {
                                 {trackResult && (
                                     <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 animate-in zoom-in-95">
                                         <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Current Status</p>
-                                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{trackResult.status}</p>
+                                        <p className="text-sm font-black text-foreground uppercase tracking-tight">{trackResult.status}</p>
                                         <Link href={`/track?id=${trackResult.id}`} className="text-[9px] font-black text-primary uppercase underline mt-2 block">Full Tracking Detail</Link>
                                     </div>
                                 )}
@@ -259,7 +259,7 @@ export default function SupportBubble() {
                                         <div className="h-12 w-12 rounded-full bg-primary/10 text-primary mx-auto flex items-center justify-center shadow-inner">
                                             <CheckCircle className="h-6 w-6" />
                                         </div>
-                                        <p className="text-[10px] font-black uppercase text-slate-900 tracking-tight">Message Received!</p>
+                                        <p className="text-[10px] font-black uppercase text-foreground tracking-tight">Message Received!</p>
                                         <p className="text-[9px] text-slate-400 font-medium px-4 leading-relaxed">Our elite team will reach out via email shortly.</p>
                                     </div>
                                 ) : (

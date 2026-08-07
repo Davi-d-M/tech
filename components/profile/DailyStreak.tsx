@@ -21,13 +21,13 @@ export default function DailyStreak({ currentStreak, milestoneDays = 14, milesto
                     </div>
                     <div className="text-right">
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Current Streak</p>
-                        <p className="text-4xl font-black text-slate-900 tracking-tighter uppercase">{currentStreak} <span className="text-rose-500 italic">Days</span></p>
+                        <p className="text-4xl font-black text-foreground tracking-tighter uppercase">{currentStreak} <span className="text-rose-500 italic">Days</span></p>
                     </div>
                 </div>
 
                 <div className="space-y-4">
                     <div className="flex justify-between items-end">
-                        <p className="text-[10px] font-black uppercase text-slate-900 tracking-tight">Milestone Progress</p>
+                        <p className="text-[10px] font-black uppercase text-foreground tracking-tight">Milestone Progress</p>
                         <p className="text-[10px] font-black text-primary uppercase tracking-widest">{currentStreak}/{milestoneDays} Days</p>
                     </div>
                     <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200 p-0.5">

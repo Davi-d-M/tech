@@ -159,7 +159,7 @@ export default function ProductCard({ product }: { product: Product }) {
           <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
             <Button
               size="sm"
-              className="bg-white text-slate-900 hover:bg-slate-50 font-black uppercase text-[10px] tracking-widest px-6 py-5 rounded-2xl shadow-2xl border-none scale-90 group-hover:scale-100 transition-transform duration-300"
+              className="bg-white text-foreground hover:bg-slate-50 font-black uppercase text-[10px] tracking-widest px-6 py-5 rounded-2xl shadow-2xl border-none scale-90 group-hover:scale-100 transition-transform duration-300"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -175,7 +175,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <CardContent className="p-3 sm:p-6 space-y-3 sm:space-y-4 text-left">
         <Link href={`/shop/${product.id}`}>
-          <h2 className="font-black text-slate-900 text-[10px] sm:text-sm uppercase tracking-tight line-clamp-1 group-hover:text-primary transition-colors">
+          <h2 className="font-black text-foreground text-[10px] sm:text-sm uppercase tracking-tight line-clamp-1 group-hover:text-primary transition-colors">
             {product.name}
           </h2>
         </Link>
@@ -183,7 +183,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-50 pb-3 sm:pb-4">
           <div className="flex flex-col">
               {isSale && <span className="text-[8px] sm:text-[10px] font-bold text-slate-400 line-through leading-none mb-1">{formatPrice(Number(product.old_price))}</span>}
-              <span className="text-sm sm:text-xl font-black text-slate-900 leading-none">
+              <span className="text-sm sm:text-xl font-black text-foreground leading-none">
                 {formatPrice(product.price)}
               </span>
           </div>
@@ -285,7 +285,7 @@ export default function ProductCard({ product }: { product: Product }) {
               {/* Product Details */}
               <div className="space-y-6 text-left">
                 <div>
-                  <h1 className="text-3xl font-black text-slate-900 mb-2 uppercase tracking-tight">
+                  <h1 className="text-3xl font-black text-foreground mb-2 uppercase tracking-tight">
                     {product.name}
                   </h1>
                   <div className="flex items-baseline gap-3">

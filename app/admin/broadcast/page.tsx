@@ -93,7 +93,7 @@ export default function AdminBroadcastPage() {
     return (
         <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
             <header className="border-b border-slate-200 pb-8">
-                <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Broadcast Center</h1>
+                <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Broadcast Center</h1>
                 <p className="text-slate-500 text-sm font-medium mt-1">Send mass updates, flash sale alerts, and news to your community.</p>
             </header>
 
@@ -120,7 +120,7 @@ export default function AdminBroadcastPage() {
                                 onClick={() => setChannel('email')}
                                 className={cn(
                                     "flex-1 py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                                    channel === 'email' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                    channel === 'email' ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600"
                                 )}
                             >
                                 <Mail className="h-3.5 w-3.5" /> Email
@@ -129,7 +129,7 @@ export default function AdminBroadcastPage() {
                                 onClick={() => setChannel('whatsapp')}
                                 className={cn(
                                     "flex-1 py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                                    channel === 'whatsapp' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                                    channel === 'whatsapp' ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600"
                                 )}
                             >
                                 <Phone className="h-3.5 w-3.5" /> WhatsApp

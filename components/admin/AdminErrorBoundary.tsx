@@ -42,7 +42,7 @@ export default class AdminErrorBoundary extends Component<Props, State> {
                 <ShieldAlert className="h-10 w-10" />
             </div>
 
-            <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter mb-4 leading-none">
+            <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter mb-4 leading-none">
                 Admin Hub Encountered an Error
             </h1>
             <p className="text-slate-500 font-medium text-lg mb-8 italic leading-relaxed">
@@ -74,7 +74,7 @@ export default class AdminErrorBoundary extends Component<Props, State> {
 
             <button
                 onClick={() => window.location.href = '/'}
-                className="mt-8 w-full text-center text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-slate-900 transition-colors flex items-center justify-center gap-2"
+                className="mt-8 w-full text-center text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-foreground transition-colors flex items-center justify-center gap-2"
             >
                 <Home className="h-3 w-3" /> Return to Public Store
             </button>

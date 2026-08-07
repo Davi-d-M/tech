@@ -61,7 +61,7 @@ export default function RestockRadar({ productId, productName }: { productId: nu
                         <Rocket className="h-6 w-6 fill-current" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900 leading-none">Restock Radar</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tighter text-foreground leading-none">Restock Radar</h3>
                         <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mt-1.5">Elite Priority Notification</p>
                     </div>
                 </div>

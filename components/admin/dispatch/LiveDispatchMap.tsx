@@ -92,11 +92,11 @@ export default function LiveDispatchMap({ riders }: LiveDispatchMapProps) {
             <Popup className="custom-leaflet-popup">
               <div className="p-4 min-w-[200px] text-left space-y-4">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-900 text-xs font-black shadow-inner">
+                    <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-foreground text-xs font-black shadow-inner">
                         {rider.rider_name.substring(0, 2).toUpperCase()}
                     </div>
                     <div>
-                        <h4 className="font-black text-slate-900 uppercase text-xs leading-none">{rider.rider_name}</h4>
+                        <h4 className="font-black text-foreground uppercase text-xs leading-none">{rider.rider_name}</h4>
                         <p className={cn(
                             "text-[9px] font-black uppercase mt-1",
                             rider.status === 'Delivering' ? "text-primary" : "text-emerald-500"
@@ -107,13 +107,13 @@ export default function LiveDispatchMap({ riders }: LiveDispatchMapProps) {
                 <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
                     <div>
                         <p className="text-[8px] font-black text-slate-400 uppercase">Battery</p>
-                        <p className="text-xs font-black text-slate-900 flex items-center gap-1">
+                        <p className="text-xs font-black text-foreground flex items-center gap-1">
                             <BatteryMedium className="h-3 w-3 text-emerald-500" /> {rider.battery_level}%
                         </p>
                     </div>
                     <div>
                         <p className="text-[8px] font-black text-slate-400 uppercase">Speed</p>
-                        <p className="text-xs font-black text-slate-900">{rider.current_speed || 0} km/h</p>
+                        <p className="text-xs font-black text-foreground">{rider.current_speed || 0} km/h</p>
                     </div>
                 </div>
 

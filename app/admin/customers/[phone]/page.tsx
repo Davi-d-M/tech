@@ -161,11 +161,11 @@ export default function CustomerIntelligence() {
             <ArrowLeft className="h-4 w-4" /> Back to Directory
           </Link>
           <div className="flex items-center gap-6">
-            <div className="h-20 w-20 rounded-[2rem] bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-900 text-2xl font-black uppercase shadow-inner">
+            <div className="h-20 w-20 rounded-[2rem] bg-slate-50 border border-slate-100 flex items-center justify-center text-foreground text-2xl font-black uppercase shadow-inner">
                 {profile?.full_name?.substring(0, 2) || orders[0]?.customer_name?.substring(0, 2) || '??'}
             </div>
             <div>
-              <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">
+              <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">
                   {profile?.full_name || orders[0]?.customer_name || 'Anonymous User'}
               </h1>
               <div className="flex items-center gap-3 mt-3">
@@ -199,7 +199,7 @@ export default function CustomerIntelligence() {
                       <item.icon className="h-6 w-6" />
                   </div>
                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{item.label}</p>
-                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter truncate">{item.val}</h3>
+                  <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter truncate">{item.val}</h3>
               </Card>
           ))}
       </div>
@@ -207,7 +207,7 @@ export default function CustomerIntelligence() {
       <div className="grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-1 space-y-8">
               <Card className="p-10 rounded-[3rem] border-slate-100 shadow-sm bg-white">
-                  <h2 className="text-xl font-black text-slate-900 uppercase mb-8 flex items-center gap-3">
+                  <h2 className="text-xl font-black text-foreground uppercase mb-8 flex items-center gap-3">
                       <ShieldCheck className="h-5 w-5 text-primary" /> Intelligence Data
                   </h2>
                   <div className="space-y-6">
@@ -217,35 +217,35 @@ export default function CustomerIntelligence() {
                       </div>
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Age</span>
-                          <span className="text-xs font-black text-slate-900 uppercase">{stats.age}</span>
+                          <span className="text-xs font-black text-foreground uppercase">{stats.age}</span>
                       </div>
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Birthday</span>
-                          <span className="text-xs font-black text-slate-900 uppercase">{profile?.birth_date ? new Date(profile.birth_date).toLocaleDateString('en-KE', { day: 'numeric', month: 'long' }) : 'Not Logged'}</span>
+                          <span className="text-xs font-black text-foreground uppercase">{profile?.birth_date ? new Date(profile.birth_date).toLocaleDateString('en-KE', { day: 'numeric', month: 'long' }) : 'Not Logged'}</span>
                       </div>
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Latitude</span>
-                          <span className="text-xs font-black text-slate-900 uppercase">{profile?.latitude?.toFixed(6) || 'N/A'}</span>
+                          <span className="text-xs font-black text-foreground uppercase">{profile?.latitude?.toFixed(6) || 'N/A'}</span>
                       </div>
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Longitude</span>
-                          <span className="text-xs font-black text-slate-900 uppercase">{profile?.longitude?.toFixed(6) || 'N/A'}</span>
+                          <span className="text-xs font-black text-foreground uppercase">{profile?.longitude?.toFixed(6) || 'N/A'}</span>
                       </div>
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Location</span>
-                          <span className="text-xs font-black text-slate-900 uppercase truncate max-w-[150px]">{profile?.address || 'No Address'}</span>
+                          <span className="text-xs font-black text-foreground uppercase truncate max-w-[150px]">{profile?.address || 'No Address'}</span>
                       </div>
                       <div className="flex justify-between items-center py-4">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Preferred Method</span>
-                          <span className="text-xs font-black text-slate-900 uppercase">{orders[0]?.payment_method || 'M-Pesa'}</span>
+                          <span className="text-xs font-black text-foreground uppercase">{orders[0]?.payment_method || 'M-Pesa'}</span>
                       </div>
                   </div>
               </Card>
 
-              <div className="bg-white rounded-[3rem] p-10 border-2 border-primary/10 text-slate-900 relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all">
+              <div className="bg-white rounded-[3rem] p-10 border-2 border-primary/10 text-foreground relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all">
                   <Zap className="h-10 w-10 text-primary mb-6 animate-pulse fill-current" />
                   <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-4">Engagement Index</h3>
-                  <p className="text-slate-500 font-medium leading-relaxed italic text-sm group-hover:text-slate-900 transition-colors">&quot;Recommended Action: Send early-access WhatsApp alert for restocks.&quot;</p>
+                  <p className="text-slate-500 font-medium leading-relaxed italic text-sm group-hover:text-foreground transition-colors">&quot;Recommended Action: Send early-access WhatsApp alert for restocks.&quot;</p>
                   <div className="absolute -bottom-10 -right-10 h-48 w-48 bg-primary/5 rounded-full blur-3xl"></div>
               </div>
           </div>
@@ -256,7 +256,7 @@ export default function CustomerIntelligence() {
                       <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                           <div className="flex items-center gap-3">
                               <MapPin className="h-6 w-6 text-primary" />
-                              <h2 className="text-xl font-black text-slate-900 uppercase">Tactical Drop Point</h2>
+                              <h2 className="text-xl font-black text-foreground uppercase">Tactical Drop Point</h2>
                           </div>
                           <Button
                             onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${profile.latitude},${profile.longitude}`, '_blank')}
@@ -271,7 +271,7 @@ export default function CustomerIntelligence() {
                               <div className="h-16 w-16 rounded-full bg-primary/20 animate-ping absolute" />
                               <MapPin className="h-12 w-12 text-primary relative z-10" />
                               <div className="text-center">
-                                  <p className="text-[10px] font-black uppercase text-slate-900">Coordinates Locked</p>
+                                  <p className="text-[10px] font-black uppercase text-foreground">Coordinates Locked</p>
                                   <p className="text-[8px] font-bold text-slate-400 uppercase mt-1">{profile.latitude.toFixed(6)}, {profile.longitude.toFixed(6)}</p>
                               </div>
                           </div>
@@ -283,7 +283,7 @@ export default function CustomerIntelligence() {
                   <div className="p-10 border-b border-slate-50 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                           <HistoryIcon className="h-6 w-6 text-primary" />
-                          <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Purchase Timeline</h2>
+                          <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Purchase Timeline</h2>
                       </div>
                       <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-4 py-2 rounded-full">{orders.length} Events</span>
                   </div>
@@ -300,12 +300,12 @@ export default function CustomerIntelligence() {
                                           <Package className="h-6 w-6" />
                                       </div>
                                       <div>
-                                          <h4 className="font-black text-slate-900 uppercase text-sm tracking-tight">{(prod?.name as string) || `Gadget #${order.product_id}`}</h4>
+                                          <h4 className="font-black text-foreground uppercase text-sm tracking-tight">{(prod?.name as string) || `Gadget #${order.product_id}`}</h4>
                                           <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">{new Date(order.created_at).toLocaleDateString()} • {order.status}</p>
                                       </div>
                                   </div>
                                   <div className="flex items-center gap-8 w-full sm:w-auto justify-between">
-                                      <p className="text-lg font-black text-slate-900">{formatPrice(order.total_price)}</p>
+                                      <p className="text-lg font-black text-foreground">{formatPrice(order.total_price)}</p>
                                       <Link href="/admin/orders">
                                           <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-slate-50 group-hover:bg-primary group-hover:text-white transition-all"><ChevronRight className="h-4 w-4" /></Button>
                                       </Link>

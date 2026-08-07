@@ -65,11 +65,11 @@ export default function BundleUpsell({ mainProduct, bundleProductId, discountPer
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
                         <Plus className="h-3 w-3" /> Perfect Match
                     </div>
-                    <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">
+                    <h3 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">
                         Buy Together &amp; <span className="text-primary italic">Save {discountPercent}%</span>
                     </h3>
                     <p className="text-slate-500 font-medium leading-relaxed">
-                        Complete your setup. Add <span className="text-slate-900 font-black uppercase tracking-tight">{bundleProduct.name}</span> to your order and get an instant elite discount.
+                        Complete your setup. Add <span className="text-foreground font-black uppercase tracking-tight">{bundleProduct.name}</span> to your order and get an instant elite discount.
                     </p>
                 </div>
 
@@ -87,7 +87,7 @@ export default function BundleUpsell({ mainProduct, bundleProductId, discountPer
                     <div className="text-center sm:text-right space-y-4">
                         <div className="space-y-1">
                             <p className="text-[10px] font-black uppercase text-slate-400 line-through tracking-widest">Regular Price: {formatPrice(totalOriginal)}</p>
-                            <p className="text-3xl font-black text-slate-900 tracking-tighter">Bundle Price: {formatPrice(finalPrice)}</p>
+                            <p className="text-3xl font-black text-foreground tracking-tighter">Bundle Price: {formatPrice(finalPrice)}</p>
                         </div>
                         <Button
                             onClick={handleAddBundle}

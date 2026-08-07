@@ -71,7 +71,7 @@ export default function Recommendations() {
           <div className="flex items-center gap-2 text-primary font-black uppercase text-[10px] tracking-[0.3em]">
             <Sparkles size={14} /> Curated Selection
           </div>
-          <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">You Might Also Like</h2>
+          <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter">You Might Also Like</h2>
         </div>
         <Link href="/shop" className="group flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 hover:text-primary transition-colors">
           View All <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -94,12 +94,12 @@ export default function Recommendations() {
             <CardContent className="p-6 flex-1 flex flex-col text-left">
               <div className="flex-1 space-y-1 mb-4">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{product.category}</p>
-                <h3 className="text-sm font-black text-slate-900 uppercase truncate group-hover:text-primary transition-colors">{product.name}</h3>
+                <h3 className="text-sm font-black text-foreground uppercase truncate group-hover:text-primary transition-colors">{product.name}</h3>
                 <p className="text-lg font-black text-primary">{formatPrice(product.price)}</p>
               </div>
               <Button
                 onClick={() => addToCart({ ...product, quantity: 1 } as CartItem)}
-                className="w-full h-12 rounded-2xl bg-slate-50 text-slate-900 font-black uppercase text-[9px] tracking-widest hover:bg-primary hover:text-white border border-slate-100 group-hover:border-transparent transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2"
+                className="w-full h-12 rounded-2xl bg-slate-50 text-foreground font-black uppercase text-[9px] tracking-widest hover:bg-primary hover:text-white border border-slate-100 group-hover:border-transparent transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2"
               >
                 <ShoppingCart size={14} /> Add to Cart
               </Button>

@@ -77,7 +77,7 @@ function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
             </div>
             <div className="flex flex-col items-start leading-none">
                 <span className={cn(
-                    "text-[9px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-900 transition-colors",
+                    "text-[9px] font-black uppercase tracking-widest text-slate-400 group-hover:text-foreground transition-colors",
                     isMobileMenu ? "inline-block" : "hidden lg:inline-block"
                 )}>
                   {displayEmail?.split('@')?.[0] || 'Member'}
@@ -98,7 +98,7 @@ function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
       <Link
         href="/auth?mode=signin"
         className={cn(
-            "text-[10px] font-black uppercase tracking-widest text-slate-900 hover:text-primary transition-colors",
+            "text-[10px] font-black uppercase tracking-widest text-foreground hover:text-primary transition-colors",
             !isMobileMenu && "hidden sm:inline-block"
         )}
       >
@@ -248,7 +248,7 @@ export default function Header() {
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-xl shadow-slate-900/5"
+          ? "bg-white/95 backdrop-blur-xl border-b border-slate-100 shadow-xl shadow-slate-200/50"
           : "bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm"
       }`}
     >
@@ -256,7 +256,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8 lg:space-x-12">
             <Link
-              className="text-xl sm:text-2xl tracking-tighter font-black text-slate-900 hover:text-primary transition-colors flex items-center gap-2 uppercase"
+              className="text-xl sm:text-2xl tracking-tighter font-black text-foreground hover:text-primary transition-colors flex items-center gap-2 uppercase"
               href="/"
               aria-label="Apexstores Home"
             >
@@ -283,7 +283,7 @@ export default function Header() {
                   className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
                     pathname === href
                       ? "bg-primary/10 text-primary shadow-sm"
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-foreground"
                   }`}
                 >
                   {label}
@@ -344,7 +344,7 @@ export default function Header() {
                                                 <img src={item.image} alt="" className="max-h-full w-auto object-contain" />
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-[10px] font-black uppercase text-slate-900 truncate group-hover:text-primary transition-colors">{item.name}</p>
+                                                <p className="text-[10px] font-black uppercase text-foreground truncate group-hover:text-primary transition-colors">{item.name}</p>
                                                 <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5 tracking-tighter">Viewed Just Now</p>
                                             </div>
                                         </Link>
@@ -380,7 +380,7 @@ export default function Header() {
                                     <img src={product.image_url} alt="" className="max-h-full w-auto object-contain" />
                                 </div>
                                 <div className="flex-1 min-w-0 text-left">
-                                    <p className="text-sm font-black uppercase text-slate-900 truncate tracking-tight">{product.name}</p>
+                                    <p className="text-sm font-black uppercase text-foreground truncate tracking-tight">{product.name}</p>
                                     <p className="text-xs font-bold text-primary mt-1">{formatPrice(product.price)}</p>
                                 </div>
                                 <ChevronRight className="h-5 w-5 text-slate-200 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -434,7 +434,7 @@ export default function Header() {
                 {isNotificationsOpen && (
                     <div className="absolute top-full right-0 mt-3 w-80 bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 z-[70] p-4 text-left">
                         <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">Notifications Hub</h3>
+                            <h3 className="text-xs font-black uppercase tracking-widest text-foreground">Notifications Hub</h3>
                             <button className="text-[9px] font-black text-primary uppercase hover:underline" onClick={(e) => { e.stopPropagation(); setHasUnread(false); setIsNotificationsOpen(false); }}>Mark all read</button>
                         </div>
                         <div className="space-y-3">
@@ -442,7 +442,7 @@ export default function Header() {
                                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex gap-4 group/item hover:border-primary/20 transition-all">
                                     <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm shrink-0 border border-slate-100 group-hover/item:scale-110 transition-transform"><Zap className="h-5 w-5 fill-current" /></div>
                                     <div>
-                                        <p className="text-[11px] font-black text-slate-900 uppercase leading-tight">Welcome to the Club!</p>
+                                        <p className="text-[11px] font-black text-foreground uppercase leading-tight">Welcome to the Club!</p>
                                         <p className="text-[10px] text-slate-500 mt-1.5 leading-relaxed font-medium">Complete your profile setup to earn your first 100 points instantly.</p>
                                     </div>
                                 </div>
@@ -521,7 +521,7 @@ export default function Header() {
                                 <img src={product.image_url} alt="" className="max-h-full w-auto object-contain" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-[10px] font-black uppercase text-slate-900 truncate">{product.name}</p>
+                                <p className="text-[10px] font-black uppercase text-foreground truncate">{product.name}</p>
                                 <p className="text-[9px] font-bold text-primary">{formatPrice(product.price)}</p>
                             </div>
                         </Link>

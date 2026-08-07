@@ -107,7 +107,7 @@ export default function AffiliateDashboard() {
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-indigo-100 mb-4">
                             <Target className="h-3 w-3" /> Growth Partner
                         </div>
-                        <h1 className="text-4xl lg:text-6xl font-black text-slate-900 tracking-tighter uppercase leading-none">Affiliate <br/> <span className="text-primary italic">Command Center</span></h1>
+                        <h1 className="text-4xl lg:text-6xl font-black text-foreground tracking-tighter uppercase leading-none">Affiliate <br/> <span className="text-primary italic">Command Center</span></h1>
                     </div>
                     <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
@@ -115,13 +115,13 @@ export default function AffiliateDashboard() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 leading-none mb-1">Marketer</p>
-                            <p className="text-xs font-bold text-slate-900 uppercase truncate max-w-[120px]">{(profile?.full_name as string) || user?.email?.split('@')[0]}</p>
+                            <p className="text-xs font-bold text-foreground uppercase truncate max-w-[120px]">{(profile?.full_name as string) || user?.email?.split('@')[0]}</p>
                         </div>
                     </div>
                 </header>
 
                 {/* Main Link Section (Light Rebrand) */}
-                <section className="mb-12 bg-white rounded-[3rem] p-8 sm:p-16 text-slate-900 relative overflow-hidden shadow-sm border-2 border-primary/5">
+                <section className="mb-12 bg-white rounded-[3rem] p-8 sm:p-16 text-foreground relative overflow-hidden shadow-sm border-2 border-primary/5">
                     <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center text-left">
                         <div className="space-y-6">
                             <h2 className="text-4xl font-black uppercase tracking-tighter leading-none">Your Unique <br/> <span className="text-primary italic">Rocket Link</span></h2>
@@ -165,7 +165,7 @@ export default function AffiliateDashboard() {
                                 <item.icon className="h-7 w-7" />
                             </div>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{item.label}</p>
-                            <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">{item.val}</h3>
+                            <h3 className="text-4xl font-black text-foreground tracking-tighter uppercase">{item.val}</h3>
                             <p className="text-[9px] font-black text-slate-300 uppercase mt-4 tracking-widest">{item.meta}</p>
                         </div>
                     ))}
@@ -176,7 +176,7 @@ export default function AffiliateDashboard() {
                     <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden">
                         <div className="p-8 border-b border-slate-50 flex items-center gap-3">
                             <History className="h-5 w-5 text-primary" />
-                            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Payout History</h2>
+                            <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">Payout History</h2>
                         </div>
                         <div className="p-12 text-center">
                             <div className="h-16 w-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mx-auto mb-6">
@@ -188,7 +188,7 @@ export default function AffiliateDashboard() {
                     </div>
 
                     {/* Partner Support */}
-                    <div className="bg-slate-50 border border-slate-100 rounded-[3rem] p-10 text-slate-900 relative overflow-hidden shadow-inner">
+                    <div className="bg-slate-50 border border-slate-100 rounded-[3rem] p-10 text-foreground relative overflow-hidden shadow-inner">
                         <div className="relative z-10">
                             <h2 className="text-2xl font-black uppercase tracking-tight mb-4">Partner Support</h2>
                             <p className="text-slate-500 font-medium mb-8 leading-relaxed italic">&quot;Need custom creative assets or have a large-scale collaboration proposal? Let&apos;s talk strategy.&quot;</p>

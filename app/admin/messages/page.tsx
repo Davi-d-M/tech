@@ -94,7 +94,7 @@ export default function AdminMessagesPage() {
     <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Support Inbox</h1>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Support Inbox</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">Manage customer inquiries and technical support tickets.</p>
         </div>
         <Button onClick={fetchMessages} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest transition-all hover:shadow-lg">
@@ -159,7 +159,7 @@ export default function AdminMessagesPage() {
                                       {(msg.name || '??').substring(0, 2)}
                                   </div>
                                   <div>
-                                      <h3 className="font-black text-slate-900 uppercase text-sm tracking-tight">{msg.name}</h3>
+                                      <h3 className="font-black text-foreground uppercase text-sm tracking-tight">{msg.name}</h3>
                                       <p className="text-[10px] font-bold text-slate-400 uppercase">{msg.email}</p>
                                   </div>
                                   <span className={cn(
@@ -173,7 +173,7 @@ export default function AdminMessagesPage() {
                               </div>
 
                               <div className="pl-14">
-                                  <p className="font-black text-slate-900 text-lg uppercase tracking-tight mb-2">{msg.subject}</p>
+                                  <p className="font-black text-foreground text-lg uppercase tracking-tight mb-2">{msg.subject}</p>
                                   <p className="text-slate-600 font-medium leading-relaxed max-w-3xl italic">&quot;{msg.message}&quot;</p>
                                   <p className="text-[9px] font-bold text-slate-400 uppercase mt-6 flex items-center gap-1">
                                       <Clock className="h-3 w-3" /> Received {new Date(msg.created_at).toLocaleString()}

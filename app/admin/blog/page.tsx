@@ -216,7 +216,7 @@ export default function AdminBlogPage() {
     <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Library Center</h1>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Library Center</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">Manage technical guides, news, and system documentation.</p>
         </div>
         <Button onClick={fetchPosts} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest transition-all hover:shadow-lg">
@@ -237,7 +237,7 @@ export default function AdminBlogPage() {
                   </div>
                   <div className="min-w-0 text-left">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{item.label}</p>
-                      <h3 className="text-xl font-black text-slate-900 mt-1 tracking-tighter uppercase truncate">{item.val}</h3>
+                      <h3 className="text-xl font-black text-foreground mt-1 tracking-tighter uppercase truncate">{item.val}</h3>
                   </div>
               </Card>
           ))}
@@ -254,12 +254,12 @@ export default function AdminBlogPage() {
                   <div className="flex items-center justify-between mb-10">
                       <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Pencil className="h-5 w-5" /></div>
-                          <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">{editingId ? 'Refine Content' : 'New Manuscript'}</h2>
+                          <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">{editingId ? 'Refine Content' : 'New Manuscript'}</h2>
                       </div>
                       <div className="flex items-center p-1 bg-slate-50 rounded-xl border border-slate-100">
-                          <button onClick={() => setPreviewMode('edit')} className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all", previewMode === 'edit' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400")}>Edit</button>
-                          <button onClick={() => setPreviewMode('split')} className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all", previewMode === 'split' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400")}>Split</button>
-                          <button onClick={() => setPreviewMode('live')} className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all", previewMode === 'live' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400")}>Preview</button>
+                          <button onClick={() => setPreviewMode('edit')} className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all", previewMode === 'edit' ? "bg-white text-foreground shadow-sm" : "text-slate-400")}>Edit</button>
+                          <button onClick={() => setPreviewMode('split')} className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all", previewMode === 'split' ? "bg-white text-foreground shadow-sm" : "text-slate-400")}>Split</button>
+                          <button onClick={() => setPreviewMode('live')} className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all", previewMode === 'live' ? "bg-white text-foreground shadow-sm" : "text-slate-400")}>Preview</button>
                       </div>
                   </div>
 
@@ -340,7 +340,7 @@ export default function AdminBlogPage() {
                                 onChange={e => setForm(prev => ({ ...prev, is_published: e.target.checked, status: e.target.checked ? 'Published' : 'Draft' }))}
                                 className="h-6 w-6 rounded-lg border-slate-300 text-primary focus:ring-primary cursor-pointer shadow-sm"
                               />
-                              <label htmlFor="is_published" className="text-xs font-black uppercase tracking-widest text-slate-900 cursor-pointer">Live Distribution</label>
+                              <label htmlFor="is_published" className="text-xs font-black uppercase tracking-widest text-foreground cursor-pointer">Live Distribution</label>
                           </div>
                           <div className="flex gap-3">
                             <Button type="submit" disabled={isSubmitting} className="h-16 px-10 rounded-[1.5rem] bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
@@ -377,7 +377,7 @@ export default function AdminBlogPage() {
                       <div className="p-10 space-y-8 text-left">
                           <header className="space-y-4">
                               <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest rounded-full">{form.category || 'Guides'}</span>
-                              <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-tight">{form.title || 'Manuscript Title'}</h1>
+                              <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-tight">{form.title || 'Manuscript Title'}</h1>
                           </header>
                           <div className="prose prose-slate prose-sm text-slate-600 font-medium leading-relaxed whitespace-pre-wrap">
                               {form.content || 'Real-time manuscript rendering...'}
@@ -391,7 +391,7 @@ export default function AdminBlogPage() {
       {/* Article Log */}
       <section className="space-y-6">
           <div className="flex items-center justify-between px-2 text-left">
-              <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">Archives</h2>
+              <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Archives</h2>
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{posts.length} Guides Logged</span>
           </div>
 
@@ -407,7 +407,7 @@ export default function AdminBlogPage() {
                           <BookOpen className="h-10 w-10 group-hover:scale-110 transition-transform" />
                       </div>
                       <div className="max-w-md space-y-2">
-                          <p className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">Your Library is Silent</p>
+                          <p className="text-xl font-black text-foreground uppercase tracking-tight leading-none">Your Library is Silent</p>
                           <p className="text-slate-400 text-xs font-medium leading-relaxed italic">&quot;Authorize your first tech guide to begin building the knowledge pool.&quot;</p>
                       </div>
                   </div>
@@ -429,7 +429,7 @@ export default function AdminBlogPage() {
                                           <span className="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-400 text-[8px] font-black uppercase tracking-widest">{post.category}</span>
                                           <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest flex items-center gap-1"><Eye className="h-2 w-2" /> {post.views || 0}</span>
                                       </div>
-                                      <h3 className="font-black text-slate-900 uppercase text-lg tracking-tight group-hover:text-primary transition-colors leading-none">{post.title}</h3>
+                                      <h3 className="font-black text-foreground uppercase text-lg tracking-tight group-hover:text-primary transition-colors leading-none">{post.title}</h3>
                                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">By {post.author} • {new Date(post.created_at).toLocaleDateString()}</p>
                                   </div>
                               </div>

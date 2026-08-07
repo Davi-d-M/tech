@@ -1,52 +1,58 @@
-# Implementation Plan - Complete Codebase Purge of Dark Theme ☀️🧹
+# Implementation Plan - Total Purge of Black Color ☀️🎨
 
-This plan outlines the final, comprehensive removal of all dark theme related code, utility classes, and logic from the application. This will result in a strictly light-mode, "pure white" UI.
+This plan systematically removes all black and near-black colors from the codebase to ensure a strictly light, high-contrast, and "pure white" user experience as requested.
 
 ## User Review Required
 
-> [!WARNING]
-> This action is destructive for any dark-mode capabilities. All `dark:` Tailwind utility classes will be removed from the identified files.
+> [!IMPORTANT]
+> - **Color Rebranding**: All instances of `slate-900`, `slate-950`, and `black` will be replaced with lighter alternatives (like `slate-700/800` for text and `white` for backgrounds).
+> - **Hex Conversion**: I will transition from `oklch` to standard Hex codes in `globals.css` to prevent any rendering issues that might cause fallback to dark colors.
+> - **Force Light Mode**: I will add explicit `color-scheme: light` and ensure no system-level dark mode can override the UI.
 
 ## Proposed Changes
 
-### 1. Systematic Utility Purge
-I will remove all `dark:` prefixed classes from the following files to ensure the codebase is clean and no hidden "dark" styling remains.
+### 1. Global Style Hardening
+
+#### [MODIFY] [globals.css](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/globals.css)
+- Replace `oklch` variables with Hex:
+    - `--background`: `#ffffff` (Pure White)
+    - `--foreground`: `#334155` (Slate-700 - Deep Gray, but not black)
+    - `--card`: `#ffffff`
+    - `--border`: `#e2e8f0` (Lighter gray)
+    - `--secondary`: `#f8fafc`
+- Add `color-scheme: light;` to `:root`.
+- Remove any remaining dark mode logic or variables.
+
+### 2. Codebase-wide Color Purge
+
+#### [MODIFY] Systematic Search & Replace
+I will run a comprehensive replacement across all components and pages:
+- **Backgrounds**:
+    - `bg-slate-900`, `bg-slate-950`, `bg-black`, `bg-gray-900` -> `bg-white` or `bg-background`.
+- **Text**:
+    - `text-slate-900`, `text-slate-950`, `text-black`, `text-gray-900` -> `text-slate-800` or `text-foreground`.
+- **Borders**:
+    - `border-slate-900`, `border-black` -> `border-border`.
+
+### 3. Specific Component Refinement
+
+#### [MODIFY] [AuthForm.js](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/auth/AuthForm.js)
+- Change "Log In" / "Sign Up" buttons from `bg-slate-900` to `bg-primary` (Orange).
+- Ensure all text uses `text-slate-800` instead of `text-slate-900`.
+
+#### [MODIFY] [auth/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/auth/page.tsx)
+- Explicitly set `bg-white` on the `main` container to guarantee light mode.
+- Update button styles to avoid dark backgrounds.
 
 #### [MODIFY] [layout-client.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/layout-client.tsx)
-- Remove `dark:` classes from the main container, sidebar, mobile header, and top navigation.
-
-#### [MODIFY] [page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/page.tsx)
-- Remove `dark:` classes from dashboard cards, charts, and warehouse alerts.
-
-#### [MODIFY] [affiliates/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/affiliates/page.tsx)
-- Remove `dark:` classes from metric cards, tables, and buttons.
-
-#### [MODIFY] [dispatch/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/dispatch/page.tsx)
-- Remove `dark:` classes from rider inventory, map overlays, and detail modals.
-
-#### [MODIFY] [staff/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/staff/page.tsx)
-- Remove `dark:` classes from the leaderboard and team directory table.
-
-#### [MODIFY] [settings/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/settings/page.tsx)
-- Remove `dark:` classes from tab navigation and card containers.
-
-#### [MODIFY] [LiveActivitySidebar.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/admin/LiveActivitySidebar.tsx)
-- Remove `dark:` classes from the slide-out panel and activity event cards.
-
-#### [MODIFY] [GlobalCommandPalette.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/admin/GlobalCommandPalette.tsx)
-- Remove `dark:` classes from the search modal and result items.
-
-### 2. Logic & State Finalization
-
-#### [MODIFY] [layout-client.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/layout-client.tsx)
-- Ensure the `isDarkMode` state and `toggleDarkMode` function are completely gone (if any remnants exist).
-- Re-verify `useEffect` doesn't check for `admin_theme`.
+- Ensure the sidebar and header are strictly white.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to confirm no syntax errors were introduced during the purge.
+- Run `npm run build` to ensure no syntax errors.
 
 ### Manual Verification
-- Perform a "Visual Sweep" across all admin routes to ensure every page is strictly using the light theme palette.
-- Verify that no theme toggle or moon icon appears anywhere in the UI.
+1.  **Visual Sweep**: Open the Auth page, Admin Dashboard, and Storefront. Confirm ZERO black background sections exist.
+2.  **Contrast Check**: Ensure all text remains readable against the new white/light backgrounds.
+3.  **System Preference Test**: Change OS theme to dark and verify the app STAYS light.

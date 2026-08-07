@@ -17,7 +17,7 @@ export default function PerformanceHub({ tier, rating, acceptance, maintenanceSt
 
     return (
         <section className="space-y-6 text-left">
-            <h2 className="text-xl font-black uppercase tracking-tighter text-slate-900 px-2">Operator Performance</h2>
+            <h2 className="text-xl font-black uppercase tracking-tighter text-foreground px-2">Operator Performance</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
@@ -31,7 +31,7 @@ export default function PerformanceHub({ tier, rating, acceptance, maintenanceSt
                             <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Current Tier</span>
                         </div>
                         <div>
-                            <p className="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">{tier}</p>
+                            <p className="text-3xl font-black text-foreground uppercase tracking-tighter italic">{tier}</p>
                             <p className="text-[9px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Next: Silver (14 Missions)</p>
                         </div>
                     </div>
@@ -46,7 +46,7 @@ export default function PerformanceHub({ tier, rating, acceptance, maintenanceSt
                         <span className="text-[10px] font-black text-indigo-600">Top 5%</span>
                     </div>
                     <div>
-                        <p className="text-3xl font-black text-slate-900">{rating.toFixed(2)}</p>
+                        <p className="text-3xl font-black text-foreground">{rating.toFixed(2)}</p>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Tactical Rating</p>
                     </div>
                 </Card>
@@ -60,7 +60,7 @@ export default function PerformanceHub({ tier, rating, acceptance, maintenanceSt
                         <Activity className="h-4 w-4 text-slate-100" />
                     </div>
                     <div>
-                        <p className="text-3xl font-black text-slate-900">{acceptance}%</p>
+                        <p className="text-3xl font-black text-foreground">{acceptance}%</p>
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2">Mission Acceptance</p>
                     </div>
                 </Card>
@@ -81,7 +81,7 @@ export default function PerformanceHub({ tier, rating, acceptance, maintenanceSt
                             {isHealthy ? <BatteryMedium className="h-8 w-8" /> : <AlertTriangle className="h-8 w-8" />}
                         </div>
                         <div>
-                            <h3 className={cn("text-xl font-black uppercase tracking-tighter", isHealthy ? "text-slate-900" : "text-rose-600")}>
+                            <h3 className={cn("text-xl font-black uppercase tracking-tighter", isHealthy ? "text-foreground" : "text-rose-600")}>
                                 {isHealthy ? "Unit Health Optimal" : "Maintenance Required"}
                             </h3>
                             <p className="text-[10px] font-medium text-slate-500 leading-relaxed italic mt-1">

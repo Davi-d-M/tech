@@ -149,7 +149,7 @@ export default function AdminMediaHub() {
         <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left selection:bg-primary/20 pb-40">
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Brand Media Hub</h1>
+                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Brand Media Hub</h1>
                     <p className="text-slate-500 text-sm font-medium mt-1">Central repository for product shoots, marketing posters, and banners.</p>
                 </div>
                 <div className="flex gap-2">
@@ -181,7 +181,7 @@ export default function AdminMediaHub() {
                         onClick={() => setActiveTab(tab.id as 'products' | 'posters' | 'banners')}
                         className={cn(
                             "flex items-center gap-3 px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border-2 border-transparent",
-                            activeTab === tab.id ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-400 hover:bg-slate-50 hover:text-slate-900"
+                            activeTab === tab.id ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-400 hover:bg-slate-50 hover:text-foreground"
                         )}
                     >
                         <tab.icon className="h-4 w-4" />
@@ -193,15 +193,15 @@ export default function AdminMediaHub() {
             <div className="grid lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-3 space-y-6">
                     <Card className="p-8 rounded-[2.5rem] border border-slate-100 bg-white shadow-sm space-y-6">
-                        <h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Library Intel</h2>
+                        <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Library Intel</h2>
                         <div className="space-y-6 text-left">
                             <div className="flex justify-between items-center border-b border-slate-50 pb-4">
                                 <span className="text-[9px] font-black uppercase text-slate-400">Section</span>
-                                <span className="text-xs font-black text-slate-900 uppercase">{activeTab}</span>
+                                <span className="text-xs font-black text-foreground uppercase">{activeTab}</span>
                             </div>
                             <div className="flex justify-between items-center border-b border-slate-50 pb-4">
                                 <span className="text-[9px] font-black uppercase text-slate-400">Total Count</span>
-                                <span className="text-xs font-black text-slate-900">{filteredAssets.length} Units</span>
+                                <span className="text-xs font-black text-foreground">{filteredAssets.length} Units</span>
                             </div>
                         </div>
                     </Card>
@@ -239,7 +239,7 @@ export default function AdminMediaHub() {
                                         <div className="absolute inset-0 bg-white/80 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4">
                                             <Button
                                                 onClick={() => copyToClipboard(asset.url)}
-                                                className="w-full bg-white text-slate-900 hover:bg-slate-50 font-black uppercase text-[8px] h-10 rounded-xl border border-slate-100 shadow-sm"
+                                                className="w-full bg-white text-foreground hover:bg-slate-50 font-black uppercase text-[8px] h-10 rounded-xl border border-slate-100 shadow-sm"
                                             >
                                                 {copiedUrl === asset.url ? <CheckCircle2 className="h-3 w-3 mr-2 text-primary" /> : <Copy className="h-3 w-3 mr-2" />}
                                                 {copiedUrl === asset.url ? 'Copied' : 'Copy URL'}
@@ -263,7 +263,7 @@ export default function AdminMediaHub() {
                                         </div>
                                     </div>
                                     <div className="p-4 border-t border-slate-50">
-                                        <p className="text-[9px] font-black uppercase text-slate-900 truncate tracking-tight">{asset.name}</p>
+                                        <p className="text-[9px] font-black uppercase text-foreground truncate tracking-tight">{asset.name}</p>
                                         <p className="text-[8px] font-bold text-slate-400 uppercase mt-1">Uploaded {new Date(asset.updated_at).toLocaleDateString()}</p>
                                     </div>
                                 </Card>

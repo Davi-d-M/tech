@@ -421,7 +421,7 @@ function UploadContent() {
                     <div className="h-2 w-2 rounded-full bg-primary animate-pulse"></div>
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Inventory Command</span>
                 </div>
-                <h1 className="text-4xl font-black tracking-tighter text-slate-900 uppercase leading-none">
+                <h1 className="text-4xl font-black tracking-tighter text-foreground uppercase leading-none">
                   {editingId ? 'Refine Gadget' : 'Stock Control'}
                 </h1>
                 <p className="text-slate-500 text-sm font-medium italic">Deploy premium tech payload to the global marketplace.</p>
@@ -458,7 +458,7 @@ function UploadContent() {
                   <button type="button" onClick={() => toggleSection('basic')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Info className="h-5 w-5" /></div>
-                          <div className="text-left"><h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Basic Information</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Identify tech payload specs</p></div>
+                          <div className="text-left"><h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Basic Information</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Identify tech payload specs</p></div>
                       </div>
                       {openSections.basic ? <ChevronUp className="h-5 w-5 text-slate-300" /> : <ChevronDown className="h-5 w-5 text-slate-300" />}
                   </button>
@@ -485,7 +485,7 @@ function UploadContent() {
                   <button type="button" onClick={() => toggleSection('pricing')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><DollarSign className="h-5 w-5" /></div>
-                          <div className="text-left"><h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Pricing Hub</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Financial & Margin control</p></div>
+                          <div className="text-left"><h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Pricing Hub</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Financial & Margin control</p></div>
                       </div>
                       {openSections.pricing ? <ChevronUp className="h-5 w-5 text-slate-300" /> : <ChevronDown className="h-5 w-5 text-slate-300" />}
                   </button>
@@ -521,7 +521,7 @@ function UploadContent() {
                   <button type="button" onClick={() => toggleSection('inventory')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><PackageCheck className="h-5 w-5" /></div>
-                          <div className="text-left"><h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Inventory</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Multi-dimensional Stock</p></div>
+                          <div className="text-left"><h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Inventory</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Multi-dimensional Stock</p></div>
                       </div>
                       {openSections.inventory ? <ChevronUp className="h-5 w-5 text-slate-300" /> : <ChevronDown className="h-5 w-5 text-slate-300" />}
                   </button>
@@ -551,7 +551,7 @@ function UploadContent() {
                   <button type="button" onClick={() => toggleSection('description')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><FileText className="h-5 w-5" /></div>
-                          <div className="text-left"><h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Content Hub</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Storytelling & Specs</p></div>
+                          <div className="text-left"><h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Content Hub</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Storytelling & Specs</p></div>
                       </div>
                       {openSections.description ? <ChevronUp className="h-5 w-5 text-slate-300" /> : <ChevronDown className="h-5 w-5 text-slate-300" />}
                   </button>
@@ -563,7 +563,7 @@ function UploadContent() {
                           </div>
                           <div className="space-y-2"><label className="text-[9px] font-black uppercase text-slate-400">Full Mission Narrative</label><Textarea name="description" value={form.description} onChange={handleInputChange} rows={6} className="rounded-[2rem] bg-slate-50 border-slate-100 p-6 text-sm" /></div>
                           <div className="space-y-6">
-                              <div className="flex justify-between items-center"><h3 className="text-[10px] font-black uppercase text-slate-900">Technical Specifications</h3><Button type="button" onClick={handleAddSpec} variant="outline" className="h-8 rounded-lg text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-1" /> Add Spec</Button></div>
+                              <div className="flex justify-between items-center"><h3 className="text-[10px] font-black uppercase text-foreground">Technical Specifications</h3><Button type="button" onClick={handleAddSpec} variant="outline" className="h-8 rounded-lg text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-1" /> Add Spec</Button></div>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{techSpecs.map((s, i) => (
                                   <div key={i} className="flex gap-2 p-3 bg-slate-50 rounded-2xl border border-slate-100">
                                       <input value={s.key} onChange={e => handleSpecChange(i, 'key', e.target.value)} placeholder="Key" className="bg-transparent text-[10px] font-black uppercase w-1/2 outline-none" />
@@ -580,7 +580,7 @@ function UploadContent() {
                   <button type="button" onClick={() => toggleSection('media')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><ImageIcon className="h-5 w-5" /></div>
-                          <div className="text-left"><h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Media Hub</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Visual Assets & Video</p></div>
+                          <div className="text-left"><h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Media Hub</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Visual Assets & Video</p></div>
                       </div>
                       {openSections.media ? <ChevronUp className="h-5 w-5 text-slate-300" /> : <ChevronDown className="h-5 w-5 text-slate-300" />}
                   </button>
@@ -636,7 +636,7 @@ function UploadContent() {
                         {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : <Rocket className="h-5 w-5 mr-3" />}
                         {editingId ? 'Save Product Changes' : 'Deploy New Gadget'}
                       </Button>
-                      {editingId && <Button type="button" onClick={cancelEditing} variant="ghost" className="h-16 px-10 rounded-2xl text-slate-400 hover:text-slate-900 hover:bg-white font-black uppercase text-[10px] active:scale-95 transition-all">Abort</Button>}
+                      {editingId && <Button type="button" onClick={cancelEditing} variant="ghost" className="h-16 px-10 rounded-2xl text-slate-400 hover:text-foreground hover:bg-white font-black uppercase text-[10px] active:scale-95 transition-all">Abort</Button>}
                   </div>
               </div>
 
@@ -662,8 +662,8 @@ function UploadContent() {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-[8px] font-black uppercase text-primary tracking-widest">{form.brand || 'Apexstores'}</p>
-                                    <h4 className="text-xl font-black uppercase text-slate-900 tracking-tighter leading-none truncate">{form.name || 'Gadget Title'}</h4>
-                                    <p className="text-2xl font-black text-slate-900 tracking-tighter">{formatPrice(Number(form.price) || 0)}</p>
+                                    <h4 className="text-xl font-black uppercase text-foreground tracking-tighter leading-none truncate">{form.name || 'Gadget Title'}</h4>
+                                    <p className="text-2xl font-black text-foreground tracking-tighter">{formatPrice(Number(form.price) || 0)}</p>
                                 </div>
                                 <p className="text-[10px] text-slate-500 font-medium italic line-clamp-3">&quot;{form.short_description || form.description || 'Manuscript pending...'}&quot;</p>
                                 <div className="space-y-2">
@@ -677,7 +677,7 @@ function UploadContent() {
                   <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col h-[500px]">
                       <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                              <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Inventory Feed</h2>
+                              <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">Inventory Feed</h2>
                               <Button onClick={cancelEditing} variant="ghost" size="sm" className="h-8 rounded-lg bg-primary/5 text-primary text-[8px] font-black uppercase hover:bg-primary hover:text-white"><Plus className="h-3 w-3 mr-1" /> New</Button>
                           </div>
                           <button onClick={fetchProducts} className="text-slate-300 hover:text-primary transition-colors">
@@ -696,7 +696,7 @@ function UploadContent() {
                                           <img src={p.image_url} className="max-h-full w-auto object-contain" alt="" />
                                       </div>
                                       <div className="min-w-0">
-                                          <p className="text-[11px] font-black text-slate-900 uppercase truncate leading-none mb-1">{p.name}</p>
+                                          <p className="text-[11px] font-black text-foreground uppercase truncate leading-none mb-1">{p.name}</p>
                                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{p.stock} Units • {p.category}</p>
                                       </div>
                                   </div>

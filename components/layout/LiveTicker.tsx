@@ -34,7 +34,7 @@ export default function LiveTicker() {
     }, [tickerItems]);
 
     return (
-        <div className="bg-slate-50 text-slate-900 overflow-hidden py-2 border-b border-slate-100">
+        <div className="bg-slate-50 text-foreground overflow-hidden py-2 border-b border-slate-100">
             <div className="container mx-auto px-4 flex justify-center items-center h-6">
                 {tickerItems.map((item, index) => (
                     <div

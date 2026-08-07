@@ -165,7 +165,7 @@ export default function AdminReviewHub() {
     <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Community Feedback</h1>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Community Feedback</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">Moderate customer reviews and personally respond to the Apex community.</p>
         </div>
         <div className="flex gap-2">
@@ -228,7 +228,7 @@ export default function AdminReviewHub() {
                     onClick={() => setStatusFilter(f.id as 'all' | 'visible' | 'hidden')}
                     className={cn(
                         "rounded-xl h-14 px-6 font-black uppercase text-[10px] tracking-widest transition-all",
-                        statusFilter === f.id ? "bg-primary text-white shadow-xl shadow-primary/20" : "bg-white border-slate-100 text-slate-400 hover:text-slate-900"
+                        statusFilter === f.id ? "bg-primary text-white shadow-xl shadow-primary/20" : "bg-white border-slate-100 text-slate-400 hover:text-foreground"
                     )}
                   >
                       {f.label}
@@ -260,11 +260,11 @@ export default function AdminReviewHub() {
                               {/* Customer Identity */}
                               <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-4">
-                                      <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-900 font-black text-xs uppercase shadow-inner">
+                                      <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-foreground font-black text-xs uppercase shadow-inner">
                                           {(review.customer_name || '??').substring(0, 2)}
                                       </div>
                                       <div>
-                                          <h3 className="font-black text-slate-900 uppercase text-sm tracking-tight">{review.customer_name}</h3>
+                                          <h3 className="font-black text-foreground uppercase text-sm tracking-tight">{review.customer_name}</h3>
                                           <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{getProductName(review.product_id)}</p>
                                       </div>
                                   </div>

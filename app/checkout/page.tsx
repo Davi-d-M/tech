@@ -562,7 +562,7 @@ function CheckoutContent() {
             <Link href="/cart" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors flex items-center gap-2 mb-4">
                 <ArrowLeft className="h-4 w-4" /> Edit Cart
             </Link>
-            <h1 className="text-5xl font-black uppercase tracking-tighter text-slate-900">Checkout</h1>
+            <h1 className="text-5xl font-black uppercase tracking-tighter text-foreground">Checkout</h1>
             <p className="mt-2 text-slate-500 font-medium italic">Complete your order to begin dispatch.</p>
         </div>
       </div>
@@ -613,7 +613,7 @@ function CheckoutContent() {
                         onClick={() => setShippingRegionId(r.id)}
                         className={`p-4 sm:p-6 rounded-3xl border-2 text-left transition-all active:scale-95 ${currentRegion.id === r.id ? 'border-primary bg-white shadow-xl scale-105' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}
                     >
-                        <p className="font-black uppercase tracking-tight text-slate-900 text-[10px] sm:text-sm">{r.label}</p>
+                        <p className="font-black uppercase tracking-tight text-foreground text-[10px] sm:text-sm">{r.label}</p>
                         <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 mt-1">{r.fee === 0 ? 'FREE' : `+ Ksh ${r.fee}`}</p>
                     </button>
                 ))}
@@ -643,7 +643,7 @@ function CheckoutContent() {
                                 <MapPin className="h-5 w-5 sm:h-6 sm:w-6" />
                             </div>
                             <div>
-                                <h3 className="font-black uppercase text-slate-900 tracking-tight text-xs sm:text-base">
+                                <h3 className="font-black uppercase text-foreground tracking-tight text-xs sm:text-base">
                                     {coords.lat ? "Drop Point Locked" : "Pin Location"}
                                 </h3>
                                 <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -678,12 +678,12 @@ function CheckoutContent() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <button onClick={() => setPaymentMethod("M-Pesa")} className={`p-6 rounded-3xl border-2 text-left transition-all ${paymentMethod === 'M-Pesa' ? 'border-primary bg-white shadow-xl' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}>
-                    <p className="font-black uppercase tracking-tight text-slate-900 text-lg">M-Pesa</p>
+                    <p className="font-black uppercase tracking-tight text-foreground text-lg">M-Pesa</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Direct STK Push</p>
                   </button>
 
                   <button onClick={() => setPaymentMethod("COD")} className={`p-6 rounded-3xl border-2 text-left transition-all ${paymentMethod === 'COD' ? 'border-primary bg-white shadow-xl' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}>
-                    <p className="font-black uppercase tracking-tight text-slate-900 text-lg">Cash on Delivery</p>
+                    <p className="font-black uppercase tracking-tight text-foreground text-lg">Cash on Delivery</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Pay to Rider</p>
                   </button>
             </div>
@@ -695,7 +695,7 @@ function CheckoutContent() {
                       <div className="h-24 w-24 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl animate-bounce">
                         <PartyPopper className="h-12 w-12" />
                       </div>
-                      <h3 className="text-4xl font-black uppercase tracking-tighter text-slate-900 mb-4">Payment Verified!</h3>
+                      <h3 className="text-4xl font-black uppercase tracking-tighter text-foreground mb-4">Payment Verified!</h3>
                       <p className="text-slate-500 font-medium mb-10 max-w-sm mx-auto leading-relaxed text-lg">
                           Your order has been confirmed. We&apos;ve sent a professional receipt to your email.
                       </p>
@@ -741,7 +741,7 @@ function CheckoutContent() {
         <div className="space-y-8 lg:sticky lg:top-8">
 
           {/* Order Summary Card */}
-          <Card className="rounded-[3rem] border-none shadow-2xl bg-slate-50 text-slate-900 p-2">
+          <Card className="rounded-[3rem] border-none shadow-2xl bg-slate-50 text-foreground p-2">
             <CardHeader className="p-8 border-b border-slate-100">
               <CardTitle className="text-xl font-black uppercase tracking-widest text-primary flex items-center gap-3">
                   <Tag className="h-5 w-5" /> Summary
@@ -751,7 +751,7 @@ function CheckoutContent() {
               <div className="space-y-4">
                 <div className="flex justify-between text-xs font-black uppercase tracking-widest text-slate-400">
                   <span>Subtotal</span>
-                  <span className="text-slate-900">{formatPrice(subtotal)}</span>
+                  <span className="text-foreground">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-xs font-black uppercase tracking-widest text-slate-500">
                   <span>Delivery ({currentRegion.id})</span>

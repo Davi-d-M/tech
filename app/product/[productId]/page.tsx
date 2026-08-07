@@ -253,7 +253,7 @@ export default function Product() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
                 <span className={cn(
-                    "text-4xl font-black text-slate-900",
+                    "text-4xl font-black text-foreground",
                     user && "text-slate-400 text-2xl line-through decoration-2"
                 )}>
                 {formatPrice(product.price)}
@@ -313,7 +313,7 @@ export default function Product() {
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="px-8 py-2 min-w-[60px] text-center font-black text-slate-900">
+                  <span className="px-8 py-2 min-w-[60px] text-center font-black text-foreground">
                     {quantity}
                   </span>
                   <Button
@@ -383,7 +383,7 @@ export default function Product() {
                 onClick={toggleWishlist}
                 className={cn(
                   "text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2",
-                  isInWishlist(product.id) ? "text-rose-500" : "text-slate-400 hover:text-slate-900"
+                  isInWishlist(product.id) ? "text-rose-500" : "text-slate-400 hover:text-foreground"
                 )}
               >
                 <Heart
@@ -408,7 +408,7 @@ export default function Product() {
                         alert('Product link copied to clipboard!');
                     }
                 }}
-                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 flex items-center gap-2 transition-colors"
+                className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground flex items-center gap-2 transition-colors"
               >
                 <Share2 className="h-4 w-4" />
                 Share
@@ -422,7 +422,7 @@ export default function Product() {
 
       {/* Educational Hub */}
       {tutorials.length > 0 && (
-          <div className="mt-24 bg-slate-50 rounded-[3.5rem] p-8 sm:p-16 text-slate-900 border border-slate-100 relative overflow-hidden shadow-inner">
+          <div className="mt-24 bg-slate-50 rounded-[3.5rem] p-8 sm:p-16 text-foreground border border-slate-100 relative overflow-hidden shadow-inner">
               <div className="relative z-10">
                   <div className="flex items-center gap-3 mb-6">
                       <div className="h-10 w-10 rounded-2xl bg-primary/20 flex items-center justify-center text-primary"><BookOpen className="h-6 w-6" /></div>

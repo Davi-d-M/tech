@@ -319,7 +319,7 @@ export default function ProductList() {
                 <LayoutGrid className="h-12 w-12 text-slate-200" />
               </div>
               <div className="space-y-2 text-left sm:text-center px-6">
-                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">
+                  <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">
                     Warehouse Silent
                   </h3>
                   <p className="text-slate-400 text-sm font-medium italic max-w-xs mx-auto">

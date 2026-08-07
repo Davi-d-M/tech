@@ -51,7 +51,7 @@ function DetailRenderer({ log }: { log: AuditLog }) {
         case 'UPDATE_PRODUCT':
             return (
                 <div className="flex flex-col gap-1">
-                    <p className="text-xs font-black text-slate-900 uppercase">Restocked: {d.name}</p>
+                    <p className="text-xs font-black text-foreground uppercase">Restocked: {d.name}</p>
                     <div className="flex gap-4">
                         <span className="text-[10px] font-bold text-primary uppercase">Stock: {d.stock} Units</span>
                         <span className="text-[10px] font-bold text-primary uppercase">Price: {formatPrice(d.price)}</span>
@@ -83,21 +83,21 @@ function DetailRenderer({ log }: { log: AuditLog }) {
             return (
                 <div className="flex items-center gap-2">
                     <Activity className="h-3 w-3 text-primary" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Rider <span className="text-slate-900 font-black">{d.rider}</span> assigned to #{d.id}</p>
+                    <p className="text-xs font-bold text-slate-700 uppercase">Rider <span className="text-foreground font-black">{d.rider}</span> assigned to #{d.id}</p>
                 </div>
             );
         case 'UPDATE_RIDER_STATUS':
             return (
                 <div className="flex items-center gap-2">
                     <Truck className="h-3 w-3 text-primary" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Rider <span className="text-slate-900 font-black">{d.rider}</span> moved to <span className="text-primary font-black">{d.current_location}</span></p>
+                    <p className="text-xs font-bold text-slate-700 uppercase">Rider <span className="text-foreground font-black">{d.rider}</span> moved to <span className="text-primary font-black">{d.current_location}</span></p>
                 </div>
             );
         case 'ADD_STAFF':
             return (
                 <div className="flex items-center gap-2">
                     <PlusCircle className="h-3 w-3 text-primary" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Authorized <span className="text-slate-900 font-black">{d.email}</span> as {d.role}</p>
+                    <p className="text-xs font-bold text-slate-700 uppercase">Authorized <span className="text-foreground font-black">{d.email}</span> as {d.role}</p>
                 </div>
             );
         case 'UPDATE_PERMISSION':
@@ -171,7 +171,7 @@ export default function AdminAuditPage() {
     <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">System Audit</h1>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">System Audit</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">Review administrative actions and maintain operational security.</p>
         </div>
         <div className="flex gap-2">
@@ -200,7 +200,7 @@ export default function AdminAuditPage() {
           <div className="p-8 border-b border-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-3">
                   <Activity className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Activity Stream</h2>
+                  <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Activity Stream</h2>
               </div>
               <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">{filteredLogs.length} Events</span>
           </div>
@@ -235,7 +235,7 @@ export default function AdminAuditPage() {
                                               {(log?.admin_email?.substring(0, 2) || 'AD').toUpperCase()}
                                           </div>
                                           <div>
-                                              <span className="font-black text-slate-900 uppercase text-xs block">{log.admin_email || 'System'}</span>
+                                              <span className="font-black text-foreground uppercase text-xs block">{log.admin_email || 'System'}</span>
                                               <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1 block">Verified Admin</span>
                                           </div>
                                       </div>
@@ -251,7 +251,7 @@ export default function AdminAuditPage() {
                                       </div>
                                   </td>
                                   <td className="px-10 py-8 text-right">
-                                      <p className="text-xs font-black text-slate-900 uppercase tracking-tighter">{log?.created_at ? new Date(log.created_at).toLocaleTimeString() : 'N/A'}</p>
+                                      <p className="text-xs font-black text-foreground uppercase tracking-tighter">{log?.created_at ? new Date(log.created_at).toLocaleTimeString() : 'N/A'}</p>
                                       <p className="text-[9px] font-bold text-slate-400 uppercase">{log?.created_at ? new Date(log.created_at).toLocaleDateString() : 'N/A'}</p>
                                   </td>
                               </tr>

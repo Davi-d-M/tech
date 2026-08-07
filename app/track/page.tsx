@@ -162,11 +162,11 @@ function TrackingContent() {
       <div className="max-w-4xl mx-auto">
 
         <div className="mb-12">
-            <h1 className="text-5xl font-black tracking-tighter text-slate-900 uppercase mb-4">Track Gadget</h1>
+            <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase mb-4">Track Gadget</h1>
             <p className="text-slate-500 font-medium text-lg italic">Elite real-time visibility into your tech dispatch.</p>
         </div>
 
-        <Card className="rounded-[3rem] border-slate-100 shadow-2xl shadow-slate-900/5 mb-16 overflow-hidden">
+        <Card className="rounded-[3rem] border-slate-100 shadow-2xl shadow-slate-200/50 mb-16 overflow-hidden">
             <CardContent className="p-10 bg-slate-50/50">
                 <form onSubmit={(e) => { e.preventDefault(); fetchOrder(searchQuery); }} className="flex flex-col sm:flex-row gap-4">
                     <div className="relative flex-1">
@@ -192,7 +192,7 @@ function TrackingContent() {
                     <div className="p-8 sm:p-12 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                         <div>
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2 block">Real-time Pipeline Active</span>
-                            <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Order #{order.id}</h2>
+                            <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter">Order #{order.id}</h2>
                         </div>
                         <div className={`px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg ${
                             order.status === 'Delivered' ? 'bg-emerald-500 text-white' :
@@ -236,7 +236,7 @@ function TrackingContent() {
                                         <div className="sm:text-center text-left">
                                             <p className={cn(
                                                 "sm:mt-5 text-[10px] font-black uppercase tracking-widest sm:max-w-[80px]",
-                                                currentIndex >= idx ? "text-slate-900" : "text-slate-300"
+                                                currentIndex >= idx ? "text-foreground" : "text-slate-300"
                                             )}>
                                                 {step.label}
                                             </p>
@@ -254,15 +254,15 @@ function TrackingContent() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pt-8 border-t border-slate-50">
                             <div className="space-y-1">
                                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Recipient</p>
-                                <p className="font-bold text-slate-900 uppercase text-xs">{order.customer_name}</p>
+                                <p className="font-bold text-foreground uppercase text-xs">{order.customer_name}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Payment</p>
-                                <p className="font-bold text-slate-900 uppercase text-xs">{order.payment_method}</p>
+                                <p className="font-bold text-foreground uppercase text-xs">{order.payment_method}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Total Paid</p>
-                                <p className="font-black text-slate-900 text-lg">{formatPrice(order.total_price)}</p>
+                                <p className="font-black text-foreground text-lg">{formatPrice(order.total_price)}</p>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Est. Arrival</p>
@@ -278,7 +278,7 @@ function TrackingContent() {
                                 <div className="flex items-center gap-4">
                                     <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center text-indigo-600 shadow-sm"><Truck className="h-6 w-6" /></div>
                                     <div>
-                                        <p className="font-black text-indigo-900 uppercase text-sm tracking-tight">
+                                        <p className="font-black text-foreground uppercase text-sm tracking-tight">
                                             {order.rider_name ? `Rider ${order.rider_name} is moving!` : 'Your tech is moving!'}
                                         </p>
                                         <p className="text-indigo-600 text-[10px] font-bold uppercase">
@@ -303,7 +303,7 @@ function TrackingContent() {
 
                         {/* Digital Warranty Card */}
                         {order.status === 'Delivered' && (
-                            <div className="mt-12 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 text-slate-900 relative overflow-hidden shadow-xl animate-in zoom-in-95 duration-700">
+                            <div className="mt-12 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 text-foreground relative overflow-hidden shadow-xl animate-in zoom-in-95 duration-700">
                                 <div className="relative z-10">
                                     <div className="flex items-center justify-between mb-8">
                                         <div className="flex items-center gap-3">
@@ -317,7 +317,7 @@ function TrackingContent() {
                                         </div>
                                         <div className="text-right">
                                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Serial Key</p>
-                                            <p className="text-[10px] font-black text-slate-900 uppercase">APX-{order.id}-{new Date(order.created_at).getTime().toString().slice(-4)}</p>
+                                            <p className="text-[10px] font-black text-foreground uppercase">APX-{order.id}-{new Date(order.created_at).getTime().toString().slice(-4)}</p>
                                         </div>
                                     </div>
 
@@ -333,13 +333,13 @@ function TrackingContent() {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
                                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Valid Until</p>
-                                                <p className="text-sm font-bold text-slate-900 uppercase">
+                                                <p className="text-sm font-bold text-foreground uppercase">
                                                     {new Date(new Date(order.created_at).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
                                                 </p>
                                             </div>
                                             <div className="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
                                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Coverage</p>
-                                                <p className="text-sm font-bold text-slate-900 uppercase">Replacement</p>
+                                                <p className="text-sm font-bold text-foreground uppercase">Replacement</p>
                                             </div>
                                         </div>
                                     </div>
@@ -357,7 +357,7 @@ function TrackingContent() {
                     <p className="text-slate-400 text-sm font-medium italic">Apexstores guarantees zero-defect dispatch for every gadget.</p>
                     <div className="flex justify-center gap-4">
                         <Link href="/">
-                            <Button variant="ghost" className="rounded-xl h-12 px-6 font-black uppercase text-[9px] tracking-widest text-slate-400 hover:text-slate-900">
+                            <Button variant="ghost" className="rounded-xl h-12 px-6 font-black uppercase text-[9px] tracking-widest text-slate-400 hover:text-foreground">
                                 ← Store Home
                             </Button>
                         </Link>
@@ -389,7 +389,7 @@ function TrackingContent() {
                             <feature.icon className="h-7 w-7" />
                         </div>
                         <div className="space-y-1">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 group-hover:text-primary transition-colors">{feature.text}</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-foreground group-hover:text-primary transition-colors">{feature.text}</p>
                             {feature.live && (
                                 <div className="flex items-center justify-center gap-1.5 pt-1">
                                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>

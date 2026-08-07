@@ -68,7 +68,7 @@ export default function AllProductsPage() {
       <div className="max-w-7xl mx-auto">
         <header className="mb-16 border-b border-slate-100 pb-10 flex flex-col md:flex-row justify-between items-end gap-6">
           <div>
-            <h1 className="text-5xl font-black tracking-tighter text-slate-900 uppercase">Our Collection</h1>
+            <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase">Our Collection</h1>
             <p className="text-slate-500 mt-2 font-medium text-lg">Premium technology and authentic gadgets for every lifestyle.</p>
           </div>
           <div className="text-right">

@@ -11,7 +11,7 @@ export default function AboutUsPage() {
           <span className="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
             Our Story
           </span>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mt-3">
+          <h1 className="text-3xl font-extrabold text-foreground tracking-tight mt-3">
             About Apexstores
           </h1>
           <p className="text-slate-600 mt-4 leading-relaxed text-base">
@@ -22,15 +22,15 @@ export default function AboutUsPage() {
         {/* Quick Brand Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8 text-center bg-slate-50 p-4 rounded-xl border border-slate-100">
           <div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900">100%</div>
+            <div className="text-xl sm:text-2xl font-black text-foreground">100%</div>
             <div className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-medium mt-1">Authentic</div>
           </div>
           <div className="border-x border-slate-200">
-            <div className="text-xl sm:text-2xl font-black text-slate-900">Ksh</div>
+            <div className="text-xl sm:text-2xl font-black text-foreground">Ksh</div>
             <div className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-medium mt-1">Local Prices</div>
           </div>
           <div>
-            <div className="text-xl sm:text-2xl font-black text-slate-900">24/7</div>
+            <div className="text-xl sm:text-2xl font-black text-foreground">24/7</div>
             <div className="text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-medium mt-1">Fast Dispatch</div>
           </div>
         </div>

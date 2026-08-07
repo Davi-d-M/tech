@@ -119,7 +119,7 @@ export default function AdminCouponsPage() {
     <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter text-left">Gift & Coupons</h1>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter text-left">Gift & Coupons</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">Generate discount codes to drive sales and reward loyal customers.</p>
         </div>
         <Button onClick={fetchCoupons} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest">
@@ -132,7 +132,7 @@ export default function AdminCouponsPage() {
           {/* Create Form */}
           <div className="lg:col-span-1">
               <Card className="rounded-[2.5rem] border-slate-100 shadow-sm p-10 bg-white">
-                  <h2 className="text-xl font-black text-slate-900 uppercase mb-10 flex items-center gap-4">
+                  <h2 className="text-xl font-black text-foreground uppercase mb-10 flex items-center gap-4">
                       <Plus className="h-5 w-5 text-primary" /> New Coupon
                   </h2>
                   <form onSubmit={handleSubmit} className="space-y-6 text-left">
@@ -183,7 +183,7 @@ export default function AdminCouponsPage() {
                   <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                           <Ticket className="h-6 w-6 text-primary" />
-                          <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Active Vouchers</h2>
+                          <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Active Vouchers</h2>
                       </div>
                       <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">{coupons.length} Coupons</span>
                   </div>
@@ -218,7 +218,7 @@ export default function AdminCouponsPage() {
                                                       %
                                                   </div>
                                                   <div>
-                                                      <span className="font-black text-slate-900 uppercase text-sm tracking-widest block">{coupon.code}</span>
+                                                      <span className="font-black text-foreground uppercase text-sm tracking-widest block">{coupon.code}</span>
                                                       <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1 block italic">Created {new Date(coupon.created_at).toLocaleDateString()}</span>
                                                   </div>
                                               </div>

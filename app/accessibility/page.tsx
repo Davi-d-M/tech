@@ -10,7 +10,7 @@ export default function AccessibilityPage() {
         
         {/* Header Section */}
         <div className="border-b pb-6 mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Accessibility Statement</h1>
+          <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Accessibility Statement</h1>
           <p className="text-sm text-slate-400 mt-2">Last Updated: {lastUpdated}</p>
           <p className="text-slate-600 mt-4 leading-relaxed">
             At <strong>Apexstores</strong>, we are committed to ensuring digital accessibility for everyone, including people with disabilities. We continuously update our web application interface to improve the user experience for all shoppers and apply the relevant accessibility standards.

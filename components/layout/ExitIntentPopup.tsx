@@ -36,7 +36,7 @@ export default function ExitIntentPopup() {
         <div className="bg-white rounded-[3rem] max-w-lg w-full overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-500">
             <button
                 onClick={() => setIsVisible(false)}
-                className="absolute top-6 right-6 text-slate-300 hover:text-slate-900 transition-colors"
+                className="absolute top-6 right-6 text-slate-300 hover:text-foreground transition-colors"
             >
                 <X className="h-6 w-6" />
             </button>
@@ -47,7 +47,7 @@ export default function ExitIntentPopup() {
                 </div>
 
                 <div className="space-y-2">
-                    <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Wait, Bro!</h2>
+                    <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter">Wait, Bro!</h2>
                     <p className="text-slate-500 font-medium text-lg">Don&apos;t leave your gear behind.</p>
                 </div>
 
@@ -57,7 +57,7 @@ export default function ExitIntentPopup() {
                         <span className="text-4xl font-black text-primary">5% OFF</span>
                     </div>
                     <div className="flex items-center justify-center gap-2 bg-white rounded-xl py-3 px-4 border border-slate-100">
-                        <code className="text-xl font-black text-slate-900 tracking-widest">STAY5</code>
+                        <code className="text-xl font-black text-foreground tracking-widest">STAY5</code>
                     </div>
                 </div>
 
@@ -75,7 +75,7 @@ export default function ExitIntentPopup() {
                     </Button>
                     <button
                         onClick={() => setIsVisible(false)}
-                        className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] hover:text-slate-900 transition-colors"
+                        className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] hover:text-foreground transition-colors"
                     >
                         Continue Shopping
                     </button>

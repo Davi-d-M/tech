@@ -72,7 +72,7 @@ export default function WarrantyVault() {
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/10 mb-2">
                         <ShieldCheck className="h-3 w-3" /> Blockchain Verified Tech
                     </div>
-                    <h1 className="text-5xl lg:text-7xl font-black text-slate-900 tracking-tighter uppercase leading-none">Digital <br/> <span className="text-primary italic">Warranty Vault</span></h1>
+                    <h1 className="text-5xl lg:text-7xl font-black text-foreground tracking-tighter uppercase leading-none">Digital <br/> <span className="text-primary italic">Warranty Vault</span></h1>
                     <p className="text-slate-500 font-medium max-w-lg mx-auto italic text-lg leading-relaxed">
                         &quot;Your gadgets are premium. Your protection should be too. Enter your order ID to access your digital tech certificate.&quot;
                     </p>
@@ -112,11 +112,11 @@ export default function WarrantyVault() {
                             <div className="flex flex-col sm:flex-row justify-between items-start gap-8 mb-16 border-b-2 border-slate-100 pb-12">
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Certificate of Authenticity</p>
-                                    <h2 className="text-3xl font-black text-slate-900 uppercase">Apexstores Tech Kenya</h2>
+                                    <h2 className="text-3xl font-black text-foreground uppercase">Apexstores Tech Kenya</h2>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Vault Key</p>
-                                    <p className="text-xl font-mono font-black text-slate-900 tracking-widest">#{result.id}</p>
+                                    <p className="text-xl font-mono font-black text-foreground tracking-widest">#{result.id}</p>
                                 </div>
                             </div>
 
@@ -125,7 +125,7 @@ export default function WarrantyVault() {
                                 <div className="space-y-6">
                                     <div>
                                         <p className="text-[9px] font-black uppercase text-slate-300 mb-2">Registered Owner</p>
-                                        <p className="text-2xl font-black text-slate-900 uppercase tracking-tight">{result.customer_name}</p>
+                                        <p className="text-2xl font-black text-foreground uppercase tracking-tight">{result.customer_name}</p>
                                     </div>
                                     <div>
                                         <p className="text-[9px] font-black uppercase text-slate-300 mb-2">Device Specification</p>
@@ -134,7 +134,7 @@ export default function WarrantyVault() {
                                     <div className="flex gap-8">
                                         <div>
                                             <p className="text-[9px] font-black uppercase text-slate-300 mb-2">Activation Date</p>
-                                            <p className="text-sm font-bold text-slate-900">{new Date(result.created_at).toLocaleDateString()}</p>
+                                            <p className="text-sm font-bold text-foreground">{new Date(result.created_at).toLocaleDateString()}</p>
                                         </div>
                                         <div>
                                             <p className="text-[9px] font-black uppercase text-slate-300 mb-2">Security Status</p>
@@ -151,7 +151,7 @@ export default function WarrantyVault() {
                                         <CheckCircle2 className="h-12 w-12" />
                                         <div className="absolute inset-0 rounded-full border-2 border-primary animate-ping opacity-20"></div>
                                     </div>
-                                    <p className="text-xl font-black text-slate-900 uppercase tracking-tighter mb-2">Elite Warranty Active</p>
+                                    <p className="text-xl font-black text-foreground uppercase tracking-tighter mb-2">Elite Warranty Active</p>
                                     <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">180 Days Protection Remaining</p>
                                 </div>
                             </div>

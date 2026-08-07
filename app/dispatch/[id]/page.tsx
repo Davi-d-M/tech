@@ -71,7 +71,7 @@ export default function DispatchPortal() {
     if (!order) return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-white p-8 text-center">
             <AlertCircle className="h-16 w-16 text-rose-500 mb-6" />
-            <h1 className="text-3xl font-black uppercase tracking-tighter text-slate-900">Dispatch Expired</h1>
+            <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Dispatch Expired</h1>
             <p className="text-slate-400 mt-2 font-medium">The order could not be located in our elite pipeline.</p>
             <Link href="/" className="mt-8">
                 <Button variant="outline" className="rounded-xl border-slate-200">Return to Base</Button>
@@ -98,7 +98,7 @@ export default function DispatchPortal() {
                         <Package className="h-7 w-7 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black uppercase tracking-tighter text-slate-900 leading-none">Rider Command</h1>
+                        <h1 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Rider Command</h1>
                         <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-1.5 flex items-center gap-2">
                             <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></span>
                             Order #{order.id} • Active
@@ -112,7 +112,7 @@ export default function DispatchPortal() {
                         <Clock className="h-5 w-5 text-slate-400" />
                         <div>
                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Pipeline</p>
-                            <p className="text-xs font-black text-slate-900 uppercase">Current Phase</p>
+                            <p className="text-xs font-black text-foreground uppercase">Current Phase</p>
                         </div>
                     </div>
                     <span className="px-5 py-2 rounded-xl bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-primary/20">
@@ -121,13 +121,13 @@ export default function DispatchPortal() {
                 </div>
 
                 {/* Mission Data */}
-                <div className="bg-white rounded-[3rem] p-10 space-y-10 text-slate-900 shadow-2xl border border-slate-50 relative overflow-hidden">
+                <div className="bg-white rounded-[3rem] p-10 space-y-10 text-foreground shadow-2xl border border-slate-50 relative overflow-hidden">
                     {/* Customer */}
                     <div className="flex items-start gap-5">
                         <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 shrink-0 border border-slate-100"><User className="h-6 w-6" /></div>
                         <div className="min-w-0">
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Recipient</p>
-                            <p className="text-xl font-black uppercase tracking-tight truncate text-slate-900">{order.customer_name}</p>
+                            <p className="text-xl font-black uppercase tracking-tight truncate text-foreground">{order.customer_name}</p>
                         </div>
                     </div>
 
@@ -145,7 +145,7 @@ export default function DispatchPortal() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-5">Package Authentication</p>
                         <div className="flex items-center justify-between p-5 bg-slate-50 rounded-3xl border border-slate-100 group">
                             <div className="min-w-0 text-left">
-                                <p className="text-xs font-black uppercase text-slate-900 truncate">{productName || 'Tech Payload'}</p>
+                                <p className="text-xs font-black uppercase text-foreground truncate">{productName || 'Tech Payload'}</p>
                                 <p className="text-[9px] font-bold text-slate-400 uppercase mt-1 tracking-widest">{order.size} Edition</p>
                             </div>
                             <div className="h-10 w-10 rounded-xl bg-primary text-white flex items-center justify-center text-xs font-black shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">

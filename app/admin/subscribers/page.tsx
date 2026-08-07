@@ -89,7 +89,7 @@ export default function AdminSubscribersPage() {
             <ArrowLeft className="h-4 w-4" /> Back to Broadcast
           </Link>
           <div>
-            <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Subscriber Base</h1>
+            <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Subscriber Base</h1>
             <p className="text-slate-500 text-sm font-medium mt-1">Manage your community of elite tech enthusiasts.</p>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function AdminSubscribersPage() {
                                           {sub.email.substring(0, 2).toUpperCase()}
                                       </div>
                                       <div>
-                                          <p className="font-black text-slate-900 uppercase text-xs tracking-tight">{sub.email}</p>
+                                          <p className="font-black text-foreground uppercase text-xs tracking-tight">{sub.email}</p>
                                           <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Verified Lead</p>
                                       </div>
                                   </div>

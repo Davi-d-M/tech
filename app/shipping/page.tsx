@@ -10,7 +10,7 @@ export default function ShippingInfoPage() {
         
         {/* Header Section */}
         <div className="border-b pb-6 mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Shipping & Delivery Info</h1>
+          <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Shipping & Delivery Info</h1>
           <p className="text-sm text-slate-400 mt-2">Last Updated: {lastUpdated}</p>
           <p className="text-slate-600 mt-4 leading-relaxed">
             At <strong>Apexstores</strong>, we work to get your premium gadgets and accessories processed, packed, and dispatched into your hands as quickly as possible. Below you will find everything you need to know about our local delivery zones, timelines, and courier fulfillment methods.
@@ -31,17 +31,17 @@ export default function ShippingInfoPage() {
               </thead>
               <tbody className="divide-y divide-slate-200 text-slate-600">
                 <tr>
-                  <td className="px-4 py-3 font-medium text-slate-900">Nairobi CBD & Environs</td>
+                  <td className="px-4 py-3 font-medium text-foreground">Nairobi CBD & Environs</td>
                   <td className="px-4 py-3">Same Day or Within 24 Hours</td>
                   <td className="px-4 py-3">Local On-Demand Rider</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-medium text-slate-900">Nairobi Suburbs</td>
+                  <td className="px-4 py-3 font-medium text-foreground">Nairobi Suburbs</td>
                   <td className="px-4 py-3">24 to 48 Hours max</td>
                   <td className="px-4 py-3">Standard Moto-Courier</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 font-medium text-slate-900">Upcountry Kenya</td>
+                  <td className="px-4 py-3 font-medium text-foreground">Upcountry Kenya</td>
                   <td className="px-4 py-3">24 to 72 Hours max</td>
                   <td className="px-4 py-3">Regional Shuttle / G4S / Wells Fargo</td>
                 </tr>

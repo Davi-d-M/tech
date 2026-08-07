@@ -160,7 +160,7 @@ export default function AdminAbandonedPage() {
               <div className={cn("h-2 w-2 rounded-full animate-pulse", ghostStatus === 'running' ? "bg-primary" : "bg-primary/50")}></div>
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Ghost Worker: {ghostStatus.toUpperCase()}</span>
           </div>
-          <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter">Baggage Rescue</h1>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Baggage Rescue</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">AI-powered recovery suite for high-intent abandoned tech bags.</p>
         </div>
         <div className="flex gap-2">
@@ -191,7 +191,7 @@ export default function AdminAbandonedPage() {
                   </div>
                   <div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{item.label}</p>
-                      <h3 className="text-2xl font-black text-slate-900 mt-1 tracking-tighter uppercase">{item.val}</h3>
+                      <h3 className="text-2xl font-black text-foreground mt-1 tracking-tighter uppercase">{item.val}</h3>
                   </div>
               </Card>
           ))}
@@ -204,7 +204,7 @@ export default function AdminAbandonedPage() {
               <Card className="p-10 rounded-[3rem] border border-slate-100 bg-white shadow-sm h-[400px] flex flex-col relative overflow-hidden">
                   <div className="flex items-center justify-between mb-8 relative z-10">
                       <div>
-                          <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Revenue Rescue</h2>
+                          <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">Revenue Rescue</h2>
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Recovered vs. Lost Revenue</p>
                       </div>
                   </div>
@@ -244,7 +244,7 @@ export default function AdminAbandonedPage() {
               {/* 3. ABANDONED CART TABLE */}
               <div className="space-y-6">
                   <div className="flex items-center justify-between px-2 text-left">
-                      <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900">Rescue Inventory</h2>
+                      <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Rescue Inventory</h2>
                       <div className="relative">
                           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
                           <Input
@@ -276,7 +276,7 @@ export default function AdminAbandonedPage() {
                                   <div key={cart.id} className="p-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 hover:bg-slate-50/50 transition-all group">
                                       <div className="flex items-center gap-8 flex-1 text-left">
                                           <div className={cn(
-                                              "h-20 w-20 rounded-[2.5rem] flex items-center justify-center text-slate-900 text-xl font-black uppercase shadow-inner relative transition-transform group-hover:scale-105 border border-slate-100",
+                                              "h-20 w-20 rounded-[2.5rem] flex items-center justify-center text-foreground text-xl font-black uppercase shadow-inner relative transition-transform group-hover:scale-105 border border-slate-100",
                                               cart.recovery_status === 'Recovered' ? "bg-primary/10" : cart.recovery_status === 'Contacted' ? "bg-primary/5" : "bg-slate-50"
                                           )}>
                                               {cart.customer_name.substring(0, 2).toUpperCase()}
@@ -289,7 +289,7 @@ export default function AdminAbandonedPage() {
                                           </div>
                                           <div className="min-w-0">
                                               <div className="flex items-center gap-3 mb-2">
-                                                  <h3 className="font-black text-slate-900 uppercase text-lg tracking-tight group-hover:text-primary transition-colors leading-none">{cart.customer_name}</h3>
+                                                  <h3 className="font-black text-foreground uppercase text-lg tracking-tight group-hover:text-primary transition-colors leading-none">{cart.customer_name}</h3>
                                                   <span className="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-400 text-[8px] font-black uppercase tracking-widest border border-slate-200">{cart.recovery_status}</span>
                                               </div>
                                               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 flex items-center gap-2">
@@ -306,7 +306,7 @@ export default function AdminAbandonedPage() {
                                       </div>
 
                                       <div className="flex flex-col items-end gap-3 w-full lg:w-auto">
-                                          <p className="text-2xl font-black text-slate-900 tracking-tighter leading-none">{formatPrice(cart.total_price)}</p>
+                                          <p className="text-2xl font-black text-foreground tracking-tighter leading-none">{formatPrice(cart.total_price)}</p>
                                           <div className="flex gap-2">
                                               <Button onClick={() => setSelectedCart(cart)} variant="ghost" size="sm" className="h-10 px-4 rounded-xl text-[9px] font-black uppercase text-slate-400 hover:text-primary border border-transparent hover:border-primary/20">Journey</Button>
                                               <Button
@@ -331,7 +331,7 @@ export default function AdminAbandonedPage() {
                       <div className="flex items-center justify-between mb-8">
                           <div className="flex items-center gap-3">
                               <div className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_#F5A000]"></div>
-                              <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900">Live Ops Center</h3>
+                              <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Live Ops Center</h3>
                           </div>
                           <span className="text-[9px] font-black uppercase bg-white text-slate-400 px-3 py-1 rounded-full border border-slate-100 tracking-[0.2em]">{visitors.length} Active</span>
                       </div>
@@ -352,7 +352,7 @@ export default function AdminAbandonedPage() {
                                           <User className="h-5 w-5" />
                                       </div>
                                       <div className="min-w-0 text-left">
-                                          <p className="text-xs font-black uppercase tracking-tight text-slate-900">{v.customer_name || 'Anonymous'}</p>
+                                          <p className="text-xs font-black uppercase tracking-tight text-foreground">{v.customer_name || 'Anonymous'}</p>
                                           <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate max-w-[120px]">{v.current_page}</p>
                                       </div>
                                   </div>
@@ -375,7 +375,7 @@ export default function AdminAbandonedPage() {
               {/* 5. RECOVERY CHANNELS PIE (Real Data Only) */}
               {CHANNEL_DATA.length > 0 && (
                   <Card className="p-8 rounded-[3.5rem] border border-slate-100 bg-white shadow-sm space-y-8">
-                      <h3 className="text-lg font-black uppercase tracking-tighter text-slate-900 flex items-center gap-3">
+                      <h3 className="text-lg font-black uppercase tracking-tighter text-foreground flex items-center gap-3">
                           <BarChart3 className="h-5 w-5 text-primary" /> Channel Efficiency
                       </h3>
                       <div className="h-[250px] w-full relative">
@@ -401,7 +401,7 @@ export default function AdminAbandonedPage() {
                               </PieChart>
                           </ResponsiveContainer>
                           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                              <p className="text-2xl font-black text-slate-900 leading-none">62%</p>
+                              <p className="text-2xl font-black text-foreground leading-none">62%</p>
                               <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">WhatsApp</p>
                           </div>
                       </div>
@@ -423,7 +423,7 @@ export default function AdminAbandonedPage() {
                   <h3 className="text-xs font-black uppercase text-slate-400 tracking-[0.2em] ml-4 flex items-center gap-2">
                       <Activity className="h-4 w-4" /> AI Operations
                   </h3>
-                  <Card className="p-8 rounded-[3rem] bg-slate-50 border border-slate-100 text-slate-900 shadow-inner relative overflow-hidden">
+                  <Card className="p-8 rounded-[3rem] bg-slate-50 border border-slate-100 text-foreground shadow-inner relative overflow-hidden">
                       <div className="relative z-10 space-y-6">
                           <Flame className="h-10 w-10 text-primary animate-pulse" />
                           <div className="space-y-2">
@@ -446,11 +446,11 @@ export default function AdminAbandonedPage() {
                   <div className="p-10 space-y-10 text-left">
                       <header className="flex justify-between items-start">
                           <div className="flex items-center gap-6">
-                              <div className="h-20 w-20 rounded-[2rem] bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-900 text-2xl font-black shadow-inner">
+                              <div className="h-20 w-20 rounded-[2rem] bg-slate-50 border border-slate-200 flex items-center justify-center text-foreground text-2xl font-black shadow-inner">
                                   {selectedCart.customer_name.substring(0, 2).toUpperCase()}
                               </div>
                               <div>
-                                  <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">{selectedCart.customer_name}</h2>
+                                  <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">{selectedCart.customer_name}</h2>
                                   <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest mt-2">Baggage ID: #{selectedCart.id}</p>
                               </div>
                           </div>
@@ -460,7 +460,7 @@ export default function AdminAbandonedPage() {
                       <div className="space-y-8">
                           <div className="flex items-center gap-3">
                               <History className="h-6 w-6 text-primary" />
-                              <h3 className="text-xl font-black uppercase tracking-tighter text-slate-900">Recovery Timeline</h3>
+                              <h3 className="text-xl font-black uppercase tracking-tighter text-foreground">Recovery Timeline</h3>
                           </div>
 
                           <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-1 before:bg-slate-50 before:rounded-full">
@@ -472,7 +472,7 @@ export default function AdminAbandonedPage() {
                                           <Target className="h-2.5 w-2.5 text-white" />
                                       </div>
                                       <div className="text-left">
-                                          <p className="text-xs font-black text-slate-900 uppercase leading-none">{step.message || step.m}</p>
+                                          <p className="text-xs font-black text-foreground uppercase leading-none">{step.message || step.m}</p>
                                           <p className="text-[9px] font-bold text-slate-400 uppercase mt-1.5">{step.time || step.t}</p>
                                       </div>
                                   </div>

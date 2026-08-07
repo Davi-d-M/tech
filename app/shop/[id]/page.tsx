@@ -82,7 +82,7 @@ export default async function Page({ params }: Props) {
 
   if (!product) return (
     <div className="min-h-[50dvh] flex flex-col items-center justify-center p-8 text-center">
-        <h1 className="text-2xl font-black uppercase text-slate-900">Gadget Not Found</h1>
+        <h1 className="text-2xl font-black uppercase text-foreground">Gadget Not Found</h1>
         <p className="text-slate-500 mt-2">This item may have been removed from the catalog.</p>
     </div>
   );
