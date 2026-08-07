@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from '@/components/home/ProductCard';
+import { Product } from '@/types/product';
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -12,8 +13,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const slug = resolvedParams?.slug || '';
   const categorySlug = slug.toLowerCase();
 
-  let products: Record<string, unknown>[] = [];
-  let fetchError: Record<string, unknown> | null = null;
+  let products: Product[] = [];
+  let fetchError: { message: string } | null = null;
 
   if (supabase && categorySlug) {
     try {
@@ -41,14 +42,15 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
            const { data: allData, error: allErr } = await supabase.from('products').select('*');
 
            if (!allErr && allData) {
+              const typedAllData = allData as Product[];
               if (categorySlug === 'sale') {
-                  products = allData.filter(p => p.old_price && Number(p.old_price) > Number(p.price));
+                  products = typedAllData.filter(p => p.old_price && Number(p.old_price) > Number(p.price));
               } else if (categorySlug === 'new-arrivals') {
-                  products = allData.filter(p => p.is_new === true);
+                  products = typedAllData.filter(p => p.is_new === true);
               } else if (categorySlug === 'featured') {
-                  products = allData.filter(p => p.is_featured === true);
+                  products = typedAllData.filter(p => (p as any).is_featured === true);
               } else {
-                  products = allData.filter(p => p.category?.toLowerCase() === categorySlug);
+                  products = typedAllData.filter(p => p.category?.toLowerCase() === categorySlug);
               }
            } else {
               fetchError = allErr || { message: "Database connection issue" };
@@ -59,9 +61,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       } else {
         // Handle 'sale' memory filter if needed
         if (categorySlug === 'sale' && data) {
-          products = data.filter(p => p.old_price && Number(p.old_price) > Number(p.price));
+          const typedData = data as Product[];
+          products = typedData.filter(p => p.old_price && Number(p.old_price) > Number(p.price));
         } else {
-          products = data || [];
+          products = (data || []) as Product[];
         }
       }
     } catch (err) {
