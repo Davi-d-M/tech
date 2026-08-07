@@ -13,15 +13,15 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
 
-  let product: Record<string, unknown> | null = null;
+  let product: Product | null = null;
 
   if (supabase) {
     const { data } = await supabase
       .from('products')
-      .select('name, description, image_url, price')
+      .select('name, description, image_url, image, price')
       .eq('id', id)
       .single();
-    product = data;
+    product = data as unknown as Product;
   }
 
   // No Fallback
@@ -32,14 +32,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: product.description || `Buy authentic ${product.name} with Nairobi fast dispatch. Genuine tech and elite performance.`,
     openGraph: {
       title: product.name,
-      description: product.description,
-      images: [product.image_url || product.image],
+      description: product.description || undefined,
+      images: [(product.image_url || product.image || '/placeholder.jpg')],
       type: 'website',
     },
     twitter: {
         card: 'summary_large_image',
         title: product.name,
-        images: [product.image_url || product.image],
+        images: [(product.image_url || product.image || '/placeholder.jpg')],
     }
   };
 }
