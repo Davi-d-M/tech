@@ -2,12 +2,18 @@
 
 import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
-import { DollarSign, Calendar, Wallet, Loader2 } from 'lucide-react';
-import { formatPrice } from '@/lib/utils';
+import { DollarSign, Calendar, Wallet, Loader2, Zap } from 'lucide-react';
+import { formatPrice, cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 
-export default function EarningsCenter({ balance, totalEarned, orders = [] }: { balance: number, totalEarned: number, orders?: any[] }) {
+interface Order {
+    created_at: string;
+    status: string;
+    total_price: number;
+}
+
+export default function EarningsCenter({ balance, totalEarned, orders = [] }: { balance: number, totalEarned: number, orders?: Order[] }) {
     const [requesting, setRequesting] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 

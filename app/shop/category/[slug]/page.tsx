@@ -48,7 +48,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               } else if (categorySlug === 'new-arrivals') {
                   products = typedAllData.filter(p => p.is_new === true);
               } else if (categorySlug === 'featured') {
-                  products = typedAllData.filter(p => (p as any).is_featured === true);
+                  products = typedAllData.filter(p => p.is_featured === true);
               } else {
                   products = typedAllData.filter(p => p.category?.toLowerCase() === categorySlug);
               }

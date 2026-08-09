@@ -9,6 +9,7 @@ export interface Product {
   category?: string;
   rating?: number;
   is_new?: boolean;
+  is_featured?: boolean;
   stock?: number;
   sizes?: string[];
   variant_stock?: Record<string, number>;
