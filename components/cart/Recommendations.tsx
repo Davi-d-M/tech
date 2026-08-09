@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
-import { useCart } from '@/context/CartContext';
+import { useCart, CartItem } from '@/context/CartContext';
 
 interface RecommendedProduct {
   id: number;
@@ -100,7 +100,13 @@ export default function Recommendations() {
                 <p className="text-lg font-black text-primary">{formatPrice(product.price)}</p>
               </div>
               <Button
-                onClick={() => addToCart({ ...product, quantity: 1 } as CartItem)}
+                onClick={() => addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.image_url,
+                  quantity: 1
+                } as CartItem)}
                 className="w-full h-12 rounded-2xl bg-slate-50 text-foreground font-black uppercase text-[9px] tracking-widest hover:bg-primary hover:text-white border border-slate-100 group-hover:border-transparent transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2"
               >
                 <ShoppingCart size={14} /> Add to Cart
