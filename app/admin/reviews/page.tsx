@@ -52,6 +52,7 @@ export default function AdminReviewHub() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'visible' | 'hidden'>('all');
   const [scrubbing, setScrubbing] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Response handling
   const [respondingTo, setRespondingTo] = useState<number | null>(null);
@@ -93,7 +94,8 @@ export default function AdminReviewHub() {
         setReviews(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
     } catch (err: unknown) {
         const error = err as Error;
-        alert(error.message);
+        setMessage({ type: 'error', text: error.message });
+        setTimeout(() => setMessage(null), 5000);
     }
   };
 
@@ -106,19 +108,21 @@ export default function AdminReviewHub() {
   };
 
   const deleteReview = async (id: number) => {
-      if (!supabase || !confirm("Delete this review permanently?")) return;
+      if (!supabase) return;
       try {
           const { error } = await supabase.from('reviews').delete().eq('id', id);
           if (error) throw error;
           await logAuditAction(adminEmail, 'DELETE_REVIEW', { id });
           setReviews(prev => prev.filter(r => r.id !== id));
+          setMessage({ type: 'success', text: 'Review expelled.' });
+          setTimeout(() => setMessage(null), 3000);
       } catch (err: unknown) {
           console.error(err);
       }
   };
 
   const scrubPlaceholders = async () => {
-      if (!supabase || !confirm("Identify and delete all reviews with placeholder names (John Doe, Member, etc.)?")) return;
+      if (!supabase) return;
       setScrubbing(true);
       try {
           const placeholders = ['john doe', 'member', 'anonymous', 'anonymous user', '??', 'apex member'];
@@ -130,7 +134,8 @@ export default function AdminReviewHub() {
           if (fetchErr) throw fetchErr;
 
           if (!toDelete || toDelete.length === 0) {
-              alert("No suspicious placeholders detected, bro.");
+              setMessage({ type: 'error', text: "No suspicious placeholders detected." });
+              setTimeout(() => setMessage(null), 3000);
               return;
           }
 
@@ -140,10 +145,12 @@ export default function AdminReviewHub() {
 
           await logAuditAction(adminEmail, 'SCRUB_PLACEHOLDER_REVIEWS', { count: ids.length });
           setReviews(prev => prev.filter(r => !ids.includes(r.id)));
-          alert(`Successfully scrubbed ${ids.length} placeholder reviews.`);
+          setMessage({ type: 'success', text: `Successfully scrubbed ${ids.length} placeholder reviews.` });
+          setTimeout(() => setMessage(null), 5000);
       } catch (err: unknown) {
           const error = err as Error;
-          alert(`Scrub Error: ${error.message}`);
+          setMessage({ type: 'error', text: `Scrub Error: ${error.message}` });
+          setTimeout(() => setMessage(null), 5000);
       } finally {
           setScrubbing(false);
       }
@@ -178,6 +185,16 @@ export default function AdminReviewHub() {
             </Button>
         </div>
       </header>
+
+      {message && (
+          <div className={cn(
+              "p-4 rounded-[1.5rem] border flex items-center gap-3 animate-in fade-in slide-in-from-top-2",
+              message.type === 'success' ? "bg-primary/10 border-primary/20 text-primary" : "bg-rose-50 border-rose-100 text-rose-600"
+          )}>
+              <Zap className="h-5 w-5" />
+              <p className="text-xs font-black uppercase tracking-widest">{message.text}</p>
+          </div>
+      )}
 
       {/* Security Error Box */}
       {fetchError && (

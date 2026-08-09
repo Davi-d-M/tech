@@ -152,9 +152,12 @@ export default function AdminDispatchPage() {
                 }).catch(() => {});
             }
 
-            alert(`Unit ${rider.rider_name} dispatched! 🚚`);
+            setMessage({ type: 'success', text: `Unit ${rider.rider_name} dispatched! 🚚` });
+            setTimeout(() => setMessage(null), 3000);
         } catch {
             console.error("Dispatch sequence failed.");
+            setMessage({ type: 'error', text: 'Dispatch sequence failed.' });
+            setTimeout(() => setMessage(null), 5000);
         } finally {
             setAssigning(null);
         }
@@ -192,6 +195,16 @@ export default function AdminDispatchPage() {
                     </Button>
                 </div>
             </header>
+
+            {message && (
+                <div className={cn(
+                    "p-4 rounded-[1.5rem] border flex items-center gap-3 animate-in fade-in slide-in-from-top-2",
+                    message.type === 'success' ? "bg-primary/10 border-primary/20 text-primary" : "bg-rose-50 border-rose-100 text-rose-600"
+                )}>
+                    <Zap className="h-5 w-5" />
+                    <p className="text-xs font-black uppercase tracking-widest">{message.text}</p>
+                </div>
+            )}
 
             {/* Top Stats HUD */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -378,7 +391,8 @@ export default function AdminDispatchPage() {
                                             if (newPin && newPin.length === 4) {
                                                 const { error } = await supabase!.from('rider_status').update({ pin: newPin }).eq('id', selectedRider.id);
                                                 if (!error) {
-                                                    alert("PIN Updated! 🛡️");
+                                                    setMessage({ type: 'success', text: "PIN Updated! 🛡️" });
+                                                    setTimeout(() => setMessage(null), 3000);
                                                     setSelectedRider({ ...selectedRider, pin: newPin });
                                                     fetchData();
                                                 }
@@ -394,7 +408,8 @@ export default function AdminDispatchPage() {
                                         const baseUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_BASE_URL || window.location.origin) : 'https://tech-paxv.onrender.com';
                                         const link = `${baseUrl}/rider/dashboard?phone=${selectedRider.rider_phone}`;
                                         navigator.clipboard.writeText(link);
-                                        alert("Magic Link Copied! 🔗");
+                                        setMessage({ type: 'success', text: "Magic Link Copied! 🔗" });
+                                        setTimeout(() => setMessage(null), 3000);
                                     }}
                                     className="flex-1 h-14 rounded-2xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-indigo-200 active:scale-95 transition-all"
                                 >

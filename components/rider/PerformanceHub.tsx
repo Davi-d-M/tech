@@ -32,7 +32,7 @@ export default function PerformanceHub({ tier, rating, acceptance, maintenanceSt
                         </div>
                         <div>
                             <p className="text-3xl font-black text-foreground uppercase tracking-tighter italic">{tier}</p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Next: Silver (14 Missions)</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Active Duty Status</p>
                         </div>
                     </div>
                 </Card>
@@ -86,8 +86,8 @@ export default function PerformanceHub({ tier, rating, acceptance, maintenanceSt
                             </h3>
                             <p className="text-[10px] font-medium text-slate-500 leading-relaxed italic mt-1">
                                 {isHealthy
-                                    ? "Your vehicle protocol is stable. Service recommended in 482 missions."
-                                    : "Protocol Alert: Scheduled maintenance overdue. Safety check required."
+                                    ? "Your vehicle protocol is stable and verified."
+                                    : "Protocol Alert: Safety check required."
                                 }
                             </p>
                         </div>

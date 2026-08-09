@@ -127,6 +127,7 @@ function UploadContent() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formSession, setFormSession] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Section States
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -224,7 +225,11 @@ function UploadContent() {
   const handleRemoveSpec = (index: number) => setTechSpecs(techSpecs.filter((_, i) => i !== index));
 
   const handleGenerateDescription = async () => {
-    if (!form.name.trim()) return alert("Enter gadget name first!");
+    if (!form.name.trim()) {
+        setMessage({ type: 'error', text: "Enter gadget name first!" });
+        setTimeout(() => setMessage(null), 3000);
+        return;
+    }
     setIsGenerating(true);
     try {
         const res = await fetch('/api/admin/generate-description', {
@@ -298,7 +303,11 @@ function UploadContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase || !canManageInventory) return;
-    if (!editingId && selectedFiles.length === 0) return alert('Upload at least one photo.');
+    if (!editingId && selectedFiles.length === 0) {
+        setMessage({ type: 'error', text: 'Upload at least one photo.' });
+        setTimeout(() => setMessage(null), 3000);
+        return;
+    }
 
     setIsSubmitting(true);
 
@@ -377,9 +386,12 @@ function UploadContent() {
 
       cancelEditing();
       fetchProducts();
+      setMessage({ type: 'success', text: editingId ? 'Payload updated.' : 'Gadget deployed!' });
+      setTimeout(() => setMessage(null), 3000);
     } catch (err: unknown) {
         const error = err as Error;
-        alert(error.message);
+        setMessage({ type: 'error', text: error.message });
+        setTimeout(() => setMessage(null), 5000);
     } finally {
         setIsSubmitting(false);
     }
@@ -387,7 +399,6 @@ function UploadContent() {
 
   const handleDeleteProduct = async (id: number, name: string) => {
     if (!supabase || !canManageInventory) return;
-    if (!confirm(`Are you sure you want to permanently DELETE ${name}? This action cannot be undone.`)) return;
 
     try {
         const { error } = await supabase.from('products').delete().eq('id', id);
@@ -396,9 +407,12 @@ function UploadContent() {
         await logAuditAction(email, 'DELETE_PRODUCT', { id, name });
         if (editingId === id) cancelEditing();
         fetchProducts();
+        setMessage({ type: 'success', text: `${name} deleted.` });
+        setTimeout(() => setMessage(null), 3000);
     } catch (err: unknown) {
         const error = err as Error;
-        alert(`Deletion failed: ${error.message}`);
+        setMessage({ type: 'error', text: `Deletion failed: ${error.message}` });
+        setTimeout(() => setMessage(null), 5000);
     }
   };
 
@@ -426,6 +440,16 @@ function UploadContent() {
                 </h1>
                 <p className="text-slate-500 text-sm font-medium italic">Deploy premium tech payload to the global marketplace.</p>
             </div>
+
+            {message && (
+                <div className={cn(
+                    "p-4 rounded-[1.5rem] border flex items-center gap-3 animate-in fade-in slide-in-from-top-2",
+                    message.type === 'success' ? "bg-primary/10 border-primary/20 text-primary" : "bg-rose-50 border-rose-100 text-rose-600"
+                )}>
+                    <Layers className="h-5 w-5" />
+                    <p className="text-xs font-black uppercase tracking-widest">{message.text}</p>
+                </div>
+            )}
 
             <div className="flex items-center gap-8 relative z-10">
                 <div className="hidden sm:flex flex-col items-end gap-2">

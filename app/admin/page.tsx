@@ -118,7 +118,10 @@ export default function AdminDashboard() {
 
     const totalRevenue = deliveredOrders.reduce((sum, o) => sum + Number(o.total_price || 0), 0);
     const totalCost = deliveredOrders.reduce((sum, o) => {
-        const cost = o.unit_cost !== undefined ? Number(o.unit_cost) : (productCostMap.get(o.product_id) || 0);
+        const productCost = productCostMap.get(o.product_id);
+        const cost = o.unit_cost !== undefined
+            ? Number(o.unit_cost)
+            : (productCost !== undefined ? productCost : (Number(o.unit_price || 0) * 0.7));
         return sum + (cost * (o.quantity || 1));
     }, 0);
 
@@ -126,7 +129,23 @@ export default function AdminDashboard() {
     const profitMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
     const lowStockItems = products.filter(p => p.stock <= 5).length;
 
-    return { totalRevenue, netProfit, profitMargin, lowStockItems };
+    // Calculate Growth (vs Previous 7 Days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+
+    const currentPeriodRev = orders
+        .filter(o => o.status === 'Delivered' && new Date(o.created_at) >= sevenDaysAgo)
+        .reduce((sum, o) => sum + Number(o.total_price || 0), 0);
+
+    const prevPeriodRev = orders
+        .filter(o => o.status === 'Delivered' && new Date(o.created_at) >= fourteenDaysAgo && new Date(o.created_at) < sevenDaysAgo)
+        .reduce((sum, o) => sum + Number(o.total_price || 0), 0);
+
+    const growth = prevPeriodRev > 0 ? ((currentPeriodRev - prevPeriodRev) / prevPeriodRev) * 100 : 0;
+
+    return { totalRevenue, netProfit, profitMargin, lowStockItems, growth };
   }, [orders, products]);
 
   const sparklineData = useMemo(() => {
@@ -136,10 +155,27 @@ export default function AdminDashboard() {
           return d.toISOString().split('T')[0];
       }).reverse();
 
-      return days.map(date => ({
-          value: orders.filter(o => o.created_at?.startsWith(date)).length
-      }));
-  }, [orders]);
+      const productCostMap = new Map(products.map(p => [p.id, Number(p.cost_price || 0)]));
+
+      return days.map(date => {
+          const dayOrders = orders.filter(o => o.created_at?.startsWith(date));
+          const dayRevenue = dayOrders.filter(o => o.status === 'Delivered').reduce((sum, o) => sum + Number(o.total_price || 0), 0);
+          const dayCost = dayOrders.filter(o => o.status === 'Delivered').reduce((sum, o) => {
+              const productCost = productCostMap.get(o.product_id);
+              const cost = o.unit_cost !== undefined
+                  ? Number(o.unit_cost)
+                  : (productCost !== undefined ? productCost : (Number(o.unit_price || 0) * 0.7));
+              return sum + (cost * (o.quantity || 1));
+          }, 0);
+
+          return {
+              date: date.split('-').slice(1).join('/'),
+              count: dayOrders.length,
+              revenue: dayRevenue,
+              profit: dayRevenue - dayCost
+          };
+      });
+  }, [orders, products]);
 
   if (isLoading) {
     return (
@@ -164,7 +200,7 @@ export default function AdminDashboard() {
                     <div className="h-12 w-24">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={sparklineData}>
-                                <Line type="monotone" dataKey="value" stroke="#ff6b00" strokeWidth={2} dot={false} />
+                                <Line type="monotone" dataKey="revenue" stroke="#ff6b00" strokeWidth={2} dot={false} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
@@ -172,9 +208,12 @@ export default function AdminDashboard() {
                 <div className="mt-8">
                     <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Gross Revenue</p>
                     <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.totalRevenue)}</h3>
-                    <div className="flex items-center gap-2 mt-3 text-emerald-500">
-                        <ArrowUpRight className="h-3 w-3" />
-                        <span className="text-[9px] font-black uppercase">12.5% vs Last Period</span>
+                    <div className={cn(
+                        "flex items-center gap-2 mt-3",
+                        stats.growth >= 0 ? "text-emerald-500" : "text-rose-500"
+                    )}>
+                        <ArrowUpRight className={cn("h-3 w-3", stats.growth < 0 && "rotate-90")} />
+                        <span className="text-[9px] font-black uppercase">{stats.growth === 0 ? 'Stable' : `${Math.abs(stats.growth).toFixed(1)}% vs Last Period`}</span>
                     </div>
                 </div>
             </div>
@@ -206,7 +245,7 @@ export default function AdminDashboard() {
                     <div className="h-12 w-24">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={sparklineData}>
-                                <Bar dataKey="value" fill="#ff6b00" radius={[4, 4, 4, 4]} />
+                                <Bar dataKey="count" fill="#ff6b00" radius={[4, 4, 4, 4]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -265,7 +304,7 @@ export default function AdminDashboard() {
                   <div className="h-80 w-full">
                       {mounted && (
                           <ResponsiveContainer width="100%" height="100%">
-                              <AreaChart data={sparklineData.map((d) => ({ ...d, r: (d.value * 5000), p: (d.value * 1200) }))}>
+                              <AreaChart data={sparklineData}>
                                   <defs>
                                       <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                                           <stop offset="5%" stopColor="#ff6b00" stopOpacity={0.1}/>
@@ -273,11 +312,11 @@ export default function AdminDashboard() {
                                       </linearGradient>
                                   </defs>
                                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border/50" />
-                                  <XAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: 'currentColor' }} className="text-muted-foreground" />
+                                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: 'currentColor' }} className="text-muted-foreground" />
                                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: 'currentColor' }} className="text-muted-foreground" />
                                   <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)', fontWeight: 900, fontSize: '10px' }} />
-                                  <Area type="monotone" dataKey="r" stroke="#ff6b00" strokeWidth={4} fill="url(#colorRevenue)" name="Revenue" />
-                                  <Area type="monotone" dataKey="p" stroke="currentColor" className="text-foreground" strokeWidth={2} fill="transparent" name="Net Profit" />
+                                  <Area type="monotone" dataKey="revenue" stroke="#ff6b00" strokeWidth={4} fill="url(#colorRevenue)" name="Revenue" />
+                                  <Area type="monotone" dataKey="profit" stroke="currentColor" className="text-foreground" strokeWidth={2} fill="transparent" name="Net Profit" />
                               </AreaChart>
                           </ResponsiveContainer>
                       )}

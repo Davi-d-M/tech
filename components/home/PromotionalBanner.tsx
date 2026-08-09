@@ -9,11 +9,10 @@ import CountdownTimer from "./CountdownTimer";
 export default function PromotionalBanner() {
   const { settings } = useSettings();
 
-  // For this demo, we'll keep the 48-hour logic but use the dynamic text
-  const saleEndDate = new Date(new Date().getTime() + 48 * 60 * 60 * 1000).toISOString();
-
   // @ts-expect-error - promotions might not be in the initial type yet
-  const promo = settings.promotions || { flash_sale_text: 'Flash Sale: 20% OFF All Tech!', discount_percent: 20, is_active: true };
+  const promo = settings.promotions || { flash_sale_text: 'Flash Sale: 20% OFF All Tech!', discount_percent: 20, is_active: true, flash_sale_end: '' };
+
+  const saleEndDate = promo.flash_sale_end || new Date(new Date().getTime() + 48 * 60 * 60 * 1000).toISOString();
 
   if (!promo.is_active) return null;
 

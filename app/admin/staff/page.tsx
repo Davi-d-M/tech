@@ -205,13 +205,16 @@ export default function AdminStaffPage() {
   };
 
   const removeStaff = async (id: string) => {
-      if (!supabase || !confirm("Revoke all access?")) return;
+      if (!supabase) return;
+
       const member = staff.find(s => s.id === id);
       const { error } = await supabase.from('staff').delete().eq('id', id);
+
       if (!error) {
           if (adminEmail) await logAuditAction(adminEmail, 'REMOVE_STAFF', { id, email: member?.email });
           setStaff(staff.filter(s => s.id !== id));
           setMessage({ type: 'success', text: 'Staff revoked.' });
+          setTimeout(() => setMessage(null), 3000);
       }
   };
 

@@ -9,6 +9,7 @@ import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from 'rechar
 
 export default function EarningsCenter({ balance, totalEarned, orders = [] }: { balance: number, totalEarned: number, orders?: any[] }) {
     const [requesting, setRequesting] = useState(false);
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const chartData = useMemo(() => {
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -33,11 +34,16 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
     }, [orders]);
 
     const handleWithdraw = async () => {
-        if (balance < 500) return alert("Minimum withdrawal is KSh 500.");
+        if (balance < 500) {
+            setMessage({ type: 'error', text: "Minimum withdrawal is KSh 500." });
+            setTimeout(() => setMessage(null), 3000);
+            return;
+        }
         setRequesting(true);
         // Real payout logic should be integrated with M-Pesa API
         setTimeout(() => {
-            alert("Payout sequence initialized! KSh " + balance + " sent to your registered M-Pesa number. 🛡️");
+            setMessage({ type: 'success', text: "Payout sequence initialized! KSh " + balance + " sent to M-Pesa. 🛡️" });
+            setTimeout(() => setMessage(null), 5000);
             setRequesting(false);
         }, 2000);
     };
@@ -45,6 +51,16 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
     return (
         <section className="space-y-6 text-left">
             <h2 className="text-xl font-black uppercase tracking-tighter text-foreground px-2">Financial Intel</h2>
+
+            {message && (
+                <div className={cn(
+                    "p-4 rounded-[1.5rem] border flex items-center gap-3 animate-in fade-in slide-in-from-top-2",
+                    message.type === 'success' ? "bg-primary/10 border-primary/20 text-primary" : "bg-rose-50 border-rose-100 text-rose-600"
+                )}>
+                    <Zap className="h-5 w-5" />
+                    <p className="text-xs font-black uppercase tracking-widest">{message.text}</p>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 💳 WALLET CARD */}

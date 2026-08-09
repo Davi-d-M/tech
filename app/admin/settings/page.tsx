@@ -126,6 +126,15 @@ export default function AdminSettingsPage() {
         fetchSettings();
     }, []);
 
+    const uploadAsset = async (file: File, folder: string) => {
+        const BUCKET = 'apexstores-assets';
+        const path = `${folder}/${folder.split('/')[0]}-${Date.now()}`;
+        const { error: uploadError } = await supabase!.storage.from(BUCKET).upload(path, file);
+        if (uploadError) throw uploadError;
+        const { data } = supabase!.storage.from(BUCKET).getPublicUrl(path);
+        return data.publicUrl;
+    };
+
     const handleSave = async (key: string, value: unknown, publish: boolean = true) => {
         if (!supabase) return;
         setSavingKey(key);
@@ -134,28 +143,11 @@ export default function AdminSettingsPage() {
         let finalValue = value;
 
         try {
-            const BUCKET = 'apexstores-assets';
-
             // Handle File Uploads for Branding
             if (key === 'branding') {
                 const updatedBrandingLocal = { ...(value as Record<string, unknown>) };
-
-                if (logoFile) {
-                    const path = `branding/logo-${Date.now()}`;
-                    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, logoFile);
-                    if (uploadError) throw uploadError;
-                    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-                    updatedBrandingLocal.logo_url = data.publicUrl;
-                }
-
-                if (faviconFile) {
-                    const path = `branding/favicon-${Date.now()}`;
-                    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, faviconFile);
-                    if (uploadError) throw uploadError;
-                    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-                    updatedBrandingLocal.favicon_url = data.publicUrl;
-                }
-
+                if (logoFile) updatedBrandingLocal.logo_url = await uploadAsset(logoFile, 'branding');
+                if (faviconFile) updatedBrandingLocal.favicon_url = await uploadAsset(faviconFile, 'branding');
                 finalValue = updatedBrandingLocal;
                 setBranding(updatedBrandingLocal as typeof branding);
                 setLogoFile(null);
@@ -165,15 +157,7 @@ export default function AdminSettingsPage() {
             // Handle File Uploads for Homepage
             if (key === 'homepage') {
                 const updatedHomepageLocal = { ...(value as Record<string, unknown>) };
-
-                if (heroFile) {
-                    const path = `homepage/hero-${Date.now()}`;
-                    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, heroFile);
-                    if (uploadError) throw uploadError;
-                    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-                    updatedHomepageLocal.hero_image_url = data.publicUrl;
-                }
-
+                if (heroFile) updatedHomepageLocal.hero_image_url = await uploadAsset(heroFile, 'homepage');
                 finalValue = updatedHomepageLocal;
                 setHomepage(updatedHomepageLocal as typeof homepage);
                 setHeroFile(null);
@@ -212,31 +196,10 @@ export default function AdminSettingsPage() {
         try {
             const updatedBrandingLocal = { ...branding };
             const updatedHomepageLocal = { ...homepage };
-            const BUCKET = 'apexstores-assets';
 
-            if (logoFile) {
-                const path = `branding/logo-${Date.now()}`;
-                const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, logoFile);
-                if (uploadError) throw uploadError;
-                const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-                updatedBrandingLocal.logo_url = data.publicUrl;
-            }
-
-            if (faviconFile) {
-                const path = `branding/favicon-${Date.now()}`;
-                const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, faviconFile);
-                if (uploadError) throw uploadError;
-                const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-                updatedBrandingLocal.favicon_url = data.publicUrl;
-            }
-
-            if (heroFile) {
-                const path = `homepage/hero-${Date.now()}`;
-                const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, heroFile);
-                if (uploadError) throw uploadError;
-                const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-                updatedHomepageLocal.hero_image_url = data.publicUrl;
-            }
+            if (logoFile) updatedBrandingLocal.logo_url = await uploadAsset(logoFile, 'branding');
+            if (faviconFile) updatedBrandingLocal.favicon_url = await uploadAsset(faviconFile, 'branding');
+            if (heroFile) updatedHomepageLocal.hero_image_url = await uploadAsset(heroFile, 'homepage');
 
             const payloads = [
                 { key: 'contact', value: contact },
@@ -316,7 +279,7 @@ export default function AdminSettingsPage() {
             {message && (
                 <div className={cn(
                     "p-6 rounded-[2rem] border-2 flex items-start gap-4 animate-in slide-in-from-top-4 duration-500 shadow-xl relative overflow-hidden",
-                    message.type === 'success' ? "bg-primary/5 border-primary/20 text-primary" : "bg-primary/5 border-primary/20 text-primary"
+                    message.type === 'success' ? "bg-primary/5 border-primary/20 text-primary" : "bg-rose-50 border-rose-100 text-rose-600"
                 )}>
                     {message.type === 'success' ? <CheckCircle2 className="h-6 w-6 shrink-0 mt-0.5" /> : <ShieldAlert className="h-6 w-6 shrink-0 mt-0.5" />}
                     <div className="flex-1">
