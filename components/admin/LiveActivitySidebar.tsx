@@ -32,9 +32,10 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
     useEffect(() => {
         if (!supabase) return;
 
-        const channel = supabase
-            .channel('enterprise-pulse')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload: { new: { customer_name: string; total_price: number } }) => {
+        const channel = supabase.channel('enterprise-pulse');
+
+        channel
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload: any) => {
                 const newEvent: ActivityEvent = {
                     id: Math.random().toString(),
                     label: `New Order from ${payload.new.customer_name}`,
@@ -46,7 +47,7 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
                 };
                 setPulseEvents(prev => [newEvent, ...prev].slice(0, 10));
             })
-            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: 'status=eq.Paid' }, (payload: { new: { id: number } }) => {
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: 'status=eq.Paid' }, (payload: any) => {
                 const newEvent: ActivityEvent = {
                     id: Math.random().toString(),
                     label: `Payment Verified for #${payload.new.id}`,
@@ -68,7 +69,7 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
                 };
                 setPulseEvents(prev => [newEvent, ...prev].slice(0, 10));
             })
-            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rider_status' }, (payload: { new: { status: string, rider_name: string }, old: { status: string } }) => {
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rider_status' }, (payload: any) => {
                 if (payload.new.status === 'Idle' && payload.old.status === 'Offline') {
                     const newEvent: ActivityEvent = {
                         id: Math.random().toString(),
