@@ -73,6 +73,7 @@ export default function AdminDispatchPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRider, setSelectedRider] = useState<Rider | null>(null);
     const [assigning, setAssigning] = useState<number | null>(null);
+    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const [showHeatmap, setShowHeatmap] = useState(false);
 
