@@ -157,17 +157,17 @@ export function useSettings() {
                 if (data && data.length > 0) {
                     const newSettings = { ...DEFAULT_SETTINGS };
                     data.forEach(item => {
-                        if (item.key === 'contact') newSettings.contact = item.value;
-                        if (item.key === 'branding') newSettings.branding = item.value;
-                        if (item.key === 'homepage') newSettings.homepage = item.value;
-                        if (item.key === 'catalog') newSettings.catalog = item.value;
-                        if (item.key === 'shipping') newSettings.shipping = item.value;
-                        if (item.key === 'logistics') newSettings.logistics = item.value;
-                        if (item.key === 'theme_config') newSettings.theme_config = item.value;
-                        if (item.key === 'seo_config') newSettings.seo_config = item.value;
-                        if (item.key === 'social_links') newSettings.social_links = item.value;
-                        if (item.key === 'store_info') newSettings.store_info = item.value;
-                        if (item.key === 'promotions') newSettings.promotions = item.value;
+                        if (item.key === 'contact') newSettings.contact = { ...newSettings.contact, ...item.value };
+                        if (item.key === 'branding') newSettings.branding = { ...newSettings.branding, ...item.value };
+                        if (item.key === 'homepage') newSettings.homepage = { ...newSettings.homepage, ...item.value };
+                        if (item.key === 'catalog') newSettings.catalog = { ...newSettings.catalog, ...item.value };
+                        if (item.key === 'shipping') newSettings.shipping = { ...newSettings.shipping, ...item.value };
+                        if (item.key === 'logistics') newSettings.logistics = { ...newSettings.logistics, ...item.value };
+                        if (item.key === 'theme_config') newSettings.theme_config = { ...newSettings.theme_config, ...item.value };
+                        if (item.key === 'seo_config') newSettings.seo_config = { ...newSettings.seo_config, ...item.value };
+                        if (item.key === 'social_links') newSettings.social_links = { ...newSettings.social_links, ...item.value };
+                        if (item.key === 'store_info') newSettings.store_info = { ...newSettings.store_info, ...item.value };
+                        if (item.key === 'promotions') newSettings.promotions = { ...newSettings.promotions, ...item.value };
                     });
                     setSettings(newSettings);
                 }

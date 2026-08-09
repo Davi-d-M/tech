@@ -125,10 +125,10 @@ export default function SupportBubble() {
             {showLabel && !isOpen && (
                 <div className="bg-white px-6 py-4 rounded-[1.8rem] border border-slate-100 shadow-2xl animate-in slide-in-from-right-4 duration-500 flex items-center gap-4 group">
                     <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white font-black text-xs shadow-lg shadow-primary/20">
-                        {(userProfile?.full_name as string)?.substring(0, 1) || settings.branding.owner_name.substring(0, 1)}
+                        {(userProfile?.full_name as string)?.substring(0, 1) || settings?.branding?.owner_name?.substring(0, 1) || 'A'}
                     </div>
                     <div className="text-left">
-                        <p className="font-black text-foreground uppercase text-[10px] tracking-tight">{userProfile?.full_name || settings.branding.owner_name}</p>
+                        <p className="font-black text-foreground uppercase text-[10px] tracking-tight">{userProfile?.full_name || settings?.branding?.owner_name || 'Admin'}</p>
                         <p className="text-slate-400 text-[9px] font-bold uppercase tracking-widest mt-0.5">
                             {userProfile?.full_name ? `Need help with your tech, ${userProfile.full_name.split(' ')[0]}?` : "Need help with tech, bro?"}
                         </p>

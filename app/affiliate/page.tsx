@@ -197,7 +197,7 @@ export default function AffiliateDashboard() {
                                 onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}`, '_blank')}
                                 className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all"
                             >
-                                <MessageSquare className="h-4 w-4 mr-2" /> WhatsApp {settings.branding.owner_name.split(' ')[0]} Direct
+                                <MessageSquare className="h-4 w-4 mr-2" /> WhatsApp {settings?.branding?.owner_name?.split(' ')[0] || 'Admin'} Direct
                             </Button>
                         </div>
                         <ShieldCheck className="absolute -bottom-6 -right-6 h-32 w-32 text-primary/5 rotate-12" />
