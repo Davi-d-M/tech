@@ -8,7 +8,8 @@ import CountdownTimer from "./CountdownTimer";
 
 export default function HomeHero() {
   const { settings } = useSettings();
-  const promotions = (settings as unknown as { promotions: Record<string, unknown> }).promotions || {};
+  const promotions = settings.promotions;
+
   return (
     <section className="relative pt-12 pb-20 lg:pt-20 lg:pb-32 overflow-hidden bg-white text-left">
       {/* Background Decorative Elements */}
@@ -29,7 +30,7 @@ export default function HomeHero() {
               Total <span className="text-slate-400">Power.</span>
             </h1>
 
-            {promotions.is_active && promotions.flash_sale_end && (
+            {promotions?.is_active && promotions.flash_sale_end && (
                 <CountdownTimer targetDate={promotions.flash_sale_end} />
             )}
 

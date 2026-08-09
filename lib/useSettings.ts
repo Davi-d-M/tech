@@ -62,6 +62,12 @@ export interface StoreSettings {
         google_maps: string;
         footer_copy: string;
     };
+    promotions?: {
+        flash_sale_text: string;
+        discount_percent: number;
+        is_active: boolean;
+        flash_sale_end: string;
+    };
 }
 
 const DEFAULT_SETTINGS: StoreSettings = {
@@ -161,6 +167,7 @@ export function useSettings() {
                         if (item.key === 'seo_config') newSettings.seo_config = item.value;
                         if (item.key === 'social_links') newSettings.social_links = item.value;
                         if (item.key === 'store_info') newSettings.store_info = item.value;
+                        if (item.key === 'promotions') newSettings.promotions = item.value;
                     });
                     setSettings(newSettings);
                 }
