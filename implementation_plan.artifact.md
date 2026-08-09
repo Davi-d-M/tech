@@ -1,42 +1,33 @@
-# Implementation Plan - Final Bug Fixes & GitHub Deployment 🛠️🚀
+# Implementation Plan - Final Stability & Build Fixes 🛠️🚀
 
-This plan finalizes the stabilization effort by fixing remaining UX bugs (blocking alerts), correcting UI color logic errors, and preparing the codebase for a clean push to GitHub.
+This plan addresses the TypeScript errors blocking the build and resolves the runtime module desync issues.
 
 ## Proposed Changes
 
-### 🎨 UI & UX Bug Fixes
+### 🔧 TypeScript & Build Fixes
 
-#### [MODIFY] [AdminDashboard Components](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/dispatch/page.tsx)
-- **Fix Color Bug**: Correct the message box logic to show proper error colors (rose/red) when a dispatch fail occurs, instead of reusing the primary orange.
-- **Modernize Alerts**: Replace lingering `alert()` calls in PIN updates and link copying with the non-blocking `message` state.
+#### [MODIFY] [HomeHero.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/home/HomeHero.tsx)
+- **Fix ReactNode Type Error**: Add explicit boolean casting and type safety to the `promotions` conditional check. This prevents the "unknown is not assignable to ReactNode" error during compilation.
 
-#### [MODIFY] [Brand OS (Settings)](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/settings/page.tsx)
-- **Fix Color Bug**: Correct the message box colors for error states.
+#### [MODIFY] [LiveActivitySidebar.tsx](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/admin/LiveActivitySidebar.tsx)
+- **Cleanup Warnings**: Replace `any` with more descriptive interfaces for the Realtime payloads to satisfy linting rules.
 
-#### [MODIFY] [Review Hub](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/reviews/page.tsx)
-- **State Injection**: Add a `message` state to handle feedback.
-- **Modernize Scrub Flow**: Replace `confirm()` and `alert()` in the `scrubPlaceholders` and `deleteReview` functions with modern UI feedback.
-- **Security Info**: Refine the SQL snippet display for better readability.
+---
 
-#### [MODIFY] [Rider Earnings](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/rider/EarningsCenter.tsx)
-- **State Injection**: Add a local `message` state.
-- **Modernize Payout Flow**: Replace `alert()` with an inline success/error message.
+### 🕸️ Runtime & Environment Fixes
 
-### 🤖 Android Build Tweaks
-- **Optimization**: Ensure no lingering demo strings or resources are referenced in the build process.
+#### [ACTION] Cache Purge
+- The `Cannot find module './5994.js'` and unexpected `404` errors on existing pages (like `/shop` and `/blog`) indicate a corrupted `.next` build cache.
+- **Solution**: I will prepare a command to delete the `.next` folder and restart the dev server to force a fresh, clean compilation of all routes.
 
-### 🏁 Deployment Preparation
-- **Git Stage**: Perform a full `git add .` to capture all bug fixes and deletions.
-- **Git Commit**: Craft a professional commit message detailing the transition from demo to real-data state.
-- **Git Push**: Push the sanitized codebase to the `main` branch on GitHub.
+#### [MODIFY] [next.config.ts](file:///C:/Users/hp/AndroidStudioProjects/theapp/next.config.ts)
+- Ensure all remote patterns are optimized for the latest Next.js version to prevent image timeouts if caused by strict hostname matching.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `git status` to verify all files are staged correctly.
-- Perform a final Android build check.
+- Run `npm run build` locally (or `npx next build`) to verify that all TypeScript errors are resolved and the production build can be generated.
 
 ### Manual Verification
-1.  **UI Feedback Test**: Trigger a mock error in the Dispatch page to verify the red message box appears.
-2.  **Review Scrub**: Verify the scrub feature works without browser popups.
-3.  **Git Check**: Verify the remote is correctly targeted.
+1.  **Route Check**: Verify that `/shop`, `/blog`, and `/warranty` load correctly after the cache purge.
+2.  **Promo Test**: Ensure the countdown timer in `HomeHero` appears only when a promotion is active in the database.

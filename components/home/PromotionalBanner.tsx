@@ -9,7 +9,6 @@ import CountdownTimer from "./CountdownTimer";
 export default function PromotionalBanner() {
   const { settings } = useSettings();
 
-  // @ts-expect-error - promotions might not be in the initial type yet
   const promo = settings.promotions || { flash_sale_text: 'Flash Sale: 20% OFF All Tech!', discount_percent: 20, is_active: true, flash_sale_end: '' };
 
   const saleEndDate = promo.flash_sale_end || new Date(new Date().getTime() + 48 * 60 * 60 * 1000).toISOString();

@@ -9,9 +9,16 @@ const IconMap: Record<string, React.ElementType> = {
     Star, ShieldCheck, Crown, Gem, Trophy, ShoppingBag, Smartphone, MessageSquare, Users, Rocket
 };
 
+interface Badge {
+    key: string;
+    label: string;
+    icon: string;
+    desc: string;
+}
+
 export default function AchievementBadges({ userId }: { userId: string }) {
     const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
-    const [badges, setBadges] = useState<Record<string, unknown>[]>([]);
+    const [badges, setBadges] = useState<Badge[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

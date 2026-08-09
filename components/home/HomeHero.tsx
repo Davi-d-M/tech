@@ -30,8 +30,8 @@ export default function HomeHero() {
               Total <span className="text-slate-400">Power.</span>
             </h1>
 
-            {promotions?.is_active && promotions.flash_sale_end && (
-                <CountdownTimer targetDate={promotions.flash_sale_end} />
+            {Boolean(promotions?.is_active) && promotions?.flash_sale_end && (
+                <CountdownTimer targetDate={promotions.flash_sale_end as string} />
             )}
 
             <p className="text-lg text-slate-500 font-medium max-w-lg leading-relaxed">

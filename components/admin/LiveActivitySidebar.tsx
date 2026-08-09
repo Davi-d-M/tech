@@ -32,7 +32,7 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
     useEffect(() => {
         if (!supabase) return;
 
-        const channel = supabase.channel('enterprise-pulse');
+        const channel: any = supabase.channel('enterprise-pulse');
 
         channel
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload: { new: { customer_name: string; total_price: number } }) => {
