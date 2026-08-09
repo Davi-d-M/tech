@@ -20,7 +20,7 @@ import {
   Send
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
