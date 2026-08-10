@@ -106,43 +106,53 @@ export default function AdminLayoutClient({
   const isAdmin = role === 'admin' || isOwner;
 
   const allNavItems = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, minRole: 'viewer' },
-    { name: 'Products', href: '/admin/upload', icon: Package, permission: 'can_manage_inventory' },
-    { name: 'Orders', href: '/admin/orders', icon: ShoppingCart, permission: 'can_manage_orders' },
-
-    { name: 'Marketing Hub', href: '/admin/marketing', icon: Zap, permission: 'can_manage_broadcast' },
-    { name: 'Campaign Builder', href: '/admin/marketing/create', icon: Plus, permission: 'can_manage_broadcast' },
-    { name: 'Mission Log', href: '/admin/marketing/list', icon: HistoryIcon, permission: 'can_manage_broadcast' },
-    { name: 'Segments', href: '/admin/marketing/audiences', icon: Users, permission: 'can_manage_broadcast' },
-
-    { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp, permission: 'can_view_revenue' },
-    { name: 'Finance', href: '/admin/finance', icon: DollarSign, permission: 'can_view_revenue' },
-
-    { name: 'Customers', href: '/admin/customers', icon: Users, permission: 'can_manage_customer_care' },
-    { name: 'Reviews', href: '/admin/reviews', icon: MessageSquare, permission: 'can_manage_customer_care' },
-    { name: 'Affiliates', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
-    { name: 'Abandoned', href: '/admin/abandoned', icon: ShoppingBag, permission: 'can_view_revenue' },
-    { name: 'Library', href: '/admin/blog', icon: BookOpen, permission: 'can_manage_blog' },
-    { name: 'Subscribers', href: '/admin/subscribers', icon: Mail, permission: 'can_manage_broadcast' },
-    { name: 'Broadcast', href: '/admin/broadcast', icon: Send, permission: 'can_manage_broadcast' },
-    { name: 'Reports', href: '/admin/reports', icon: BarChart3, permission: 'can_view_revenue' },
-    { name: 'Rewards', href: '/admin/gamification', icon: Trophy, permission: 'can_manage_settings' },
-    { name: 'Media Hub', href: '/admin/media', icon: ImageIcon, permission: 'can_manage_media' },
-    { name: 'Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
-    { name: 'History', href: '/admin/audit', icon: HistoryIcon, permission: 'can_view_revenue' },
-    { name: 'Team', href: '/admin/staff', icon: ShieldCheck, minRole: 'owner' },
-    { name: 'Settings', href: '/admin/settings', icon: Settings, permission: 'can_manage_settings' },
+    { group: 'INTELLIGENCE', items: [
+      { name: 'Today Console', href: '/admin', icon: LayoutDashboard, minRole: 'viewer' },
+      { name: 'Deep Analytics', href: '/admin/analytics', icon: TrendingUp, permission: 'can_view_revenue' },
+      { name: 'System Audit', href: '/admin/audit', icon: HistoryIcon, permission: 'can_view_revenue' },
+    ]},
+    { group: 'MARKETING', items: [
+      { name: 'Campaign Hub', href: '/admin/marketing', icon: Zap, permission: 'can_manage_broadcast' },
+      { name: 'Builder', href: '/admin/marketing/create', icon: Plus, permission: 'can_manage_broadcast' },
+      { name: 'Experiments', href: '/admin/marketing/experiments', icon: Activity, permission: 'can_manage_broadcast' },
+      { name: 'Abandoned', href: '/admin/marketing/abandoned', icon: ShoppingBag, permission: 'can_manage_broadcast' },
+      { name: 'Creators', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
+      { name: 'Segments', href: '/admin/marketing/audiences', icon: Users, permission: 'can_manage_broadcast' },
+    ]},
+    { group: 'LOGISTICS', items: [
+      { name: 'Tasks Board', href: '/admin/operations/tasks', icon: Layout, permission: 'can_manage_orders' },
+      { name: 'Warehouse', href: '/admin/upload', icon: Package, permission: 'can_manage_inventory' },
+      { name: 'Live Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
+      { name: 'Orders Pipeline', href: '/admin/orders', icon: ShoppingCart, permission: 'can_manage_orders' },
+    ]},
+    { group: 'RELATIONS', items: [
+      { name: 'Directory', href: '/admin/customers', icon: Users, permission: 'can_manage_customer_care' },
+      { name: 'Reviews Hub', href: '/admin/reviews', icon: MessageSquare, permission: 'can_manage_customer_care' },
+      { name: 'Loyalty Logic', href: '/admin/gamification', icon: Trophy, permission: 'can_manage_settings' },
+    ]},
+    { group: 'FINANCE', items: [
+      { name: 'Finance Fortress', href: '/admin/finance', icon: DollarSign, permission: 'can_view_revenue' },
+      { name: 'Payout Requests', href: '/admin/payouts', icon: CreditCard, permission: 'can_view_revenue' },
+    ]},
+    { group: 'ENTERPRISE', items: [
+      { name: 'Security Hub', href: '/admin/security', icon: ShieldAlert, permission: 'can_manage_settings' },
+      { name: 'Command & Control', href: '/admin/staff', icon: ShieldCheck, minRole: 'owner' },
+      { name: 'Brand Settings', href: '/admin/settings', icon: Settings, permission: 'can_manage_settings' },
+    ]},
   ];
 
-  const visibleNavItems = allNavItems.filter(item => {
-      if (!role) return false;
-      if (isOwner) return true;
-      if (item.minRole === 'viewer') return true;
-      if (item.permission && permissions && permissions[item.permission as keyof Permissions]) return true;
-      if (item.minRole === 'admin') return isAdmin;
-      if (item.minRole === 'owner') return isOwner;
-      return false;
-  });
+  const visibleNavGroups = allNavItems.map(group => ({
+      ...group,
+      items: group.items.filter(item => {
+          if (!role) return false;
+          if (isOwner) return true;
+          if (item.minRole === 'viewer') return true;
+          if (item.permission && permissions && permissions[item.permission as keyof Permissions]) return true;
+          if (item.minRole === 'admin') return isAdmin;
+          if (item.minRole === 'owner') return isOwner;
+          return false;
+      })
+  })).filter(group => group.items.length > 0);
 
   const isActive = (href: string) => {
     if (href === '/admin') return pathname === '/admin';
@@ -206,27 +216,38 @@ export default function AdminLayoutClient({
               </div>
 
               {/* Nav Links */}
-              <nav className="flex-1 p-6 space-y-2 overflow-y-auto no-scrollbar">
-                {visibleNavItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    title={isSidebarCollapsed ? item.name : ""}
-                    onClick={() => setIsSidebarOpen(false)}
-                    className={cn(
-                      "flex items-center rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 group",
-                      isSidebarCollapsed ? "justify-center p-3.5" : "gap-4 px-5 py-3.5",
-                      isActive(item.href)
-                        ? "bg-primary/10 text-primary shadow-sm"
-                        : "text-slate-400 hover:bg-slate-50 hover:text-foreground"
+              <nav className="flex-1 p-6 space-y-8 overflow-y-auto no-scrollbar">
+                {visibleNavGroups.map((group) => (
+                  <div key={group.group} className="space-y-3">
+                    {!isSidebarCollapsed && (
+                      <p className="px-5 text-[8px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                        {group.group}
+                      </p>
                     )}
-                  >
-                    <item.icon className={cn(
-                      "h-5 w-5 transition-colors shrink-0",
-                      isActive(item.href) ? "text-primary" : "text-slate-300 group-hover:text-slate-500"
-                    )} />
-                    {!isSidebarCollapsed && <span className="truncate">{item.name}</span>}
-                  </Link>
+                    <div className="space-y-1">
+                      {group.items.map((item) => (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          title={isSidebarCollapsed ? item.name : ""}
+                          onClick={() => setIsSidebarOpen(false)}
+                          className={cn(
+                            "flex items-center rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 group",
+                            isSidebarCollapsed ? "justify-center p-3.5" : "gap-4 px-5 py-3",
+                            isActive(item.href)
+                              ? "bg-primary text-white shadow-lg shadow-primary/20"
+                              : "text-slate-400 hover:bg-slate-50 hover:text-foreground"
+                          )}
+                        >
+                          <item.icon className={cn(
+                            "h-4 w-4 transition-colors shrink-0",
+                            isActive(item.href) ? "text-white" : "text-slate-300 group-hover:text-slate-500"
+                          )} />
+                          {!isSidebarCollapsed && <span className="truncate">{item.name}</span>}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </nav>
 

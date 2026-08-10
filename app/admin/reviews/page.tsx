@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
   MessageSquare,
@@ -16,7 +16,8 @@ import {
   Search,
   Zap,
   ShieldAlert,
-  ExternalLink
+  ExternalLink,
+  Rocket
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,19 +46,19 @@ interface Product {
 
 export default function AdminReviewHub() {
   const { email: adminEmail } = useAdmin();
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [fetchError, setFetchError] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'visible' | 'hidden'>('all');
-  const [scrubbing, setScrubbing] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [reviews, setReviews] = React.useState<Review[]>([]);
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [fetchError, setFetchError] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState<'all' | 'visible' | 'hidden'>('all');
+  const [scrubbing, setScrubbing] = React.useState(false);
+  const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Response handling
-  const [respondingTo, setRespondingTo] = useState<number | null>(null);
-  const [responseText, setResponseText] = useState('');
-  const [isSavingResponse, setIsSavingResponse] = useState(false);
+  const [respondingTo, setRespondingTo] = React.useState<number | null>(null);
+  const [responseText, setResponseText] = React.useState('');
+  const [isSavingResponse, setIsSavingResponse] = React.useState(false);
 
   const fetchReviews = async () => {
     if (!supabase) return;
@@ -80,9 +81,21 @@ export default function AdminReviewHub() {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchReviews();
   }, []);
+
+  const promoteToMarketing = async (review: Review) => {
+      if (!supabase) return;
+      try {
+          // This would ideally insert into a marketing_assets table
+          await logAuditAction(adminEmail, 'PROMOTE_REVIEW_TO_MARKETING', { id: review.id });
+          setMessage({ type: 'success', text: "Review boosted to Marketing Hub assets! 🚀" });
+          setTimeout(() => setMessage(null), 3000);
+      } catch (err) {
+          console.error(err);
+      }
+  };
 
   const updateReview = async (id: number, updates: Partial<Review>, actionName: string) => {
     if (!supabase) return;
@@ -333,6 +346,13 @@ export default function AdminReviewHub() {
                                         )}
                                       >
                                           {review.is_hidden ? <><Eye className="h-3 w-3" /> Unhide</> : <><EyeOff className="h-3 w-3" /> Hide from Site</>}
+                                      </button>
+
+                                      <button
+                                        onClick={() => promoteToMarketing(review)}
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-foreground text-background text-[8px] font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl shadow-slate-200"
+                                      >
+                                          <Rocket className="h-3 w-3 text-primary" /> Boost to Marketing
                                       </button>
                                   </div>
                               </div>

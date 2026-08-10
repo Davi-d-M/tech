@@ -134,7 +134,7 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
                     <div className="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
                         {events.length === 0 ? (
                             <div className="py-20 text-center space-y-4 opacity-30">
-                                <Activity className="h-10 w-10 mx-auto animate-pulse" />
+                                <ActivityIcon className="h-10 w-10 mx-auto animate-pulse" />
                                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground">Awaiting Uplink...</p>
                             </div>
                         ) : (

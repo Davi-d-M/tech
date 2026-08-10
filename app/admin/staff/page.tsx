@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
   Users,
@@ -58,26 +58,26 @@ interface StaffOrder {
 
 export default function AdminStaffPage() {
   const { email: adminEmail } = useAdmin();
-  const [staff, setStaff] = useState<StaffMember[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [newEmail, setNewEmail] = useState('');
-  const [newRole, setNewRole] = useState<StaffMember['role']>('staff');
-  const [newPin, setNewPin] = useState('');
+  const [staff, setStaff] = React.useState<StaffMember[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [newEmail, setNewEmail] = React.useState('');
+  const [newRole, setNewRole] = React.useState<StaffMember['role']>('staff');
+  const [newPin, setNewPin] = React.useState('');
 
-  const [canViewRev, setCanViewRev] = useState(false);
-  const [canManageInv, setCanManageInv] = useState(true);
-  const [canManageOrd, setCanManageOrd] = useState(true);
-  const [canDelItems, setCanDelItems] = useState(false);
-  const [canManageBlog, setCanManageBlog] = useState(false);
-  const [canManageAffiliates, setCanManageAffiliates] = useState(false);
-  const [canManageCustomerCare, setCanManageCustomerCare] = useState(false);
-  const [canManageBroadcast, setCanManageBroadcast] = useState(false);
-  const [canManageSettings, setCanManageSettings] = useState(false);
-  const [canManageMedia, setCanManageMedia] = useState(false);
+  const [canViewRev, setCanViewRev] = React.useState(false);
+  const [canManageInv, setCanManageInv] = React.useState(true);
+  const [canManageOrd, setCanManageOrd] = React.useState(true);
+  const [canDelItems, setCanDelItems] = React.useState(false);
+  const [canManageBlog, setCanManageBlog] = React.useState(false);
+  const [canManageAffiliates, setCanManageAffiliates] = React.useState(false);
+  const [canManageCustomerCare, setCanManageCustomerCare] = React.useState(false);
+  const [canManageBroadcast, setCanManageBroadcast] = React.useState(false);
+  const [canManageSettings, setCanManageSettings] = React.useState(false);
+  const [canManageMedia, setCanManageMedia] = React.useState(false);
 
-  const [isAdding, setIsAdding] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [orders, setOrders] = useState<StaffOrder[]>([]);
+  const [isAdding, setIsAdding] = React.useState(false);
+  const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [orders, setOrders] = React.useState<StaffOrder[]>([]);
 
   const fetchStaffData = async () => {
     if (!supabase) return;
@@ -106,11 +106,11 @@ export default function AdminStaffPage() {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchStaffData();
   }, []);
 
-  const leaderboard = useMemo(() => {
+  const leaderboard = React.useMemo(() => {
     return staff.map(member => {
         const sales = orders
             .filter(o => o.captured_by === member.email)

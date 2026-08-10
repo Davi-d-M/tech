@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
+import Link from 'next/link';
 
 interface Segment {
     id: string;
