@@ -43,19 +43,8 @@ export default function TaskCenter() {
         setLoading(true);
         try {
             const { data, error } = await supabase.from('admin_tasks').select('*').order('created_at', { ascending: false });
-            if (error) {
-                if (error.code === 'PGRST116' || error.message.includes('does not exist')) {
-                    setTasks([
-                        { id: '1', title: 'Restock AMAYA AM-05', description: 'Inventory level dropped below 5 units.', status: 'Todo', priority: 'High', assigned_to: 'Logistics', due_date: '2026-08-11', created_at: new Date().toISOString() },
-                        { id: '2', title: 'Verify Partner #104 Payout', description: 'Reconcile sales for last week.', status: 'InProgress', priority: 'Medium', assigned_to: 'Finance', due_date: '2026-08-10', created_at: new Date().toISOString() },
-                        { id: '3', title: 'Update Brand Hero Image', description: 'New Platinum Series visuals arrived.', status: 'Review', priority: 'Low', assigned_to: 'Marketing', due_date: '2026-08-15', created_at: new Date().toISOString() }
-                    ]);
-                } else {
-                    throw error;
-                }
-            } else {
-                setTasks(data || []);
-            }
+            if (error) throw error;
+            setTasks(data || []);
         } catch (err) {
             console.error(err);
         } finally {

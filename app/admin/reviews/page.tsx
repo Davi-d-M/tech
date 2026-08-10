@@ -169,7 +169,7 @@ export default function AdminReviewHub() {
       }
   };
 
-  const filteredReviews = useMemo(() => {
+  const filteredReviews = React.useMemo(() => {
       return reviews.filter(r => {
           const matchesSearch = (r.customer_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                                 (r.comment || '').toLowerCase().includes(searchQuery.toLowerCase());

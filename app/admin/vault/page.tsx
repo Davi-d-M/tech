@@ -45,19 +45,12 @@ export default function DocumentVault() {
             try {
                 const { data, error } = await supabase.from('admin_vault').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
-                setDocuments(data || []);
-            } catch (err) {
-                console.error(err);
-                // Fallback for demo
-                setDocuments([
-                    { id: 'DOC-104', name: 'July_Revenue_Report.pdf', type: 'Report', size: '2.4MB', created_at: '2026-08-01', authorized_by: 'Finance' },
-                    { id: 'DOC-105', name: 'Supplier_Amaya_Invoice.pdf', type: 'Invoice', size: '1.1MB', created_at: '2026-08-05', authorized_by: 'Logistics' }
-                ]);
-            } finally {
-                setLoading(false);
-            }
+            setDocuments(data || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
-        fetchDocs();
     }, []);
 
     return (

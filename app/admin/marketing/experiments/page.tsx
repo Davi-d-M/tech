@@ -41,16 +41,8 @@ export default function ExperimentationCenter() {
         setLoading(true);
         try {
             const { data, error } = await supabase.from('marketing_experiments').select('*').order('created_at', { ascending: false });
-            if (error) {
-                if (error.code === 'PGRST116' || error.message.includes('does not exist')) {
-                    // Fallback to demo data if table missing
-                    setExperiments([
-                        { id: '1', name: 'Hero Headline Test', status: 'Running', variant_a: { name: 'Future Sound', orders: 21, ctr: 4.2 }, variant_b: { name: 'Titan Audio', orders: 39, ctr: 7.8 }, created_at: new Date().toISOString() }
-                    ]);
-                } else throw error;
-            } else {
-                setExperiments(data || []);
-            }
+            if (error) throw error;
+            setExperiments(data || []);
         } catch (err) {
             console.error(err);
         } finally {
