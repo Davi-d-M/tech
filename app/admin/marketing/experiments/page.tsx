@@ -99,15 +99,15 @@ export default function ExperimentationCenter() {
     };
 
     return (
-        <div className="p-8 space-y-10 bg-background min-h-screen text-left">
-            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-border pb-8">
+        <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
+            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <Activity className="h-4 w-4 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Yield Lab</span>
                     </div>
-                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Experimentation</h1>
-                    <p className="text-muted-foreground text-sm font-medium mt-1">Optimize conversion funnels through clinical A/B testing protocols.</p>
+                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">Experimentation</h1>
+                    <p className="text-muted-foreground text-sm font-medium mt-2">Optimize conversion funnels through clinical A/B testing protocols.</p>
                 </div>
                 <Button onClick={startExperiment} className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                     <Plus size={16} className="mr-2" /> Start Experiment
@@ -116,7 +116,7 @@ export default function ExperimentationCenter() {
 
             {message && (
                 <div className={cn(
-                    "p-6 rounded-[2.5rem] border-2 flex items-center gap-4 animate-in slide-in-from-top-4",
+                    "p-6 rounded-[2rem] border-2 flex items-center gap-4 animate-in slide-in-from-top-4",
                     message.type === 'success' ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600"
                 )}>
                     {message.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
@@ -124,19 +124,88 @@ export default function ExperimentationCenter() {
                 </div>
             )}
 
-            <div className="bg-card rounded-[3rem] border border-border shadow-sm overflow-hidden min-h-[500px]">
+            <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden min-h-[500px]">
                 {loading ? (
                     <div className="p-40 text-center flex flex-col items-center gap-4">
                         <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                        <p className="text-[10px] font-black uppercase text-muted tracking-widest">Warming Lab Sensors...</p>
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Warming Lab Sensors...</p>
                     </div>
                 ) : (
-                    <div className="grid lg:grid-cols-12 gap-10 items-stretch p-8">
+                    <div className="grid lg:grid-cols-12 gap-10 items-stretch p-10 bg-white">
                         <div className="lg:col-span-8 space-y-8 h-full flex flex-col">
                             {experiments.map(exp => {
                                 const winner = exp.variant_a.ctr > exp.variant_b.ctr ? 'A' : 'B';
                                 return (
-                                    <Card key={exp.id} className="p-10 rounded-[3.5rem] border border-border bg-card shadow-sm space-y-10 flex-1 flex flex-col justify-between">
+                                    <Card key={exp.id} className="p-10 rounded-[3.5rem] border border-slate-100 bg-white shadow-sm space-y-10 flex-1 flex flex-col justify-between group hover:shadow-xl transition-all">
+                                        <div>
+                                            <div className="flex justify-between items-center mb-10">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary shadow-sm"><Target size={24} /></div>
+                                                    <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">{exp.name}</h3>
+                                                </div>
+                                                <span className={cn(
+                                                    "px-4 py-2 text-[10px] font-black uppercase rounded-full tracking-widest border",
+                                                    exp.status === 'Running' ? "bg-emerald-50 text-emerald-600 border-emerald-100 animate-pulse" : "bg-slate-50 text-slate-400 border-slate-100"
+                                                )}>{exp.status}</span>
+                                            </div>
+
+                                            <div className="grid sm:grid-cols-2 gap-10 items-stretch">
+                                                {/* Variant A */}
+                                                <div className={cn(
+                                                    "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
+                                                    (exp.winning_variant === 'A' || (winner === 'A' && exp.status !== 'Ended')) ? "border-emerald-500/20 bg-emerald-50/10" : "border-slate-100 bg-slate-50/50"
+                                                )}>
+                                                    {exp.winning_variant === 'A' && <div className="absolute top-4 right-4"><CheckCircle2 className="text-emerald-500 h-6 w-6" /></div>}
+                                                    <div className="relative z-10 space-y-6">
+                                                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Version A</p>
+                                                        <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_a.name}</h4>
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div>
+                                                                <p className="text-[8px] font-black uppercase text-slate-400">CTR</p>
+                                                                <p className="text-2xl font-black text-foreground">{exp.variant_a.ctr}%</p>
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[8px] font-black uppercase text-slate-400">Orders</p>
+                                                                <p className="text-2xl font-black text-foreground">{exp.variant_a.orders}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Variant B */}
+                                                <div className={cn(
+                                                    "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
+                                                    (exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) ? "border-emerald-500 border-emerald-50/30 shadow-2xl" : "border-slate-100 bg-slate-50/50"
+                                                )}>
+                                                    {(exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) && <div className="absolute top-4 right-4"><Trophy className="text-primary h-6 w-6" /></div>}
+                                                    <div className="relative z-10 space-y-6">
+                                                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Version B</p>
+                                                        <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_b.name}</h4>
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div>
+                                                                <p className="text-[8px] font-black uppercase text-slate-400">CTR</p>
+                                                                <p className="text-2xl font-black text-primary">{exp.variant_b.ctr}%</p>
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[8px] font-black uppercase text-slate-400">Orders</p>
+                                                                <p className="text-2xl font-black text-primary">{exp.variant_b.orders}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
+                                            <p className="text-[10px] text-slate-400 font-medium italic">
+                                                {exp.status === 'Ended' ? "Experiment concluded." : "\"Statistical significance reached in favor of Version B yield.\""}
+                                            </p>
+                                            <Button onClick={() => adoptVariant(exp.id, 'B')} disabled={exp.status === 'Ended'} className="rounded-xl h-12 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-lg">Adopt Version B</Button>
+                                        </div>
+                                    </Card>
+                                );
+                            })}
+                        </div>
                                         <div>
                                             <div className="flex justify-between items-center mb-10">
                                                 <div className="flex items-center gap-4">
@@ -207,44 +276,47 @@ export default function ExperimentationCenter() {
                             })}
                         </div>
 
-                        <div className="lg:col-span-4 flex flex-col gap-8 h-full">
-                            <Card className="p-10 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group flex-1">
-                                <div className="relative z-10 space-y-6 text-left">
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Conversion Funnel</h3>
-                                    <div className="space-y-6">
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-[10px] font-black uppercase text-background/50">
+                        <div className="lg:col-span-4 flex flex-col gap-10 h-full">
+                            <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl relative overflow-hidden group flex-1 flex flex-col justify-between">
+                                <div className="relative z-10 space-y-10 text-left">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Zap size={24} className="fill-current" /></div>
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Conversion Funnel</h3>
+                                    </div>
+                                    <div className="space-y-8">
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between text-[10px] font-black uppercase text-slate-400 tracking-widest">
                                                 <span>Product Views</span>
-                                                <span>9.8K</span>
+                                                <span className="text-foreground">9.8K</span>
                                             </div>
-                                            <div className="h-1 w-full bg-background/10 rounded-full overflow-hidden">
+                                            <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
                                                 <div className="h-full bg-primary w-full"></div>
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-[10px] font-black uppercase text-background/50">
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between text-[10px] font-black uppercase text-slate-400 tracking-widest">
                                                 <span>Cart Additions</span>
-                                                <span>2.1K</span>
+                                                <span className="text-foreground">2.1K</span>
                                             </div>
-                                            <div className="h-1 w-full bg-background/10 rounded-full overflow-hidden">
+                                            <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
                                                 <div className="h-full bg-primary w-[22%]"></div>
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-[10px] font-black uppercase text-background/50">
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between text-[10px] font-black uppercase text-slate-400 tracking-widest">
                                                 <span>Checkout Start</span>
-                                                <span>1.0K</span>
+                                                <span className="text-foreground">1.0K</span>
                                             </div>
-                                            <div className="h-1 w-full bg-background/10 rounded-full overflow-hidden">
+                                            <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
                                                 <div className="h-full bg-primary w-[11%]"></div>
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between text-[10px] font-black uppercase text-background/50">
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between text-[10px] font-black uppercase text-slate-400 tracking-widest">
                                                 <span>Completed Order</span>
                                                 <span className="text-emerald-500">684</span>
                                             </div>
-                                            <div className="h-1 w-full bg-background/10 rounded-full overflow-hidden">
+                                            <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
                                                 <div className="h-full bg-emerald-500 w-[7%]"></div>
                                             </div>
                                         </div>

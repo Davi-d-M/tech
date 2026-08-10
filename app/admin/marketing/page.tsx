@@ -34,9 +34,10 @@ export default function MarketingOverview() {
         async function fetchMarketingData() {
             if (!supabase) return;
             try {
-                const [campRes, ordersRes] = await Promise.all([
+                const [campRes, ordersRes, profilesRes] = await Promise.all([
                     supabase.from('marketing_campaigns').select('*, products(name)').order('created_at', { ascending: false }).limit(3),
-                    supabase.from('orders').select('id', { count: 'exact' }).not('referred_by_code', 'is', null)
+                    supabase.from('orders').select('id, referred_by_code').not('referred_by_code', 'is', null),
+                    supabase.from('profiles').select('id').not('referral_code', 'is', null)
                 ]);
 
                 if (campRes.data) {
@@ -44,7 +45,8 @@ export default function MarketingOverview() {
                     setStats(prev => ({
                         ...prev,
                         activeCampaigns: campRes.data.filter(c => c.status === 'Published' || c.status === 'Live').length,
-                        generatedOrders: ordersRes.count || 0
+                        generatedOrders: ordersRes.data?.length || 0,
+                        totalReach: (profilesRes.data?.length || 0) * 12 // Simulated reach multiplier per creator
                     }));
                 }
             } catch (err) {
@@ -57,7 +59,7 @@ export default function MarketingOverview() {
     }, []);
 
     return (
-        <div className="p-8 space-y-10 bg-background min-h-screen text-left">
+        <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-border pb-8">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
@@ -75,25 +77,25 @@ export default function MarketingOverview() {
             </header>
 
             {/* Performance KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
                 {[
                     { label: 'Total Tactical Reach', val: stats.totalReach.toLocaleString(), icon: Users, color: 'indigo' },
                     { label: 'Active Deployments', val: stats.activeCampaigns, icon: Send, color: 'primary' },
                     { label: 'Orders Generated', val: stats.generatedOrders, icon: Target, color: 'emerald' },
                     { label: 'Campaign ROI', val: `${stats.marketingROI}x`, icon: TrendingUp, color: 'primary' },
                 ].map((item) => (
-                    <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all relative overflow-hidden h-full">
+                    <Card key={item.label} className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm group hover:shadow-xl transition-all relative overflow-hidden h-full">
                         <div className="relative z-10 flex flex-col h-full justify-between">
                             <div>
                                 <div className={cn(
-                                    "h-12 w-12 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110",
+                                    "h-12 w-12 rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 shadow-sm",
                                     item.color === 'indigo' ? "bg-indigo-50 text-indigo-500" :
                                     item.color === 'emerald' ? "bg-emerald-50 text-emerald-500" :
-                                    "bg-primary/10 text-primary"
+                                    "bg-primary/5 text-primary"
                                 )}>
                                     <item.icon className="h-6 w-6" />
                                 </div>
-                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
                                 <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase">{item.val}</h3>
                             </div>
                         </div>
@@ -104,32 +106,32 @@ export default function MarketingOverview() {
             <div className="grid lg:grid-cols-12 gap-10 items-stretch">
                 {/* Channel Pulse */}
                 <div className="lg:col-span-8 space-y-8 flex flex-col h-full">
-                    <div className="flex items-center justify-between px-2 shrink-0">
-                        <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Recent Deployments</h2>
-                        <Link href="/admin/marketing/list" className="text-[10px] font-black text-primary uppercase underline">View Full History</Link>
+                    <div className="flex items-center justify-between px-4 shrink-0">
+                        <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Recent Deployments</h2>
+                        <Link href="/admin/marketing/list" className="text-[10px] font-black text-primary uppercase underline tracking-widest">View Mission Log</Link>
                     </div>
 
                     <div className="grid gap-4 flex-1">
                         {loading ? (
                              [...Array(3)].map((_, i) => (
-                                <Card key={i} className="h-32 rounded-[3rem] border border-border animate-pulse bg-secondary/50"></Card>
+                                <Card key={i} className="h-32 rounded-[3rem] border border-slate-100 animate-pulse bg-white"></Card>
                              ))
                         ) : recentCampaigns.length === 0 ? (
-                            <div className="p-16 text-center bg-secondary/20 rounded-[3rem] border border-dashed border-border opacity-40">
+                            <div className="p-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100 opacity-40">
                                 <Rocket className="h-10 w-10 mx-auto mb-4" />
                                 <p className="text-[10px] font-black uppercase tracking-widest">No active deployments found.</p>
                             </div>
                         ) : recentCampaigns.map(camp => (
-                            <Card key={camp.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm flex items-center justify-between group hover:border-primary/20 transition-all h-auto">
-                                <div className="flex items-center gap-6">
-                                    <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary shadow-inner">
+                            <Card key={camp.id} className="p-8 rounded-[3rem] border border-slate-100 bg-white shadow-sm flex items-center justify-between group hover:border-primary/20 transition-all h-auto">
+                                <div className="flex items-center gap-6 text-left">
+                                    <div className="h-14 w-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-primary shadow-inner">
                                         <Zap className="h-7 w-7" />
                                     </div>
                                     <div>
-                                        <h3 className="font-black text-foreground uppercase text-lg tracking-tighter">{camp.name}</h3>
-                                        <div className="flex items-center gap-3 mt-1">
+                                        <h3 className="font-black text-foreground uppercase text-lg tracking-tighter leading-none">{camp.name}</h3>
+                                        <div className="flex items-center gap-3 mt-2">
                                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{camp.type}</span>
-                                            <div className="h-1 w-1 rounded-full bg-border"></div>
+                                            <div className="h-1 w-1 rounded-full bg-slate-200"></div>
                                             <span className={cn(
                                                 "text-[9px] font-black uppercase tracking-widest",
                                                 camp.status === 'Published' || camp.status === 'Live' ? "text-emerald-500" : "text-primary"
@@ -140,10 +142,10 @@ export default function MarketingOverview() {
 
                                 <div className="flex items-center gap-12 text-right">
                                     <div className="hidden sm:block">
-                                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Target</p>
-                                        <p className="text-lg font-black text-foreground">{camp.products?.name?.substring(0, 15) || 'Global'}</p>
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Target Payload</p>
+                                        <p className="text-sm font-black text-foreground uppercase">{camp.products?.name?.substring(0, 15) || 'Global'}</p>
                                     </div>
-                                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-secondary group-hover:bg-primary group-hover:text-white transition-all">
+                                    <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 group-hover:bg-primary group-hover:text-white transition-all">
                                         <ChevronRight size={18} />
                                     </Button>
                                 </div>
@@ -153,43 +155,43 @@ export default function MarketingOverview() {
                 </div>
 
                 {/* Automation & Insights */}
-                <div className="lg:col-span-4 flex flex-col gap-8 h-full">
-                    <Card className="p-10 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group flex-1">
+                <div className="lg:col-span-4 flex flex-col gap-10 h-full">
+                    <Card className="p-10 rounded-[3.5rem] border border-slate-100 bg-white shadow-xl relative overflow-hidden group flex-1">
                         <div className="relative z-10 space-y-8 text-left h-full flex flex-col justify-between">
                             <div>
-                                <div className="flex justify-between items-center mb-8">
+                                <div className="flex justify-between items-center mb-10">
                                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Channel Mastery</h3>
                                     <div className="flex -space-x-2">
-                                        <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><Instagram size={14} className="text-primary" /></div>
-                                        <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><MessageCircle size={14} className="text-emerald-500" /></div>
-                                        <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><Mail size={14} className="text-indigo-400" /></div>
+                                        <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center border-2 border-slate-50 shadow-sm"><Instagram size={14} className="text-primary" /></div>
+                                        <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center border-2 border-slate-50 shadow-sm"><MessageCircle size={14} className="text-emerald-500" /></div>
+                                        <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center border-2 border-slate-50 shadow-sm"><Mail size={14} className="text-indigo-400" /></div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center text-[10px] font-black uppercase text-background/50">
+                                <div className="space-y-8">
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-widest">
                                             <span>WhatsApp Conversion</span>
                                             <span className="text-emerald-500">12.4%</span>
                                         </div>
-                                        <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
+                                        <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
                                             <div className="h-full bg-emerald-500 w-[72%]"></div>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between items-center text-[10px] font-black uppercase text-background/50">
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-widest">
                                             <span>Instagram Reach</span>
                                             <span className="text-primary">8.4K</span>
                                         </div>
-                                        <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
+                                        <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
                                             <div className="h-full bg-primary w-[55%]"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <Link href="/admin/analytics">
-                                <Button className="w-full h-14 rounded-2xl bg-primary text-background font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all mt-auto">
+                            <Link href="/admin/analytics" className="mt-auto">
+                                <Button className="w-full h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-primary/20 active:scale-95 transition-all">
                                     Analyze Funnel Details
                                 </Button>
                             </Link>

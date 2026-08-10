@@ -45,12 +45,14 @@ export default function DocumentVault() {
             try {
                 const { data, error } = await supabase.from('admin_vault').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
-            setDocuments(data || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
+                setDocuments(data || []);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
         }
+        fetchDocs();
     }, []);
 
     return (

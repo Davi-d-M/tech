@@ -60,7 +60,6 @@ interface AffiliateOrder {
 }
 
 export default function AdminAffiliates() {
-    const { settings } = useSettings();
     const [affiliates, setAffiliates] = React.useState<Affiliate[]>([]);
     const [orders, setOrders] = React.useState<AffiliateOrder[]>([]);
     const [loading, setLoading] = React.useState(true);

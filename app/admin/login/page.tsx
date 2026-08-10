@@ -144,7 +144,13 @@ export default function AdminLoginPage() {
           </div>
         )}
 
-        <div className="text-center pt-4 border-t border-slate-100">
+        <div className="text-center pt-6 border-t border-slate-100 flex flex-col gap-4">
+          <Link
+            href="/rider/login"
+            className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-widest transition-colors"
+          >
+            Rider Terminal Access
+          </Link>
           <Link
             href="/"
             className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline"

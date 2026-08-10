@@ -118,7 +118,7 @@ export default function RiderOnboarding() {
                                     <p className="text-sm text-slate-500 font-medium italic">&quot;Trusted by thousands of riders. Start your tactical mission today.&quot;</p>
                                 </div>
                                 <Button onClick={() => setStep('phone')} className="w-full h-18 rounded-[1.8rem] bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
-                                    Continue to Login
+                                    Continue to Login Protocol
                                 </Button>
                             </div>
                         )}

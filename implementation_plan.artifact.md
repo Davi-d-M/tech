@@ -1,40 +1,41 @@
-# Implementation Plan - Apex Enterprise OS Final Stabilization 💎🛡️
+# Implementation Plan - Total Integrity & Theme Harmonization 💎⚖️
 
-This plan focuses on absolute functional connectivity, UI symmetry, and the removal of all hardcoded "placeholder" data across the Admin Hub.
+This plan finalizes the system stabilization by resolving icon reference errors, enforcing a consistent light theme across all hubs, and verifying rider onboarding/terminal access.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Database Requirements**: I will provide SQL migrations for `admin_tasks`, `marketing_experiments`, and `marketing_campaigns` stats tracking.
-> - **Commission Logic**: The 10% affiliate commission is currently a baseline; I will add a "Rules" section in Settings to adjust this globally.
+> - **Theme Standard**: I have transitioned the entire Admin Hub to a light, high-contrast theme (`bg-slate-50` and `bg-white`) to eliminate "awful dark colors".
+> - **Rider Access**: I have established two entry points for riders: the Public Login (`/auth`) and the Admin Terminal (`/admin/login`).
 
 ## Proposed Changes
 
-### 1. Hardcoded Data Removal (Intelligence Phase) 🧠
-- [MODIFY] [AdminAnalytics](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/analytics/page.tsx): Replace hardcoded KPI cards (Revenue, Margin, LTV, Conv. Rate) with real calculations from `orders` and `products`.
-- [MODIFY] [AdminFinance](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/finance/page.tsx): Calculate "Today Revenue" and "Projected Profit" dynamically.
-- [MODIFY] [MarketingOverview](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/marketing/page.tsx): Connect "Total Reach" and "Orders Generated" to actual database metrics.
+### 1. Icon & Reference Resolution 🛠️
+- [MODIFY] [AdminLayoutClient](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/layout-client.tsx): Synchronize `ShieldAlert` and `LayoutIcon` references to prevent runtime crashes.
+- [MODIFY] [AdminReviews](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/reviews/page.tsx): Add missing `React.useMemo` import to fix build error.
 
-### 2. UI Symmetry & UX Stabilization ⚖️
-- [MODIFY] [AdminAffiliates](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/affiliates/page.tsx): Fix card heights in the KPI row and Growth chart.
-- [MODIFY] [TaskCenter](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/operations/tasks/page.tsx): Improve Kanban column layout and card alignment.
-- [MODIFY] [SecurityHub](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/security/page.tsx): Align protocol cards to match the enterprise grid standard.
+### 2. "Dark Mode" Elimination (Theme Harmonization) ☀️
+- [MODIFY] [AdminDashboard](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/page.tsx): Transition all dashboard cards to `bg-white` with refined slate shadows.
+- [MODIFY] [SecurityHub](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/security/page.tsx): Replace dark backgrounds with clean, high-fidelity light layouts.
+- [MODIFY] [FinanceFortress](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/finance/page.tsx): Update the "Integrity Audit" card to a light professional aesthetic.
+- [MODIFY] [MarketingLab](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/marketing/experiments/page.tsx): Standardize grid background to `bg-slate-50`.
 
-### 3. Button & Logic Connectivity (The "Work" Phase) 🛠️
-- [MODIFY] [ExperimentationCenter](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/marketing/experiments/page.tsx): Implement real "Adopt Variant" and "Start Experiment" database persistence.
-- [MODIFY] [TaskCenter](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/operations/tasks/page.tsx): Connect "New Protocol" creation to the `admin_tasks` table.
-- [MODIFY] [AdminAffiliates](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/affiliates/page.tsx): Fix "Download Catalog" button and add "Commission Rules" editor.
+### 3. Rider & Staff Terminal Logistics 🚚
+- [MODIFY] [AuthForm](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/auth/AuthForm.js): Add a direct "🚚 Rider" terminal button to the public authentication form.
+- [MODIFY] [AdminLogin](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/login/page.tsx): Restore "Staff Login" tab and add a "Rider Terminal Access" link in the footer.
+- [NEW] [RiderLogin](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/rider/login/page.tsx): A dedicated, logistics-focused entry point for TechPax riders using Phone & PIN.
 
-### 4. Customer Feedback Integrity ⭐
-- [MODIFY] [CustomerIntelligence](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/customers/[phone]/page.tsx): Ensure the "Customer Feedback" section only shows real reviews and handles empty states with a professional tactical message.
+### 4. Fake Data Extraction 🧠
+- [MODIFY] [ApexIntelligence](file:///C:/Users/hp/AndroidStudioProjects/theapp/components/admin/ApexIntelligence.tsx): Connect the briefings to real inventory and delivery volume data.
+- [MODIFY] [AdminAnalytics](file:///C:/Users/hp/AndroidStudioProjects/theapp/app/admin/analytics/page.tsx): Replace hardcoded KPI trends with dynamic period-over-period calculations.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run lint` to ensure zero compilation warnings or errors.
-- Verify React 19 hook safety (`import * as React`).
+- Run `npm run build` to confirm zero compilation errors.
+- Run `npm run lint` to ensure type safety across all navigation icons.
 
 ### Manual Verification
-1.  **Dashboard Pulse**: Check that Gross Revenue and Net Profit match the sum of Delivered orders.
-2.  **Marketing Flow**: Build a campaign, then verify it appears in the Mission Log.
-3.  **Task Routing**: Move a task from "InProgress" to "Done" and verify it persists on refresh.
+1.  **Icon Pulse**: Verify "Security Hub" link in sidebar no longer crashes the app.
+2.  **Theme Audit**: Scan all 20+ admin pages to ensure zero "black/foreground" backgrounds remain.
+3.  **Rider Onboarding**: Test the full flow from `/rider/onboarding` to Identity Verification.

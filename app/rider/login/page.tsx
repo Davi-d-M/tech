@@ -48,8 +48,8 @@ export default function RiderLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
-            <div className="max-w-md w-full space-y-10 bg-white p-10 rounded-[3rem] shadow-2xl border border-white/10 relative overflow-hidden">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+            <div className="max-w-md w-full space-y-10 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100 relative overflow-hidden">
                 <div className="text-center space-y-4">
                     <div className="mx-auto h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
                         <Truck className="h-8 w-8" />

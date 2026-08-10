@@ -41,6 +41,8 @@ export default function AdminAnalyticsPage() {
     const [products, setProducts] = React.useState<any[]>([]);
     const [orders, setOrders] = React.useState<any[]>([]);
 
+    const [affiliateSales, setAffiliateSales] = React.useState(0);
+
     React.useEffect(() => {
         async function fetchData() {
             if (!supabase) return;
@@ -52,6 +54,11 @@ export default function AdminAnalyticsPage() {
                 ]);
                 setProducts(prodRes.data || []);
                 setOrders(ordRes.data || []);
+
+                const affRev = (ordRes.data || [])
+                    .filter(o => o.status === 'Delivered' && o.referred_by_code)
+                    .reduce((s, o) => s + (o.total_price || 0), 0);
+                setAffiliateSales(affRev);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -94,13 +101,19 @@ export default function AdminAnalyticsPage() {
     const performanceStats = React.useMemo(() => {
         const delivered = orders.filter(o => o.status === 'Delivered');
         const totalRevenue = delivered.reduce((s, o) => s + (o.total_price || 0), 0);
-        const totalProfit = totalRevenue * 0.3; // Baseline 30% margin
         const convRate = orders.length > 0 ? (delivered.length / orders.length) * 100 : 0;
 
+        // Calculate 30d revenue
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const rev30d = orders
+            .filter(o => o.status === 'Delivered' && new Date(o.created_at) > thirtyDaysAgo)
+            .reduce((s, o) => s + (o.total_price || 0), 0);
+
         return [
-            { label: 'Revenue (Total)', val: formatPrice(totalRevenue), trend: '+18.3%', color: 'primary' },
+            { label: 'Revenue (30d)', val: formatPrice(rev30d), trend: '+18.3%', color: 'primary' },
             { label: 'Net Margin', val: '30.0%', trend: '+2.1%', color: 'emerald' },
-            { label: 'Total Orders', val: orders.length.toString(), trend: '+4.5%', color: 'indigo' },
+            { label: 'Cust. LTV', val: formatPrice(totalRevenue / (new Set(orders.map(o => o.customer_phone)).size || 1)), trend: '+4.5%', color: 'indigo' },
             { label: 'Conv. Rate', val: `${convRate.toFixed(1)}%`, trend: '-0.2%', color: 'amber' },
         ];
     }, [orders]);
@@ -314,15 +327,15 @@ export default function AdminAnalyticsPage() {
                         <div className="space-y-6">
                             <div className="flex justify-between items-center py-4 border-b border-border">
                                 <span className="text-[10px] font-black uppercase text-muted-foreground">Affiliate Rev</span>
-                                <span className="text-sm font-black text-foreground">KSh 142K</span>
+                                <span className="text-sm font-black text-foreground">{formatPrice(affiliateSales)}</span>
                             </div>
                             <div className="flex justify-between items-center py-4 border-b border-border">
-                                <span className="text-[10px] font-black uppercase text-muted-foreground">Coupon Burn</span>
-                                <span className="text-sm font-black text-rose-500">KSh 18K</span>
+                                <span className="text-[10px] font-black uppercase text-muted-foreground">Network Coverage</span>
+                                <span className="text-sm font-black text-primary">{((affiliateSales / (orders.filter(o => o.status === 'Delivered').reduce((s,o) => s+(o.total_price||0), 0) || 1)) * 100).toFixed(1)}%</span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Net Campaign ROI</span>
-                                <span className="text-lg font-black text-emerald-500 tracking-tighter">7.4x</span>
+                                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Growth Velocity</span>
+                                <span className="text-lg font-black text-emerald-500 tracking-tighter">ELITE</span>
                             </div>
                         </div>
                     </div>

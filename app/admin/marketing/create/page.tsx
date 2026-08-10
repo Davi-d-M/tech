@@ -462,36 +462,36 @@ export default function CreateCampaign() {
 
                 {/* Right Sidebar: Dynamic Intelligence */}
                 <div className="lg:col-span-4 space-y-8">
-                    <Card className="p-10 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
+                    <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl relative overflow-hidden group">
                         <div className="relative z-10 space-y-6 text-left">
                             <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Payload Specs</h3>
                             {selectedProduct ? (
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-4">
-                                        <div className="h-16 w-16 rounded-2xl bg-white/10 p-2 overflow-hidden relative">
-                                            <Image src={selectedProduct.image_url} fill className="object-contain" alt="" />
+                                        <div className="h-16 w-16 rounded-2xl bg-slate-50 p-2 overflow-hidden relative border border-slate-100 flex items-center justify-center">
+                                            {selectedProduct.image_url && <Image src={selectedProduct.image_url} fill className="object-contain" alt="" />}
                                         </div>
                                         <div>
                                             <p className="text-[9px] font-black text-primary uppercase leading-none mb-1">Target Device</p>
-                                            <p className="text-sm font-black text-white uppercase tracking-tight leading-tight">{selectedProduct.name}</p>
+                                            <p className="text-sm font-black text-foreground uppercase tracking-tight leading-tight">{selectedProduct.name}</p>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                                            <p className="text-[8px] font-black text-background/50 uppercase mb-1">Price</p>
-                                            <p className="text-lg font-black text-white">{formatPrice(selectedProduct.price)}</p>
+                                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase mb-1">Price</p>
+                                            <p className="text-lg font-black text-foreground">{formatPrice(selectedProduct.price)}</p>
                                         </div>
-                                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                                            <p className="text-[8px] font-black text-background/50 uppercase mb-1">Stock</p>
-                                            <p className="text-lg font-black text-white">{selectedProduct.stock} U</p>
+                                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 shadow-inner">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase mb-1">Stock</p>
+                                            <p className="text-lg font-black text-foreground">{selectedProduct.stock} U</p>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <p className="text-sm font-medium text-background/40 italic">Select a product to view tactical specifications.</p>
+                                <p className="text-sm font-medium text-slate-400 italic leading-relaxed">Select a tactical payload to view specifications.</p>
                             )}
                         </div>
-                        <Zap className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/10 rotate-12 -z-0" />
+                        <Zap className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/5 rotate-12 -z-0" />
                     </Card>
 
                     <div className="p-8 rounded-[3rem] bg-white border border-border shadow-sm space-y-4 text-left">

@@ -186,11 +186,11 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 bg-background pb-20">
+    <div className="space-y-10 animate-in fade-in duration-700 bg-slate-50 min-h-screen p-8 pb-20">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
 
-        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+        <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
                     <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
@@ -219,26 +219,26 @@ export default function AdminDashboard() {
             <Zap className="absolute -bottom-6 -right-6 h-32 w-32 text-primary/5 rotate-12 -z-0" />
         </Card>
 
-        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+        <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
                         <DollarSign className="h-6 w-6" />
                     </div>
-                    <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase">Healthy</div>
+                    <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest">Growth Locked</div>
                 </div>
                 <div className="mt-8">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Net Unit Profit</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Net Unit Profit</p>
                     <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.netProfit)}</h3>
-                    <p className="text-[9px] font-black text-primary uppercase mt-3">{stats.profitMargin.toFixed(1)}% Margin Unlocked</p>
+                    <p className="text-[9px] font-black text-primary uppercase mt-3">{stats.profitMargin.toFixed(1)}% Margin Efficiency</p>
                 </div>
             </div>
         </Card>
 
-        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+        <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
                         <ShoppingCart className="h-6 w-6" />
                     </div>
                     <div className="h-12 w-24">
@@ -250,9 +250,9 @@ export default function AdminDashboard() {
                     </div>
                 </div>
                 <div className="mt-8">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Active Pipeline</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Pipeline</p>
                     <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{orders.length}</h3>
-                    <p className="text-[9px] font-black text-primary uppercase mt-3">{orders.filter(o => o.status === 'Pending').length} Pending Extraction</p>
+                    <p className="text-[9px] font-black text-primary uppercase mt-3">{orders.filter(o => o.status === 'Pending').length} Pending Fulfillment</p>
                 </div>
             </div>
         </Card>
@@ -268,13 +268,13 @@ export default function AdminDashboard() {
       <div className="grid lg:grid-cols-12 gap-10">
 
           <div className="lg:col-span-8 space-y-10">
-              <section className="bg-card rounded-[3.5rem] p-10 border border-border shadow-sm">
+              <section className="bg-white rounded-[3.5rem] p-10 border border-slate-100 shadow-sm">
                   <div className="flex items-center justify-between mb-12">
                       <div>
                           <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Market Dynamics</h2>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-2">Revenue vs Profit Stream</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Revenue vs Profit Stream</p>
                       </div>
-                      <Link href="/admin/reports">
+                      <Link href="/admin/analytics">
                           <Button variant="ghost" className="text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5">Advanced Analytics &rarr;</Button>
                       </Link>
                   </div>
@@ -303,25 +303,25 @@ export default function AdminDashboard() {
 
               <section id="warehouse-alerts" className="space-y-6">
                   <div className="flex items-center justify-between px-4">
-                      <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Warehouse Alerts</h2>
+                      <h2 className="text-xl font-black uppercase tracking-tighter text-foreground leading-none">Warehouse Alerts</h2>
                       <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest animate-pulse">{stats.lowStockItems} Low Units</span>
                   </div>
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 gap-6">
                       {products.filter(p => p.stock <= 5).slice(0, 4).map(p => (
-                          <Card key={p.id} className="p-6 rounded-[2.5rem] bg-card border-border flex items-center justify-between group hover:border-rose-200 transition-all">
+                          <Card key={p.id} className="p-8 rounded-[3rem] bg-white border border-slate-100 flex items-center justify-between group hover:border-rose-200 transition-all shadow-sm">
                               <div className="flex items-center gap-4 min-w-0">
-                                  <div className="h-12 w-12 rounded-xl bg-secondary p-2 shrink-0 border border-border">
+                                  <div className="h-16 w-16 rounded-[1.5rem] bg-slate-50 p-2 shrink-0 border border-slate-100 flex items-center justify-center">
                                       {/* eslint-disable-next-line @next/next/no-img-element */}
                                       <img src={p.image_url} alt="" className="max-h-full w-auto object-contain mx-auto" />
                                   </div>
                                   <div className="min-w-0">
-                                      <p className="text-[11px] font-black text-foreground uppercase truncate">{p.name}</p>
-                                      <p className="text-[9px] font-bold text-rose-500 uppercase mt-1">Only {p.stock} remain</p>
+                                      <p className="text-[11px] font-black text-foreground uppercase truncate tracking-tight">{p.name}</p>
+                                      <p className="text-[10px] font-bold text-rose-500 uppercase mt-1 tracking-widest">Only {p.stock} remain</p>
                                   </div>
                               </div>
                               <Link href="/admin/upload">
-                                  <Button size="icon" variant="ghost" className="h-10 w-10 rounded-xl bg-secondary text-muted-foreground hover:text-primary active:scale-90 transition-all">
-                                      <Plus className="h-4 w-4" />
+                                  <Button size="icon" variant="ghost" className="h-12 w-12 rounded-2xl bg-slate-50 text-slate-400 hover:text-primary active:scale-90 transition-all border border-slate-100 shadow-sm">
+                                      <Plus className="h-5 w-5" />
                                   </Button>
                               </Link>
                           </Card>
@@ -334,40 +334,40 @@ export default function AdminDashboard() {
 
               <SystemPulseWidget />
 
-              <section className="bg-card rounded-[3.5rem] p-10 border border-border shadow-sm relative overflow-hidden">
-                  <div className="relative z-10 space-y-8 text-left">
-                    <h3 className="text-sm font-black uppercase text-muted-foreground tracking-[0.3em]">Quick Deployment</h3>
-                    <div className="grid grid-cols-2 gap-4">
+              <section className="bg-white rounded-[3.5rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden">
+                  <div className="relative z-10 space-y-10 text-left">
+                    <h3 className="text-sm font-black uppercase text-slate-400 tracking-[0.4em]">Tactical Access</h3>
+                    <div className="grid grid-cols-2 gap-6">
                         {[
                             { label: 'New Product', icon: Package, href: '/admin/upload' },
                             { label: 'New Rider', icon: Truck, href: '/admin/dispatch' },
                             { label: 'Broadcast', icon: Send, href: '/admin/broadcast' },
                             { label: 'New Coupon', icon: Zap, href: '/admin/gamification' },
                         ].map(action => (
-                            <Link key={action.label} href={action.href} className="flex flex-col items-center gap-3 p-6 rounded-3xl bg-secondary border border-border hover:bg-primary hover:text-background transition-all group">
-                                <action.icon className="h-5 w-5 text-primary group-hover:text-background transition-colors" />
-                                <span className="text-[8px] font-black uppercase tracking-widest text-center">{action.label}</span>
+                            <Link key={action.label} href={action.href} className="flex flex-col items-center gap-4 p-8 rounded-[2rem] bg-slate-50 border border-slate-100 hover:bg-primary hover:text-white transition-all group shadow-sm">
+                                <action.icon className="h-6 w-6 text-primary group-hover:text-white transition-colors" />
+                                <span className="text-[9px] font-black uppercase tracking-widest text-center">{action.label}</span>
                             </Link>
                         ))}
                     </div>
                   </div>
               </section>
 
-              <section className="bg-card rounded-[3.5rem] p-10 border border-border shadow-sm">
-                  <div className="flex items-center justify-between mb-8 text-left">
-                      <h3 className="text-sm font-black uppercase text-foreground tracking-tighter">Audit Trail</h3>
-                      <Link href="/admin/audit" className="text-[9px] font-black text-primary uppercase underline">View All</Link>
+              <section className="bg-white rounded-[3.5rem] p-10 border border-slate-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-8 text-left border-b border-slate-50 pb-6">
+                      <h3 className="text-sm font-black uppercase text-foreground tracking-tighter leading-none">Security Audit</h3>
+                      <Link href="/admin/audit" className="text-[10px] font-black text-primary uppercase underline tracking-widest">Full Log</Link>
                   </div>
                   <div className="space-y-6">
                       {auditLogs.length === 0 ? (
-                          <p className="text-[10px] font-black text-muted-foreground uppercase italic text-center py-4">No recent activity logged.</p>
+                          <p className="text-[10px] font-black text-slate-300 uppercase italic text-center py-4">No recent activity detected.</p>
                       ) : (
                           auditLogs.map((log) => (
-                              <div key={log.id} className="flex gap-4">
-                                  <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground"><HistoryIcon className="h-4 w-4" /></div>
+                              <div key={log.id} className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-50 hover:border-slate-100 transition-all">
+                                  <div className="h-10 w-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm"><HistoryIcon className="h-5 w-5" /></div>
                                   <div className="text-left min-w-0">
-                                      <p className="text-[10px] font-black text-foreground uppercase leading-tight truncate">{log.action?.replace(/_/g, ' ')}</p>
-                                      <p className="text-[8px] text-muted-foreground uppercase mt-1">
+                                      <p className="text-[11px] font-black text-foreground uppercase leading-tight truncate tracking-tight">{log.action?.replace(/_/g, ' ')}</p>
+                                      <p className="text-[9px] font-bold text-slate-400 uppercase mt-1 tracking-widest">
                                           {log.staff_email?.split('@')[0]} &bull; {new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                       </p>
                                   </div>

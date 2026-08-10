@@ -244,16 +244,24 @@ export default function AuthForm({ initialMode = 'signin' }) {
 
       <div className="mt-6 space-y-3 border-t border-slate-200 pt-4">
         {!showAdminPin && (
-          <button
-            onClick={() => {
-              setShowAdminPin(true)
-              setMessage('')
-              setAdminPin('')
-            }}
-            className="block w-full text-center text-sm font-medium text-slate-600 hover:text-foreground hover:bg-slate-50 p-2.5 rounded-xl transition-colors"
-          >
-            🔐 Admin Access
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+                onClick={() => {
+                setShowAdminPin(true)
+                setMessage('')
+                setAdminPin('')
+                }}
+                className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground hover:bg-slate-50 p-3 rounded-xl transition-all border border-transparent hover:border-slate-100"
+            >
+                🔐 Admin
+            </button>
+            <button
+                onClick={() => router.push('/rider/login')}
+                className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:bg-primary/5 p-3 rounded-xl transition-all border border-transparent hover:border-primary/10"
+            >
+                🚚 Rider
+            </button>
+          </div>
         )}
         {showAdminPin && (
           <button
