@@ -11,7 +11,8 @@ import {
   Crown,
   Star,
   ShieldAlert,
-  Gem
+  Gem,
+  Zap
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { formatPrice } from '@/lib/utils';

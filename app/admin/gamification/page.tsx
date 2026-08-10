@@ -23,7 +23,8 @@ import {
     Users,
     Rocket,
     Plus,
-    Trash2
+    Trash2,
+    DollarSign
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
