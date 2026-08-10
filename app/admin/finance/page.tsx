@@ -77,12 +77,18 @@ export default function AdminFinancePage() {
     };
 
     const stats = React.useMemo(() => {
-        const totalRevenue = orders.filter(o => o.status === 'Delivered').reduce((sum, o) => sum + Number(o.total_price || 0), 0);
+        const deliveredOrders = orders.filter(o => o.status === 'Delivered');
+        const totalRevenue = deliveredOrders.reduce((sum, o) => sum + Number(o.total_price || 0), 0);
         const pendingValue = orders.filter(o => o.status === 'Pending' || o.status === 'Paid').reduce((sum, o) => sum + Number(o.total_price || 0), 0);
         const totalPayouts = payouts.reduce((sum, w) => sum + Number(w.total_earned || 0), 0);
         const availableCash = totalRevenue - totalPayouts;
 
-        return { totalRevenue, pendingValue, totalPayouts, availableCash };
+        const today = new Date().toISOString().split('T')[0];
+        const todayRevenue = orders
+            .filter(o => o.status === 'Delivered' && o.created_at?.startsWith(today))
+            .reduce((sum, o) => sum + Number(o.total_price || 0), 0);
+
+        return { totalRevenue, pendingValue, totalPayouts, availableCash, todayRevenue };
     }, [orders, payouts]);
 
     const transactions: Transaction[] = React.useMemo(() => {
@@ -167,14 +173,14 @@ export default function AdminFinancePage() {
             )}
 
             {/* Financial KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
                 {[
                     { label: 'Available Cash', val: stats.availableCash, icon: Wallet, color: 'emerald', trend: '+4.2%' },
                     { label: 'Pending Payouts', val: stats.totalPayouts, icon: Target, color: 'amber', trend: '-1.1%' },
-                    { label: 'Today Revenue', val: 38400, icon: TrendingUp, color: 'primary', trend: '+18.4%' },
-                    { label: 'Projected Profit', val: 12800, icon: DollarSign, color: 'indigo', trend: '+12.5%' },
+                    { label: 'Today Revenue', val: stats.todayRevenue, icon: TrendingUp, color: 'primary', trend: '+18.4%' },
+                    { label: 'Projected Profit', val: stats.todayRevenue * 0.3, icon: DollarSign, color: 'indigo', trend: '+12.5%' },
                 ].map((item) => (
-                    <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all relative overflow-hidden">
+                    <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all relative overflow-hidden h-full flex flex-col justify-between">
                         <div className="relative z-10 flex flex-col h-full justify-between">
                             <div className="flex justify-between items-start">
                                 <div className={cn(

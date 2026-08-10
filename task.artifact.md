@@ -1,34 +1,30 @@
-# Tasks - Apex Marketing Command Center 📣🚀
+# Tasks - Apex Enterprise OS Final Stabilization 💎🛡️
 
-## Phase 1: Foundation & UI Shell
-- [x] **1. Schema Deployment**
-    - [x] Create migration for `marketing_campaigns`.
-    - [x] Create migration for `campaign_channels`.
-    - [x] Create migration for `customer_segments`.
-- [x] **2. Navigation Evolution**
-    - [x] Update `AdminLayoutClient` with Marketing section.
-- [x] **3. Marketing Hub Build**
-    - [x] Build `/admin/marketing` Overview.
-    - [x] Build `/admin/marketing/campaigns` history.
-- [x] **4. Campaign Builder Step 1 & 2**
-    - [x] Implement Product Selector & Type selector.
-    - [x] Implement AI Content Assistant UI.
+## Phase 1: Removing Fake Data
+- [ ] **1. Analytics Hub Intelligence**
+    - [ ] Calculate real Revenue (30d), Net Margin, and Conv. Rate in `analytics/page.tsx`.
+- [ ] **2. Finance Fortress Pulse**
+    - [ ] Connect "Today Revenue" and "Projected Profit" to real data.
+- [ ] **3. Marketing Intelligence**
+    - [ ] Connect "Total Reach" and "Conversions" stats.
 
-## Phase 2: Tactical Previews & Channels
-- [x] **1. Multi-Platform Previews**
-    - [x] Create Instagram Mockup component.
-    - [x] Create WhatsApp Mockup component.
-    - [x] Create Email Mockup component.
-- [x] **2. Campaign Builder Step 3 & 4**
-    - [x] Implement Tactical Preview stage.
-    - [x] Implement Audience & Schedule stage.
-- [ ] **3. Integration Settings**
-    - [ ] Build Meta/Google connection UI in Settings.
+## Phase 2: UI Symmetry & Consistency
+- [ ] **1. Grid Stabilization**
+    - [ ] Apply `items-stretch` to Finance Hub grid.
+    - [ ] Apply `items-stretch` to Affiliate Center grid.
+- [ ] **2. Kanban Refinement**
+    - [ ] Fix column heights in Task Center.
 
-## Phase 3: Tracking & Intelligence
-- [ ] **1. UTM Engine**
-    - [ ] Build automated link generator with campaign attribution.
-- [ ] **2. Marketing ROI Dashboard**
-    - [ ] Connect Orders back to Campaign ID for revenue reporting.
-- [x] **3. Feed Protocol**
-    - [x] Implement `google_merchant.xml` dynamic route.
+## Phase 3: Button & Persistence Logic
+- [ ] **1. Marketing Lab**
+    - [ ] Implement DB persistence for Experimentation variants.
+- [ ] **2. Operations Workflow**
+    - [ ] Implement DB persistence for Task Board.
+- [ ] **3. Affiliate Rules**
+    - [ ] Add commission rules editor to Settings.
+
+## Phase 4: Final Integrity Check
+- [ ] **1. Lint Optimization**
+    - [ ] Resolve all remaining warnings.
+- [ ] **2. End-to-End Navigation Test**
+    - [ ] Verify every button in the sidebar groups.

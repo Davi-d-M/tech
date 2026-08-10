@@ -68,32 +68,51 @@ export default function TaskCenter() {
     }, [fetchTasks]);
 
     const handleCreateTask = async () => {
-        if (!newTask.title.trim()) return;
-        const task: Task = {
-            id: Math.random().toString(),
-            title: newTask.title,
-            description: newTask.description,
-            status: 'Todo',
-            priority: newTask.priority,
-            assigned_to: 'Staff',
-            due_date: null,
-            created_at: new Date().toISOString()
-        };
-        setTasks([task, ...tasks]);
-        setIsAdding(false);
-        setNewTask({ title: '', description: '', priority: 'Medium' });
-        setMessage({ type: 'success', text: "New operations protocol established. 📝" });
-        setTimeout(() => setMessage(null), 3000);
+        if (!supabase || !newTask.title.trim()) return;
+        try {
+            const { error } = await supabase.from('admin_tasks').insert([{
+                title: newTask.title,
+                description: newTask.description,
+                status: 'Todo',
+                priority: newTask.priority,
+                assigned_to: 'Staff',
+                created_by: adminEmail
+            }]);
+
+            if (error) throw error;
+
+            setMessage({ type: 'success', text: "New operations protocol established. 📝" });
+            setTimeout(() => setMessage(null), 3000);
+            setIsAdding(false);
+            setNewTask({ title: '', description: '', priority: 'Medium' });
+            fetchTasks();
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const updateTaskStatus = async (id: string, status: Task['status']) => {
-        setTasks(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+        if (!supabase) return;
+        try {
+            const { error } = await supabase.from('admin_tasks').update({ status }).eq('id', id);
+            if (error) throw error;
+            setTasks(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    const deleteTask = (id: string) => {
-        setTasks(prev => prev.filter(t => t.id !== id));
-        setMessage({ type: 'success', text: "Protocol decommissioned." });
-        setTimeout(() => setMessage(null), 3000);
+    const deleteTask = async (id: string) => {
+        if (!supabase) return;
+        try {
+            const { error } = await supabase.from('admin_tasks').delete().eq('id', id);
+            if (error) throw error;
+            setTasks(prev => prev.filter(t => t.id !== id));
+            setMessage({ type: 'success', text: "Protocol decommissioned." });
+            setTimeout(() => setMessage(null), 3000);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const COLUMNS: Task['status'][] = ['Todo', 'InProgress', 'Review', 'Done'];

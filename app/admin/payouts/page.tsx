@@ -102,19 +102,23 @@ export default function AdminPayoutsPage() {
                 </div>
             </header>
 
-            <div className="grid lg:grid-cols-4 gap-6">
-                <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6"><DollarSign className="h-5 w-5" /></div>
+            <div className="grid lg:grid-cols-4 gap-6 items-stretch">
+                <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all h-full">
                     <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Payouts</p>
-                        <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{formatPrice(payouts.filter(p => p.status === 'Paid').reduce((s, p) => s + p.amount, 0))}</h3>
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6"><DollarSign className="h-5 w-5" /></div>
+                        <div>
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Payouts</p>
+                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{formatPrice(payouts.filter(p => p.status === 'Paid').reduce((s, p) => s + p.amount, 0))}</h3>
+                        </div>
                     </div>
                 </Card>
-                <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all">
-                    <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 mb-6"><Clock className="h-5 w-5" /></div>
+                <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all h-full">
                     <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Pending Volume</p>
-                        <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{formatPrice(payouts.filter(p => p.status === 'Pending').reduce((s, p) => s + p.amount, 0))}</h3>
+                        <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 mb-6"><Clock className="h-5 w-5" /></div>
+                        <div>
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Pending Volume</p>
+                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{formatPrice(payouts.filter(p => p.status === 'Pending').reduce((s, p) => s + p.amount, 0))}</h3>
+                        </div>
                     </div>
                 </Card>
             </div>

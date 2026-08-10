@@ -53,9 +53,7 @@ export default function CreateCampaign() {
     const [products, setProducts] = React.useState<any[]>([]);
     const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
     const [segments, setSegments] = React.useState<any[]>([
-        { id: 'all', name: 'Everyone', estimated_reach: 2481 },
-        { id: 'vip', name: 'Elite VIPs', estimated_reach: 184 },
-        { id: 'inactive', name: 'Inactive 30d', estimated_reach: 312 }
+        { id: 'all', name: 'Everyone', estimated_reach: 2481 }
     ]);
 
     // Channel Content State
@@ -70,10 +68,12 @@ export default function CreateCampaign() {
             if (!supabase) return;
             const [prodRes, segRes] = await Promise.all([
                 supabase.from('products').select('*').order('name'),
-                supabase.from('customer_segments').select('*')
+                supabase.from('customer_segments').select('*').order('name')
             ]);
             if (prodRes.data) setProducts(prodRes.data);
-            if (segRes.data && segRes.data.length > 0) setSegments(segRes.data);
+            if (segRes.data && segRes.data.length > 0) {
+                setSegments(segRes.data);
+            }
         }
         fetchData();
     }, []);

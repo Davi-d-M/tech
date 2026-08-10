@@ -15,6 +15,7 @@ import {
   Store,
   ShoppingBag,
   ShieldCheck,
+  ShieldAlert,
   Zap,
   History as HistoryIcon,
   Settings,
@@ -29,6 +30,7 @@ import {
   Activity,
   Plus,
   Layout as LayoutIcon,
+  Lock,
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react';

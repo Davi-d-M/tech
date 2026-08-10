@@ -19,9 +19,17 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 
+interface LoginAttempt {
+    id: string;
+    ip_address: string;
+    success: boolean;
+    attempt_time: string;
+    metadata: any;
+}
+
 export default function SecurityHub() {
     const { email: adminEmail } = useAdmin();
-    const [attempts, setAttempts] = React.useState<any[]>([]);
+    const [attempts, setAttempts] = React.useState<LoginAttempt[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     const fetchSecurityData = async () => {

@@ -9,7 +9,8 @@ import {
     Activity,
     Trophy,
     AlertCircle,
-    Zap
+    Zap,
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,7 @@ interface Experiment {
     status: 'Running' | 'Paused' | 'Ended';
     variant_a: { name: string, orders: number, ctr: number };
     variant_b: { name: string, orders: number, ctr: number };
+    winning_variant?: 'A' | 'B';
     created_at: string;
 }
 
@@ -32,6 +34,7 @@ export default function ExperimentationCenter() {
     const [loading, setLoading] = React.useState(true);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const [isAdding, setIsAdding] = React.useState(false);
+    const [newExp, setNewExp] = React.useState({ name: '', varA: '', varB: '' });
 
     const fetchExperiments = React.useCallback(async () => {
         if (!supabase) return;
@@ -59,20 +62,48 @@ export default function ExperimentationCenter() {
         fetchExperiments();
     }, [fetchExperiments]);
 
-    const adoptVariant = (id: string, variant: 'A' | 'B') => {
-        setMessage({ type: 'success', text: `Protocol updated. Version ${variant} is now the global default. 🚀` });
-        setTimeout(() => setMessage(null), 5000);
-        setExperiments(prev => prev.map(e => e.id === id ? { ...e, status: 'Ended' } : e));
+    const adoptVariant = async (id: string, variant: 'A' | 'B') => {
+        if (!supabase) return;
+        try {
+            const { error } = await supabase.from('marketing_experiments').update({
+                status: 'Ended',
+                winning_variant: variant
+            }).eq('id', id);
+
+            if (error) throw error;
+
+            setMessage({ type: 'success', text: `Protocol updated. Version ${variant} is now the global default. 🚀` });
+            setTimeout(() => setMessage(null), 5000);
+            setExperiments(prev => prev.map(e => e.id === id ? { ...e, status: 'Ended', winning_variant: variant } : e));
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     const startExperiment = () => {
         setIsAdding(true);
     };
 
-    const handleCreateExperiment = () => {
-        setMessage({ type: 'success', text: "New yield experiment initialized. Awaiting baseline data..." });
-        setTimeout(() => setMessage(null), 3000);
-        setIsAdding(false);
+    const handleCreateExperiment = async () => {
+        if (!supabase || !newExp.name.trim()) return;
+        try {
+            const { error } = await supabase.from('marketing_experiments').insert([{
+                name: newExp.name,
+                status: 'Running',
+                variant_a: { name: newExp.varA || 'Variant A', orders: 0, ctr: 0 },
+                variant_b: { name: newExp.varB || 'Variant B', orders: 0, ctr: 0 }
+            }]);
+
+            if (error) throw error;
+
+            setMessage({ type: 'success', text: "New yield experiment initialized. Awaiting baseline data..." });
+            setTimeout(() => setMessage(null), 3000);
+            setIsAdding(false);
+            setNewExp({ name: '', varA: '', varB: '' });
+            fetchExperiments();
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     return (
@@ -130,8 +161,9 @@ export default function ExperimentationCenter() {
                                                 {/* Variant A */}
                                                 <div className={cn(
                                                     "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
-                                                    winner === 'A' && exp.status !== 'Ended' ? "border-emerald-500/20 bg-emerald-50/10" : "border-border bg-secondary/50"
+                                                    (exp.winning_variant === 'A' || (winner === 'A' && exp.status !== 'Ended')) ? "border-emerald-500/20 bg-emerald-50/10" : "border-border bg-secondary/50"
                                                 )}>
+                                                    {exp.winning_variant === 'A' && <div className="absolute top-4 right-4"><CheckCircle2 className="text-emerald-500 h-6 w-6" /></div>}
                                                     <div className="relative z-10 space-y-6">
                                                         <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Version A</p>
                                                         <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_a.name}</h4>
@@ -151,9 +183,9 @@ export default function ExperimentationCenter() {
                                                 {/* Variant B */}
                                                 <div className={cn(
                                                     "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
-                                                    winner === 'B' && exp.status !== 'Ended' ? "border-emerald-500 border-emerald-50/30 shadow-2xl" : "border-border bg-secondary/50"
+                                                    (exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) ? "border-emerald-500 border-emerald-50/30 shadow-2xl" : "border-border bg-secondary/50"
                                                 )}>
-                                                    {winner === 'B' && exp.status !== 'Ended' && <div className="absolute top-4 right-4"><Trophy className="text-primary h-6 w-6" /></div>}
+                                                    {(exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) && <div className="absolute top-4 right-4"><Trophy className="text-primary h-6 w-6" /></div>}
                                                     <div className="relative z-10 space-y-6">
                                                         <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Version B</p>
                                                         <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_b.name}</h4>
@@ -250,16 +282,16 @@ export default function ExperimentationCenter() {
                         <div className="space-y-4 text-left">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Experiment Name</label>
-                                <Input className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground" placeholder="e.g. Price Anchor Test" />
+                                <Input value={newExp.name} onChange={e => setNewExp({...newExp, name: e.target.value})} className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground" placeholder="e.g. Price Anchor Test" />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Variant A</label>
-                                    <Input className="h-12 rounded-xl bg-secondary border-border font-bold text-foreground" placeholder="Baseline" />
+                                    <Input value={newExp.varA} onChange={e => setNewExp({...newExp, varA: e.target.value})} className="h-12 rounded-xl bg-secondary border-border font-bold text-foreground" placeholder="Baseline" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Variant B</label>
-                                    <Input className="h-12 rounded-xl bg-secondary border-border font-bold text-foreground" placeholder="Challenger" />
+                                    <Input value={newExp.varB} onChange={e => setNewExp({...newExp, varB: e.target.value})} className="h-12 rounded-xl bg-secondary border-border font-bold text-foreground" placeholder="Challenger" />
                                 </div>
                             </div>
                         </div>

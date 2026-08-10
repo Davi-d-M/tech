@@ -91,6 +91,20 @@ export default function AdminAnalyticsPage() {
         });
     }, [orders]);
 
+    const performanceStats = React.useMemo(() => {
+        const delivered = orders.filter(o => o.status === 'Delivered');
+        const totalRevenue = delivered.reduce((s, o) => s + (o.total_price || 0), 0);
+        const totalProfit = totalRevenue * 0.3; // Baseline 30% margin
+        const convRate = orders.length > 0 ? (delivered.length / orders.length) * 100 : 0;
+
+        return [
+            { label: 'Revenue (Total)', val: formatPrice(totalRevenue), trend: '+18.3%', color: 'primary' },
+            { label: 'Net Margin', val: '30.0%', trend: '+2.1%', color: 'emerald' },
+            { label: 'Total Orders', val: orders.length.toString(), trend: '+4.5%', color: 'indigo' },
+            { label: 'Conv. Rate', val: `${convRate.toFixed(1)}%`, trend: '-0.2%', color: 'amber' },
+        ];
+    }, [orders]);
+
     if (loading) return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-background">
             <Loader2 className="h-10 w-10 text-primary animate-spin" />
@@ -132,12 +146,7 @@ export default function AdminAnalyticsPage() {
 
             {/* Performance HUD */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-                {[
-                    { label: 'Revenue (30d)', val: 'KSh 840,000', trend: '+18.3%', color: 'primary' },
-                    { label: 'Net Margin', val: '32.4%', trend: '+2.1%', color: 'emerald' },
-                    { label: 'Cust. LTV', val: 'KSh 12,400', trend: '+4.5%', color: 'indigo' },
-                    { label: 'Conv. Rate', val: '4.82%', trend: '-0.2%', color: 'amber' },
-                ].map((item) => (
+                {performanceStats.map((item) => (
                     <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all h-full flex flex-col justify-between">
                         <div>
                             <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>

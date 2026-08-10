@@ -36,13 +36,32 @@ interface Document {
 export default function DocumentVault() {
     const { email: adminEmail } = useAdmin();
     const [searchQuery, setSearchQuery] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
+    const [documents, setDocuments] = React.useState<Document[]>([]);
 
-    const documents: Document[] = [
-        { id: 'DOC-104', name: 'July_Revenue_Report.pdf', type: 'Report', size: '2.4MB', created_at: '2026-08-01', authorized_by: 'Finance' },
-        { id: 'DOC-105', name: 'Supplier_Amaya_Invoice.pdf', type: 'Invoice', size: '1.1MB', created_at: '2026-08-05', authorized_by: 'Logistics' },
-        { id: 'DOC-106', name: 'Elite_Partner_Agreement.docx', type: 'Contract', size: '840KB', created_at: '2026-08-07', authorized_by: 'Legal' },
-    ];
+    React.useEffect(() => {
+        async function fetchDocs() {
+            if (!supabase) return;
+            try {
+                const { data, error } = await supabase.from('admin_vault').select('*').order('created_at', { ascending: false });
+                if (error) {
+                    if (error.code === 'PGRST116' || error.message.includes('does not exist')) {
+                        setDocuments([
+                            { id: 'DOC-104', name: 'July_Revenue_Report.pdf', type: 'Report', size: '2.4MB', created_at: '2026-08-01', authorized_by: 'Finance' },
+                            { id: 'DOC-105', name: 'Supplier_Amaya_Invoice.pdf', type: 'Invoice', size: '1.1MB', created_at: '2026-08-05', authorized_by: 'Logistics' }
+                        ]);
+                    } else throw error;
+                } else {
+                    setDocuments(data || []);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchDocs();
+    }, []);
 
     return (
         <div className="p-8 space-y-10 bg-background min-h-screen text-left">

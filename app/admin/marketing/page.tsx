@@ -24,27 +24,27 @@ export default function MarketingOverview() {
     const [stats, setStats] = React.useState({
         totalReach: 12480,
         activeCampaigns: 0,
-        generatedOrders: 47,
+        generatedOrders: 0,
         marketingROI: 4.7
     });
-    const [recentCampaigns, setRecentCampaigns] = React.useState<any[]>([]);
+    const [recentCampaigns, setRecentCampaigns] = React.useState<{ id: string, name: string, type: string, status: string, reach?: number, conversions?: number, products?: { name: string } }[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
         async function fetchMarketingData() {
             if (!supabase) return;
             try {
-                const { data, error } = await supabase
-                    .from('marketing_campaigns')
-                    .select('*, products(name)')
-                    .order('created_at', { ascending: false })
-                    .limit(3);
+                const [campRes, ordersRes] = await Promise.all([
+                    supabase.from('marketing_campaigns').select('*, products(name)').order('created_at', { ascending: false }).limit(3),
+                    supabase.from('orders').select('id', { count: 'exact' }).not('referred_by_code', 'is', null)
+                ]);
 
-                if (data) {
-                    setRecentCampaigns(data);
+                if (campRes.data) {
+                    setRecentCampaigns(campRes.data);
                     setStats(prev => ({
                         ...prev,
-                        activeCampaigns: data.filter(c => c.status === 'Published' || c.status === 'Live').length
+                        activeCampaigns: campRes.data.filter(c => c.status === 'Published' || c.status === 'Live').length,
+                        generatedOrders: ordersRes.count || 0
                     }));
                 }
             } catch (err) {
@@ -188,9 +188,11 @@ export default function MarketingOverview() {
                                 </div>
                             </div>
 
-                            <Button className="w-full h-14 rounded-2xl bg-primary text-background font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all mt-auto">
-                                Analyze Funnel Details
-                            </Button>
+                            <Link href="/admin/analytics">
+                                <Button className="w-full h-14 rounded-2xl bg-primary text-background font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all mt-auto">
+                                    Analyze Funnel Details
+                                </Button>
+                            </Link>
                         </div>
                     </Card>
 
@@ -200,7 +202,7 @@ export default function MarketingOverview() {
                             <h3 className="text-xl font-black uppercase tracking-tighter text-foreground leading-none">Personalization</h3>
                         </div>
                         <p className="text-[10px] text-muted-foreground font-medium leading-relaxed italic">
-                            &quot;Current category affinity maps show elite preference for Audio gadgets. Personalized 'Welcome Back' triggers active for Gold tier.&quot;
+                            &quot;Current category affinity maps show elite preference for Audio gadgets. Personalized &apos;Welcome Back&apos; triggers active for Gold tier.&quot;
                         </p>
                         <div className="pt-4 border-t border-border flex justify-between items-center">
                             <span className="text-[8px] font-black text-indigo-600 uppercase tracking-widest">Logic Active</span>
