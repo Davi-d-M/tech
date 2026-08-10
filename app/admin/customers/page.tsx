@@ -28,6 +28,7 @@ interface OrderRecord {
   customer_phone: string;
   total_price: number;
   created_at: string;
+  referred_by_code?: string | null;
 }
 
 interface CustomerStats {

@@ -23,16 +23,38 @@ import Link from 'next/link';
 export default function MarketingOverview() {
     const [stats, setStats] = React.useState({
         totalReach: 12480,
-        activeCampaigns: 3,
+        activeCampaigns: 0,
         generatedOrders: 47,
         marketingROI: 4.7
     });
+    const [recentCampaigns, setRecentCampaigns] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
-    const recentCampaigns = [
-        { id: '1', name: 'AMAYA AM-05 Launch', type: 'Product Launch', status: 'Live', reach: 8421, conversions: 12 },
-        { id: '2', name: 'Elite Audio Flash Sale', type: 'Flash Sale', status: 'Published', reach: 3200, conversions: 24 },
-        { id: '3', name: 'Weekend Tech Protocol', type: 'Restock', status: 'Scheduled', reach: 0, conversions: 0 },
-    ];
+    React.useEffect(() => {
+        async function fetchMarketingData() {
+            if (!supabase) return;
+            try {
+                const { data, error } = await supabase
+                    .from('marketing_campaigns')
+                    .select('*, products(name)')
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+
+                if (data) {
+                    setRecentCampaigns(data);
+                    setStats(prev => ({
+                        ...prev,
+                        activeCampaigns: data.filter(c => c.status === 'Published' || c.status === 'Live').length
+                    }));
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchMarketingData();
+    }, []);
 
     return (
         <div className="p-8 space-y-10 bg-background min-h-screen text-left">
@@ -88,7 +110,16 @@ export default function MarketingOverview() {
                     </div>
 
                     <div className="grid gap-4 flex-1">
-                        {recentCampaigns.map(camp => (
+                        {loading ? (
+                             [...Array(3)].map((_, i) => (
+                                <Card key={i} className="h-32 rounded-[3rem] border border-border animate-pulse bg-secondary/50"></Card>
+                             ))
+                        ) : recentCampaigns.length === 0 ? (
+                            <div className="p-16 text-center bg-secondary/20 rounded-[3rem] border border-dashed border-border opacity-40">
+                                <Rocket className="h-10 w-10 mx-auto mb-4" />
+                                <p className="text-[10px] font-black uppercase tracking-widest">No active deployments found.</p>
+                            </div>
+                        ) : recentCampaigns.map(camp => (
                             <Card key={camp.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm flex items-center justify-between group hover:border-primary/20 transition-all h-auto">
                                 <div className="flex items-center gap-6">
                                     <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary shadow-inner">
@@ -101,7 +132,7 @@ export default function MarketingOverview() {
                                             <div className="h-1 w-1 rounded-full bg-border"></div>
                                             <span className={cn(
                                                 "text-[9px] font-black uppercase tracking-widest",
-                                                camp.status === 'Live' ? "text-emerald-500" : "text-primary"
+                                                camp.status === 'Published' || camp.status === 'Live' ? "text-emerald-500" : "text-primary"
                                             )}>{camp.status}</span>
                                         </div>
                                     </div>
@@ -109,12 +140,8 @@ export default function MarketingOverview() {
 
                                 <div className="flex items-center gap-12 text-right">
                                     <div className="hidden sm:block">
-                                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Reach</p>
-                                        <p className="text-lg font-black text-foreground">{camp.reach.toLocaleString()}</p>
-                                    </div>
-                                    <div className="hidden sm:block">
-                                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Impact</p>
-                                        <p className="text-lg font-black text-emerald-500">{camp.conversions} Sales</p>
+                                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Target</p>
+                                        <p className="text-lg font-black text-foreground">{camp.products?.name?.substring(0, 15) || 'Global'}</p>
                                     </div>
                                     <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-secondary group-hover:bg-primary group-hover:text-white transition-all">
                                         <ChevronRight size={18} />

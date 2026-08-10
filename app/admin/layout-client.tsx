@@ -23,10 +23,12 @@ import {
   TrendingUp,
   DollarSign,
   Truck,
+  CreditCard,
   Search,
   Bell,
   Activity,
   Plus,
+  Layout as LayoutIcon,
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react';
@@ -115,7 +117,7 @@ export default function AdminLayoutClient({
       { name: 'Segments', href: '/admin/marketing/audiences', icon: Users, permission: 'can_manage_broadcast' },
     ]},
     { group: 'LOGISTICS', items: [
-      { name: 'Tasks Board', href: '/admin/operations/tasks', icon: Layout, permission: 'can_manage_orders' },
+      { name: 'Tasks Board', href: '/admin/operations/tasks', icon: LayoutIcon, permission: 'can_manage_orders' },
       { name: 'Warehouse', href: '/admin/upload', icon: Package, permission: 'can_manage_inventory' },
       { name: 'Live Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
       { name: 'Orders Pipeline', href: '/admin/orders', icon: ShoppingCart, permission: 'can_manage_orders' },

@@ -10,7 +10,8 @@ import {
     Zap,
     Layout,
     MoreVertical,
-    AlertCircle
+    AlertCircle,
+    Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -128,9 +129,9 @@ export default function TaskCenter() {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch min-h-[600px]">
                 {COLUMNS.map(col => (
-                    <div key={col} className="space-y-6 flex flex-col h-full">
+                    <div key={col} className="space-y-6 flex flex-col h-full bg-slate-50/50 p-4 rounded-[2.5rem] border border-slate-100">
                         <div className="flex items-center justify-between px-4 shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className={cn(
@@ -146,7 +147,7 @@ export default function TaskCenter() {
                             </span>
                         </div>
 
-                        <div className="space-y-4 flex-1">
+                        <div className="space-y-4 flex-1 overflow-y-auto no-scrollbar pb-10">
                             {tasks.filter(t => t.status === col).map(task => (
                                 <Card key={task.id} className="p-6 rounded-[2rem] border border-border bg-card shadow-sm hover:shadow-xl transition-all group cursor-grab active:cursor-grabbing h-auto">
                                     <div className="space-y-4 h-full flex flex-col justify-between">
@@ -158,7 +159,10 @@ export default function TaskCenter() {
                                                     task.priority === 'High' ? "bg-primary/5 text-primary border-primary/10" :
                                                     "bg-slate-50 text-slate-400 border-slate-100"
                                                 )}>{task.priority}</span>
-                                                <button className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"><MoreVertical size={14} /></button>
+                                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button onClick={() => deleteTask(task.id)} className="text-slate-300 hover:text-rose-500 transition-colors p-1"><Trash2 size={14} /></button>
+                                                    <button className="text-slate-300 hover:text-primary transition-colors p-1"><MoreVertical size={14} /></button>
+                                                </div>
                                             </div>
                                             <div>
                                                 <h4 className="text-sm font-black text-foreground uppercase tracking-tight leading-tight">{task.title}</h4>
@@ -173,6 +177,14 @@ export default function TaskCenter() {
                                                 <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">{task.assigned_to}</span>
                                             </div>
                                             <div className="flex gap-1">
+                                                {col !== 'Todo' && (
+                                                    <button
+                                                        onClick={() => updateTaskStatus(task.id, COLUMNS[COLUMNS.indexOf(col) - 1])}
+                                                        className="h-6 w-6 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-white hover:text-foreground transition-all shadow-sm border border-slate-100"
+                                                    >
+                                                        <ChevronRight size={12} className="rotate-180" />
+                                                    </button>
+                                                )}
                                                 {col !== 'Done' && (
                                                     <button
                                                         onClick={() => updateTaskStatus(task.id, COLUMNS[COLUMNS.indexOf(col) + 1])}
@@ -188,7 +200,7 @@ export default function TaskCenter() {
                             ))}
 
                             {tasks.filter(t => t.status === col).length === 0 && (
-                                <div className="py-12 border-2 border-dashed border-border rounded-[2rem] flex flex-col items-center justify-center text-center opacity-20 group hover:opacity-100 transition-opacity h-full min-h-[200px]">
+                                <div className="py-12 border-2 border-dashed border-border rounded-[2rem] flex flex-col items-center justify-center text-center opacity-20 group hover:opacity-100 transition-opacity min-h-[200px]">
                                     <CheckCircle2 size={32} className="mb-2" />
                                     <p className="text-[8px] font-black uppercase tracking-widest italic">Column Optimized</p>
                                 </div>

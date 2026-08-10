@@ -19,7 +19,8 @@ import {
   Gem,
   Loader2,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  MessageSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -61,6 +62,7 @@ export default function CustomerIntelligence() {
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [products, setProducts] = useState<ProductInfo[]>([]);
   const [referrals, setReferrals] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -71,16 +73,18 @@ export default function CustomerIntelligence() {
         const profileRes = await supabase.from('profiles').select('*').eq('phone_number', phone).maybeSingle();
         const profileData = profileRes.data as CustomerProfile;
 
-        const [ordersRes, productsRes, referralsRes] = await Promise.all([
+        const [ordersRes, productsRes, referralsRes, reviewsRes] = await Promise.all([
           supabase.from('orders').select('*').eq('customer_phone', phone).order('created_at', { ascending: false }),
           supabase.from('products').select('id, name, category'),
-          profileData ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] })
+          profileData ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] }),
+          supabase.from('reviews').select('*').eq('customer_name', profileData?.full_name || '').order('created_at', { ascending: false })
         ]);
 
         if (ordersRes.data) setOrders(ordersRes.data as Order[]);
         if (profileRes.data) setProfile(profileRes.data as CustomerProfile);
         if (productsRes.data) setProducts(productsRes.data as ProductInfo[]);
         if (referralsRes.data) setReferrals(referralsRes.data);
+        if (reviewsRes.data) setReviews(reviewsRes.data);
       } catch (err: unknown) {
         console.error(err);
       } finally {
@@ -319,6 +323,46 @@ export default function CustomerIntelligence() {
                               </div>
                           );
                       })}
+                  </div>
+              </Card>
+
+              <Card className="rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden bg-white">
+                  <div className="p-10 border-b border-slate-50 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                          <MessageSquare className="h-6 w-6 text-primary" />
+                          <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Customer Feedback</h2>
+                      </div>
+                      <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-4 py-2 rounded-full">{reviews.length} Submissions</span>
+                  </div>
+                  <div className="divide-y divide-slate-50">
+                      {reviews.length === 0 ? (
+                          <div className="p-20 text-center opacity-30">
+                              <MessageSquare className="h-10 w-10 mx-auto mb-4" />
+                              <p className="text-[10px] font-black uppercase tracking-widest">No reviews logged yet.</p>
+                          </div>
+                      ) : (
+                          reviews.map((review) => (
+                              <div key={review.id} className="p-10 space-y-4 hover:bg-slate-50/50 transition-all group">
+                                  <div className="flex justify-between items-start">
+                                      <div className="flex text-amber-400">
+                                          {[...Array(5)].map((_, i) => (
+                                              <Star key={i} className={cn("h-3.5 w-3.5", i < review.rating ? "fill-current" : "text-slate-100")} />
+                                          ))}
+                                      </div>
+                                      <span className="text-[8px] font-black text-slate-300 uppercase">{new Date(review.created_at).toLocaleDateString()}</span>
+                                  </div>
+                                  <p className="text-slate-600 font-medium italic leading-relaxed">&quot;{review.comment}&quot;</p>
+                                  <div className="pt-2 flex items-center gap-4">
+                                      <span className={cn(
+                                          "text-[8px] font-black uppercase px-2 py-1 rounded border",
+                                          review.is_verified_owner ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-50 text-slate-400 border-slate-100"
+                                      )}>
+                                          {review.is_verified_owner ? 'Verified Owner' : 'Standard'}
+                                      </span>
+                                  </div>
+                              </div>
+                          ))
+                      )}
                   </div>
               </Card>
           </div>

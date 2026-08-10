@@ -441,7 +441,7 @@ export default function AdminAffiliates() {
                                                 >
                                                     <ShieldCheck className="h-4 w-4" />
                                                 </Button>
-                                                <Link href={`/admin/customers/${aff.id}`}>
+                                                <Link href={`/admin/customers/${aff.phone_number}`}>
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
