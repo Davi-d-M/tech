@@ -74,6 +74,7 @@ export default function AdminSettingsPage() {
 
     const [activeTab, setActiveTab] = useState<TabId>('identity');
     const [isAdvancedEnabled, setIsAdvancedEnabled] = useState(false);
+    const [isSandboxMode, setIsSandboxMode] = useState(false);
 
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [faviconFile, setFaviconFile] = useState<File | null>(null);
@@ -702,6 +703,46 @@ export default function AdminSettingsPage() {
                     {/* ADVANCED TAB */}
                     {activeTab === 'advanced' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 relative overflow-hidden text-left">
+                                <div className="relative z-10 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><ShieldAlert className="h-6 w-6" /></div>
+                                        <div>
+                                            <h2 className="text-xl font-black text-foreground uppercase">Tactical Sandbox</h2>
+                                            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mt-1">Simulate orders & payments</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsSandboxMode(!isSandboxMode)}
+                                        className={cn(
+                                            "w-20 h-10 rounded-full transition-all relative p-1 flex items-center shadow-inner",
+                                            isSandboxMode ? "bg-emerald-500" : "bg-secondary"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "h-8 w-8 rounded-full bg-white shadow-xl transition-all flex items-center justify-center",
+                                            isSandboxMode ? "translate-x-10" : "translate-x-0"
+                                        )}>
+                                            {isSandboxMode ? <CheckCircle2 size={16} className="text-emerald-500" /> : <X size={16} className="text-slate-300" />}
+                                        </div>
+                                    </button>
+                                </div>
+
+                                {isSandboxMode && (
+                                    <div className="p-8 rounded-[2.5rem] bg-emerald-50/50 border-2 border-dashed border-emerald-200 text-emerald-700 animate-in zoom-in-95 duration-500">
+                                        <div className="flex items-start gap-4">
+                                            <Zap size={20} className="mt-1 animate-pulse" />
+                                            <div className="space-y-2">
+                                                <p className="text-sm font-black uppercase tracking-tight">Active Duty: Sandbox Mode</p>
+                                                <p className="text-xs font-medium leading-relaxed italic">
+                                                    The system is now isolated. You can test Order Dispatch, Payment Webhooks, and Loyalty Rewards without affecting production ledgers or live customers.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </Card>
+
                             <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 overflow-hidden relative text-left">
                                 <div className="flex items-center justify-between text-left">
                                     <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Code className="h-5 w-5 text-muted-foreground" /> Surgical Tweaks</h2>

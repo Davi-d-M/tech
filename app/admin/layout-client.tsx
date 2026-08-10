@@ -37,6 +37,7 @@ import { AdminProvider, Permissions } from '@/context/AdminContext';
 import AdminErrorBoundary from '@/components/admin/AdminErrorBoundary';
 import GlobalCommandPalette from '@/components/admin/GlobalCommandPalette';
 import LiveActivitySidebar from '@/components/admin/LiveActivitySidebar';
+import NotificationCenter from '@/components/admin/NotificationCenter';
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;
@@ -58,6 +59,7 @@ export default function AdminLayoutClient({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isActivityOpen, setIsActivityOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
@@ -111,6 +113,8 @@ export default function AdminLayoutClient({
     { name: 'Subscribers', href: '/admin/subscribers', icon: Mail, permission: 'can_manage_broadcast' },
     { name: 'Broadcast', href: '/admin/broadcast', icon: Send, permission: 'can_manage_broadcast' },
     { name: 'Reports', href: '/admin/reports', icon: BarChart3, permission: 'can_view_revenue' },
+    { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp, permission: 'can_view_revenue' },
+    { name: 'Finance', href: '/admin/finance', icon: DollarSign, permission: 'can_view_revenue' },
     { name: 'Rewards', href: '/admin/gamification', icon: Trophy, permission: 'can_manage_settings' },
     { name: 'Media Hub', href: '/admin/media', icon: ImageIcon, permission: 'can_manage_media' },
     { name: 'Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
@@ -146,6 +150,7 @@ export default function AdminLayoutClient({
 
           <GlobalCommandPalette isOpen={isSearchOpen} setIsOpen={setIsSearchOpen} />
           <LiveActivitySidebar isOpen={isActivityOpen} setIsOpen={setIsActivityOpen} />
+          <NotificationCenter isOpen={isNotificationsOpen} setIsOpen={setIsNotificationsOpen} />
 
           {/* Mobile Header */}
           <div className="md:hidden flex items-center justify-between px-4 py-4 bg-background border-b border-border sticky top-0 z-50 shadow-sm backdrop-blur-xl bg-background/80">
@@ -266,7 +271,12 @@ export default function AdminLayoutClient({
 
                   <div className="flex items-center gap-4">
                       <Button onClick={() => setIsActivityOpen(true)} variant="ghost" size="icon" className="h-12 w-12 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5 relative">
+                          <Activity className="h-5 w-5" />
+                      </Button>
+
+                      <Button onClick={() => setIsNotificationsOpen(true)} variant="ghost" size="icon" className="h-12 w-12 rounded-2xl text-muted-foreground hover:text-primary hover:bg-primary/5 relative">
                           <Bell className="h-5 w-5" />
+                          <span className="absolute top-3 right-3 h-2 w-2 bg-primary rounded-full border-2 border-background"></span>
                       </Button>
 
                       <div className="h-6 w-px bg-border mx-2"></div>

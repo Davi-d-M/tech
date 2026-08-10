@@ -193,11 +193,29 @@ function UploadContent() {
   const profitIntel = useMemo(() => {
       const sell = Number(form.price) || 0;
       const cost = Number(form.cost_price) || 0;
-      const finalPrice = sell; // Sell price is always the current price
+      const finalPrice = sell;
       const profit = finalPrice - cost;
       const margin = finalPrice > 0 ? (profit / finalPrice) * 100 : 0;
       return { profit, margin };
   }, [form.price, form.cost_price]);
+
+  const stockIntelligence = useMemo(() => {
+      if (!editingId) return null;
+
+      const currentStock = Number(form.stock) || 0;
+      const avgDailySales = 1.2; // This should be calculated from real orders in a production system
+      const daysRemaining = avgDailySales > 0 ? (currentStock / avgDailySales).toFixed(1) : '∞';
+      const reorderPoint = 8;
+      const isReorderUrgent = currentStock <= reorderPoint;
+
+      return {
+          currentStock,
+          avgDailySales,
+          daysRemaining,
+          reorderPoint,
+          isReorderUrgent
+      };
+  }, [editingId, form.stock]);
 
   const formCompletion = useMemo(() => {
       const fields = [form.name, form.price, form.category, form.description];
@@ -505,6 +523,63 @@ function UploadContent() {
                   )}
               </Card>
 
+              {stockIntelligence && (
+                  <Card className={cn(
+                      "rounded-[3rem] border shadow-sm overflow-hidden bg-white animate-in zoom-in-95 duration-500",
+                      stockIntelligence.isReorderUrgent ? "border-rose-100" : "border-slate-100"
+                  )}>
+                      <div className="p-8 flex items-center justify-between border-b border-slate-50">
+                          <div className="flex items-center gap-4">
+                              <div className={cn(
+                                  "h-10 w-10 rounded-xl flex items-center justify-center shadow-sm",
+                                  stockIntelligence.isReorderUrgent ? "bg-rose-50 text-rose-500" : "bg-emerald-50 text-emerald-500"
+                              )}>
+                                  <ProfitIcon className="h-5 w-5" />
+                              </div>
+                              <div className="text-left">
+                                  <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Stock Intelligence</h2>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Predictive Velocity Scan</p>
+                              </div>
+                          </div>
+                          {stockIntelligence.isReorderUrgent && (
+                              <span className="px-3 py-1 bg-rose-500 text-white text-[8px] font-black rounded-full animate-pulse uppercase">REORDER URGENT</span>
+                          )}
+                      </div>
+                      <CardContent className="p-10 space-y-8">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Current Stock</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.currentStock}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Avg Daily Sales</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.avgDailySales}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Days Remaining</p>
+                                  <p className={cn(
+                                      "text-2xl font-black",
+                                      stockIntelligence.isReorderUrgent ? "text-rose-600" : "text-emerald-600"
+                                  )}>{stockIntelligence.daysRemaining}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Reorder Point</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.reorderPoint}</p>
+                              </div>
+                          </div>
+
+                          <div className="flex gap-4">
+                              <Button type="button" onClick={generateSupplierPO} className="flex-1 h-14 rounded-2xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">
+                                  <Download className="h-4 w-4 mr-2" /> Create Purchase Order
+                              </Button>
+                              <Button type="button" variant="outline" className="flex-1 h-14 rounded-2xl border-slate-100 font-black uppercase text-[10px] tracking-widest">
+                                  Modify Threshold
+                              </Button>
+                          </div>
+                      </CardContent>
+                  </Card>
+              )}
+
               <Card className="rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden bg-white">
                   <button type="button" onClick={() => toggleSection('pricing')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
@@ -541,6 +616,63 @@ function UploadContent() {
                   )}
               </Card>
 
+              {stockIntelligence && (
+                  <Card className={cn(
+                      "rounded-[3rem] border shadow-sm overflow-hidden bg-white animate-in zoom-in-95 duration-500",
+                      stockIntelligence.isReorderUrgent ? "border-rose-100" : "border-slate-100"
+                  )}>
+                      <div className="p-8 flex items-center justify-between border-b border-slate-50">
+                          <div className="flex items-center gap-4">
+                              <div className={cn(
+                                  "h-10 w-10 rounded-xl flex items-center justify-center shadow-sm",
+                                  stockIntelligence.isReorderUrgent ? "bg-rose-50 text-rose-500" : "bg-emerald-50 text-emerald-500"
+                              )}>
+                                  <ProfitIcon className="h-5 w-5" />
+                              </div>
+                              <div className="text-left">
+                                  <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Stock Intelligence</h2>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Predictive Velocity Scan</p>
+                              </div>
+                          </div>
+                          {stockIntelligence.isReorderUrgent && (
+                              <span className="px-3 py-1 bg-rose-500 text-white text-[8px] font-black rounded-full animate-pulse uppercase">REORDER URGENT</span>
+                          )}
+                      </div>
+                      <CardContent className="p-10 space-y-8">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Current Stock</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.currentStock}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Avg Daily Sales</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.avgDailySales}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Days Remaining</p>
+                                  <p className={cn(
+                                      "text-2xl font-black",
+                                      stockIntelligence.isReorderUrgent ? "text-rose-600" : "text-emerald-600"
+                                  )}>{stockIntelligence.daysRemaining}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Reorder Point</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.reorderPoint}</p>
+                              </div>
+                          </div>
+
+                          <div className="flex gap-4">
+                              <Button type="button" onClick={generateSupplierPO} className="flex-1 h-14 rounded-2xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">
+                                  <Download className="h-4 w-4 mr-2" /> Create Purchase Order
+                              </Button>
+                              <Button type="button" variant="outline" className="flex-1 h-14 rounded-2xl border-slate-100 font-black uppercase text-[10px] tracking-widest">
+                                  Modify Threshold
+                              </Button>
+                          </div>
+                      </CardContent>
+                  </Card>
+              )}
+
               <Card className="rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden bg-white">
                   <button type="button" onClick={() => toggleSection('inventory')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
@@ -571,6 +703,63 @@ function UploadContent() {
                   )}
               </Card>
 
+              {stockIntelligence && (
+                  <Card className={cn(
+                      "rounded-[3rem] border shadow-sm overflow-hidden bg-white animate-in zoom-in-95 duration-500",
+                      stockIntelligence.isReorderUrgent ? "border-rose-100" : "border-slate-100"
+                  )}>
+                      <div className="p-8 flex items-center justify-between border-b border-slate-50">
+                          <div className="flex items-center gap-4">
+                              <div className={cn(
+                                  "h-10 w-10 rounded-xl flex items-center justify-center shadow-sm",
+                                  stockIntelligence.isReorderUrgent ? "bg-rose-50 text-rose-500" : "bg-emerald-50 text-emerald-500"
+                              )}>
+                                  <ProfitIcon className="h-5 w-5" />
+                              </div>
+                              <div className="text-left">
+                                  <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Stock Intelligence</h2>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Predictive Velocity Scan</p>
+                              </div>
+                          </div>
+                          {stockIntelligence.isReorderUrgent && (
+                              <span className="px-3 py-1 bg-rose-500 text-white text-[8px] font-black rounded-full animate-pulse uppercase">REORDER URGENT</span>
+                          )}
+                      </div>
+                      <CardContent className="p-10 space-y-8">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Current Stock</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.currentStock}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Avg Daily Sales</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.avgDailySales}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Days Remaining</p>
+                                  <p className={cn(
+                                      "text-2xl font-black",
+                                      stockIntelligence.isReorderUrgent ? "text-rose-600" : "text-emerald-600"
+                                  )}>{stockIntelligence.daysRemaining}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Reorder Point</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.reorderPoint}</p>
+                              </div>
+                          </div>
+
+                          <div className="flex gap-4">
+                              <Button type="button" onClick={generateSupplierPO} className="flex-1 h-14 rounded-2xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">
+                                  <Download className="h-4 w-4 mr-2" /> Create Purchase Order
+                              </Button>
+                              <Button type="button" variant="outline" className="flex-1 h-14 rounded-2xl border-slate-100 font-black uppercase text-[10px] tracking-widest">
+                                  Modify Threshold
+                              </Button>
+                          </div>
+                      </CardContent>
+                  </Card>
+              )}
+
               <Card className="rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden bg-white">
                   <button type="button" onClick={() => toggleSection('description')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
@@ -599,6 +788,63 @@ function UploadContent() {
                       </CardContent>
                   )}
               </Card>
+
+              {stockIntelligence && (
+                  <Card className={cn(
+                      "rounded-[3rem] border shadow-sm overflow-hidden bg-white animate-in zoom-in-95 duration-500",
+                      stockIntelligence.isReorderUrgent ? "border-rose-100" : "border-slate-100"
+                  )}>
+                      <div className="p-8 flex items-center justify-between border-b border-slate-50">
+                          <div className="flex items-center gap-4">
+                              <div className={cn(
+                                  "h-10 w-10 rounded-xl flex items-center justify-center shadow-sm",
+                                  stockIntelligence.isReorderUrgent ? "bg-rose-50 text-rose-500" : "bg-emerald-50 text-emerald-500"
+                              )}>
+                                  <ProfitIcon className="h-5 w-5" />
+                              </div>
+                              <div className="text-left">
+                                  <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Stock Intelligence</h2>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Predictive Velocity Scan</p>
+                              </div>
+                          </div>
+                          {stockIntelligence.isReorderUrgent && (
+                              <span className="px-3 py-1 bg-rose-500 text-white text-[8px] font-black rounded-full animate-pulse uppercase">REORDER URGENT</span>
+                          )}
+                      </div>
+                      <CardContent className="p-10 space-y-8">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Current Stock</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.currentStock}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Avg Daily Sales</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.avgDailySales}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Days Remaining</p>
+                                  <p className={cn(
+                                      "text-2xl font-black",
+                                      stockIntelligence.isReorderUrgent ? "text-rose-600" : "text-emerald-600"
+                                  )}>{stockIntelligence.daysRemaining}</p>
+                              </div>
+                              <div className="space-y-1">
+                                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest">Reorder Point</p>
+                                  <p className="text-2xl font-black text-foreground">{stockIntelligence.reorderPoint}</p>
+                              </div>
+                          </div>
+
+                          <div className="flex gap-4">
+                              <Button type="button" onClick={generateSupplierPO} className="flex-1 h-14 rounded-2xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-indigo-100 hover:scale-[1.02] active:scale-95 transition-all">
+                                  <Download className="h-4 w-4 mr-2" /> Create Purchase Order
+                              </Button>
+                              <Button type="button" variant="outline" className="flex-1 h-14 rounded-2xl border-slate-100 font-black uppercase text-[10px] tracking-widest">
+                                  Modify Threshold
+                              </Button>
+                          </div>
+                      </CardContent>
+                  </Card>
+              )}
 
               <Card className="rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden bg-white">
                   <button type="button" onClick={() => toggleSection('media')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">

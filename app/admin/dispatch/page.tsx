@@ -231,7 +231,7 @@ export default function AdminDispatchPage() {
             <div className="grid lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 space-y-10">
                     <div className="h-[650px] w-full relative">
-                        <LiveDispatchMap riders={riders} />
+                        <LiveDispatchMap riders={riders as any} onSelectRider={(r: any) => setSelectedRider(r)} />
                     </div>
 
                     <section className="space-y-6">
@@ -354,56 +354,98 @@ export default function AdminDispatchPage() {
                 </div>
             </div>
 
+            {/* Mission Intel Sidebar */}
             {selectedRider && (
-                <div className="fixed inset-0 z-[210] flex items-center justify-center bg-background/50 backdrop-blur-md p-6" onClick={() => setSelectedRider(null)}>
-                    <Card className="max-w-3xl w-full bg-card rounded-[3.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 border-border" onClick={e => e.stopPropagation()}>
+                <div
+                    className="fixed inset-0 z-[200] flex justify-end bg-background/20 backdrop-blur-sm animate-in fade-in duration-300"
+                    onClick={() => setSelectedRider(null)}
+                >
+                    <aside
+                        className="w-[450px] h-full bg-card border-l border-border shadow-2xl animate-in slide-in-from-right duration-500 overflow-y-auto no-scrollbar"
+                        onClick={e => e.stopPropagation()}
+                    >
                         <div className="p-10 space-y-10 text-left">
                             <header className="flex justify-between items-start">
                                 <div className="flex items-center gap-6">
-                                    <div className="h-24 w-24 rounded-[2rem] bg-secondary border border-border flex items-center justify-center text-foreground text-3xl font-black relative">
+                                    <div className="h-20 w-20 rounded-[2rem] bg-secondary border border-border flex items-center justify-center text-foreground text-2xl font-black relative">
                                         {selectedRider.rider_name.substring(0, 2).toUpperCase()}
+                                        <div className={cn(
+                                            "absolute -top-1 -right-1 h-6 w-6 rounded-full border-4 border-card",
+                                            selectedRider.status === 'Offline' ? "bg-slate-300" : "bg-emerald-500 animate-pulse"
+                                        )} />
                                     </div>
                                     <div>
                                         <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">{selectedRider.rider_name}</h2>
+                                        <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mt-2">Unit Status: {selectedRider.status}</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setSelectedRider(null)} className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-muted-foreground hover:text-rose-500 transition-colors border border-border"><XCircle className="h-6 w-6" /></button>
+                                <button onClick={() => setSelectedRider(null)} className="h-10 w-10 rounded-xl hover:bg-secondary flex items-center justify-center text-muted transition-colors border border-border"><XCircle className="h-6 w-6" /></button>
                             </header>
 
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="p-6 rounded-3xl bg-secondary border border-border space-y-2">
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase flex items-center gap-2"><CreditCard className="h-3 w-3" /> Current Balance</p>
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase flex items-center gap-2"><CreditCard className="h-3 w-3" /> Balance</p>
                                     <p className="text-xl font-black text-foreground">{formatPrice(selectedRider.wallet?.balance || 0)}</p>
                                 </div>
                                 <div className="p-6 rounded-3xl bg-secondary border border-border space-y-2">
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase flex items-center gap-2"><Trophy className="h-3 w-3" /> Total Earned</p>
+                                    <p className="text-[8px] font-black text-muted-foreground uppercase flex items-center gap-2"><Trophy className="h-3 w-3" /> Lifetime</p>
                                     <p className="text-xl font-black text-foreground">{formatPrice(selectedRider.wallet?.total_earned || 0)}</p>
-                                </div>
-                                <div className="p-6 rounded-3xl bg-secondary border border-border space-y-2">
-                                    <p className="text-[8px] font-black text-muted-foreground uppercase flex items-center gap-2"><Activity className="h-3 w-3" /> Acceptance</p>
-                                    <p className="text-xl font-black text-foreground">{selectedRider.acceptance_rate || 100}%</p>
-                                </div>
-                                <div className="p-6 rounded-3xl bg-secondary border border-border space-y-2">
-                                    <p className="text-[8px] font-black text-primary uppercase flex items-center gap-2"><Zap className="h-3 w-3" /> Access PIN</p>
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-xl font-black text-foreground">{selectedRider.pin}</p>
-                                        <button onClick={async () => {
-                                            const newPin = prompt("New 4-digit PIN?", selectedRider.pin);
-                                            if (newPin && newPin.length === 4) {
-                                                const { error } = await supabase!.from('rider_status').update({ pin: newPin }).eq('id', selectedRider.id);
-                                                if (!error) {
-                                                    setMessage({ type: 'success', text: "PIN Updated! 🛡️" });
-                                                    setTimeout(() => setMessage(null), 3000);
-                                                    setSelectedRider({ ...selectedRider, pin: newPin });
-                                                    fetchData();
-                                                }
-                                            }
-                                        }} className="text-[8px] font-black uppercase text-primary underline">Change</button>
-                                    </div>
                                 </div>
                             </div>
 
-                            <div className="pt-8 border-t border-border flex flex-wrap gap-4">
+                            {selectedRider.status === 'Delivering' && (
+                                <div className="p-8 rounded-[2.5rem] bg-primary/5 border-2 border-primary/20 space-y-8 relative overflow-hidden">
+                                    <div className="flex items-center justify-between relative z-10">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white"><Package className="h-5 w-5" /></div>
+                                            <h3 className="text-lg font-black uppercase text-foreground">Mission Live</h3>
+                                        </div>
+                                        <span className="px-3 py-1 bg-primary text-white text-[8px] font-black rounded-full animate-pulse uppercase">Tactical Pursuit</span>
+                                    </div>
+
+                                    <div className="space-y-6 relative z-10">
+                                        <div className="flex justify-between items-center pb-4 border-b border-primary/10">
+                                            <span className="text-[10px] font-black uppercase text-muted-foreground">Active Order</span>
+                                            <span className="text-xs font-black text-foreground">#10492</span>
+                                        </div>
+                                        <div className="flex justify-between items-center pb-4 border-b border-primary/10">
+                                            <span className="text-[10px] font-black uppercase text-muted-foreground">Payload</span>
+                                            <span className="text-xs font-bold text-foreground truncate max-w-[150px]">AMAYA AM-05 + 1 Other</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[10px] font-black uppercase text-muted-foreground">ETA to Extraction</span>
+                                            <span className="text-sm font-black text-primary uppercase">12 Minutes</span>
+                                        </div>
+                                    </div>
+
+                                    <Button className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest relative z-10 shadow-xl shadow-primary/20">
+                                        View Flight Path
+                                    </Button>
+
+                                    <Zap className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/5 rotate-12" />
+                                </div>
+                            )}
+
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground ml-2">Communications</h3>
+                                <div className="flex flex-wrap gap-3">
+                                    <Button
+                                        onClick={() => window.open(`tel:${selectedRider.rider_phone}`, '_self')}
+                                        variant="outline"
+                                        className="flex-1 h-14 rounded-2xl border-border text-foreground font-black uppercase text-[10px] hover:bg-secondary transition-all"
+                                    >
+                                        <Phone className="h-4 w-4 mr-2" /> Call Unit
+                                    </Button>
+                                    <Button
+                                        onClick={() => window.open(`https://wa.me/${selectedRider.rider_phone}`, '_blank')}
+                                        className="flex-1 h-14 rounded-2xl bg-emerald-500 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-100 active:scale-95 transition-all"
+                                    >
+                                        WhatsApp
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div className="pt-8 border-t border-border flex flex-col gap-4">
                                 <Button
                                     onClick={() => {
                                         const baseUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_BASE_URL || window.location.origin) : 'https://tech-paxv.onrender.com';
@@ -412,26 +454,21 @@ export default function AdminDispatchPage() {
                                         setMessage({ type: 'success', text: "Magic Link Copied! 🔗" });
                                         setTimeout(() => setMessage(null), 3000);
                                     }}
-                                    className="flex-1 h-14 rounded-2xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-indigo-200 active:scale-95 transition-all"
+                                    variant="outline"
+                                    className="w-full h-14 rounded-2xl border-indigo-200 text-indigo-600 font-black uppercase text-[10px] tracking-widest hover:bg-indigo-50 transition-all"
                                 >
-                                    Share Dashboard
-                                </Button>
-                                <Button
-                                    onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}?text=Update unit: ${selectedRider.rider_name}`, '_blank')}
-                                    className="flex-1 h-14 rounded-2xl bg-primary text-background font-black uppercase text-[10px] tracking-widest shadow-xl active:scale-95 transition-all"
-                                >
-                                    Update Unit
+                                    Copy Rider Access Link
                                 </Button>
                                 <Button
                                     variant="outline"
                                     onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}?text=Retire unit: ${selectedRider.rider_name}`, '_blank')}
-                                    className="flex-1 h-14 rounded-2xl border-border text-muted-foreground font-black uppercase text-[10px] hover:bg-secondary transition-all"
+                                    className="w-full h-14 rounded-2xl border-rose-100 text-rose-400 font-black uppercase text-[10px] hover:bg-rose-50 transition-all"
                                 >
-                                    Retire Unit
+                                    Decommission Unit
                                 </Button>
                             </div>
                         </div>
-                    </Card>
+                    </aside>
                 </div>
             )}
         </div>

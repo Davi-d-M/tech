@@ -24,6 +24,7 @@ export async function logAuditAction(email: string, action: string, details: Rec
         action,
         details,
         ip_address: ip,
+        device_info: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
         created_at: new Date().toISOString()
       }]);
   } catch (err) {

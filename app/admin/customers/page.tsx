@@ -35,12 +35,15 @@ interface CustomerStats {
   totalOrders: number;
   totalSpend: number;
   lastOrder: string;
+  isVIP: boolean;
+  referredCount: number;
 }
 
 export default function AdminCustomersPage() {
   const { role } = useAdmin();
   const router = useRouter();
   const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -54,12 +57,13 @@ export default function AdminCustomersPage() {
       if (!supabase) return;
 
       try {
-        const { data } = await supabase
-          .from('orders')
-          .select('id, customer_name, customer_phone, total_price, created_at')
-          .order('created_at', { ascending: false });
+        const [ordersRes, profilesRes] = await Promise.all([
+          supabase.from('orders').select('id, customer_name, customer_phone, total_price, created_at, referred_by_code'),
+          supabase.from('profiles').select('phone_number, referral_code')
+        ]);
 
-        if (data) setOrders(data as OrderRecord[]);
+        if (ordersRes.data) setOrders(ordersRes.data as any[]);
+        if (profilesRes.data) setProfiles(profilesRes.data);
       } catch (err) {
         console.error('Error loading customers:', err);
       } finally {
@@ -72,16 +76,27 @@ export default function AdminCustomersPage() {
 
   const customers = useMemo(() => {
     const map = new Map<string, CustomerStats>();
+    const referralMap = new Map<string, number>();
+
+    // Count referrals
+    orders.forEach(o => {
+        if (o.referred_by_code) {
+            referralMap.set(o.referred_by_code, (referralMap.get(o.referred_by_code) || 0) + 1);
+        }
+    });
 
     orders.forEach((order) => {
       const key = (order.customer_phone || '').trim();
       if (!key) return;
 
       const existing = map.get(key);
+      const profile = profiles.find(p => p.phone_number === key);
+      const referredCount = profile ? (referralMap.get(profile.referral_code) || 0) : 0;
 
       if (existing) {
         existing.totalOrders += 1;
         existing.totalSpend += Number(order.total_price || 0);
+        existing.referredCount = Math.max(existing.referredCount, referredCount);
       } else {
         map.set(key, {
           name: order.customer_name || 'Anonymous',
@@ -89,12 +104,17 @@ export default function AdminCustomersPage() {
           totalOrders: 1,
           totalSpend: Number(order.total_price || 0),
           lastOrder: order.created_at,
+          isVIP: false,
+          referredCount
         });
       }
     });
 
-    return Array.from(map.values()).sort((a, b) => b.totalSpend - a.totalSpend);
-  }, [orders]);
+    return Array.from(map.values()).map(c => ({
+        ...c,
+        isVIP: c.totalSpend > 50000 || c.totalOrders > 5
+    })).sort((a, b) => b.totalSpend - a.totalSpend);
+  }, [orders, profiles]);
 
   const filteredCustomers = useMemo(() => {
     const query = (searchQuery || '').toLowerCase();
@@ -142,13 +162,13 @@ export default function AdminCustomersPage() {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-6">
           <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
             <Users className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total Customers</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total Shoppers</p>
             <h3 className="text-2xl font-black text-foreground mt-2 uppercase tracking-tighter">{customers.length}</h3>
           </div>
         </div>
@@ -157,7 +177,7 @@ export default function AdminCustomersPage() {
             <DollarSign className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Avg. Spend</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Customer LTV</p>
             <h3 className="text-2xl font-black text-foreground mt-2 uppercase tracking-tighter">
               {formatPrice(customers.length > 0 ? customers.reduce((s, c) => s + c.totalSpend, 0) / customers.length : 0)}
             </h3>
@@ -165,12 +185,23 @@ export default function AdminCustomersPage() {
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-6">
           <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
-            <ShoppingBag className="h-6 w-6" />
+            <Crown className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Returning</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Elite VIPs</p>
             <h3 className="text-2xl font-black text-foreground mt-2 uppercase tracking-tighter">
-              {customers.filter(c => c.totalOrders > 1).length}
+              {customers.filter(c => c.isVIP).length}
+            </h3>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-6">
+          <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
+            <Zap className="h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Viral Impact</p>
+            <h3 className="text-2xl font-black text-foreground mt-2 uppercase tracking-tighter">
+              {customers.reduce((s, c) => s + c.referredCount, 0)} Refs
             </h3>
           </div>
         </div>
@@ -184,8 +215,9 @@ export default function AdminCustomersPage() {
               <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-[0.2em]">
                 <th className="px-8 py-5">Customer</th>
                 <th className="px-8 py-5">Contact</th>
-                <th className="px-8 py-5">Orders</th>
-                <th className="px-8 py-5">Total Value</th>
+                <th className="px-8 py-5">Impact</th>
+                <th className="px-8 py-5">Engagement</th>
+                <th className="px-8 py-5">LTV</th>
                 <th className="px-8 py-5 text-right">Actions</th>
               </tr>
             </thead>
@@ -220,9 +252,15 @@ export default function AdminCustomersPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-3 w-3 text-slate-300" />
+                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{customer.referredCount} Refs</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
                         <span className="px-3 py-1 rounded-lg bg-primary/10 text-primary text-[9px] font-black uppercase tracking-widest">
-                          {customer.totalOrders} Drops
+                          {customer.totalOrders} Orders
                         </span>
                         {customer.totalSpend >= 100000 ? (
                             <span className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 animate-pulse">

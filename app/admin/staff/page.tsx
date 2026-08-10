@@ -35,7 +35,7 @@ import { logAuditAction } from '@/lib/auditService';
 interface StaffMember {
   id: string;
   email: string;
-  role: 'admin' | 'staff' | 'viewer';
+  role: 'owner' | 'super_admin' | 'finance' | 'operations' | 'support' | 'staff' | 'viewer';
   pin?: string;
   can_view_revenue: boolean;
   can_manage_inventory: boolean;
@@ -61,7 +61,7 @@ export default function AdminStaffPage() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [newEmail, setNewEmail] = useState('');
-  const [newRole, setNewRole] = useState<'admin' | 'staff' | 'viewer'>('staff');
+  const [newRole, setNewRole] = useState<StaffMember['role']>('staff');
   const [newPin, setNewPin] = useState('');
 
   const [canViewRev, setCanViewRev] = useState(false);
@@ -299,14 +299,17 @@ export default function AdminStaffPage() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Role</label>
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Enterprise Role</label>
                             <select
                                 value={newRole}
-                                onChange={e => setNewRole(e.target.value as 'admin' | 'staff' | 'viewer')}
+                                onChange={e => setNewRole(e.target.value as any)}
                                 className="w-full h-14 px-4 rounded-2xl border border-border bg-secondary text-xs font-black uppercase outline-none text-foreground"
                             >
                                 <option value="staff">Staff</option>
-                                <option value="admin">Admin</option>
+                                <option value="super_admin">Super Admin</option>
+                                <option value="finance">Finance Ops</option>
+                                <option value="operations">Logistics Ops</option>
+                                <option value="support">Customer Care</option>
                                 <option value="viewer">Viewer</option>
                             </select>
                         </div>
@@ -403,11 +406,14 @@ export default function AdminStaffPage() {
                                                       <span className="font-black text-foreground uppercase text-xs tracking-tight block truncate">{member.email || 'Unknown'}</span>
                                                       <select
                                                         value={member.role}
-                                                        onChange={e => updateStaffRole(member.id, e.target.value as 'admin' | 'staff' | 'viewer')}
+                                                        onChange={e => updateStaffRole(member.id, e.target.value as any)}
                                                         className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1 block italic bg-transparent border-none outline-none cursor-pointer hover:text-primary transition-colors"
                                                       >
                                                         <option value="staff">Staff</option>
-                                                        <option value="admin">Admin</option>
+                                                        <option value="super_admin">Super Admin</option>
+                                                        <option value="finance">Finance</option>
+                                                        <option value="operations">Operations</option>
+                                                        <option value="support">Support</option>
                                                         <option value="viewer">Viewer</option>
                                                       </select>
                                                   </div>

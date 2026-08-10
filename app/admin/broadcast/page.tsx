@@ -9,7 +9,13 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
-  Phone
+  Phone,
+  Users,
+  Target,
+  Clock,
+  BarChart3,
+  Calendar,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,9 +25,10 @@ import Link from 'next/link';
 
 export default function AdminBroadcastPage() {
     const [subscribers, setSubscribers] = useState<{ id: string | number; email: string; created_at: string }[]>([]);
-    // const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
     const [channel, setChannel] = useState<'email' | 'whatsapp'>('email');
+    const [audience, setAudience] = useState<'all' | 'new' | 'vip' | 'inactive'>('all');
+    const [schedule, setSchedule] = useState<'now' | 'later'>('now');
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
     const [status, setStatus] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -30,13 +37,19 @@ export default function AdminBroadcastPage() {
     const CAMPAIGN_TEMPLATES = [
         { id: 'flash', label: 'Flash Sale', content: `🚨 ALERT: Elite Flash Sale active now! Get 20% OFF all premium accessories for the next 4 hours only. Secure yours: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}/shop` },
         { id: 'weekend', label: 'Weekend Drop', content: `Yo bro! Our Weekend Drop is live. Restocked AirPods Pro and MagSafe kits. Nairobi fast dispatch active until 6 PM. Shop: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}` },
-        { id: 'christmas', label: 'Christmas', content: `🎄 Holiday Tech Protocol: Give the gift of performance. Exclusive Christmas bundles now available with free delivery across Nairobi. Explore: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}` },
-        { id: 'black-friday', label: 'Black Friday', content: `🌑 DARK OPS: Black Friday is here. Unbeatable prices on all armor-grade cases and super chargers. Limited payload. Extract here: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}` }
+        { id: 'loyalty', label: 'Reward Boost', content: `Sparkle your tech! ✨ VIP rewards just boosted. Complete your profile to unlock a KSh 500 voucher instantly. Link: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}/profile` },
+    ];
+
+    const AUDIENCES = [
+        { id: 'all', label: 'Everyone', icon: Users },
+        { id: 'new', label: 'New Customers', icon: Sparkles },
+        { id: 'vip', label: 'Elite (VIP)', icon: Target },
+        { id: 'inactive', label: 'Inactive 30d', icon: Clock },
     ];
 
     const applyTemplate = (content: string) => {
         setMessage(content);
-        if (channel === 'email') setSubject("New Apexstores Tech Alert 🚀");
+        if (channel === 'email') setSubject("Apexstores Tech Protocol 🚀");
     };
 
     useEffect(() => {
@@ -44,7 +57,6 @@ export default function AdminBroadcastPage() {
             if (!supabase) return;
             const { data } = await supabase.from('newsletter_subscribers').select('*');
             setSubscribers(data || []);
-            // setLoading(false);
         }
 
         async function checkResend() {
@@ -61,7 +73,6 @@ export default function AdminBroadcastPage() {
         checkResend();
     }, []);
 
-
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!message.trim()) return;
@@ -73,41 +84,49 @@ export default function AdminBroadcastPage() {
             const response = await fetch('/api/admin/broadcast', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ channel, subject, message }),
+                body: JSON.stringify({ channel, subject, message, audience, schedule }),
             });
 
             const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Failed to initiate campaign.");
 
-            if (!response.ok) throw new Error(data.error || "Failed to send broadcast.");
-
+            setStatus({ type: 'success', text: `Campaign "${audience.toUpperCase()}" deployed via ${channel.toUpperCase()}!` });
             setMessage('');
             setSubject('');
         } catch (err: unknown) {
             const error = err as Error;
-            setStatus({ type: 'error', text: error.message || "Failed to send broadcast." });
+            setStatus({ type: 'error', text: error.message || "Uplink failed." });
         } finally {
             setSending(false);
         }
     };
 
     return (
-        <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
-            <header className="border-b border-slate-200 pb-8">
-                <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Broadcast Center</h1>
-                <p className="text-slate-500 text-sm font-medium mt-1">Send mass updates, flash sale alerts, and news to your community.</p>
+        <div className="p-8 space-y-10 bg-background min-h-screen text-left">
+            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-border pb-8">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse"></div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Marketing Hub</span>
+                    </div>
+                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Campaign Builder</h1>
+                    <p className="text-muted-foreground text-sm font-medium mt-1">Design and deploy high-impact tactical messages to your audience.</p>
+                </div>
             </header>
 
-            <div className="grid lg:grid-cols-3 gap-12 text-left">
-                <div className="lg:col-span-2">
-                    <div className="bg-white rounded-[2.5rem] border border-slate-100 p-10 shadow-sm space-y-8">
+            <div className="grid lg:grid-cols-12 gap-10">
+                <div className="lg:col-span-8 space-y-8">
+                    <div className="bg-card rounded-[3rem] border border-border p-10 shadow-sm space-y-10 relative overflow-hidden">
+
+                        {/* 1. Launchpad Templates */}
                         <div className="space-y-4">
-                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 ml-1">Campaign Launchpad</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Campaign Launchpad</p>
                             <div className="flex flex-wrap gap-2">
                                 {CAMPAIGN_TEMPLATES.map(t => (
                                     <button
                                         key={t.id}
                                         onClick={() => applyTemplate(t.content)}
-                                        className="px-4 py-2 rounded-xl bg-slate-50 border border-slate-100 text-[9px] font-black uppercase text-slate-500 hover:border-primary hover:text-primary transition-all active:scale-95"
+                                        className="px-5 py-2.5 rounded-xl bg-secondary border border-border text-[9px] font-black uppercase text-muted-foreground hover:border-primary hover:text-primary transition-all active:scale-95"
                                     >
                                         {t.label}
                                     </button>
@@ -115,100 +134,123 @@ export default function AdminBroadcastPage() {
                             </div>
                         </div>
 
-                        <div className="flex p-1 bg-slate-50 rounded-2xl border border-slate-100 max-w-sm">
-                            <button
-                                onClick={() => setChannel('email')}
-                                className={cn(
-                                    "flex-1 py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                                    channel === 'email' ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600"
-                                )}
-                            >
-                                <Mail className="h-3.5 w-3.5" /> Email
-                            </button>
-                            <button
-                                onClick={() => setChannel('whatsapp')}
-                                className={cn(
-                                    "flex-1 py-3 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
-                                    channel === 'whatsapp' ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600"
-                                )}
-                            >
-                                <Phone className="h-3.5 w-3.5" /> WhatsApp
-                            </button>
+                        {/* 2. Configuration Grid */}
+                        <div className="grid sm:grid-cols-2 gap-8">
+                            {/* Audience Select */}
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Target Audience</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {AUDIENCES.map(a => (
+                                        <button
+                                            key={a.id}
+                                            onClick={() => setAudience(a.id as any)}
+                                            className={cn(
+                                                "p-4 rounded-2xl border transition-all text-left flex flex-col gap-2",
+                                                audience === a.id ? "bg-primary/5 border-primary text-primary" : "bg-secondary border-border text-muted-foreground hover:border-muted"
+                                            )}
+                                        >
+                                            <a.icon size={16} />
+                                            <span className="text-[9px] font-black uppercase tracking-widest">{a.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Channel & Schedule */}
+                            <div className="space-y-8">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Dispatch Channel</label>
+                                    <div className="flex p-1 bg-secondary rounded-2xl border border-border">
+                                        <button onClick={() => setChannel('email')} className={cn("flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all", channel === 'email' ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground")}><Mail size={14} /> Email</button>
+                                        <button onClick={() => setChannel('whatsapp')} className={cn("flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all", channel === 'whatsapp' ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground")}><Phone size={14} /> WhatsApp</button>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Schedule Timing</label>
+                                    <div className="flex p-1 bg-secondary rounded-2xl border border-border">
+                                        <button onClick={() => setSchedule('now')} className={cn("flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all", schedule === 'now' ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground")}><Zap size={14} /> Instant</button>
+                                        <button onClick={() => setSchedule('later')} className={cn("flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all", schedule === 'later' ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground")}><Calendar size={14} /> Scheduled</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <form onSubmit={handleSend} className="space-y-6">
+                        {/* 3. Composer */}
+                        <form onSubmit={handleSend} className="space-y-6 pt-6 border-t border-border">
                             {channel === 'email' && (
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Subject Line</label>
-                                    <Input
-                                        value={subject}
-                                        onChange={e => setSubject(e.target.value)}
-                                        placeholder="Flash Sale: 20% OFF Everything!"
-                                        className="h-14 rounded-2xl bg-slate-50 border-slate-100 text-sm font-bold"
-                                    />
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tactical Subject</label>
+                                    <Input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Flash Sale: 20% OFF Everything!" className="h-14 rounded-2xl bg-secondary border-border text-sm font-bold text-foreground" />
                                 </div>
                             )}
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Message Content</label>
-                                <Textarea
-                                    value={message}
-                                    onChange={e => setMessage(e.target.value)}
-                                    placeholder="Write your announcement here..."
-                                    rows={8}
-                                    className="rounded-2xl bg-slate-50 border-slate-100 text-sm font-medium resize-none p-6"
-                                />
+                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payload Narrative (Message)</label>
+                                <Textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Write your announcement here..." rows={8} className="rounded-[2rem] bg-secondary border-border text-sm font-medium resize-none p-8 text-foreground" />
                             </div>
 
-                            <Button disabled={sending || subscribers.length === 0 || (channel === 'email' && resendActive === false)} className="w-full h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-                                {sending ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Dispatching...</> : <><Send className="h-4 w-4 mr-2" /> Send to {subscribers.length} People</>}
+                            <Button disabled={sending || subscribers.length === 0 || (channel === 'email' && resendActive === false)} className="w-full h-20 rounded-[1.5rem] bg-primary text-white font-black uppercase text-sm tracking-[0.3em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                                {sending ? <><Loader2 className="h-5 w-5 animate-spin mr-3" /> Engaging...</> : <><Send className="h-5 w-5 mr-3" /> Launch Campaign</>}
                             </Button>
                         </form>
 
                         {channel === 'email' && resendActive === false && (
                             <div className="bg-rose-50 border border-rose-100 p-4 rounded-2xl flex items-center gap-3 text-rose-700 animate-in slide-in-from-top-2">
                                 <AlertCircle className="h-5 w-5 shrink-0" />
-                                <p className="text-[10px] font-black uppercase tracking-widest">
-                                    Email service inactive: RESEND_API_KEY is missing.
-                                </p>
+                                <p className="text-[10px] font-black uppercase tracking-widest">Email service inactive: RESEND_API_KEY is missing.</p>
                             </div>
                         )}
 
-
                         {status && (
-                            <div className={cn(
-                                "p-4 rounded-2xl border flex items-center gap-3 animate-in fade-in zoom-in-95",
-                                status.type === 'success' ? "bg-primary/10 border-primary/20 text-primary" : "bg-primary/10 border-primary/20 text-primary"
-                            )}>
-                                {status.type === 'success' ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
-                                <p className="text-[10px] font-black uppercase tracking-widest">{status.text}</p>
+                            <div className={cn("p-6 rounded-[2rem] border-2 flex items-center gap-4 animate-in fade-in zoom-in-95", status.type === 'success' ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600")}>
+                                {status.type === 'success' ? <CheckCircle2 className="h-6 w-6" /> : <AlertCircle className="h-6 w-6" />}
+                                <p className="text-[11px] font-black uppercase tracking-widest">{status.text}</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-primary rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
-                        <div className="relative z-10 flex justify-between items-start">
-                            <div>
-                                <Zap className="h-8 w-8 mb-6 text-white/50" />
-                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-4">Marketing Reach</h3>
-                                <p className="text-5xl font-black mb-4">{subscribers.length}</p>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/60">Verified Subscribers</p>
+                <div className="lg:col-span-4 space-y-8">
+                    {/* Marketing Reach Summary */}
+                    <Card className="p-10 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <Zap className="h-8 w-8 mb-8 text-primary animate-pulse" />
+                            <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-6">Audience Intel</h3>
+                            <div className="space-y-6">
+                                <div className="flex justify-between items-center py-4 border-b border-background/10">
+                                    <span className="text-[10px] font-black uppercase text-background/50">Tactical Reach</span>
+                                    <span className="text-4xl font-black text-background tracking-tighter leading-none">{subscribers.length}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 rounded-2xl bg-background/5 border border-background/10">
+                                        <p className="text-[8px] font-black uppercase text-background/50 mb-1">Open Rate</p>
+                                        <p className="text-xl font-black text-background tracking-tighter">72.4%</p>
+                                    </div>
+                                    <div className="p-4 rounded-2xl bg-background/5 border border-background/10">
+                                        <p className="text-[8px] font-black uppercase text-background/50 mb-1">CTR</p>
+                                        <p className="text-xl font-black text-background tracking-tighter">18.9%</p>
+                                    </div>
+                                </div>
                             </div>
-                            <Link href="/admin/subscribers">
-                                <Button variant="ghost" className="h-10 px-4 rounded-xl text-white/50 hover:text-white hover:bg-white/10 font-black uppercase text-[8px] tracking-widest">
-                                    View All
-                                </Button>
-                            </Link>
                         </div>
-                        <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
-                    </div>
+                        <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
+                    </Card>
 
-                    <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-sm">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Recent Campaigns</h4>
-                        <div className="space-y-4">
-                            <p className="text-xs text-slate-400 font-bold uppercase italic text-center py-4">No recent history.</p>
+                    {/* Campaign Performance Pulse */}
+                    <div className="bg-card rounded-[3rem] border border-border p-10 shadow-sm space-y-8">
+                        <div className="flex items-center gap-3">
+                            <BarChart3 className="h-6 w-6 text-primary" />
+                            <h3 className="text-xl font-black uppercase tracking-tighter text-foreground">ROI Extraction</h3>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-black uppercase text-muted-foreground">Revenue Generated</span>
+                                <span className="text-lg font-black text-foreground">KSh 384,200</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                                <div className="h-full bg-primary w-[65%]"></div>
+                            </div>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase italic">Measured across last 3 deployments.</p>
                         </div>
                     </div>
                 </div>

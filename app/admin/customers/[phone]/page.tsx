@@ -45,6 +45,7 @@ interface CustomerProfile {
   latitude: number | null;
   longitude: number | null;
   birth_date: string | null;
+  referral_code: string | null;
   created_at: string;
 }
 
@@ -59,6 +60,7 @@ export default function CustomerIntelligence() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [products, setProducts] = useState<ProductInfo[]>([]);
+  const [referrals, setReferrals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,15 +68,19 @@ export default function CustomerIntelligence() {
       if (!supabase || !phone) return;
 
       try {
-        const [ordersRes, profileRes, productsRes] = await Promise.all([
+        const profileRes = await supabase.from('profiles').select('*').eq('phone_number', phone).maybeSingle();
+        const profileData = profileRes.data as CustomerProfile;
+
+        const [ordersRes, productsRes, referralsRes] = await Promise.all([
           supabase.from('orders').select('*').eq('customer_phone', phone).order('created_at', { ascending: false }),
-          supabase.from('profiles').select('*').eq('phone_number', phone).maybeSingle(),
-          supabase.from('products').select('id, name, category')
+          supabase.from('products').select('id, name, category'),
+          profileData ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] })
         ]);
 
         if (ordersRes.data) setOrders(ordersRes.data as Order[]);
         if (profileRes.data) setProfile(profileRes.data as CustomerProfile);
         if (productsRes.data) setProducts(productsRes.data as ProductInfo[]);
+        if (referralsRes.data) setReferrals(referralsRes.data);
       } catch (err: unknown) {
         console.error(err);
       } finally {

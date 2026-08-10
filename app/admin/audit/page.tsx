@@ -21,9 +21,11 @@ import { useAdmin } from '@/context/AdminContext';
 
 interface AuditLog {
   id: number;
-  admin_email: string;
+  staff_email: string;
   action: string;
   details: Record<string, unknown> | null;
+  ip_address?: string;
+  device_info?: string;
   created_at: string;
 }
 
@@ -163,7 +165,7 @@ export default function AdminAuditPage() {
   };
 
   const filteredLogs = logs.filter(l =>
-    (l.admin_email || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+    (l.staff_email || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
     (l.action || '').toLowerCase().includes((searchQuery || '').toLowerCase())
   );
 
@@ -232,11 +234,13 @@ export default function AdminAuditPage() {
                                   <td className="px-10 py-8">
                                       <div className="flex items-center gap-4">
                                           <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-[10px] shadow-lg shadow-primary/20 transition-transform group-hover:scale-110">
-                                              {(log?.admin_email?.substring(0, 2) || 'AD').toUpperCase()}
+                                              {(log?.staff_email?.substring(0, 2) || 'AD').toUpperCase()}
                                           </div>
                                           <div>
-                                              <span className="font-black text-foreground uppercase text-xs block">{log.admin_email || 'System'}</span>
-                                              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1 block">Verified Admin</span>
+                                              <span className="font-black text-foreground uppercase text-xs block">{log.staff_email || 'System'}</span>
+                                              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1 block">
+                                                  {log.ip_address || '0.0.0.0'} &bull; {log.device_info?.split(' ')[0] || 'Unknown'}
+                                              </span>
                                           </div>
                                       </div>
                                   </td>

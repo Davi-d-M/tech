@@ -25,6 +25,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAdmin } from '@/context/AdminContext';
+import TodayCommandCenter from '@/components/admin/TodayCommandCenter';
+import ExceptionCenter from '@/components/admin/ExceptionCenter';
+import SystemPulseWidget from '@/components/admin/SystemPulseWidget';
+import ApexIntelligence from '@/components/admin/ApexIntelligence';
 import {
   AreaChart,
   Area,
@@ -187,9 +191,9 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 bg-background">
+    <div className="space-y-10 animate-in fade-in duration-700 bg-background pb-20">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
             <div className="relative z-10 flex flex-col h-full justify-between">
@@ -258,34 +262,13 @@ export default function AdminDashboard() {
             </div>
         </Card>
 
-        <Card className="p-8 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
-            <div className="relative z-10 space-y-6">
-                <div className="flex justify-between items-center">
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-primary">System Pulse</h3>
-                    <Activity className="h-4 w-4 text-emerald-500 animate-pulse" />
-                </div>
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2"><Database className="h-3 w-3 text-background/50" /><span className="text-[9px] font-black uppercase">Database</span></div>
-                        <span className="text-[8px] font-black text-emerald-500 uppercase">{supabase ? 'Connected' : 'Offline'}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2"><Globe className="h-3 w-3 text-background/50" /><span className="text-[9px] font-black uppercase">Edge API</span></div>
-                        <span className="text-[8px] font-black text-emerald-500 uppercase">Operational</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2"><Smartphone className="h-3 w-3 text-background/50" /><span className="text-[9px] font-black uppercase">Logistics</span></div>
-                        <span className="text-[8px] font-black text-primary uppercase">Active</span>
-                    </div>
-                </div>
-                <div className="pt-4 border-t border-background/10 flex justify-between items-center">
-                    <span className="text-[8px] font-black text-background/50 uppercase">Latency: {latency}ms</span>
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                </div>
-            </div>
-        </Card>
-
       </div>
+
+      <TodayCommandCenter />
+
+      <ApexIntelligence />
+
+      <ExceptionCenter />
 
       <div className="grid lg:grid-cols-12 gap-10">
 
@@ -353,6 +336,8 @@ export default function AdminDashboard() {
           </div>
 
           <div className="lg:col-span-4 space-y-8">
+
+              <SystemPulseWidget />
 
               <section className="bg-card rounded-[3.5rem] p-10 border border-border shadow-sm relative overflow-hidden">
                   <div className="relative z-10 space-y-8 text-left">

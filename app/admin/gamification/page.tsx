@@ -91,7 +91,23 @@ export default function AdminGamificationPage() {
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     const [config, setConfig] = useState(DEFAULTS);
-    const [activeTab, setActiveTab] = useState<'streaks' | 'missions' | 'rewards' | 'tiers'>('streaks');
+    const [activeTab, setActiveTab] = useState<'streaks' | 'missions' | 'rewards' | 'tiers' | 'simulator'>('streaks');
+
+    // Simulator State
+    const [simPurchase, setSimPurchase] = useState('5000');
+    const [simResults, setSimResults] = useState<{ xp: number, points: number, rank: string, voucher: string } | null>(null);
+
+    const runSimulation = () => {
+        const amount = Number(simPurchase) || 0;
+        const xp = Math.floor(amount / 10); // 1 XP per 10 KSh
+        const points = Math.floor(xp * 1.5);
+
+        // Find Rank
+        const rank = [...config.tiers].sort((a, b) => b.threshold - a.threshold).find(t => xp >= t.threshold)?.label || 'Explorer';
+        const voucher = amount >= 5000 ? 'KSh 200 Voucher' : 'No Voucher';
+
+        setSimResults({ xp, points, rank, voucher });
+    };
 
     useEffect(() => {
         async function fetchConfig() {
@@ -164,16 +180,17 @@ export default function AdminGamificationPage() {
                 </div>
             )}
 
-            <div className="flex gap-2 p-1 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto no-scrollbar max-w-2xl">
+            <div className="flex gap-2 p-1 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto no-scrollbar max-w-4xl">
                 {[
                     { id: 'streaks', label: 'Streaks', icon: Flame },
                     { id: 'missions', label: 'Daily Missions', icon: Target },
                     { id: 'rewards', label: 'Interaction Odds', icon: Dices },
                     { id: 'tiers', label: 'Tiers & Badges', icon: Crown },
+                    { id: 'simulator', label: 'Reward Simulator', icon: Zap },
                 ].map(tab => (
                     <button
                         key={tab.id}
-                        onClick={() => setActiveTab(tab.id as 'streaks' | 'missions' | 'rewards' | 'tiers')}
+                        onClick={() => setActiveTab(tab.id as any)}
                         className={cn(
                             "flex items-center gap-3 px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border-2 border-transparent",
                             activeTab === tab.id ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-400 hover:bg-slate-50 hover:text-foreground"
@@ -372,6 +389,57 @@ export default function AdminGamificationPage() {
                                 </div>
                             </Card>
                         </div>
+                    )}
+
+                    {activeTab === 'simulator' && (
+                        <Card className="rounded-[3rem] border border-border p-10 bg-white shadow-sm space-y-10 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Zap className="h-5 w-5" /></div>
+                                <h2 className="text-xl font-black text-foreground uppercase">Reward Simulator</h2>
+                            </div>
+
+                            <div className="grid sm:grid-cols-2 gap-10 items-start">
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Mock Purchase Amount</label>
+                                        <div className="relative">
+                                            <Input
+                                                value={simPurchase}
+                                                onChange={e => setSimPurchase(e.target.value.replace(/\D/g, ''))}
+                                                className="h-16 rounded-2xl bg-slate-50 border-slate-100 font-black text-2xl text-primary pl-14"
+                                            />
+                                            <DollarSign className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" size={24} />
+                                        </div>
+                                    </div>
+                                    <Button onClick={runSimulation} className="w-full h-16 rounded-2xl bg-foreground text-background font-black uppercase tracking-[0.2em] shadow-xl transition-all hover:scale-105 active:scale-95">
+                                        Execute Simulation
+                                    </Button>
+                                </div>
+
+                                {simResults && (
+                                    <div className="space-y-6 animate-in zoom-in-95 duration-500">
+                                        <div className="p-8 rounded-[2.5rem] bg-secondary border border-border space-y-8">
+                                            <div className="flex justify-between items-center pb-4 border-b border-border">
+                                                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">XP Yield</span>
+                                                <span className="text-2xl font-black text-foreground">+{simResults.xp} XP</span>
+                                            </div>
+                                            <div className="flex justify-between items-center pb-4 border-b border-border">
+                                                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Loyalty Points</span>
+                                                <span className="text-2xl font-black text-foreground">{simResults.points} pts</span>
+                                            </div>
+                                            <div className="flex justify-between items-center pb-4 border-b border-border">
+                                                <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Predicted Rank</span>
+                                                <span className="text-lg font-black text-primary italic uppercase">{simResults.rank}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-[10px] font-black uppercase text-primary tracking-widest">Unlocked Perk</span>
+                                                <span className="text-xs font-black text-emerald-500 uppercase">{simResults.voucher}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </Card>
                     )}
 
                 </div>

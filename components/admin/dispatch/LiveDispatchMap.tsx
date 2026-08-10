@@ -57,17 +57,20 @@ const createRiderIcon = (status: string) => {
 
 interface LiveDispatchMapProps {
     riders: Rider[];
+    onSelectRider?: (rider: Rider) => void;
 }
 
-export default function LiveDispatchMap({ riders }: LiveDispatchMapProps) {
+export default function LiveDispatchMap({ riders, onSelectRider }: LiveDispatchMapProps) {
   useEffect(() => {
     fixLeafletIcons();
   }, []);
 
   const center: [number, number] = [-1.286389, 36.817223]; // Nairobi CBD
 
+  const onlineRiders = riders.filter(r => r.status !== 'Offline');
+
   return (
-    <div className="w-full h-full relative rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl z-0">
+    <div className="w-full h-full relative rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl z-0 group">
       <MapContainer
         center={center}
         zoom={13}
@@ -88,6 +91,9 @@ export default function LiveDispatchMap({ riders }: LiveDispatchMapProps) {
                 rider.lng || 36.817223
             ]}
             icon={createRiderIcon(rider.status)}
+            eventHandlers={{
+                click: () => onSelectRider?.(rider)
+            }}
           >
             <Popup className="custom-leaflet-popup">
               <div className="p-4 min-w-[200px] text-left space-y-4">
@@ -116,17 +122,47 @@ export default function LiveDispatchMap({ riders }: LiveDispatchMapProps) {
                         <p className="text-xs font-black text-foreground">{rider.current_speed || 0} km/h</p>
                     </div>
                 </div>
-
-                <div className="pt-2">
-                    <Button className="w-full h-10 rounded-xl bg-primary text-white font-black uppercase text-[9px] shadow-lg shadow-primary/20 active:scale-95 transition-all">
-                        Initialize Mission
-                    </Button>
-                </div>
               </div>
             </Popup>
           </Marker>
         ))}
       </MapContainer>
+
+      {/* 📡 Tactical HUD Overlay */}
+      <div className="absolute top-6 right-6 z-[1000] w-64 max-h-[80%] bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white/50 shadow-2xl flex flex-col overflow-hidden transition-all duration-700 opacity-0 group-hover:opacity-100 translate-x-10 group-hover:translate-x-0">
+          <div className="p-6 border-b border-slate-100 bg-white/50">
+              <p className="text-[8px] font-black uppercase tracking-[0.4em] text-primary mb-1">Live Tactical Stream</p>
+              <h3 className="text-sm font-black uppercase text-foreground">Operational Units</h3>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-2 no-scrollbar">
+              {onlineRiders.length === 0 ? (
+                  <p className="py-8 text-center text-[9px] font-black text-slate-300 uppercase italic">No units active</p>
+              ) : onlineRiders.map(rider => (
+                  <button
+                    key={rider.id}
+                    onClick={() => onSelectRider?.(rider)}
+                    className="w-full p-4 rounded-2xl bg-white/50 border border-transparent hover:border-primary/20 hover:bg-white transition-all text-left flex items-center justify-between group/unit"
+                  >
+                      <div className="flex items-center gap-3">
+                          <div className={cn(
+                              "h-8 w-8 rounded-lg flex items-center justify-center text-[10px] font-black text-white shadow-sm",
+                              rider.status === 'Delivering' ? "bg-primary" : "bg-emerald-500"
+                          )}>
+                              {rider.rider_name.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                              <p className="text-[10px] font-black uppercase text-foreground leading-none">{rider.rider_name}</p>
+                              <p className="text-[8px] font-bold text-slate-400 mt-1 uppercase">{rider.status}</p>
+                          </div>
+                      </div>
+                      <ChevronRight className="h-3 w-3 text-slate-300 group-hover/unit:text-primary transition-colors" />
+                  </button>
+              ))}
+          </div>
+          <div className="p-4 bg-slate-50/50 border-t border-slate-100 text-[8px] font-black uppercase text-center tracking-widest text-slate-400">
+              {onlineRiders.length} ACTIVE / {riders.length} TOTAL
+          </div>
+      </div>
 
       {/* 🧭 Legend Overlay */}
       <div className="absolute bottom-6 left-6 z-[1000] bg-white/90 backdrop-blur-md p-4 rounded-3xl border border-slate-100 shadow-xl flex gap-6 text-[9px] font-black uppercase tracking-widest">
