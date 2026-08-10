@@ -16,6 +16,7 @@ import {
   Store,
   ShoppingBag,
   ShieldCheck,
+  Zap,
   History as HistoryIcon,
   Settings,
   BookOpen,
@@ -108,6 +109,15 @@ export default function AdminLayoutClient({
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard, minRole: 'viewer' },
     { name: 'Products', href: '/admin/upload', icon: Package, permission: 'can_manage_inventory' },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart, permission: 'can_manage_orders' },
+
+    { name: 'Marketing Hub', href: '/admin/marketing', icon: Zap, permission: 'can_manage_broadcast' },
+    { name: 'Campaign Builder', href: '/admin/marketing/create', icon: Plus, permission: 'can_manage_broadcast' },
+    { name: 'Mission Log', href: '/admin/marketing/list', icon: HistoryIcon, permission: 'can_manage_broadcast' },
+    { name: 'Segments', href: '/admin/marketing/audiences', icon: Users, permission: 'can_manage_broadcast' },
+
+    { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp, permission: 'can_view_revenue' },
+    { name: 'Finance', href: '/admin/finance', icon: DollarSign, permission: 'can_view_revenue' },
+
     { name: 'Customers', href: '/admin/customers', icon: Users, permission: 'can_manage_customer_care' },
     { name: 'Reviews', href: '/admin/reviews', icon: MessageSquare, permission: 'can_manage_customer_care' },
     { name: 'Affiliates', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
@@ -116,8 +126,6 @@ export default function AdminLayoutClient({
     { name: 'Subscribers', href: '/admin/subscribers', icon: Mail, permission: 'can_manage_broadcast' },
     { name: 'Broadcast', href: '/admin/broadcast', icon: Send, permission: 'can_manage_broadcast' },
     { name: 'Reports', href: '/admin/reports', icon: BarChart3, permission: 'can_view_revenue' },
-    { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp, permission: 'can_view_revenue' },
-    { name: 'Finance', href: '/admin/finance', icon: DollarSign, permission: 'can_view_revenue' },
     { name: 'Rewards', href: '/admin/gamification', icon: Trophy, permission: 'can_manage_settings' },
     { name: 'Media Hub', href: '/admin/media', icon: ImageIcon, permission: 'can_manage_media' },
     { name: 'Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
