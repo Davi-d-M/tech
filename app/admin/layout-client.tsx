@@ -15,7 +15,7 @@ import {
   Store,
   ShoppingBag,
   ShieldCheck,
-  ShieldAlert,
+  ShieldAlert as SecurityIcon,
   Shield,
   Zap,
   History as HistoryIcon,
