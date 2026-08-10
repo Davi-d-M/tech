@@ -60,3 +60,7 @@ CREATE POLICY "Admins can view logs" ON public.login_attempts
 
 CREATE POLICY "Admins can manage vault" ON public.admin_vault
     FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- 6. Enhance Reviews with Phone Mapping
+ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS customer_phone TEXT;
+CREATE INDEX IF NOT EXISTS idx_reviews_customer_phone ON public.reviews(customer_phone);

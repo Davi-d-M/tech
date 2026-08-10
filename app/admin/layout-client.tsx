@@ -15,7 +15,7 @@ import {
   Store,
   ShoppingBag,
   ShieldCheck,
-  ShieldAlert,
+  Shield,
   Zap,
   History as HistoryIcon,
   Settings,
@@ -135,7 +135,7 @@ export default function AdminLayoutClient({
       { name: 'Document Vault', href: '/admin/vault', icon: Lock, permission: 'can_view_revenue' },
     ]},
     { group: 'ENTERPRISE', items: [
-      { name: 'Security Hub', href: '/admin/security', icon: ShieldAlert, permission: 'can_manage_settings' },
+      { name: 'Security Hub', href: '/admin/security', icon: Shield, permission: 'can_manage_settings' },
       { name: 'Command & Control', href: '/admin/staff', icon: ShieldCheck, minRole: 'owner' },
       { name: 'Brand Settings', href: '/admin/settings', icon: Settings, permission: 'can_manage_settings' },
     ]},

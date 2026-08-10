@@ -77,7 +77,7 @@ export default function CustomerIntelligence() {
           supabase.from('orders').select('*').eq('customer_phone', phone).order('created_at', { ascending: false }),
           supabase.from('products').select('id, name, category'),
           profileData ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] }),
-          supabase.from('reviews').select('*').eq('customer_name', profileData?.full_name || '').order('created_at', { ascending: false })
+          supabase.from('reviews').select('*').or(`customer_phone.eq.${phone},customer_name.eq.${profileData?.full_name || 'NONE'}`).order('created_at', { ascending: false })
         ]);
 
         if (ordersRes.data) setOrders(ordersRes.data as Order[]);
