@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import * as React from 'react';
 import {
   Users,
   Phone,
@@ -12,7 +12,7 @@ import {
   Star,
   ShieldAlert,
   Gem,
-  Zap
+  Activity as Zap
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { formatPrice } from '@/lib/utils';
@@ -43,12 +43,12 @@ interface CustomerStats {
 export default function AdminCustomersPage() {
   const { role } = useAdmin();
   const router = useRouter();
-  const [orders, setOrders] = useState<OrderRecord[]>([]);
-  const [profiles, setProfiles] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [orders, setOrders] = React.useState<OrderRecord[]>([]);
+  const [profiles, setProfiles] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [searchQuery, setSearchQuery] = React.useState('');
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (role !== 'owner' && role !== 'admin') {
         setIsLoading(false);
         return;
@@ -75,7 +75,7 @@ export default function AdminCustomersPage() {
     loadCustomers();
   }, [role]);
 
-  const customers = useMemo(() => {
+  const customers = React.useMemo(() => {
     const map = new Map<string, CustomerStats>();
     const referralMap = new Map<string, number>();
 
@@ -117,7 +117,7 @@ export default function AdminCustomersPage() {
     })).sort((a, b) => b.totalSpend - a.totalSpend);
   }, [orders, profiles]);
 
-  const filteredCustomers = useMemo(() => {
+  const filteredCustomers = React.useMemo(() => {
     const query = (searchQuery || '').toLowerCase();
     return customers.filter(c =>
       (c.name || '').toLowerCase().includes(query) ||

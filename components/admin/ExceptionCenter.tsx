@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { AlertTriangle, Clock, ShieldAlert, Zap, Truck, Package, CreditCard, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -16,10 +16,10 @@ interface Exception {
 }
 
 export default function ExceptionCenter() {
-    const [exceptions, setExceptions] = useState<Exception[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [exceptions, setExceptions] = React.useState<Exception[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function scanForExceptions() {
             if (!supabase) return;
 

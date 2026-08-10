@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
   Send,
   Mail,
-  Zap,
+  Activity as Zap,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -25,15 +25,15 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function AdminBroadcastPage() {
-    const [subscribers, setSubscribers] = useState<{ id: string | number; email: string; created_at: string }[]>([]);
-    const [sending, setSending] = useState(false);
-    const [channel, setChannel] = useState<'email' | 'whatsapp'>('email');
-    const [audience, setAudience] = useState<'all' | 'new' | 'vip' | 'inactive'>('all');
-    const [schedule, setSchedule] = useState<'now' | 'later'>('now');
-    const [subject, setSubject] = useState('');
-    const [message, setMessage] = useState('');
-    const [status, setStatus] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-    const [resendActive, setResendActive] = useState<boolean | null>(null);
+    const [subscribers, setSubscribers] = React.useState<{ id: string | number; email: string; created_at: string }[]>([]);
+    const [sending, setSending] = React.useState(false);
+    const [channel, setChannel] = React.useState<'email' | 'whatsapp'>('email');
+    const [audience, setAudience] = React.useState<'all' | 'new' | 'vip' | 'inactive'>('all');
+    const [schedule, setSchedule] = React.useState<'now' | 'later'>('now');
+    const [subject, setSubject] = React.useState('');
+    const [message, setMessage] = React.useState('');
+    const [status, setStatus] = React.useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [resendActive, setResendActive] = React.useState<boolean | null>(null);
 
     const CAMPAIGN_TEMPLATES = [
         { id: 'flash', label: 'Flash Sale', content: `🚨 ALERT: Elite Flash Sale active now! Get 20% OFF all premium accessories for the next 4 hours only. Secure yours: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}/shop` },
@@ -53,7 +53,7 @@ export default function AdminBroadcastPage() {
         if (channel === 'email') setSubject("Apexstores Tech Protocol 🚀");
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function fetchSubscribers() {
             if (!supabase) return;
             const { data } = await supabase.from('newsletter_subscribers').select('*');

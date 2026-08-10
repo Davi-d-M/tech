@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     DollarSign,
@@ -36,12 +36,12 @@ interface Transaction {
 
 export default function AdminFinancePage() {
     useAdmin();
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [orders, setOrders] = useState<any[]>([]);
-    const [payouts, setPayouts] = useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [orders, setOrders] = React.useState<any[]>([]);
+    const [payouts, setPayouts] = React.useState<any[]>([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function fetchFinanceData() {
             if (!supabase) return;
             setLoading(true);
@@ -62,7 +62,7 @@ export default function AdminFinancePage() {
         fetchFinanceData();
     }, []);
 
-    const stats = useMemo(() => {
+    const stats = React.useMemo(() => {
         const totalRevenue = orders.filter(o => o.status === 'Delivered').reduce((sum, o) => sum + Number(o.total_price || 0), 0);
         const pendingValue = orders.filter(o => o.status === 'Pending' || o.status === 'Paid').reduce((sum, o) => sum + Number(o.total_price || 0), 0);
         const totalPayouts = payouts.reduce((sum, w) => sum + Number(w.total_earned || 0), 0);
@@ -71,7 +71,7 @@ export default function AdminFinancePage() {
         return { totalRevenue, pendingValue, totalPayouts, availableCash };
     }, [orders, payouts]);
 
-    const transactions: Transaction[] = useMemo(() => {
+    const transactions: Transaction[] = React.useMemo(() => {
         const list: Transaction[] = [];
 
         orders.slice(0, 10).forEach(o => {

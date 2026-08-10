@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { ShoppingBag, Truck, Package, MessageSquare, ChevronRight, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -14,15 +14,15 @@ interface CommandStats {
 }
 
 export default function TodayCommandCenter() {
-    const [stats, setStats] = useState<CommandStats>({
+    const [stats, setStats] = React.useState<CommandStats>({
         attention_orders: 0,
         offline_riders: 0,
         low_stock: 0,
         support_tickets: 0
     });
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = React.useState(true);
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function fetchCommandData() {
             if (!supabase) return;
             try {

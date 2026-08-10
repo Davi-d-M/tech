@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Bell, X, ShieldAlert, Package, Truck, CreditCard, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 interface Notification {
     id: string;
@@ -16,7 +17,7 @@ interface Notification {
 }
 
 export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (open: boolean) => void }) {
-    const [notifications, setNotifications] = useState<Notification[]>([
+    const [notifications, setNotifications] = React.useState<Notification[]>([
         { id: '1', type: 'critical', label: 'Payment Discrepancy', meta: 'KES 800 mismatch in Paystack sync', time: '2m ago', url: '/admin/finance', isRead: false },
         { id: '2', type: 'warning', label: 'Critical Stock Alert', meta: 'SIM Card Tray — 3 units remaining', time: '11m ago', url: '/admin/upload', isRead: false },
         { id: '3', type: 'info', label: 'Rider Delayed', meta: 'Rider John K. hasn\'t moved for 15m', time: '23m ago', url: '/admin/dispatch', isRead: true },

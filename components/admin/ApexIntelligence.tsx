@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Sparkles, ArrowRight, TrendingUp, AlertTriangle, Package, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,9 +8,9 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function ApexIntelligence() {
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = React.useState(true);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const timer = setTimeout(() => setLoading(false), 2000);
         return () => clearTimeout(timer);
     }, []);

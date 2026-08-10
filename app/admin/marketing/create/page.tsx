@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     Plus,
@@ -8,15 +8,15 @@ import {
     ArrowRight,
     ArrowLeft,
     Sparkles,
-    Instagram,
-    Facebook,
+    Camera as InstagramIcon,
+    Share2 as Facebook,
     MessageCircle,
     Mail,
     Loader2,
     Smartphone,
     CheckCircle2,
     Calendar,
-    Zap,
+    Activity as Zap,
     Users,
     Package
 } from 'lucide-react';
@@ -37,14 +37,14 @@ type Step = 'context' | 'content' | 'preview' | 'audience';
 export default function CreateCampaign() {
     const { email } = useAdmin();
     const { settings } = useSettings();
-    const [step, setStep] = useState<Step>('context');
-    const [loading, setLoading] = useState(false);
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [activePreview, setActivePreview] = useState<'instagram' | 'whatsapp' | 'email'>('instagram');
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [step, setStep] = React.useState<Step>('context');
+    const [loading, setLoading] = React.useState(false);
+    const [isGenerating, setIsGenerating] = React.useState(false);
+    const [activePreview, setActivePreview] = React.useState<'instagram' | 'whatsapp' | 'email'>('instagram');
+    const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     // Campaign State
-    const [campaign, setCampaign] = useState({
+    const [campaign, setCampaign] = React.useState({
         name: '',
         type: 'Product Launch',
         product_id: '',
@@ -53,22 +53,22 @@ export default function CreateCampaign() {
         audience_id: 'all'
     });
 
-    const [products, setProducts] = useState<any[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<any>(null);
-    const [segments, setSegments] = useState<any[]>([
+    const [products, setProducts] = React.useState<any[]>([]);
+    const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
+    const [segments, setSegments] = React.useState<any[]>([
         { id: 'all', name: 'Everyone', estimated_reach: 2481 },
         { id: 'vip', name: 'Elite VIPs', estimated_reach: 184 },
         { id: 'inactive', name: 'Inactive 30d', estimated_reach: 312 }
     ]);
 
     // Channel Content State
-    const [channels, setChannels] = useState({
+    const [channels, setChannels] = React.useState({
         instagram: { active: true, caption: '', generated: false },
         whatsapp: { active: true, body: '', generated: false },
         email: { active: true, subject: '', body: '', generated: false }
     });
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function fetchData() {
             if (!supabase) return;
             const [prodRes, segRes] = await Promise.all([
@@ -260,7 +260,7 @@ export default function CreateCampaign() {
                                 <div className="space-y-8">
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 px-2 text-primary font-black uppercase text-[10px] tracking-widest">
-                                            <Instagram size={14} /> Social Meta (IG/FB)
+                                            <InstagramIcon size={14} /> Social Meta (IG/FB)
                                         </div>
                                         <Textarea
                                             value={channels.instagram.caption}

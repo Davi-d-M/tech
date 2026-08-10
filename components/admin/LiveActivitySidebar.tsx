@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
+    Activity as ActivityIcon,
     Zap,
     ShoppingCart,
     UserPlus,
@@ -10,8 +11,7 @@ import {
     Truck,
     MessageSquare,
     X,
-    ChevronRight,
-    Activity
+    ChevronRight
 } from 'lucide-react';
 import { cn, formatPrice } from '@/lib/utils';
 import Link from 'next/link';
@@ -27,9 +27,9 @@ interface ActivityEvent {
 }
 
 export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (open: boolean) => void }) {
-    const [events, setPulseEvents] = useState<ActivityEvent[]>([]);
+    const [events, setPulseEvents] = React.useState<ActivityEvent[]>([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (!supabase) return;
 
         const channel: any = supabase.channel('enterprise-pulse');

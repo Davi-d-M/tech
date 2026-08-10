@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
-    Zap,
+    Activity as Zap,
     Rocket,
     Users,
     Target,
@@ -12,7 +12,7 @@ import {
     Plus,
     ChevronRight,
     Send,
-    Instagram,
+    Camera as Instagram,
     MessageCircle,
     Mail
 } from 'lucide-react';

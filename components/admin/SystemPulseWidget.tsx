@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Activity, Database, Globe, Smartphone, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function SystemPulseWidget() {
-    const [latency, setLatency] = useState({ db: 0, api: 0, logistics: 0 });
-    const [status, setStatus] = useState({ db: 'online', api: 'online', logistics: 'active' });
+    const [latency, setLatency] = React.useState({ db: 0, api: 0, logistics: 0 });
+    const [status, setStatus] = React.useState({ db: 'online', api: 'online', logistics: 'active' });
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function checkLatency() {
             const start = performance.now();
             try {

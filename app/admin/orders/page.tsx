@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 import {
   Plus,
   RefreshCcw,
@@ -77,33 +77,33 @@ const initialManualOrder: ManualOrderForm = {
 
 export default function AdminOrdersPage() {
   const { role, email } = useAdmin();
-  const [orders, setOrders] = useState<OrderRecord[]>([]);
-  const [products, setProducts] = useState<{ id: number; name: string; price: number; cost_price: number; stock: number; variant_stock: Record<string, number> }[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [statusMessage, setStatusMessage] = useState<{
+  const [orders, setOrders] = React.useState<OrderRecord[]>([]);
+  const [products, setProducts] = React.useState<{ id: number; name: string; price: number; cost_price: number; stock: number; variant_stock: Record<string, number> }[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [statusMessage, setStatusMessage] = React.useState<{
     type: 'idle' | 'success' | 'error';
     text: string;
   }>({ type: 'idle', text: '' });
-  const [updatingId, setUpdatingId] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSavingManualOrder, setIsSavingManualOrder] = useState(false);
-  const [manualOrder, setManualOrder] = useState<ManualOrderForm>(initialManualOrder);
-  const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
-  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
-  const [assigningRiderId, setAssigningRiderId] = useState<number | null>(null);
-  const [riderForm, setRiderForm] = useState({ name: '', phone: '' });
+  const [updatingId, setUpdatingId] = React.useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [isSavingManualOrder, setIsSavingManualOrder] = React.useState(false);
+  const [manualOrder, setManualOrder] = React.useState<ManualOrderForm>(initialManualOrder);
+  const [selectedOrders, setSelectedOrders] = React.useState<number[]>([]);
+  const [isBulkUpdating, setIsBulkUpdating] = React.useState(false);
+  const [assigningRiderId, setAssigningRiderId] = React.useState<number | null>(null);
+  const [riderForm, setRiderForm] = React.useState({ name: '', phone: '' });
 
   const canManageOrders = role === 'staff' || role === 'admin' || role === 'owner';
   const canSeeMoney = role === 'staff' || role === 'admin' || role === 'owner';
 
-  const productOptions = useMemo(() => {
+  const productOptions = React.useMemo(() => {
     return products.map((product) => ({
       id: product.id,
       name: product.name,
     }));
   }, [products]);
 
-  const productNameMap = useMemo(() => {
+  const productNameMap = React.useMemo(() => {
     return new Map(products.map((product) => [product.id, product.name]));
   }, [products]);
 
@@ -139,7 +139,7 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const filteredOrders = useMemo(() => {
+  const filteredOrders = React.useMemo(() => {
       return orders.filter(o =>
           (o.customer_name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
           (o.customer_phone || '').includes(searchQuery) ||
@@ -147,11 +147,11 @@ export default function AdminOrdersPage() {
       );
   }, [orders, searchQuery]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     loadOrders();
   }, []);
 
-  const summary = useMemo(() => {
+  const summary = React.useMemo(() => {
     const totalRevenue = orders
       .filter(o => o.status === 'Delivered')
       .reduce((sum, order) => sum + Number(order.total_price || 0), 0);

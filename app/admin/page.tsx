@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import * as React from 'react';
 import {
   TrendingUp,
   ShoppingCart,
@@ -76,18 +76,18 @@ interface AuditLog {
 // ENTERPRISE HUD 2.0 - Stabilized
 export default function AdminDashboard() {
   useAdmin();
-  const [orders, setOrders] = useState<OrderRecord[]>([]);
-  const [products, setProducts] = useState<ProductRecord[]>([]);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
-  const [latency, setLatency] = useState(0);
+  const [orders, setOrders] = React.useState<OrderRecord[]>([]);
+  const [products, setProducts] = React.useState<ProductRecord[]>([]);
+  const [auditLogs, setAuditLogs] = React.useState<AuditLog[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [mounted, setMounted] = React.useState(false);
+  const [latency, setLatency] = React.useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
       setMounted(true);
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     async function loadStats() {
       if (!supabase) {
         setIsLoading(false);
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
     loadStats();
   }, []);
 
-  const stats = useMemo(() => {
+  const stats = React.useMemo(() => {
     const productCostMap = new Map(products.map(p => [p.id, Number(p.cost_price || 0)]));
     const deliveredOrders = orders.filter(o => o.status === 'Delivered');
 
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
     return { totalRevenue, netProfit, profitMargin, lowStockItems, growth };
   }, [orders, products]);
 
-  const sparklineData = useMemo(() => {
+  const sparklineData = React.useMemo(() => {
       const days = [...Array(7)].map((_, i) => {
           const d = new Date();
           d.setDate(d.getDate() - i);

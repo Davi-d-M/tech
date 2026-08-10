@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     BarChart3,
     TrendingUp,
     Users,
-    Zap,
+    Activity as Zap,
     Clock,
     ArrowUpRight,
     ArrowDownRight,
@@ -41,12 +41,12 @@ const PIE_COLORS = ['#F5A000', '#0F172A', '#5B5BFF', '#10B981'];
 
 export default function AdminAnalyticsPage() {
     useAdmin();
-    const [timeframe, setTimeframe] = useState<'7d' | '30d' | '90d' | 'YTD'>('30d');
-    const [loading, setLoading] = useState(true);
-    const [products, setProducts] = useState<any[]>([]);
-    const [orders, setOrders] = useState<any[]>([]);
+    const [timeframe, setTimeframe] = React.useState<'7d' | '30d' | '90d' | 'YTD'>('30d');
+    const [loading, setLoading] = React.useState(true);
+    const [products, setProducts] = React.useState<any[]>([]);
+    const [orders, setOrders] = React.useState<any[]>([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function fetchData() {
             if (!supabase) return;
             setLoading(true);
@@ -66,7 +66,7 @@ export default function AdminAnalyticsPage() {
         fetchData();
     }, []);
 
-    const categoryData = useMemo(() => {
+    const categoryData = React.useMemo(() => {
         const map = new Map<string, number>();
         products.forEach(p => {
             const cat = p.category || 'Other';
@@ -75,7 +75,7 @@ export default function AdminAnalyticsPage() {
         return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
     }, [products]);
 
-    const chartData = useMemo(() => {
+    const chartData = React.useMemo(() => {
         const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         const now = new Date();
         const last7Days = days.map((_, i) => {

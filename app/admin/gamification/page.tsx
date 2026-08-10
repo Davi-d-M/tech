@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     Flame,
     Target,
-    Zap,
+    Activity as Zap,
     Save,
     Loader2,
     CheckCircle2,
@@ -87,16 +87,16 @@ const IconMap: Record<string, React.ElementType> = {
 
 export default function AdminGamificationPage() {
     const { email } = useAdmin();
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const [loading, setLoading] = React.useState(true);
+    const [saving, setSaving] = React.useState(false);
+    const [message, setMessage] = React.useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-    const [config, setConfig] = useState(DEFAULTS);
-    const [activeTab, setActiveTab] = useState<'streaks' | 'missions' | 'rewards' | 'tiers' | 'simulator'>('streaks');
+    const [config, setConfig] = React.useState(DEFAULTS);
+    const [activeTab, setActiveTab] = React.useState<'streaks' | 'missions' | 'rewards' | 'tiers' | 'simulator'>('streaks');
 
     // Simulator State
-    const [simPurchase, setSimPurchase] = useState('5000');
-    const [simResults, setSimResults] = useState<{ xp: number, points: number, rank: string, voucher: string } | null>(null);
+    const [simPurchase, setSimPurchase] = React.useState('5000');
+    const [simResults, setSimResults] = React.useState<{ xp: number, points: number, rank: string, voucher: string } | null>(null);
 
     const runSimulation = () => {
         const amount = Number(simPurchase) || 0;
@@ -110,7 +110,7 @@ export default function AdminGamificationPage() {
         setSimResults({ xp, points, rank, voucher });
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function fetchConfig() {
             if (!supabase) return;
             setLoading(true);

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     History,
     Search,
     Filter,
     ChevronRight,
-    Zap,
+    Activity as Zap,
     Clock,
     CheckCircle2,
     AlertCircle,
@@ -34,11 +34,11 @@ interface Campaign {
 }
 
 export default function CampaignHistory() {
-    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [searchQuery, setSearchQuery] = React.useState('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function fetchCampaigns() {
             if (!supabase) return;
             setLoading(true);
