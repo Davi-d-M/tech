@@ -23,10 +23,13 @@ import {
   Target,
   Trophy,
   BarChart3,
+  TrendingUp,
+  DollarSign,
   Truck,
   ImageIcon,
   Search,
   Bell,
+  Activity,
   Plus,
   PanelLeftClose,
   PanelLeftOpen
