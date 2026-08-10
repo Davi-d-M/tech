@@ -9,17 +9,16 @@ import {
     Search,
     TrendingUp,
     Trophy,
-    Zap,
-    FileText,
-    MessageSquare,
-    Activity,
     ChevronRight,
     Target,
     MousePointer2,
     ArrowUpRight,
+    ShieldCheck,
+    MessageSquare,
+    Zap,
+    AlertCircle,
     Camera,
-    ShieldAlert,
-    AlertCircle
+    FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +40,7 @@ interface Affiliate {
     id: string;
     email: string;
     full_name: string;
+    phone_number: string;
     referral_code: string;
     referral_clicks: number;
     total_commission_earned: number;
@@ -108,6 +108,7 @@ export default function AdminAffiliates() {
         } catch (err: unknown) {
             const error = err as Error;
             setMessage({ type: 'error', text: error.message || "Pipeline Desync." });
+            setTimeout(() => setMessage(null), 5000);
         } finally {
             setLoading(false);
         }
@@ -116,6 +117,18 @@ export default function AdminAffiliates() {
     React.useEffect(() => {
         fetchAffiliates();
     }, [fetchAffiliates]);
+
+    const updateAffiliateStatus = async (id: string, status: Affiliate['status']) => {
+        if (!supabase) return;
+        try {
+            const { error } = await supabase.from('profiles').update({ status_flag: status }).eq('id', id);
+            if (error) throw error;
+            setAffiliates(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+            setMessage({ type: 'success', text: `Affiliate protocol set to ${status}.` });
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const stats = React.useMemo(() => {
         const totalSales = affiliates.reduce((sum, a) => sum + a.total_sales, 0);
@@ -228,7 +241,7 @@ export default function AdminAffiliates() {
             </div>
 
             <div className="grid lg:grid-cols-12 gap-10 items-stretch">
-                <Card className="lg:col-span-8 rounded-[3.5rem] border border-border p-10 bg-card shadow-sm flex flex-col justify-between h-full">
+                <Card className="lg:col-span-8 rounded-[3.5rem] border border-border p-10 bg-card shadow-sm flex flex-col min-h-[500px]">
                     <div className="flex justify-between items-center mb-12">
                         <div>
                             <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter leading-none">Yield Dynamics</h2>
@@ -249,7 +262,7 @@ export default function AdminAffiliates() {
                             ))}
                         </div>
                     </div>
-                    <div className="h-[350px] w-full">
+                    <div className="flex-1 w-full min-h-[350px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={chartData}>
                                 <defs>
@@ -272,8 +285,8 @@ export default function AdminAffiliates() {
                     </div>
                 </Card>
 
-                <div className="lg:col-span-4 flex flex-col gap-8 h-full">
-                    <Card className="rounded-[3rem] border border-border overflow-hidden bg-card shadow-sm flex-1 flex flex-col">
+                <div className="lg:col-span-4 flex flex-col gap-10">
+                    <Card className="rounded-[3rem] border border-border overflow-hidden bg-card shadow-sm flex flex-col h-full min-h-[300px]">
                         <div className="p-8 border-b border-border flex items-center justify-between">
                             <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">Elite Partners</h2>
                             <Trophy className="h-5 w-5 text-amber-500" />
@@ -306,6 +319,40 @@ export default function AdminAffiliates() {
                                 Analysis Full Directory <ArrowUpRight className="h-3 w-3" />
                             </button>
                         </Link>
+                    </Card>
+
+                    <Card className="rounded-[3rem] border border-border p-8 bg-card shadow-sm space-y-6">
+                        <h2 className="text-lg font-black text-foreground uppercase tracking-tighter flex items-center gap-3"><Zap className="h-5 w-5 text-primary fill-current" /> Marketing Assets</h2>
+                        <div className="grid grid-cols-2 gap-3">
+                            <Link href="/admin/media?tab=posters" className="flex-1">
+                                <button className="w-full p-4 rounded-2xl bg-secondary border border-border hover:bg-white hover:shadow-lg transition-all text-left group">
+                                    <Camera className="h-4 w-4 mb-3 text-primary" />
+                                    <p className="text-[9px] font-black uppercase text-foreground">IG Posters</p>
+                                </button>
+                            </Link>
+                            <Link href="/admin/media?tab=banners" className="flex-1">
+                                <button className="w-full p-4 rounded-2xl bg-secondary border border-border hover:bg-white hover:shadow-lg transition-all text-left group">
+                                    <MessageSquare className="h-4 w-4 mb-3 text-primary" />
+                                    <p className="text-[9px] font-black uppercase text-foreground">WA Banners</p>
+                                </button>
+                            </Link>
+                        </div>
+                        <Button
+                            onClick={async () => {
+                                try {
+                                    const { generateProductCatalog } = await import('@/lib/catalogService');
+                                    const doc = await generateProductCatalog(new Date().toLocaleString('default', { month: 'long' }));
+                                    doc.save('Elite_Tech_Catalog.pdf');
+                                    setMessage({ type: 'success', text: "Catalog compilation successful! 📁" });
+                                    setTimeout(() => setMessage(null), 3000);
+                                } catch (err) {
+                                    setMessage({ type: 'error', text: "Catalog extraction failed." });
+                                }
+                            }}
+                            className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95"
+                        >
+                            <FileText className="h-4 w-4 mr-2" /> Download Catalog
+                        </Button>
                     </Card>
                 </div>
             </div>
@@ -376,12 +423,23 @@ export default function AdminAffiliates() {
                                         <td className="px-10 py-8 text-right">
                                             <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <Button
-                                                    onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}`, '_blank')}
+                                                    onClick={() => window.open(`https://wa.me/${aff.phone_number}`, '_blank')}
                                                     variant="ghost"
                                                     size="icon"
                                                     className="h-10 w-10 rounded-xl hover:text-primary hover:bg-white transition-all shadow-sm"
                                                 >
                                                     <MessageSquare className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    onClick={() => {
+                                                        const status = aff.status === 'Verified' ? 'Flagged' : 'Verified';
+                                                        updateAffiliateStatus(aff.id, status);
+                                                    }}
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-10 w-10 rounded-xl hover:text-amber-500 hover:bg-white transition-all shadow-sm"
+                                                >
+                                                    <ShieldCheck className="h-4 w-4" />
                                                 </Button>
                                                 <Link href={`/admin/customers/${aff.id}`}>
                                                     <Button

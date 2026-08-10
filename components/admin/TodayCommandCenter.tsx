@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { ShoppingBag, Truck, Package, MessageSquare, ChevronRight, AlertCircle } from 'lucide-react';
+import { ShoppingBag, Truck, Package, MessageSquare, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -96,11 +96,11 @@ export default function TodayCommandCenter() {
                 <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground bg-secondary px-3 py-1 rounded-full border border-border">Live Intelligence</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
                 {indicators.map((item) => (
-                    <Link key={item.label} href={item.href}>
+                    <Link key={item.label} href={item.href} className="flex h-full">
                         <div className={cn(
-                            "p-6 rounded-[2.5rem] bg-card border border-border hover:shadow-xl hover:scale-[1.02] transition-all group relative overflow-hidden",
+                            "p-6 rounded-[2.5rem] bg-card border border-border hover:shadow-xl hover:scale-[1.02] transition-all group relative overflow-hidden flex flex-col justify-between w-full h-full",
                             item.val > 0 && item.color === 'rose' && "border-rose-100 bg-rose-50/30"
                         )}>
                             <div className="relative z-10 flex justify-between items-start">

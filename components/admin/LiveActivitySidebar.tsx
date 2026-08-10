@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
-    Activity as ActivityIcon,
     Zap,
     ShoppingCart,
     UserPlus,
@@ -11,7 +10,8 @@ import {
     Truck,
     MessageSquare,
     X,
-    ChevronRight
+    ChevronRight,
+    Activity as ActivityIcon
 } from 'lucide-react';
 import { cn, formatPrice } from '@/lib/utils';
 import Link from 'next/link';

@@ -5,17 +5,12 @@ import { supabase } from '@/lib/supabaseClient';
 import {
     Plus,
     CheckCircle2,
-    Clock,
-    AlertCircle,
-    MoreVertical,
-    Calendar,
-    Users,
-    Trash2,
-    Loader2,
     RefreshCcw,
     ChevronRight,
     Zap,
-    Layout
+    Layout,
+    MoreVertical,
+    AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,16 +35,15 @@ export default function TaskCenter() {
     const [loading, setLoading] = React.useState(true);
     const [isAdding, setIsAdding] = React.useState(false);
     const [newTask, setNewTask] = React.useState({ title: '', description: '', priority: 'Medium' as Task['priority'] });
+    const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    const fetchTasks = async () => {
+    const fetchTasks = React.useCallback(async () => {
         if (!supabase) return;
         setLoading(true);
         try {
-            // Check if table exists, if not, use mock data for now to prevent crash
             const { data, error } = await supabase.from('admin_tasks').select('*').order('created_at', { ascending: false });
             if (error) {
                 if (error.code === 'PGRST116' || error.message.includes('does not exist')) {
-                    // Mock data for initial UI
                     setTasks([
                         { id: '1', title: 'Restock AMAYA AM-05', description: 'Inventory level dropped below 5 units.', status: 'Todo', priority: 'High', assigned_to: 'Logistics', due_date: '2026-08-11', created_at: new Date().toISOString() },
                         { id: '2', title: 'Verify Partner #104 Payout', description: 'Reconcile sales for last week.', status: 'InProgress', priority: 'Medium', assigned_to: 'Finance', due_date: '2026-08-10', created_at: new Date().toISOString() },
@@ -66,15 +60,39 @@ export default function TaskCenter() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     React.useEffect(() => {
         fetchTasks();
-    }, []);
+    }, [fetchTasks]);
+
+    const handleCreateTask = async () => {
+        if (!newTask.title.trim()) return;
+        const task: Task = {
+            id: Math.random().toString(),
+            title: newTask.title,
+            description: newTask.description,
+            status: 'Todo',
+            priority: newTask.priority,
+            assigned_to: 'Staff',
+            due_date: null,
+            created_at: new Date().toISOString()
+        };
+        setTasks([task, ...tasks]);
+        setIsAdding(false);
+        setNewTask({ title: '', description: '', priority: 'Medium' });
+        setMessage({ type: 'success', text: "New operations protocol established. 📝" });
+        setTimeout(() => setMessage(null), 3000);
+    };
 
     const updateTaskStatus = async (id: string, status: Task['status']) => {
         setTasks(prev => prev.map(t => t.id === id ? { ...t, status } : t));
-        // Logic to update DB if table exists
+    };
+
+    const deleteTask = (id: string) => {
+        setTasks(prev => prev.filter(t => t.id !== id));
+        setMessage({ type: 'success', text: "Protocol decommissioned." });
+        setTimeout(() => setMessage(null), 3000);
     };
 
     const COLUMNS: Task['status'][] = ['Todo', 'InProgress', 'Review', 'Done'];
@@ -92,7 +110,7 @@ export default function TaskCenter() {
                 </div>
                 <div className="flex gap-2">
                     <Button onClick={fetchTasks} variant="outline" className="rounded-xl h-12 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest transition-all">
-                        <RefreshCcw className="h-4 w-4 mr-2" /> Sync Board
+                        <RefreshCcw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} /> Sync Board
                     </Button>
                     <Button onClick={() => setIsAdding(true)} className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                         <Plus className="h-4 w-4 mr-2" /> New Protocol
@@ -100,10 +118,20 @@ export default function TaskCenter() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+            {message && (
+                <div className={cn(
+                    "p-6 rounded-[2.5rem] border-2 flex items-center gap-4 animate-in slide-in-from-top-4",
+                    message.type === 'success' ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600"
+                )}>
+                    {message.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
+                    <p className="text-sm font-black uppercase tracking-widest">{message.text}</p>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
                 {COLUMNS.map(col => (
-                    <div key={col} className="space-y-6">
-                        <div className="flex items-center justify-between px-4">
+                    <div key={col} className="space-y-6 flex flex-col h-full">
+                        <div className="flex items-center justify-between px-4 shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className={cn(
                                     "h-2 w-2 rounded-full",
@@ -118,24 +146,26 @@ export default function TaskCenter() {
                             </span>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 flex-1">
                             {tasks.filter(t => t.status === col).map(task => (
-                                <Card key={task.id} className="p-6 rounded-[2rem] border border-border bg-card shadow-sm hover:shadow-xl transition-all group cursor-grab active:cursor-grabbing">
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-start">
-                                            <span className={cn(
-                                                "px-2 py-1 rounded-lg text-[7px] font-black uppercase tracking-widest border",
-                                                task.priority === 'Critical' ? "bg-rose-50 text-rose-600 border-rose-100" :
-                                                task.priority === 'High' ? "bg-primary/5 text-primary border-primary/10" :
-                                                "bg-slate-50 text-slate-400 border-slate-100"
-                                            )}>{task.priority}</span>
-                                            <button className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"><MoreVertical size={14} /></button>
+                                <Card key={task.id} className="p-6 rounded-[2rem] border border-border bg-card shadow-sm hover:shadow-xl transition-all group cursor-grab active:cursor-grabbing h-auto">
+                                    <div className="space-y-4 h-full flex flex-col justify-between">
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-start">
+                                                <span className={cn(
+                                                    "px-2 py-1 rounded-lg text-[7px] font-black uppercase tracking-widest border",
+                                                    task.priority === 'Critical' ? "bg-rose-50 text-rose-600 border-rose-100" :
+                                                    task.priority === 'High' ? "bg-primary/5 text-primary border-primary/10" :
+                                                    "bg-slate-50 text-slate-400 border-slate-100"
+                                                )}>{task.priority}</span>
+                                                <button className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"><MoreVertical size={14} /></button>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-sm font-black text-foreground uppercase tracking-tight leading-tight">{task.title}</h4>
+                                                <p className="text-[10px] text-muted-foreground font-medium mt-1 line-clamp-2 italic leading-relaxed">&quot;{task.description}&quot;</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 className="text-sm font-black text-foreground uppercase tracking-tight leading-tight">{task.title}</h4>
-                                            <p className="text-[10px] text-muted-foreground font-medium mt-1 line-clamp-2 italic leading-relaxed">&quot;{task.description}&quot;</p>
-                                        </div>
-                                        <div className="pt-4 border-t border-border flex justify-between items-center">
+                                        <div className="pt-4 border-t border-border flex justify-between items-center mt-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center text-[8px] font-black text-primary border border-border">
                                                     {task.assigned_to?.substring(0, 1)}
@@ -158,7 +188,7 @@ export default function TaskCenter() {
                             ))}
 
                             {tasks.filter(t => t.status === col).length === 0 && (
-                                <div className="py-12 border-2 border-dashed border-border rounded-[2rem] flex flex-col items-center justify-center text-center opacity-20 group hover:opacity-100 transition-opacity">
+                                <div className="py-12 border-2 border-dashed border-border rounded-[2rem] flex flex-col items-center justify-center text-center opacity-20 group hover:opacity-100 transition-opacity h-full min-h-[200px]">
                                     <CheckCircle2 size={32} className="mb-2" />
                                     <p className="text-[8px] font-black uppercase tracking-widest italic">Column Optimized</p>
                                 </div>
@@ -167,6 +197,40 @@ export default function TaskCenter() {
                     </div>
                 ))}
             </div>
+
+            {isAdding && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center bg-background/20 backdrop-blur-md p-6">
+                    <Card className="max-w-md w-full bg-card rounded-[3rem] border border-border shadow-2xl p-10 space-y-8 animate-in zoom-in-95 duration-300">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Zap size={24} /></div>
+                            <h3 className="text-2xl font-black uppercase text-foreground tracking-tighter">New Mission</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Protocol Title</label>
+                                <Input value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground" placeholder="e.g. Audit Warehouse Bin B" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Severity</label>
+                                <select
+                                    value={newTask.priority}
+                                    onChange={e => setNewTask({...newTask, priority: e.target.value as any})}
+                                    className="w-full h-14 rounded-2xl bg-secondary border border-border px-4 text-xs font-black uppercase outline-none focus:ring-2 focus:ring-primary"
+                                >
+                                    <option>Low</option>
+                                    <option>Medium</option>
+                                    <option>High</option>
+                                    <option>Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="flex gap-4 pt-4">
+                            <Button onClick={handleCreateTask} className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all">Establish</Button>
+                            <Button onClick={() => setIsAdding(false)} variant="outline" className="flex-1 h-14 rounded-2xl font-black uppercase text-[10px] border-border">Abort</Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 }

@@ -18,7 +18,8 @@ import {
   Star,
   Package,
   PackageCheck,
-  CreditCard
+  CreditCard,
+  Phone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -208,7 +209,7 @@ export default function AdminDispatchPage() {
             )}
 
             {/* Top Stats HUD */}
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
                 {[
                     { label: 'Total Fleet', val: stats.total, icon: Users },
                     { label: 'Active', val: stats.active, icon: Activity },
@@ -216,7 +217,7 @@ export default function AdminDispatchPage() {
                     { label: 'Standby', val: stats.standby, icon: Zap },
                     { label: 'Avg Health', val: `${stats.avgHealth}%`, icon: ShieldCheck },
                 ].map((item) => (
-                    <Card key={item.label} className="p-6 rounded-3xl border border-border bg-card shadow-sm flex items-center gap-4 group hover:shadow-xl transition-all">
+                    <Card key={item.label} className="p-6 rounded-3xl border border-border bg-card shadow-sm flex items-center gap-4 group hover:shadow-xl transition-all h-full">
                         <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary transition-transform group-hover:scale-110">
                             <item.icon className="h-6 w-6" />
                         </div>

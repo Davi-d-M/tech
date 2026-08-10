@@ -90,7 +90,7 @@ export default function AudiencesPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                 {loading ? (
                     [...Array(3)].map((_, i) => (
                         <Card key={i} className="p-8 rounded-[2.5rem] bg-card border-border animate-pulse h-64"></Card>
@@ -102,26 +102,28 @@ export default function AudiencesPage() {
                     </div>
                 ) : (
                     filtered.map((seg) => (
-                        <Card key={seg.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm group hover:border-primary/20 transition-all flex flex-col justify-between relative overflow-hidden">
-                            <div className="relative z-10 space-y-6">
-                                <div className="flex justify-between items-start">
-                                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                                        <Target size={24} />
+                        <Card key={seg.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm group hover:border-primary/20 transition-all flex flex-col justify-between relative overflow-hidden h-full">
+                            <div className="relative z-10 space-y-6 flex flex-col h-full justify-between">
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-start">
+                                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                                            <Target size={24} />
+                                        </div>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                                            <MoreVertical size={16} className="text-muted-foreground" />
+                                        </Button>
                                     </div>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
-                                        <MoreVertical size={16} className="text-muted-foreground" />
-                                    </Button>
+                                    <div>
+                                        <h3 className="text-xl font-black text-foreground uppercase tracking-tight">{seg.name}</h3>
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Rule-Based Dynamic List</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-black text-foreground uppercase tracking-tight">{seg.name}</h3>
-                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Rule-Based Dynamic List</p>
-                                </div>
-                                <div className="pt-4 border-t border-border flex justify-between items-center">
+                                <div className="pt-4 border-t border-border flex justify-between items-center mt-auto">
                                     <div>
                                         <p className="text-[8px] font-black uppercase text-muted-foreground mb-1">Reach</p>
                                         <p className="text-2xl font-black text-primary">{seg.estimated_reach.toLocaleString()}</p>
                                     </div>
-                                    <Link href="/admin/marketing/create">
+                                    <Link href="/admin/marketing/create" className="flex">
                                         <Button size="sm" variant="ghost" className="text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5">
                                             Target <ArrowRight size={12} className="ml-2" />
                                         </Button>

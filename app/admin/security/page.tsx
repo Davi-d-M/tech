@@ -12,9 +12,6 @@ import {
     Globe,
     History,
     RefreshCcw,
-    AlertCircle,
-    CheckCircle2,
-    Eye,
     Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -62,30 +59,32 @@ export default function SecurityHub() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="p-8 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
-                    <div className="relative z-10 space-y-6">
-                        <div className="flex justify-between items-center">
-                            <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary"><Lock size={20} /></div>
-                            <span className="px-3 py-1 bg-primary text-white text-[8px] font-black rounded-full animate-pulse uppercase">Armed</span>
-                        </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                <Card className="p-8 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group h-full">
+                    <div className="relative z-10 space-y-6 flex flex-col h-full justify-between">
                         <div>
-                            <p className="text-[9px] font-black uppercase text-background/50 tracking-widest mb-1">Authorization Layer</p>
-                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">RBAC System Live</h3>
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary"><Lock size={20} /></div>
+                                <span className="px-3 py-1 bg-primary text-white text-[8px] font-black rounded-full animate-pulse uppercase">Armed</span>
+                            </div>
+                            <div>
+                                <p className="text-[9px] font-black uppercase text-background/50 tracking-widest mb-1">Authorization Layer</p>
+                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">RBAC System Live</h3>
+                            </div>
                         </div>
                     </div>
                 </Card>
 
-                <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 h-full items-stretch">
                     {[
                         { label: 'Encryption Protocol', val: 'AES-256-GCM', icon: ShieldCheck, color: 'emerald' },
                         { label: 'Database Shield', val: 'RLS Active', icon: Activity, color: 'primary' },
                         { label: 'Cloud Firewall', val: 'Edge Protected', icon: Globe, color: 'indigo' },
                         { label: 'Session Lock', val: 'Cookie-based', icon: Smartphone, color: 'primary' },
                     ].map((item) => (
-                        <Card key={item.label} className="p-6 rounded-[2.5rem] border border-border bg-card shadow-sm flex items-center gap-6 group hover:border-primary/20 transition-all">
+                        <Card key={item.label} className="p-6 rounded-[2.5rem] border border-border bg-card shadow-sm flex items-center gap-6 group hover:border-primary/20 transition-all h-full">
                             <div className={cn(
-                                "h-12 w-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110",
+                                "h-12 w-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0",
                                 item.color === 'emerald' ? "bg-emerald-50 text-emerald-500" :
                                 item.color === 'indigo' ? "bg-indigo-50 text-indigo-500" :
                                 "bg-primary/10 text-primary"

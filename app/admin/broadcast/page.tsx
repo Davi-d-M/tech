@@ -22,7 +22,6 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 
 export default function AdminBroadcastPage() {
     const [subscribers, setSubscribers] = React.useState<{ id: string | number; email: string; created_at: string }[]>([]);

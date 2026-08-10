@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     DollarSign,
@@ -35,12 +35,12 @@ interface PayoutRequest {
 
 export default function AdminPayoutsPage() {
     const { email: adminEmail } = useAdmin();
-    const [payouts, setPayouts] = useState<PayoutRequest[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filter, setFilter] = useState<'all' | 'Pending' | 'Paid'>('all');
+    const [payouts, setPayouts] = React.useState<PayoutRequest[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [filter, setFilter] = React.useState<'all' | 'Pending' | 'Paid'>('all');
 
-    const fetchPayouts = async () => {
+    const fetchPayouts = React.useCallback(async () => {
         if (!supabase) return;
         setLoading(true);
         try {
@@ -56,11 +56,11 @@ export default function AdminPayoutsPage() {
         } finally {
             setLoading(false);
         }
-    };
-
-    useEffect(() => {
-        fetchPayouts();
     }, []);
+
+    React.useEffect(() => {
+        fetchPayouts();
+    }, [fetchPayouts]);
 
     const updateStatus = async (id: number, status: 'Approved' | 'Paid' | 'Rejected') => {
         if (!supabase) return;

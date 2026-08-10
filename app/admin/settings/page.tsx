@@ -31,8 +31,7 @@ import {
     Plus,
     DollarSign,
     Home as HomeIcon,
-    MapPin,
-    X
+    MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -724,7 +723,7 @@ export default function AdminSettingsPage() {
                                             "h-8 w-8 rounded-full bg-white shadow-xl transition-all flex items-center justify-center",
                                             isSandboxMode ? "translate-x-10" : "translate-x-0"
                                         )}>
-                                            {isSandboxMode ? <CheckCircle2 size={16} className="text-emerald-500" /> : <X size={16} className="text-slate-300" />}
+                                            {isSandboxMode ? <CheckCircle2 size={16} className="text-emerald-500" /> : <ShieldAlert size={16} className="text-slate-300" />}
                                         </div>
                                     </button>
                                 </div>

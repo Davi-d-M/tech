@@ -238,12 +238,12 @@ export default function AdminStaffPage() {
                   <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-secondary px-3 py-1 rounded-full border border-border ml-auto">This Month</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
                   {leaderboard.length === 0 ? (
                       <p className="text-muted-foreground text-xs font-bold uppercase italic">Awaiting competition data...</p>
                   ) : (
                       leaderboard.slice(0, 4).map((member, i) => (
-                          <div key={member.id} className="bg-secondary border border-border rounded-[2rem] p-6 flex items-center gap-4 group/card hover:bg-card hover:shadow-xl transition-all hover:border-primary/10">
+                          <div key={member.id} className="bg-secondary border border-border rounded-[2rem] p-6 flex items-center gap-4 group/card hover:bg-card hover:shadow-xl transition-all hover:border-primary/10 h-full">
                               <div className="relative shrink-0">
                                   <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center text-background font-black text-xs uppercase shadow-xl shadow-primary/20 transition-transform group-hover:scale-110">
                                       {member.email.substring(0, 2).toUpperCase()}

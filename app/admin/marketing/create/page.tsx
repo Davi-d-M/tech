@@ -3,17 +3,14 @@
 import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
-    Plus,
     Rocket,
     ArrowRight,
     ArrowLeft,
     Sparkles,
     Camera as InstagramIcon,
-    Share2 as Facebook,
     MessageCircle,
     Mail,
     Loader2,
-    Smartphone,
     CheckCircle2,
     Calendar,
     Activity as Zap,
@@ -266,7 +263,7 @@ export default function CreateCampaign() {
                                             value={channels.instagram.caption}
                                             onChange={e => setChannels({...channels, instagram: {...channels.instagram, caption: e.target.value}})}
                                             rows={5}
-                                            className="rounded-[1.5rem] bg-secondary border-border p-6 text-sm font-medium"
+                                            className="rounded-[1.5rem] bg-secondary border-border p-6 text-sm font-medium focus:ring-2 focus:ring-primary outline-none transition-all"
                                         />
                                     </div>
 
@@ -278,7 +275,7 @@ export default function CreateCampaign() {
                                             value={channels.whatsapp.body}
                                             onChange={e => setChannels({...channels, whatsapp: {...channels.whatsapp, body: e.target.value}})}
                                             rows={5}
-                                            className="rounded-[1.5rem] bg-secondary border-border p-6 text-sm font-medium"
+                                            className="rounded-[1.5rem] bg-secondary border-border p-6 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                                         />
                                     </div>
 
@@ -291,13 +288,13 @@ export default function CreateCampaign() {
                                                 value={channels.email.subject}
                                                 onChange={e => setChannels({...channels, email: {...channels.email, subject: e.target.value}})}
                                                 placeholder="Subject Line"
-                                                className="h-12 rounded-xl bg-secondary border-border text-xs font-bold"
+                                                className="h-12 rounded-xl bg-secondary border-border text-xs font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                                             />
                                             <Textarea
                                                 value={channels.email.body}
                                                 onChange={e => setChannels({...channels, email: {...channels.email, body: e.target.value}})}
                                                 rows={4}
-                                                className="rounded-[1.5rem] bg-secondary border-border p-6 text-sm font-medium"
+                                                className="rounded-[1.5rem] bg-secondary border-border p-6 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                                             />
                                         </div>
                                     </div>

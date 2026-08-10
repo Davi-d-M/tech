@@ -9,7 +9,6 @@ import {
     Target,
     BarChart3,
     TrendingUp,
-    Plus,
     ChevronRight,
     Send,
     Camera as Instagram,
@@ -22,7 +21,7 @@ import { formatPrice, cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function MarketingOverview() {
-    const [stats, setStats] = useState({
+    const [stats, setStats] = React.useState({
         totalReach: 12480,
         activeCampaigns: 3,
         generatedOrders: 47,
@@ -54,41 +53,43 @@ export default function MarketingOverview() {
             </header>
 
             {/* Performance KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
                 {[
                     { label: 'Total Tactical Reach', val: stats.totalReach.toLocaleString(), icon: Users, color: 'indigo' },
                     { label: 'Active Deployments', val: stats.activeCampaigns, icon: Send, color: 'primary' },
                     { label: 'Orders Generated', val: stats.generatedOrders, icon: Target, color: 'emerald' },
                     { label: 'Campaign ROI', val: `${stats.marketingROI}x`, icon: TrendingUp, color: 'primary' },
                 ].map((item) => (
-                    <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all relative overflow-hidden">
-                        <div className="relative z-10">
-                            <div className={cn(
-                                "h-12 w-12 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110",
-                                item.color === 'indigo' ? "bg-indigo-50 text-indigo-500" :
-                                item.color === 'emerald' ? "bg-emerald-50 text-emerald-500" :
-                                "bg-primary/10 text-primary"
-                            )}>
-                                <item.icon className="h-6 w-6" />
+                    <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all relative overflow-hidden h-full">
+                        <div className="relative z-10 flex flex-col h-full justify-between">
+                            <div>
+                                <div className={cn(
+                                    "h-12 w-12 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110",
+                                    item.color === 'indigo' ? "bg-indigo-50 text-indigo-500" :
+                                    item.color === 'emerald' ? "bg-emerald-50 text-emerald-500" :
+                                    "bg-primary/10 text-primary"
+                                )}>
+                                    <item.icon className="h-6 w-6" />
+                                </div>
+                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                                <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase">{item.val}</h3>
                             </div>
-                            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
-                            <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase">{item.val}</h3>
                         </div>
                     </Card>
                 ))}
             </div>
 
-            <div className="grid lg:grid-cols-12 gap-10">
+            <div className="grid lg:grid-cols-12 gap-10 items-stretch">
                 {/* Channel Pulse */}
-                <div className="lg:col-span-8 space-y-8">
-                    <div className="flex items-center justify-between px-2">
+                <div className="lg:col-span-8 space-y-8 flex flex-col h-full">
+                    <div className="flex items-center justify-between px-2 shrink-0">
                         <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Recent Deployments</h2>
                         <Link href="/admin/marketing/list" className="text-[10px] font-black text-primary uppercase underline">View Full History</Link>
                     </div>
 
-                    <div className="grid gap-4">
+                    <div className="grid gap-4 flex-1">
                         {recentCampaigns.map(camp => (
-                            <Card key={camp.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm flex items-center justify-between group hover:border-primary/20 transition-all">
+                            <Card key={camp.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm flex items-center justify-between group hover:border-primary/20 transition-all h-auto">
                                 <div className="flex items-center gap-6">
                                     <div className="h-14 w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary shadow-inner">
                                         <Zap className="h-7 w-7" />
@@ -125,44 +126,60 @@ export default function MarketingOverview() {
                 </div>
 
                 {/* Automation & Insights */}
-                <div className="lg:col-span-4 space-y-8">
-                    <Card className="p-10 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
-                        <div className="relative z-10 space-y-8 text-left">
-                            <div className="flex justify-between items-center">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Channel Mastery</h3>
-                                <div className="flex -space-x-2">
-                                    <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><Instagram size={14} className="text-primary" /></div>
-                                    <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><MessageCircle size={14} className="text-emerald-500" /></div>
-                                    <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><Mail size={14} className="text-indigo-400" /></div>
+                <div className="lg:col-span-4 flex flex-col gap-8 h-full">
+                    <Card className="p-10 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group flex-1">
+                        <div className="relative z-10 space-y-8 text-left h-full flex flex-col justify-between">
+                            <div>
+                                <div className="flex justify-between items-center mb-8">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Channel Mastery</h3>
+                                    <div className="flex -space-x-2">
+                                        <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><Instagram size={14} className="text-primary" /></div>
+                                        <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><MessageCircle size={14} className="text-emerald-500" /></div>
+                                        <div className="h-8 w-8 rounded-full bg-background/20 backdrop-blur-md flex items-center justify-center border-2 border-foreground"><Mail size={14} className="text-indigo-400" /></div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center text-[10px] font-black uppercase text-background/50">
+                                            <span>WhatsApp Conversion</span>
+                                            <span className="text-emerald-500">12.4%</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
+                                            <div className="h-full bg-emerald-500 w-[72%]"></div>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center text-[10px] font-black uppercase text-background/50">
+                                            <span>Instagram Reach</span>
+                                            <span className="text-primary">8.4K</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
+                                            <div className="h-full bg-primary w-[55%]"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-6">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-background/50">
-                                        <span>WhatsApp Conversion</span>
-                                        <span className="text-emerald-500">12.4%</span>
-                                    </div>
-                                    <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
-                                        <div className="h-full bg-emerald-500 w-[72%]"></div>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-background/50">
-                                        <span>Instagram Reach</span>
-                                        <span className="text-primary">8.4K</span>
-                                    </div>
-                                    <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
-                                        <div className="h-full bg-primary w-[55%]"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Button className="w-full h-14 rounded-2xl bg-primary text-background font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all">
+                            <Button className="w-full h-14 rounded-2xl bg-primary text-background font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all mt-auto">
                                 Analyze Funnel Details
                             </Button>
                         </div>
                     </Card>
+
+                    <div className="p-8 rounded-[3rem] bg-white border border-border shadow-sm space-y-6 text-left">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><Users className="h-5 w-5" /></div>
+                            <h3 className="text-xl font-black uppercase tracking-tighter text-foreground leading-none">Personalization</h3>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground font-medium leading-relaxed italic">
+                            &quot;Current category affinity maps show elite preference for Audio gadgets. Personalized 'Welcome Back' triggers active for Gold tier.&quot;
+                        </p>
+                        <div className="pt-4 border-t border-border flex justify-between items-center">
+                            <span className="text-[8px] font-black text-indigo-600 uppercase tracking-widest">Logic Active</span>
+                            <span className="text-xs font-black text-foreground">84% Yield</span>
+                        </div>
+                    </div>
 
                     <div className="p-8 rounded-[3rem] bg-white border border-border shadow-sm space-y-6 text-left">
                         <div className="flex items-center gap-3">

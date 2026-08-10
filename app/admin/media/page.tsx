@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     ImageIcon,
@@ -36,15 +36,15 @@ export default function AdminMediaHub() {
     const searchParams = useSearchParams();
     const tabParam = searchParams.get('tab');
 
-    const [assets, setAssets] = useState<CloudAsset[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [uploading, setUploading] = useState(false);
-    const [generatingCatalog, setGeneratingCatalog] = useState(false);
-    const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState<'products' | 'posters' | 'banners'>('products');
+    const [assets, setAssets] = React.useState<CloudAsset[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [uploading, setUploading] = React.useState(false);
+    const [generatingCatalog, setGeneratingCatalog] = React.useState(false);
+    const [copiedUrl, setCopiedUrl] = React.useState<string | null>(null);
+    const [activeTab, setActiveTab] = React.useState<'products' | 'posters' | 'banners'>('products');
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (tabParam === 'posters' || tabParam === 'banners') {
             setActiveTab(tabParam);
         }
@@ -86,7 +86,7 @@ export default function AdminMediaHub() {
         }
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         fetchAssets();
     }, []);
 

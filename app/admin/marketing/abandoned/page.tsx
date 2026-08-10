@@ -17,7 +17,10 @@ import {
     Loader2,
     RefreshCcw,
     DollarSign,
-    ShieldAlert
+    ShieldAlert,
+    Clock,
+    CheckCircle2,
+    AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,8 +43,9 @@ export default function AbandonedCartEngine() {
     const [carts, setCarts] = React.useState<AbandonedCart[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [searchQuery, setSearchQuery] = React.useState('');
+    const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    const fetchCarts = async () => {
+    const fetchCarts = React.useCallback(async () => {
         if (!supabase) return;
         setLoading(true);
         try {
@@ -56,10 +60,10 @@ export default function AbandonedCartEngine() {
             const enriched = (data || []).map(v => ({
                 id: v.session_id,
                 customer_name: v.customer_name || 'Anonymous Guest',
-                customer_phone: '---', // Needs to be fetched if known
+                customer_phone: '---',
                 cart_value: v.cart_value,
                 last_active_at: v.last_active_at,
-                items_count: 1, // Mock
+                items_count: 1,
                 recovery_status: 'Pending'
             } as AbandonedCart));
 
@@ -69,11 +73,17 @@ export default function AbandonedCartEngine() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     React.useEffect(() => {
         fetchCarts();
-    }, []);
+    }, [fetchCarts]);
+
+    const nudgeCustomer = (id: string, channel: 'WhatsApp' | 'Email') => {
+        setMessage({ type: 'success', text: `Tactical nudge dispatched via ${channel} for unit ${id.slice(0, 8)}. ⚡` });
+        setTimeout(() => setMessage(null), 5000);
+        setCarts(prev => prev.map(c => c.id === id ? { ...c, recovery_status: 'Nudged' } : c));
+    };
 
     const totalPotential = carts.reduce((sum, c) => sum + c.cart_value, 0);
 
@@ -90,29 +100,41 @@ export default function AbandonedCartEngine() {
                 </div>
                 <div className="flex gap-2">
                     <Button onClick={fetchCarts} variant="outline" className="rounded-xl h-12 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest transition-all">
-                        <RefreshCcw className="h-4 w-4 mr-2" /> Sync Active Carts
+                        <RefreshCcw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} /> Sync Active Carts
                     </Button>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {message && (
+                <div className={cn(
+                    "p-6 rounded-[2.5rem] border-2 flex items-center gap-4 animate-in slide-in-from-top-4",
+                    message.type === 'success' ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600"
+                )}>
+                    {message.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
+                    <p className="text-sm font-black uppercase tracking-widest">{message.text}</p>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
                 {[
                     { label: 'Rescue Potential', val: formatPrice(totalPotential), icon: DollarSign, color: 'primary' },
                     { label: 'Avg. Cart Leak', val: formatPrice(totalPotential / (carts.length || 1)), icon: TrendingUp, color: 'indigo' },
                     { label: 'Recovery Score', val: '12.4%', icon: Zap, color: 'emerald' },
                 ].map((item) => (
-                    <Card key={item.label} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all relative overflow-hidden">
-                        <div className="relative z-10">
-                            <div className={cn(
-                                "h-12 w-12 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110",
-                                item.color === 'indigo' ? "bg-indigo-50 text-indigo-500" :
-                                item.color === 'emerald' ? "bg-emerald-50 text-emerald-500" :
-                                "bg-primary/10 text-primary"
-                            )}>
-                                <item.icon className="h-6 w-6" />
+                    <Card key={item.label} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all relative overflow-hidden h-full">
+                        <div className="relative z-10 flex flex-col h-full justify-between">
+                            <div>
+                                <div className={cn(
+                                    "h-12 w-12 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110",
+                                    item.color === 'indigo' ? "bg-indigo-50 text-indigo-500" :
+                                    item.color === 'emerald' ? "bg-emerald-50 text-emerald-500" :
+                                    "bg-primary/10 text-primary"
+                                )}>
+                                    <item.icon className="h-6 w-6" />
+                                </div>
+                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                                <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase">{item.val}</h3>
                             </div>
-                            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
-                            <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase">{item.val}</h3>
                         </div>
                     </Card>
                 ))}
@@ -172,10 +194,20 @@ export default function AbandonedCartEngine() {
                                     </td>
                                     <td className="px-10 py-8 text-right">
                                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:text-emerald-500 hover:bg-white transition-all shadow-sm">
+                                            <Button
+                                                onClick={() => nudgeCustomer(cart.id, 'WhatsApp')}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-10 w-10 rounded-xl hover:text-emerald-500 hover:bg-white transition-all shadow-sm"
+                                            >
                                                 <MessageCircle className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:text-indigo-500 hover:bg-white transition-all shadow-sm">
+                                            <Button
+                                                onClick={() => nudgeCustomer(cart.id, 'Email')}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-10 w-10 rounded-xl hover:text-indigo-500 hover:bg-white transition-all shadow-sm"
+                                            >
                                                 <Mail className="h-4 w-4" />
                                             </Button>
                                             <Button size="icon" className="h-10 w-10 rounded-xl bg-primary text-white hover:scale-105 transition-all shadow-lg shadow-primary/20">

@@ -4,14 +4,11 @@ import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     BarChart3,
-    TrendingUp,
     Users,
     Activity as Zap,
     Clock,
     ArrowUpRight,
     ArrowDownRight,
-    Calendar,
-    Filter,
     Download,
     PieChart as PieIcon,
     Loader2
@@ -30,8 +27,6 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    LineChart,
-    Line,
     PieChart,
     Pie,
     Cell
@@ -136,23 +131,25 @@ export default function AdminAnalyticsPage() {
             </header>
 
             {/* Performance HUD */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
                 {[
                     { label: 'Revenue (30d)', val: 'KSh 840,000', trend: '+18.3%', color: 'primary' },
                     { label: 'Net Margin', val: '32.4%', trend: '+2.1%', color: 'emerald' },
                     { label: 'Cust. LTV', val: 'KSh 12,400', trend: '+4.5%', color: 'indigo' },
                     { label: 'Conv. Rate', val: '4.82%', trend: '-0.2%', color: 'amber' },
                 ].map((item) => (
-                    <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all">
-                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
-                        <div className="flex items-end justify-between">
-                            <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase">{item.val}</h3>
-                            <div className={cn(
-                                "flex items-center gap-1 text-[9px] font-black uppercase",
-                                item.trend.startsWith('+') ? "text-emerald-500" : "text-rose-500"
-                            )}>
-                                {item.trend.startsWith('+') ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                                {item.trend}
+                    <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all h-full flex flex-col justify-between">
+                        <div>
+                            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                            <div className="flex items-end justify-between">
+                                <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase">{item.val}</h3>
+                                <div className={cn(
+                                    "flex items-center gap-1 text-[9px] font-black uppercase",
+                                    item.trend.startsWith('+') ? "text-emerald-500" : "text-rose-500"
+                                )}>
+                                    {item.trend.startsWith('+') ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
+                                    {item.trend}
+                                </div>
                             </div>
                         </div>
                         <div className="mt-4 h-1 w-full bg-secondary rounded-full overflow-hidden">

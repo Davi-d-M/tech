@@ -6,14 +6,9 @@ import {
   ShoppingCart,
   Plus,
   DollarSign,
-  Activity,
   History as HistoryIcon,
   Zap,
   ArrowUpRight,
-  Database,
-  Globe,
-  Smartphone,
-  CheckCircle2,
   Loader2,
   Package,
   Truck,
@@ -193,9 +188,9 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-10 animate-in fade-in duration-700 bg-background pb-20">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
 
-        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
                     <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
@@ -224,7 +219,7 @@ export default function AdminDashboard() {
             <Zap className="absolute -bottom-6 -right-6 h-32 w-32 text-primary/5 rotate-12 -z-0" />
         </Card>
 
-        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
                     <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
@@ -240,7 +235,7 @@ export default function AdminDashboard() {
             </div>
         </Card>
 
-        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all">
+        <Card className="p-8 rounded-[3rem] bg-card border-border shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
                     <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">

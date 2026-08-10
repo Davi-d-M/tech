@@ -17,8 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { cn, formatPrice } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 interface Campaign {
@@ -155,11 +154,11 @@ export default function CampaignHistory() {
                                             <p className="text-[8px] font-black text-muted-foreground uppercase mt-1">{camp.scheduled_at ? new Date(camp.scheduled_at).toLocaleTimeString() : '---'}</p>
                                         </td>
                                         <td className="px-10 py-8 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-secondary">
+                                            <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-secondary">
                                                     <ChevronRight size={18} className="text-muted-foreground" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-secondary">
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-secondary">
                                                     <MoreVertical size={18} className="text-muted-foreground" />
                                                 </Button>
                                             </div>
