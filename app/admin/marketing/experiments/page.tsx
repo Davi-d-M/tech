@@ -88,7 +88,7 @@ export default function ExperimentationCenter() {
 
             if (error) throw error;
 
-            setMessage({ type: 'success', text: "New yield experiment initialized. Awaiting baseline data..." });
+            setMessage({ type: 'success', text: "New yield experiment initialized. 🧪" });
             setTimeout(() => setMessage(null), 3000);
             setIsAdding(false);
             setNewExp({ name: '', varA: '', varB: '' });
@@ -133,147 +133,85 @@ export default function ExperimentationCenter() {
                 ) : (
                     <div className="grid lg:grid-cols-12 gap-10 items-stretch p-10 bg-white">
                         <div className="lg:col-span-8 space-y-8 h-full flex flex-col">
-                            {experiments.map(exp => {
-                                const winner = exp.variant_a.ctr > exp.variant_b.ctr ? 'A' : 'B';
-                                return (
-                                    <Card key={exp.id} className="p-10 rounded-[3.5rem] border border-slate-100 bg-white shadow-sm space-y-10 flex-1 flex flex-col justify-between group hover:shadow-xl transition-all">
-                                        <div>
-                                            <div className="flex justify-between items-center mb-10">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary shadow-sm"><Target size={24} /></div>
-                                                    <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">{exp.name}</h3>
+                            {experiments.length === 0 ? (
+                                <div className="p-20 text-center border-2 border-dashed border-slate-100 rounded-[3rem] opacity-30">
+                                    <Target className="h-12 w-12 mx-auto mb-4 text-slate-300" />
+                                    <p className="text-sm font-black uppercase tracking-widest">No Active Experiments</p>
+                                </div>
+                            ) : (
+                                experiments.map(exp => {
+                                    const winner = exp.variant_a.ctr > exp.variant_b.ctr ? 'A' : 'B';
+                                    return (
+                                        <Card key={exp.id} className="p-10 rounded-[3.5rem] border border-slate-100 bg-white shadow-sm space-y-10 flex-1 flex flex-col justify-between group hover:shadow-xl transition-all">
+                                            <div>
+                                                <div className="flex justify-between items-center mb-10">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary shadow-sm"><Target size={24} /></div>
+                                                        <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">{exp.name}</h3>
+                                                    </div>
+                                                    <span className={cn(
+                                                        "px-4 py-2 text-[10px] font-black uppercase rounded-full tracking-widest border",
+                                                        exp.status === 'Running' ? "bg-emerald-50 text-emerald-600 border-emerald-100 animate-pulse" : "bg-slate-50 text-slate-400 border-slate-100"
+                                                    )}>{exp.status}</span>
                                                 </div>
-                                                <span className={cn(
-                                                    "px-4 py-2 text-[10px] font-black uppercase rounded-full tracking-widest border",
-                                                    exp.status === 'Running' ? "bg-emerald-50 text-emerald-600 border-emerald-100 animate-pulse" : "bg-slate-50 text-slate-400 border-slate-100"
-                                                )}>{exp.status}</span>
-                                            </div>
 
-                                            <div className="grid sm:grid-cols-2 gap-10 items-stretch">
-                                                {/* Variant A */}
-                                                <div className={cn(
-                                                    "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
-                                                    (exp.winning_variant === 'A' || (winner === 'A' && exp.status !== 'Ended')) ? "border-emerald-500/20 bg-emerald-50/10" : "border-slate-100 bg-slate-50/50"
-                                                )}>
-                                                    {exp.winning_variant === 'A' && <div className="absolute top-4 right-4"><CheckCircle2 className="text-emerald-500 h-6 w-6" /></div>}
-                                                    <div className="relative z-10 space-y-6">
-                                                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Version A</p>
-                                                        <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_a.name}</h4>
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div>
-                                                                <p className="text-[8px] font-black uppercase text-slate-400">CTR</p>
-                                                                <p className="text-2xl font-black text-foreground">{exp.variant_a.ctr}%</p>
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-[8px] font-black uppercase text-slate-400">Orders</p>
-                                                                <p className="text-2xl font-black text-foreground">{exp.variant_a.orders}</p>
+                                                <div className="grid sm:grid-cols-2 gap-10 items-stretch">
+                                                    {/* Variant A */}
+                                                    <div className={cn(
+                                                        "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
+                                                        (exp.winning_variant === 'A' || (winner === 'A' && exp.status !== 'Ended')) ? "border-emerald-500/20 bg-emerald-50/10" : "border-slate-100 bg-slate-50/50"
+                                                    )}>
+                                                        {exp.winning_variant === 'A' && <div className="absolute top-4 right-4"><CheckCircle2 className="text-emerald-500 h-6 w-6" /></div>}
+                                                        <div className="relative z-10 space-y-6">
+                                                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Version A</p>
+                                                            <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_a.name}</h4>
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <p className="text-[8px] font-black uppercase text-slate-400">CTR</p>
+                                                                    <p className="text-2xl font-black text-foreground">{exp.variant_a.ctr}%</p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-[8px] font-black uppercase text-slate-400">Orders</p>
+                                                                    <p className="text-2xl font-black text-foreground">{exp.variant_a.orders}</p>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                {/* Variant B */}
-                                                <div className={cn(
-                                                    "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
-                                                    (exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) ? "border-emerald-500 border-emerald-50/30 shadow-2xl" : "border-slate-100 bg-slate-50/50"
-                                                )}>
-                                                    {(exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) && <div className="absolute top-4 right-4"><Trophy className="text-primary h-6 w-6" /></div>}
-                                                    <div className="relative z-10 space-y-6">
-                                                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Version B</p>
-                                                        <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_b.name}</h4>
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div>
-                                                                <p className="text-[8px] font-black uppercase text-slate-400">CTR</p>
-                                                                <p className="text-2xl font-black text-primary">{exp.variant_b.ctr}%</p>
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-[8px] font-black uppercase text-slate-400">Orders</p>
-                                                                <p className="text-2xl font-black text-primary">{exp.variant_b.orders}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
-                                            <p className="text-[10px] text-slate-400 font-medium italic">
-                                                {exp.status === 'Ended' ? "Experiment concluded." : "\"Statistical significance reached in favor of Version B yield.\""}
-                                            </p>
-                                            <Button onClick={() => adoptVariant(exp.id, 'B')} disabled={exp.status === 'Ended'} className="rounded-xl h-12 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-lg">Adopt Version B</Button>
-                                        </div>
-                                    </Card>
-                                );
-                            })}
-                        </div>
-                                        <div>
-                                            <div className="flex justify-between items-center mb-10">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary"><Target size={24} /></div>
-                                                    <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">{exp.name}</h3>
-                                                </div>
-                                                <span className={cn(
-                                                    "px-4 py-2 text-[10px] font-black uppercase rounded-full",
-                                                    exp.status === 'Running' ? "bg-emerald-50 text-emerald-600 animate-pulse" : "bg-slate-100 text-slate-400"
-                                                )}>{exp.status}</span>
-                                            </div>
-
-                                            <div className="grid sm:grid-cols-2 gap-10 items-stretch">
-                                                {/* Variant A */}
-                                                <div className={cn(
-                                                    "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
-                                                    (exp.winning_variant === 'A' || (winner === 'A' && exp.status !== 'Ended')) ? "border-emerald-500/20 bg-emerald-50/10" : "border-border bg-secondary/50"
-                                                )}>
-                                                    {exp.winning_variant === 'A' && <div className="absolute top-4 right-4"><CheckCircle2 className="text-emerald-500 h-6 w-6" /></div>}
-                                                    <div className="relative z-10 space-y-6">
-                                                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Version A</p>
-                                                        <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_a.name}</h4>
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div>
-                                                                <p className="text-[8px] font-black uppercase text-muted-foreground">CTR</p>
-                                                                <p className="text-2xl font-black text-foreground">{exp.variant_a.ctr}%</p>
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-[8px] font-black uppercase text-muted-foreground">Orders</p>
-                                                                <p className="text-2xl font-black text-foreground">{exp.variant_a.orders}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Variant B */}
-                                                <div className={cn(
-                                                    "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
-                                                    (exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) ? "border-emerald-500 border-emerald-50/30 shadow-2xl" : "border-border bg-secondary/50"
-                                                )}>
-                                                    {(exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) && <div className="absolute top-4 right-4"><Trophy className="text-primary h-6 w-6" /></div>}
-                                                    <div className="relative z-10 space-y-6">
-                                                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Version B</p>
-                                                        <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_b.name}</h4>
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div>
-                                                                <p className="text-[8px] font-black uppercase text-muted-foreground">CTR</p>
-                                                                <p className="text-2xl font-black text-primary">{exp.variant_b.ctr}%</p>
-                                                            </div>
-                                                            <div>
-                                                                <p className="text-[8px] font-black uppercase text-muted-foreground">Orders</p>
-                                                                <p className="text-2xl font-black text-primary">{exp.variant_b.orders}</p>
+                                                    {/* Variant B */}
+                                                    <div className={cn(
+                                                        "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
+                                                        (exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) ? "border-emerald-500 border-emerald-50/30 shadow-2xl" : "border-slate-100 bg-slate-50/50"
+                                                    )}>
+                                                        {(exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) && <div className="absolute top-4 right-4"><Trophy className="text-primary h-6 w-6" /></div>}
+                                                        <div className="relative z-10 space-y-6">
+                                                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Version B</p>
+                                                            <h4 className="text-xl font-black text-foreground uppercase italic leading-none">{exp.variant_b.name}</h4>
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <p className="text-[8px] font-black uppercase text-slate-400">CTR</p>
+                                                                    <p className="text-2xl font-black text-primary">{exp.variant_b.ctr}%</p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-[8px] font-black uppercase text-slate-400">Orders</p>
+                                                                    <p className="text-2xl font-black text-primary">{exp.variant_b.orders}</p>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div className="pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
-                                            <p className="text-[10px] text-muted-foreground font-medium italic">
-                                                {exp.status === 'Ended' ? "Experiment concluded." : "\"Version B is outperforming A by 85%. Statistical significance reached.\""}
-                                            </p>
-                                            <Button onClick={() => adoptVariant(exp.id, 'B')} disabled={exp.status === 'Ended'} className="rounded-xl h-12 px-6 bg-foreground text-background font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all">Adopt Version B</Button>
-                                        </div>
-                                    </Card>
-                                );
-                            })}
+                                            <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
+                                                <p className="text-[10px] text-slate-400 font-medium italic">
+                                                    {exp.status === 'Ended' ? "Experiment concluded." : "\"Statistical significance reached in favor of Version B yield.\""}
+                                                </p>
+                                                <Button onClick={() => adoptVariant(exp.id, 'B')} disabled={exp.status === 'Ended'} className="rounded-xl h-12 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-lg">Adopt Version B</Button>
+                                            </div>
+                                        </Card>
+                                    );
+                                })
+                            )}
                         </div>
 
                         <div className="lg:col-span-4 flex flex-col gap-10 h-full">
