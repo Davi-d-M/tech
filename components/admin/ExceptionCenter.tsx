@@ -104,7 +104,7 @@ export default function ExceptionCenter() {
     };
 
     return (
-        <section className="bg-white rounded-[3rem] border-2 border-rose-50 p-10 relative overflow-hidden shadow-sm animate-in fade-in duration-1000">
+        <section className="bg-white rounded-[3rem] border border-rose-100 p-10 relative overflow-hidden shadow-sm animate-in fade-in duration-1000">
             <div className="relative z-10 space-y-8 text-left">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">

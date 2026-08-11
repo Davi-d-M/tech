@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formatPrice, cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useAdmin } from '@/context/AdminContext';
 
 interface Order {
   id: number;
@@ -155,6 +156,8 @@ export default function CustomerIntelligence() {
     return { totalSpend, avgOrder, risk, riskColor, favCat, tier, TierIcon, tierColor, age, referralCount: referrals.length };
   }, [orders, products, profile, referrals]);
 
+  const { role, permissions } = useAdmin();
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-slate-50">
@@ -236,11 +239,15 @@ export default function CustomerIntelligence() {
                       </div>
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Latitude</span>
-                          <span className="text-xs font-black text-foreground uppercase">{profile?.latitude?.toFixed(6) || 'N/A'}</span>
+                          <span className="text-xs font-black text-foreground uppercase">
+                              {role === 'owner' || permissions.can_view_sensitive_rider_data ? (profile?.latitude?.toFixed(6) || 'N/A') : 'PROTECTED'}
+                          </span>
                       </div>
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Longitude</span>
-                          <span className="text-xs font-black text-foreground uppercase">{profile?.longitude?.toFixed(6) || 'N/A'}</span>
+                          <span className="text-xs font-black text-foreground uppercase">
+                              {role === 'owner' || permissions.can_view_sensitive_rider_data ? (profile?.longitude?.toFixed(6) || 'N/A') : 'PROTECTED'}
+                          </span>
                       </div>
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Location</span>

@@ -12,6 +12,7 @@ import {
   Lock,
   RefreshCcw,
   AlertCircle,
+  History as HistoryIcon,
   Eye,
   Package,
   ShoppingCart,
@@ -47,6 +48,8 @@ interface StaffMember {
   can_manage_broadcast: boolean;
   can_manage_settings: boolean;
   can_manage_media: boolean;
+  can_view_sensitive_rider_data: boolean;
+  can_view_audit_logs: boolean;
   created_at: string;
 }
 
@@ -74,6 +77,8 @@ export default function AdminStaffPage() {
   const [canManageBroadcast, setCanManageBroadcast] = React.useState(false);
   const [canManageSettings, setCanManageSettings] = React.useState(false);
   const [canManageMedia, setCanManageMedia] = React.useState(false);
+  const [canViewSensitiveRiderData, setCanViewSensitiveRiderData] = React.useState(false);
+  const [canViewAuditLogs, setCanViewAuditLogs] = React.useState(false);
 
   const [isAdding, setIsAdding] = React.useState(false);
   const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -153,7 +158,9 @@ export default function AdminStaffPage() {
             can_manage_customer_care: canManageCustomerCare,
             can_manage_broadcast: canManageBroadcast,
             can_manage_settings: canManageSettings,
-            can_manage_media: canManageMedia
+            can_manage_media: canManageMedia,
+            can_view_sensitive_rider_data: canViewSensitiveRiderData,
+            can_view_audit_logs: canViewAuditLogs
         }]);
 
       if (error) {
@@ -339,6 +346,8 @@ export default function AdminStaffPage() {
                                   { label: 'Broadcast', state: canManageBroadcast, set: setCanManageBroadcast },
                                   { label: 'Settings', state: canManageSettings, set: setCanManageSettings },
                                   { label: 'Media', state: canManageMedia, set: setCanManageMedia },
+                                  { label: 'Sensitive', state: canViewSensitiveRiderData, set: setCanViewSensitiveRiderData },
+                                  { label: 'Audit', state: canViewAuditLogs, set: setCanViewAuditLogs },
                               ].map((p) => (
                                   <button
                                     key={p.label}
@@ -446,6 +455,8 @@ export default function AdminStaffPage() {
                                                       { field: 'can_manage_broadcast', icon: Send, color: 'primary' as const },
                                                       { field: 'can_manage_settings', icon: Settings, color: 'primary' as const },
                                                       { field: 'can_manage_media', icon: ImageIcon, color: 'primary' as const },
+                                                      { field: 'can_view_sensitive_rider_data', icon: Lock, color: 'primary' as const },
+                                                      { field: 'can_view_audit_logs', icon: HistoryIcon, color: 'primary' as const },
                                                   ].map((p) => (
                                                       <button
                                                         key={p.field}

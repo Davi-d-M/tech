@@ -41,6 +41,7 @@ import AdminErrorBoundary from '@/components/admin/AdminErrorBoundary';
 import GlobalCommandPalette from '@/components/admin/GlobalCommandPalette';
 import LiveActivitySidebar from '@/components/admin/LiveActivitySidebar';
 import NotificationCenter from '@/components/admin/NotificationCenter';
+import { logAuditAction } from '@/lib/auditService';
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;
@@ -93,6 +94,7 @@ export default function AdminLayoutClient({
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
+      await logAuditAction(email, 'OS_SESSION_END', { duration: 'calculated-on-server' });
       document.cookie = 'admin_session=; path=/; max-age=0';
       router.push('/admin/login');
     } catch (error) {
@@ -286,10 +288,10 @@ export default function AdminLayoutClient({
           </aside>
 
           {/* Main Content Area */}
-          <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+          <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-50/50">
 
               {/* TOP NAVIGATION BAR */}
-              <header className="h-20 bg-background border-b border-border flex items-center justify-between px-8 shrink-0 z-40 hidden md:flex">
+              <header className="h-20 bg-white/80 backdrop-blur-xl border-b border-border flex items-center justify-between px-8 shrink-0 z-40 hidden md:flex sticky top-0">
                   <div className="flex items-center gap-6">
                       <button
                         onClick={() => setIsSearchOpen(true)}
@@ -321,8 +323,10 @@ export default function AdminLayoutClient({
                   </div>
               </header>
 
-              <main className="flex-1 overflow-y-auto p-4 sm:p-10 no-scrollbar relative">
-                {children}
+              <main className="flex-1 overflow-y-auto p-4 sm:p-10 no-scrollbar relative scroll-smooth">
+                <div className="max-w-[1600px] mx-auto w-full space-y-10">
+                  {children}
+                </div>
               </main>
           </div>
         </div>

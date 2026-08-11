@@ -3,26 +3,37 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
-    Truck,
-    CheckCircle2,
-    Loader2,
     ShieldCheck,
     Fingerprint,
-    Phone
+    Phone,
+    User,
+    CreditCard,
+    Camera,
+    Upload,
+    Truck,
+    CheckCircle2,
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { registerBiometrics } from '@/lib/biometricService';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-type Step = 'welcome' | 'phone' | 'otp' | 'biometrics' | 'success';
+type Step = 'welcome' | 'phone' | 'otp' | 'identity' | 'vehicle' | 'verification' | 'biometrics' | 'success';
 
 export default function RiderOnboarding() {
     const [step, setStep] = useState<Step>('welcome');
     const [loading, setLoading] = useState(false);
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [idNumber, setIdNumber] = useState('');
+    const [licenseNumber, setLicenseNumber] = useState('');
+    const [plateNumber, setPlateNumber] = useState('');
+    const [vehicleType, setVehicleType] = useState('Motorbike');
+    const [riderPhoto, setRiderPhoto] = useState<File | null>(null);
+    const [vehiclePhoto, setVehiclePhoto] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleSendOTP = async () => {
@@ -64,7 +75,7 @@ export default function RiderOnboarding() {
                     type: 'sms'
                 });
                 if (verifyError) throw verifyError;
-                setStep('biometrics');
+                setStep('identity');
             }
         } catch (err: unknown) {
             setError((err as Error).message || "Verification failed.");
@@ -87,6 +98,50 @@ export default function RiderOnboarding() {
             setStep('success');
         } catch {
             setError("Biometric setup failed. You can skip for now.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerificationSubmit = async () => {
+        if (!riderPhoto || !vehiclePhoto) {
+            setError("Both photos are required for verification");
+            return;
+        }
+        setLoading(true);
+        setError(null);
+        try {
+            if (!supabase) return;
+            const BUCKET = 'rider-verifications';
+
+            // Upload Rider Photo
+            const riderPath = `riders/${phone}-${Date.now()}-selfie`;
+            await supabase.storage.from(BUCKET).upload(riderPath, riderPhoto);
+            const { data: rData } = supabase.storage.from(BUCKET).getPublicUrl(riderPath);
+
+            // Upload Vehicle Photo
+            const vehiclePath = `riders/${phone}-${Date.now()}-vehicle`;
+            await supabase.storage.from(BUCKET).upload(vehiclePath, vehiclePhoto);
+            const { data: vData } = supabase.storage.from(BUCKET).getPublicUrl(vehiclePath);
+
+            // Update Rider Status with new info
+            const { error: updateError } = await supabase
+                .from('rider_status')
+                .upsert({
+                    rider_phone: phone,
+                    id_number: idNumber,
+                    license_number: licenseNumber,
+                    plate_number: plateNumber,
+                    vehicle_type: vehicleType,
+                    rider_photo_url: rData.publicUrl,
+                    vehicle_photo_url: vData.publicUrl,
+                    verification_status: 'Pending'
+                }, { onConflict: 'rider_phone' });
+
+            if (updateError) throw updateError;
+            setStep('biometrics');
+        } catch (err: unknown) {
+            setError((err as Error).message || "Verification upload failed.");
         } finally {
             setLoading(false);
         }
@@ -171,6 +226,77 @@ export default function RiderOnboarding() {
                                 {error && <p className="text-[10px] font-black text-rose-500 uppercase">{error}</p>}
                                 <Button onClick={handleVerifyOTP} disabled={loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
                                     {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Verify Code"}
+                                </Button>
+                            </div>
+                        )}
+
+                        {step === 'identity' && (
+                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-left">
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-black text-foreground uppercase">Identity Profile</h3>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Required Documents</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="relative">
+                                        <Input value={idNumber} onChange={e => setIdNumber(e.target.value)} placeholder="National ID Number" className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-bold" />
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                                    </div>
+                                    <div className="relative">
+                                        <Input value={licenseNumber} onChange={e => setLicenseNumber(e.target.value)} placeholder="Driver's License No." className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-bold" />
+                                        <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                                    </div>
+                                </div>
+                                <Button onClick={() => setStep('vehicle')} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
+                                    Continue to Vehicle
+                                </Button>
+                            </div>
+                        )}
+
+                        {step === 'vehicle' && (
+                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-left">
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-black text-foreground uppercase">Logistics Specs</h3>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Unit Details</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <select value={vehicleType} onChange={e => setVehicleType(e.target.value)} className="w-full h-14 rounded-2xl bg-slate-50 border border-slate-100 px-4 text-xs font-black uppercase">
+                                        <option>Motorbike</option>
+                                        <option>Bicycle</option>
+                                        <option>Car</option>
+                                        <option>Van</option>
+                                    </select>
+                                    <div className="relative">
+                                        <Input value={plateNumber} onChange={e => setPlateNumber(e.target.value.toUpperCase())} placeholder="Plate Number (KXX 000X)" className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-black" />
+                                        <Truck className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                                    </div>
+                                </div>
+                                <Button onClick={() => setStep('verification')} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
+                                    Continue to Verification
+                                </Button>
+                            </div>
+                        )}
+
+                        {step === 'verification' && (
+                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-left">
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-black text-foreground uppercase">Verification</h3>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tactical Visuals</p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <label className="flex flex-col items-center gap-2 p-6 rounded-3xl border-2 border-dashed border-slate-100 bg-slate-50 cursor-pointer hover:border-primary transition-all">
+                                        <input type="file" accept="image/*" onChange={e => setRiderPhoto(e.target.files?.[0] || null)} className="hidden" />
+                                        <Camera className={cn("h-6 w-6", riderPhoto ? "text-primary" : "text-slate-300")} />
+                                        <span className="text-[8px] font-black uppercase">{riderPhoto ? 'Selfie Captured' : 'Rider Selfie'}</span>
+                                    </label>
+                                    <label className="flex flex-col items-center gap-2 p-6 rounded-3xl border-2 border-dashed border-slate-100 bg-slate-50 cursor-pointer hover:border-primary transition-all">
+                                        <input type="file" accept="image/*" onChange={e => setVehiclePhoto(e.target.files?.[0] || null)} className="hidden" />
+                                        <Truck className={cn("h-6 w-6", vehiclePhoto ? "text-primary" : "text-slate-300")} />
+                                        <span className="text-[8px] font-black uppercase">{vehiclePhoto ? 'Vehicle Logged' : 'Vehicle Photo'}</span>
+                                    </label>
+                                </div>
+                                {error && <p className="text-[10px] font-black text-rose-500 uppercase">{error}</p>}
+                                <Button onClick={handleVerificationSubmit} disabled={loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
+                                    {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Deploy for Review"}
                                 </Button>
                             </div>
                         )}

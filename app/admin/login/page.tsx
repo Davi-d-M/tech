@@ -8,6 +8,7 @@ import { Lock, Mail, Key } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
+import { logAuditAction } from '@/lib/auditService';
 
 function AdminLoginContent() {
   const searchParams = useSearchParams();
@@ -50,6 +51,9 @@ function AdminLoginContent() {
       if (!response.ok) {
         throw new Error(payload.error || 'Login failed.');
       }
+
+      const adminEmail = mode === 'email' ? email : 'owner@apexstores.com';
+      await logAuditAction(adminEmail, 'OS_SESSION_START', { mode, ip: payload.ip || 'logged' });
 
       // Wait a moment for the cookie to be set before redirecting
       await new Promise(resolve => setTimeout(resolve, 100));

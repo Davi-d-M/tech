@@ -39,7 +39,7 @@ export default function SystemPulseWidget() {
     ];
 
     return (
-        <div className="p-8 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
+        <div className="p-8 rounded-[3rem] bg-white text-foreground border border-slate-100 shadow-sm relative overflow-hidden group">
             <div className="relative z-10 space-y-6">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -57,22 +57,22 @@ export default function SystemPulseWidget() {
                     {metrics.map(m => (
                         <div key={m.label} className="flex justify-between items-center group/item">
                             <div className="flex items-center gap-3">
-                                <m.icon className="h-3 w-3 text-background/40 group-hover/item:text-primary transition-colors" />
-                                <span className="text-[9px] font-black uppercase text-background/70">{m.label}</span>
+                                <m.icon className="h-3 w-3 text-slate-300 group-hover/item:text-primary transition-colors" />
+                                <span className="text-[9px] font-black uppercase text-slate-500">{m.label}</span>
                             </div>
                             <div className="text-right">
                                 <span className={cn(
                                     "text-[8px] font-black uppercase block",
                                     m.status === 'online' || m.status === 'active' ? "text-emerald-500" : "text-rose-500"
                                 )}>{m.status}</span>
-                                <span className="text-[7px] font-bold text-background/30 uppercase">{m.val}</span>
+                                <span className="text-[7px] font-bold text-slate-400 uppercase">{m.val}</span>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <div className="pt-4 border-t border-background/10 flex justify-between items-center">
-                    <span className="text-[8px] font-black text-background/40 uppercase tracking-widest italic">Stable Uplink</span>
+                <div className="pt-4 border-t border-slate-100 flex justify-between items-center">
+                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic">Stable Uplink</span>
                     <div className="flex gap-1">
                         <div className="h-1 w-4 rounded-full bg-emerald-500/20">
                             <div className="h-full bg-emerald-500 w-full animate-pulse"></div>

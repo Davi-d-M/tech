@@ -53,7 +53,7 @@ export default function ApexIntelligence() {
     );
 
     return (
-        <section className="bg-white rounded-[3rem] p-10 border border-border shadow-sm relative overflow-hidden group hover:border-primary/20 transition-all">
+        <section className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden group hover:border-primary/20 transition-all">
             <div className="relative z-10 flex flex-col lg:flex-row justify-between gap-10">
 
                 <div className="space-y-6 flex-1 text-left">

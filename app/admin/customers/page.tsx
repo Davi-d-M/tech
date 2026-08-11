@@ -11,14 +11,15 @@ import {
   Star,
   ShieldAlert,
   Gem,
-  Activity as Zap
+  Activity as Zap,
+  MapPin,
+  Calendar
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { formatPrice } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-
 import { useAdmin } from '@/context/AdminContext';
 
 interface OrderRecord {
@@ -30,6 +31,14 @@ interface OrderRecord {
   referred_by_code?: string | null;
 }
 
+interface CustomerProfile {
+    phone_number: string | null;
+    referral_code: string | null;
+    full_name: string | null;
+    birth_date: string | null;
+    address: string | null;
+}
+
 interface CustomerStats {
   name: string;
   phone: string;
@@ -38,13 +47,15 @@ interface CustomerStats {
   lastOrder: string;
   isVIP: boolean;
   referredCount: number;
+  age: string;
+  location: string;
 }
 
 export default function AdminCustomersPage() {
-  const { role } = useAdmin();
+  const { role, permissions } = useAdmin();
   const router = useRouter();
   const [orders, setOrders] = React.useState<OrderRecord[]>([]);
-  const [profiles, setProfiles] = React.useState<{ phone_number: string | null; referral_code: string | null }[]>([]);
+  const [profiles, setProfiles] = React.useState<CustomerProfile[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -60,11 +71,11 @@ export default function AdminCustomersPage() {
       try {
         const [ordersRes, profilesRes] = await Promise.all([
           supabase.from('orders').select('id, customer_name, customer_phone, total_price, created_at, referred_by_code'),
-          supabase.from('profiles').select('phone_number, referral_code')
+          supabase.from('profiles').select('phone_number, referral_code, full_name, birth_date, address')
         ]);
 
         if (ordersRes.data) setOrders(ordersRes.data as OrderRecord[]);
-        if (profilesRes.data) setProfiles(profilesRes.data as { phone_number: string | null; referral_code: string | null }[]);
+        if (profilesRes.data) setProfiles(profilesRes.data as CustomerProfile[]);
       } catch (err) {
         console.error('Error loading customers:', err);
       } finally {
@@ -94,19 +105,31 @@ export default function AdminCustomersPage() {
       const profile = profiles.find(p => p.phone_number === key);
       const referredCount = (profile && profile.referral_code) ? (referralMap.get(profile.referral_code as string) || 0) : 0;
 
+      // Age calculation
+      let age = "N/A";
+      if (profile?.birth_date) {
+          const birth = new Date(profile.birth_date);
+          const now = new Date();
+          let calcAge = now.getFullYear() - birth.getFullYear();
+          if (now.getMonth() < birth.getMonth() || (now.getMonth() === birth.getMonth() && now.getDate() < birth.getDate())) calcAge--;
+          age = `${calcAge}y`;
+      }
+
       if (existing) {
         existing.totalOrders += 1;
         existing.totalSpend += Number(order.total_price || 0);
         existing.referredCount = Math.max(existing.referredCount, referredCount);
       } else {
         map.set(key, {
-          name: order.customer_name || 'Anonymous',
+          name: order.customer_name || profile?.full_name || 'Anonymous',
           phone: key,
           totalOrders: 1,
           totalSpend: Number(order.total_price || 0),
           lastOrder: order.created_at,
           isVIP: false,
-          referredCount
+          referredCount,
+          age,
+          location: profile?.address || 'No Address'
         });
       }
     });
@@ -250,6 +273,22 @@ export default function AdminCustomersPage() {
                         <span className="font-bold text-slate-500 text-xs">
                           {role === 'owner' ? customer.phone : `${customer.phone.substring(0, 4)}****${customer.phone.substring(customer.phone.length - 2)}`}
                         </span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-3 w-3 text-slate-300" />
+                          <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">
+                              {role === 'owner' || permissions?.can_view_sensitive_rider_data ? customer.age : 'HIDDEN'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-3 w-3 text-slate-300" />
+                          <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest truncate max-w-[100px]">
+                              {role === 'owner' || permissions?.can_view_sensitive_rider_data ? customer.location : 'PROTECTED'}
+                          </span>
+                        </div>
                       </div>
                     </td>
                     <td className="px-8 py-6">

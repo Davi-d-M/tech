@@ -19,7 +19,8 @@ import {
   Package,
   PackageCheck,
   CreditCard,
-  Phone
+  Phone,
+  User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,6 +49,12 @@ interface Rider {
     rider_phone: string;
     vehicle_type: 'Motorbike' | 'Bike' | 'Car' | 'Van';
     vehicle_reg?: string;
+    id_number?: string;
+    license_number?: string;
+    plate_number?: string;
+    rider_photo_url?: string;
+    vehicle_photo_url?: string;
+    verification_status?: 'Pending' | 'Verified' | 'Rejected';
     pin: string;
     current_location: string;
     status: 'Idle' | 'Delivering' | 'Offline' | 'Delayed' | 'Break';
@@ -66,7 +73,7 @@ interface Rider {
 }
 
 export default function AdminDispatchPage() {
-    useAdmin();
+    const { role, permissions } = useAdmin();
     const { settings } = useSettings();
     const [riders, setRiders] = useState<Rider[]>([]);
     const [orders, setOrders] = useState<{ id: number; status: string; customer_name: string; customer_email?: string; rider_name?: string }[]>([]);
@@ -393,6 +400,43 @@ export default function AdminDispatchPage() {
                                     <p className="text-xl font-black text-foreground">{formatPrice(selectedRider.wallet?.total_earned || 0)}</p>
                                 </div>
                             </div>
+
+                            {/* Verification Data (Owner/Sensitive Only) */}
+                            {(role === 'owner' || permissions.can_view_sensitive_rider_data) && (
+                                <div className="space-y-6">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground ml-2">Verification Intel</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-5 rounded-[2rem] bg-slate-50 border border-slate-100 space-y-1">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase">ID Number</p>
+                                            <p className="text-sm font-black text-foreground">{selectedRider.id_number || 'NOT LOGGED'}</p>
+                                        </div>
+                                        <div className="p-5 rounded-[2rem] bg-slate-50 border border-slate-100 space-y-1">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase">License No.</p>
+                                            <p className="text-sm font-black text-foreground">{selectedRider.license_number || 'NOT LOGGED'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase ml-2">Rider Selfie</p>
+                                            <div className="h-40 rounded-[2rem] bg-slate-100 border border-slate-200 overflow-hidden relative group/img">
+                                                {selectedRider.rider_photo_url ? (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                                    <img src={selectedRider.rider_photo_url} alt="" className="w-full h-full object-cover transition-transform group-hover/img:scale-110" />
+                                                ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><User size={24} /></div>}
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase ml-2">Vehicle Log</p>
+                                            <div className="h-40 rounded-[2rem] bg-slate-100 border border-slate-200 overflow-hidden relative group/img">
+                                                {selectedRider.vehicle_photo_url ? (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                                    <img src={selectedRider.vehicle_photo_url} alt="" className="w-full h-full object-cover transition-transform group-hover/img:scale-110" />
+                                                ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><Truck size={24} /></div>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {selectedRider.status === 'Delivering' && (
                                 <div className="p-8 rounded-[2.5rem] bg-primary/5 border-2 border-primary/20 space-y-8 relative overflow-hidden">

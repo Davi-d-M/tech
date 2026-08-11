@@ -97,8 +97,8 @@ export default function TodayCommandCenter() {
                 {indicators.map((item) => (
                     <Link key={item.label} href={item.href} className="flex h-full">
                         <div className={cn(
-                            "p-6 rounded-[2.5rem] bg-card border border-border hover:shadow-xl hover:scale-[1.02] transition-all group relative overflow-hidden flex flex-col justify-between w-full h-full",
-                            item.val > 0 && item.color === 'rose' && "border-rose-100 bg-rose-50/30"
+                            "p-6 rounded-[2.5rem] bg-white border border-slate-100 hover:shadow-xl hover:scale-[1.02] transition-all group relative overflow-hidden flex flex-col justify-between w-full h-full",
+                            item.val > 0 && item.color === 'rose' && "border-rose-100 bg-rose-50/50"
                         )}>
                             <div className="relative z-10 flex justify-between items-start">
                                 <div className={cn(

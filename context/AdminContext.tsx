@@ -14,6 +14,8 @@ export interface Permissions {
   can_manage_broadcast: boolean;
   can_manage_settings: boolean;
   can_manage_media: boolean;
+  can_view_sensitive_rider_data: boolean;
+  can_view_audit_logs: boolean;
 }
 
 interface AdminContextProps {
@@ -38,7 +40,9 @@ export const AdminProvider = ({
         can_manage_customer_care: false,
         can_manage_broadcast: false,
         can_manage_settings: false,
-        can_manage_media: false
+        can_manage_media: false,
+        can_view_sensitive_rider_data: false,
+        can_view_audit_logs: false
     }
 }: {
     children: React.ReactNode,

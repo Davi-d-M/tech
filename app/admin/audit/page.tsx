@@ -126,7 +126,7 @@ function DetailRenderer({ log }: { log: AuditLog }) {
 }
 
 export default function AdminAuditPage() {
-  const { role } = useAdmin();
+  const { role, permissions } = useAdmin();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -168,6 +168,16 @@ export default function AdminAuditPage() {
     (l.staff_email || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
     (l.action || '').toLowerCase().includes((searchQuery || '').toLowerCase())
   );
+
+  if (role !== 'owner' && !permissions.can_view_audit_logs) {
+      return (
+          <div className="p-24 flex flex-col items-center justify-center text-center">
+              <Shield className="h-16 w-16 text-rose-500 mb-6" />
+              <h2 className="text-2xl font-black uppercase text-foreground">Access Denied</h2>
+              <p className="text-slate-500 mt-2">Only the Master Admin can review system audit logs.</p>
+          </div>
+      );
+  }
 
   return (
     <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
