@@ -6,9 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lock, Mail, Key } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
 
-export default function AdminLoginPage() {
+function AdminLoginContent() {
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<'pin' | 'email'>('pin');
+
+  useEffect(() => {
+      const modeParam = searchParams.get('mode');
+      if (modeParam === 'email') setMode('email');
+  }, [searchParams]);
+
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<{ type: 'idle' | 'error'; message: string }>({
@@ -161,4 +170,12 @@ export default function AdminLoginPage() {
       </div>
     </div>
   );
+}
+
+export default function AdminLoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div></div>}>
+            <AdminLoginContent />
+        </Suspense>
+    );
 }

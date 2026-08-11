@@ -8,6 +8,8 @@ import { supabase } from '@/lib/supabaseClient'
 
 export default function AuthForm({ initialMode = 'signin' }) {
   const router = useRouter()
+  const [fullName, setFullName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUp, setIsSignUp] = useState(initialMode === 'signup')
@@ -64,6 +66,12 @@ export default function AuthForm({ initialMode = 'signin' }) {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              full_name: fullName,
+              phone_number: phoneNumber
+            }
+          }
         })
 
         if (error) throw error
@@ -164,6 +172,32 @@ export default function AuthForm({ initialMode = 'signin' }) {
         </form>
       ) : (
         <form onSubmit={handleAuth} className="space-y-4">
+          {isSignUp && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 text-foreground"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  required
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/10 text-foreground"
+                  placeholder="07XXXXXXXX"
+                />
+              </div>
+            </>
+          )}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
             <input
@@ -244,12 +278,18 @@ export default function AuthForm({ initialMode = 'signin' }) {
 
       <div className="mt-6 space-y-3 border-t border-slate-200 pt-4">
         {!showAdminPin && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
                 onClick={() => router.push('/admin/login')}
                 className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground hover:bg-slate-50 p-3 rounded-xl transition-all border border-transparent hover:border-slate-100"
             >
-                🔐 Admin
+                🔐 Owner
+            </button>
+            <button
+                onClick={() => router.push('/admin/login?mode=email')}
+                className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground hover:bg-slate-50 p-3 rounded-xl transition-all border border-transparent hover:border-slate-100"
+            >
+                👥 Staff
             </button>
             <button
                 onClick={() => router.push('/rider/login')}
