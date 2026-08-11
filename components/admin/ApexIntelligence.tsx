@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import { Sparkles, ArrowRight, TrendingUp, AlertTriangle, Package, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function ApexIntelligence() {

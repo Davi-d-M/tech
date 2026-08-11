@@ -5,12 +5,11 @@ import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, User } from 'luci
 import Image from 'next/image';
 
 interface InstagramPreviewProps {
-    productName: string;
     imageUrl: string;
     caption: string;
 }
 
-export default function InstagramPreview({ productName, imageUrl, caption }: InstagramPreviewProps) {
+export default function InstagramPreview({ imageUrl, caption }: InstagramPreviewProps) {
     return (
         <div className="max-w-[350px] mx-auto bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500">
             {/* IG Header */}

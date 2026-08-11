@@ -23,7 +23,6 @@ import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { cn, formatPrice } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
-import { useSettings } from '@/lib/useSettings';
 import Image from 'next/image';
 import InstagramPreview from '@/components/admin/marketing/InstagramPreview';
 import WhatsAppPreview from '@/components/admin/marketing/WhatsAppPreview';
@@ -33,7 +32,6 @@ type Step = 'context' | 'content' | 'preview' | 'audience';
 
 export default function CreateCampaign() {
     const { email } = useAdmin();
-    const { settings } = useSettings();
     const [step, setStep] = React.useState<Step>('context');
     const [loading, setLoading] = React.useState(false);
     const [isGenerating, setIsGenerating] = React.useState(false);
@@ -340,7 +338,6 @@ export default function CreateCampaign() {
                                 <div className="py-10 bg-slate-50 rounded-[2.5rem] border border-dashed border-border min-h-[600px] flex items-center justify-center">
                                     {activePreview === 'instagram' && (
                                         <InstagramPreview
-                                            productName={selectedProduct.name}
                                             imageUrl={selectedProduct.image_url}
                                             caption={channels.instagram.caption}
                                         />

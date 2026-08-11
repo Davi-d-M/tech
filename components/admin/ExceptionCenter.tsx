@@ -62,8 +62,6 @@ export default function ExceptionCenter() {
                 }));
 
                 // 3. Scan for inactive riders
-                const fifteenMinsAgo = new Date(now.getTime() - 15 * 60 * 1000).toISOString();
-                // Note: assuming updated_at or similar exists for last pulse
                 const { data: inactiveRiders } = await supabase
                     .from('rider_status')
                     .select('rider_name')
@@ -82,7 +80,7 @@ export default function ExceptionCenter() {
                 }
 
                 setExceptions(detected);
-            } catch (err) {
+            } catch {
                 console.error("Exception Scan failed.");
             } finally {
                 setLoading(false);

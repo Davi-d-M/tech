@@ -1,32 +1,26 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     Users,
     Plus,
     Search,
-    Filter,
     MoreVertical,
     Target,
     Zap,
-    ShieldCheck,
-    Loader2,
-    Trash2,
-    Edit3,
     ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 import Link from 'next/link';
 
 interface Segment {
     id: string;
     name: string;
-    rules: any;
+    rules: Record<string, unknown>;
     estimated_reach: number;
     created_at: string;
 }
@@ -49,7 +43,7 @@ export default function AudiencesPage() {
 
                 if (error) throw error;
                 setSegments(data || []);
-            } catch (err) {
+            } catch {
                 console.error("Segment fetch failed.");
             } finally {
                 setLoading(false);

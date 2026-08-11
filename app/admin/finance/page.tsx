@@ -10,7 +10,6 @@ import {
     CreditCard,
     History,
     Search,
-    Filter,
     Download,
     CheckCircle2,
     ShieldAlert,
@@ -38,8 +37,8 @@ export default function AdminFinancePage() {
     useAdmin();
     const [loading, setLoading] = React.useState(true);
     const [searchQuery, setSearchQuery] = React.useState('');
-    const [orders, setOrders] = React.useState<any[]>([]);
-    const [payouts, setPayouts] = React.useState<any[]>([]);
+    const [orders, setOrders] = React.useState<{ id: number; total_price: number; created_at: string; status: string; customer_name: string }[]>([]);
+    const [payouts, setPayouts] = React.useState<{ total_earned: number; rider_phone: string }[]>([]);
     const [isReconciling, setIsReconciling] = React.useState(false);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -48,13 +47,13 @@ export default function AdminFinancePage() {
         setLoading(true);
         try {
             const [ordersRes, walletsRes] = await Promise.all([
-                supabase.from('orders').select('*').order('created_at', { ascending: false }),
-                supabase.from('rider_wallets').select('*')
+                supabase.from('orders').select('id, total_price, created_at, status, customer_name').order('created_at', { ascending: false }),
+                supabase.from('rider_wallets').select('total_earned, rider_phone')
             ]);
 
             setOrders(ordersRes.data || []);
             setPayouts(walletsRes.data || []);
-        } catch (err) {
+        } catch {
             console.error("Financial Uplink Desync.");
         } finally {
             setLoading(false);

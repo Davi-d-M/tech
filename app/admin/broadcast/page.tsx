@@ -143,7 +143,7 @@ export default function AdminBroadcastPage() {
                                     {AUDIENCES.map(a => (
                                         <button
                                             key={a.id}
-                                            onClick={() => setAudience(a.id as any)}
+                                        onClick={() => setAudience(a.id as 'all' | 'new' | 'vip' | 'inactive')}
                                             className={cn(
                                                 "p-4 rounded-2xl border transition-all text-left flex flex-col gap-2",
                                                 audience === a.id ? "bg-primary/5 border-primary text-primary" : "bg-secondary border-border text-muted-foreground hover:border-muted"

@@ -61,8 +61,8 @@ export default function CustomerIntelligence() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [products, setProducts] = useState<ProductInfo[]>([]);
-  const [referrals, setReferrals] = useState<any[]>([]);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [referrals, setReferrals] = useState<{ id: number; total_price: number; created_at: string }[]>([]);
+  const [reviews, setReviews] = useState<{ id: string; rating: number; comment: string; created_at: string; is_verified_owner: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,21 +70,21 @@ export default function CustomerIntelligence() {
       if (!supabase || !phone) return;
 
       try {
-        const profileRes = await supabase.from('profiles').select('*').eq('phone_number', phone).maybeSingle();
-        const profileData = profileRes.data as CustomerProfile;
+        const initialRes = await supabase.from('profiles').select('*').eq('phone_number', phone).maybeSingle();
+        const profileData = initialRes.data as CustomerProfile;
 
         const [ordersRes, productsRes, referralsRes, reviewsRes] = await Promise.all([
           supabase.from('orders').select('*').eq('customer_phone', phone).order('created_at', { ascending: false }),
           supabase.from('products').select('id, name, category'),
-          profileData ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] }),
+          profileData?.referral_code ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] }),
           supabase.from('reviews').select('*').or(`customer_phone.eq.${phone},customer_name.eq.${profileData?.full_name || 'NONE'}`).order('created_at', { ascending: false })
         ]);
 
         if (ordersRes.data) setOrders(ordersRes.data as Order[]);
-        if (profileRes.data) setProfile(profileRes.data as CustomerProfile);
+        if (profileData) setProfile(profileData);
         if (productsRes.data) setProducts(productsRes.data as ProductInfo[]);
-        if (referralsRes.data) setReferrals(referralsRes.data);
-        if (reviewsRes.data) setReviews(reviewsRes.data);
+        if (referralsRes.data) setReferrals(referralsRes.data as { id: number; total_price: number; created_at: string }[]);
+        if (reviewsRes.data) setReviews(reviewsRes.data as { id: string; rating: number; comment: string; created_at: string; is_verified_owner: boolean }[]);
       } catch (err: unknown) {
         console.error(err);
       } finally {

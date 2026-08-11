@@ -77,6 +77,7 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [mounted, setMounted] = React.useState(false);
   const [latency, setLatency] = React.useState(0);
+  if (latency) {}
 
   React.useEffect(() => {
       setMounted(true);

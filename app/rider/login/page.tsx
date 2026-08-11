@@ -6,7 +6,6 @@ import { supabase } from '@/lib/supabaseClient';
 import { Phone, Lock, Truck, Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function RiderLogin() {

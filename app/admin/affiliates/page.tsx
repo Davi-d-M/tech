@@ -33,7 +33,6 @@ import {
     AreaChart,
     Area
 } from 'recharts';
-import { useSettings } from '@/lib/useSettings';
 import Link from 'next/link';
 
 interface Affiliate {
@@ -344,7 +343,7 @@ export default function AdminAffiliates() {
                                     doc.save('Elite_Tech_Catalog.pdf');
                                     setMessage({ type: 'success', text: "Catalog compilation successful! 📁" });
                                     setTimeout(() => setMessage(null), 3000);
-                                } catch (err) {
+                                } catch {
                                     setMessage({ type: 'error', text: "Catalog extraction failed." });
                                 }
                             }}

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Bell, X, ShieldAlert, Package, Truck, CreditCard, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Bell, X, ShieldAlert, Package, Truck, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';

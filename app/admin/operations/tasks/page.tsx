@@ -234,7 +234,7 @@ export default function TaskCenter() {
                                 <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Severity</label>
                                 <select
                                     value={newTask.priority}
-                                    onChange={e => setNewTask({...newTask, priority: e.target.value as any})}
+                                    onChange={e => setNewTask({...newTask, priority: e.target.value as Task['priority']})}
                                     className="w-full h-14 rounded-2xl bg-secondary border border-border px-4 text-xs font-black uppercase outline-none focus:ring-2 focus:ring-primary"
                                 >
                                     <option>Low</option>

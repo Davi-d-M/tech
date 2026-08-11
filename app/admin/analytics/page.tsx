@@ -38,8 +38,8 @@ export default function AdminAnalyticsPage() {
     useAdmin();
     const [timeframe, setTimeframe] = React.useState<'7d' | '30d' | '90d' | 'YTD'>('30d');
     const [loading, setLoading] = React.useState(true);
-    const [products, setProducts] = React.useState<any[]>([]);
-    const [orders, setOrders] = React.useState<any[]>([]);
+    const [products, setProducts] = React.useState<{ category: string | null }[]>([]);
+    const [orders, setOrders] = React.useState<{ id: number; total_price: number; created_at: string; status: string; customer_phone: string; referred_by_code?: string | null }[]>([]);
 
     const [affiliateSales, setAffiliateSales] = React.useState(0);
 
@@ -139,16 +139,16 @@ export default function AdminAnalyticsPage() {
                 <div className="flex gap-2">
                     <div className="bg-secondary p-1 rounded-xl flex gap-1 border border-border">
                         {['7d', '30d', '90d', 'YTD'].map(t => (
-                            <button
-                                key={t}
-                                onClick={() => setTimeframe(t as any)}
-                                className={cn(
-                                    "px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all",
-                                    timeframe === t ? "bg-white text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                {t}
-                            </button>
+                                <button
+                                    key={t}
+                                    onClick={() => setTimeframe(t as '7d' | '30d' | '90d' | 'YTD')}
+                                    className={cn(
+                                        "px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all",
+                                        timeframe === t ? "bg-white text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                    )}
+                                >
+                                    {t}
+                                </button>
                         ))}
                     </div>
                     <Button variant="outline" className="rounded-xl h-11 px-6 border-border bg-card font-black uppercase text-[9px] tracking-widest hover:bg-secondary">

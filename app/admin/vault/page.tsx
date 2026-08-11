@@ -3,26 +3,21 @@
 import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
+    RefreshCcw,
+    Lock,
+    Plus,
+    Folder,
     FileText,
+    ShieldCheck,
     Search,
     Download,
-    ShieldCheck,
-    History,
     Trash2,
-    Plus,
-    Filter,
-    Clock,
-    Lock,
-    Folder,
-    MoreVertical,
-    ArrowUpRight,
-    RefreshCcw
+    MoreVertical
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useAdmin } from '@/context/AdminContext';
 
 interface Document {
     id: string;
@@ -34,9 +29,7 @@ interface Document {
 }
 
 export default function DocumentVault() {
-    const { email: adminEmail } = useAdmin();
     const [searchQuery, setSearchQuery] = React.useState('');
-    const [loading, setLoading] = React.useState(true);
     const [documents, setDocuments] = React.useState<Document[]>([]);
 
     React.useEffect(() => {
@@ -48,8 +41,6 @@ export default function DocumentVault() {
                 setDocuments(data || []);
             } catch (err) {
                 console.error(err);
-            } finally {
-                setLoading(false);
             }
         }
         fetchDocs();

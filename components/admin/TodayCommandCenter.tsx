@@ -20,7 +20,6 @@ export default function TodayCommandCenter() {
         low_stock: 0,
         support_tickets: 0
     });
-    const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
         async function fetchCommandData() {
@@ -39,10 +38,8 @@ export default function TodayCommandCenter() {
                     low_stock: productsRes.count || 0,
                     support_tickets: messagesRes.count || 0
                 });
-            } catch (err) {
+            } catch {
                 console.error("Command Center Link unstable.");
-            } finally {
-                setLoading(false);
             }
         }
 

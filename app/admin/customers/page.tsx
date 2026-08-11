@@ -4,7 +4,6 @@ import * as React from 'react';
 import {
   Users,
   Phone,
-  ShoppingBag,
   DollarSign,
   Search,
   ChevronRight,
@@ -45,7 +44,7 @@ export default function AdminCustomersPage() {
   const { role } = useAdmin();
   const router = useRouter();
   const [orders, setOrders] = React.useState<OrderRecord[]>([]);
-  const [profiles, setProfiles] = React.useState<any[]>([]);
+  const [profiles, setProfiles] = React.useState<{ phone_number: string | null; referral_code: string | null }[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -64,8 +63,8 @@ export default function AdminCustomersPage() {
           supabase.from('profiles').select('phone_number, referral_code')
         ]);
 
-        if (ordersRes.data) setOrders(ordersRes.data as any[]);
-        if (profilesRes.data) setProfiles(profilesRes.data);
+        if (ordersRes.data) setOrders(ordersRes.data as OrderRecord[]);
+        if (profilesRes.data) setProfiles(profilesRes.data as { phone_number: string | null; referral_code: string | null }[]);
       } catch (err) {
         console.error('Error loading customers:', err);
       } finally {
@@ -93,7 +92,7 @@ export default function AdminCustomersPage() {
 
       const existing = map.get(key);
       const profile = profiles.find(p => p.phone_number === key);
-      const referredCount = profile ? (referralMap.get(profile.referral_code) || 0) : 0;
+      const referredCount = (profile && profile.referral_code) ? (referralMap.get(profile.referral_code as string) || 0) : 0;
 
       if (existing) {
         existing.totalOrders += 1;

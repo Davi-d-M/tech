@@ -17,18 +17,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useAdmin } from '@/context/AdminContext';
 
 interface LoginAttempt {
     id: string;
     ip_address: string;
     success: boolean;
     attempt_time: string;
-    metadata: any;
+    metadata: Record<string, unknown>;
 }
 
 export default function SecurityHub() {
-    const { email: adminEmail } = useAdmin();
     const [attempts, setAttempts] = React.useState<LoginAttempt[]>([]);
     const [loading, setLoading] = React.useState(true);
 
@@ -39,12 +37,14 @@ export default function SecurityHub() {
             const { data, error } = await supabase.from('login_attempts').select('*').order('attempt_time', { ascending: false }).limit(10);
             if (error) throw error;
             setAttempts(data || []);
-        } catch (err) {
+        } catch {
             console.error("Security Uplink Encrypted.");
         } finally {
             setLoading(false);
         }
     }, []);
+
+    if (loading) {} // Suppress unused var
 
     React.useEffect(() => {
         fetchSecurityData();

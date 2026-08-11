@@ -156,7 +156,6 @@ export default function ExperimentationCenter() {
                                                 </div>
 
                                                 <div className="grid sm:grid-cols-2 gap-10 items-stretch">
-                                                    {/* Variant A */}
                                                     <div className={cn(
                                                         "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
                                                         (exp.winning_variant === 'A' || (winner === 'A' && exp.status !== 'Ended')) ? "border-emerald-500/20 bg-emerald-50/10" : "border-slate-100 bg-slate-50/50"
@@ -178,7 +177,6 @@ export default function ExperimentationCenter() {
                                                         </div>
                                                     </div>
 
-                                                    {/* Variant B */}
                                                     <div className={cn(
                                                         "p-8 rounded-[2.5rem] border-2 transition-all relative overflow-hidden h-full flex flex-col justify-between",
                                                         (exp.winning_variant === 'B' || (winner === 'B' && exp.status !== 'Ended')) ? "border-emerald-500 border-emerald-50/30 shadow-2xl" : "border-slate-100 bg-slate-50/50"

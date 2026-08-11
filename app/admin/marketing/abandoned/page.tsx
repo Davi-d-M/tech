@@ -8,16 +8,10 @@ import {
     MessageCircle,
     Mail,
     TrendingUp,
-    History,
-    User,
-    ArrowUpRight,
     Search,
     ChevronRight,
-    Plus,
-    Loader2,
     RefreshCcw,
     DollarSign,
-    ShieldAlert,
     Clock,
     CheckCircle2,
     AlertCircle
@@ -39,7 +33,7 @@ interface AbandonedCart {
 }
 
 export default function AbandonedCartEngine() {
-    const { email: adminEmail } = useAdmin();
+    useAdmin();
     const [carts, setCarts] = React.useState<AbandonedCart[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [searchQuery, setSearchQuery] = React.useState('');

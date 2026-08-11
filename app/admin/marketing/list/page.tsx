@@ -49,7 +49,7 @@ export default function CampaignHistory() {
 
                 if (error) throw error;
                 setCampaigns(data || []);
-            } catch (err) {
+            } catch {
                 console.error("Campaign fetch failed.");
             } finally {
                 setLoading(false);

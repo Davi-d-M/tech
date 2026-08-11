@@ -35,7 +35,7 @@ import { logAuditAction } from '@/lib/auditService';
 interface StaffMember {
   id: string;
   email: string;
-  role: 'owner' | 'super_admin' | 'finance' | 'operations' | 'support' | 'staff' | 'viewer';
+  role: 'owner' | 'super_admin' | 'admin' | 'finance' | 'operations' | 'support' | 'staff' | 'viewer';
   pin?: string;
   can_view_revenue: boolean;
   can_manage_inventory: boolean;
@@ -189,7 +189,7 @@ export default function AdminStaffPage() {
       const { error } = await supabase.from('staff').update({ role }).eq('id', id);
       if (!error) {
           if (adminEmail) await logAuditAction(adminEmail, 'UPDATE_ROLE', { id, role });
-          setStaff(staff.map(s => s.id === id ? { ...s, role } : s));
+          setStaff(staff.map(s => s.id === id ? { ...s, role: role as StaffMember['role'] } : s));
           setMessage({ type: 'success', text: 'Role updated.' });
       }
   };

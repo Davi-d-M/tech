@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { formatPrice, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function MarketingOverview() {

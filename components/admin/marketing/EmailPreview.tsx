@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Mail, ShieldCheck, Zap } from 'lucide-react';
+import { ShieldCheck, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { formatPrice } from '@/lib/utils';
 
