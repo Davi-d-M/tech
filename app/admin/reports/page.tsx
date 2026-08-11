@@ -150,7 +150,7 @@ export default function AdminReportsPage() {
                     { label: 'Monthly Audit', desc: 'Full month', icon: FileText, type: 'Monthly' },
                     { label: 'Inventory', desc: 'Stock mapping', icon: Package, type: 'Inventory' },
                 ].map((r) => (
-                    <Card key={r.label} className="p-4 sm:p-8 rounded-[1.5rem] sm:rounded-[2.5rem] border-slate-100 shadow-sm hover:shadow-2xl transition-all group flex flex-col items-center text-center">
+                    <Card key={r.label} className="p-8 rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all group flex flex-col items-center text-center">
                         <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-2xl sm:rounded-3xl bg-primary/10 flex items-center justify-center text-primary mb-4 sm:mb-6 transition-transform group-hover:scale-110 group-hover:rotate-6">
                             <r.icon className="h-6 w-6 sm:h-8 sm:w-8" />
                         </div>
@@ -196,7 +196,7 @@ export default function AdminReportsPage() {
                 </Card>
 
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
+                    <div className="bg-white rounded-[3rem] p-10 border border-slate-100 shadow-sm space-y-8">
                         <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
                             <DollarSign className="h-4 w-4" /> Custom Data Range
                         </h3>
@@ -235,7 +235,7 @@ export default function AdminReportsPage() {
                         </div>
                     </div>
 
-                    <div className="bg-slate-50 border border-slate-100 rounded-[2.5rem] p-8 text-foreground shadow-inner relative overflow-hidden">
+                    <div className="bg-white border border-slate-100 rounded-[3rem] p-10 text-foreground shadow-sm relative overflow-hidden">
                         <h4 className="text-[10px] font-black uppercase tracking-widest mb-2 text-primary">Pro Tip</h4>
                         <p className="text-sm font-bold leading-relaxed italic text-slate-500">&quot;Always check the Inventory Health report before placing orders with suppliers to avoid dead stock.&quot;</p>
                         <ShieldCheck className="absolute -bottom-4 -right-4 h-24 w-24 text-primary/5 rotate-12" />

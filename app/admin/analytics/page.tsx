@@ -78,25 +78,29 @@ export default function AdminAnalyticsPage() {
     }, [products]);
 
     const chartData = React.useMemo(() => {
-        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const days = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : 90;
         const now = new Date();
-        const last7Days = days.map((_, i) => {
-            const d = new Date(now);
-            d.setDate(d.getDate() - i);
-            return d.toISOString().split('T')[0];
-        }).reverse();
 
-        return last7Days.map(date => {
-            const dayOrders = orders.filter(o => o.created_at?.startsWith(date));
-            const revenue = dayOrders.filter(o => o.status === 'Delivered').reduce((s, o) => s + (o.total_price || 0), 0);
+        return Array.from({ length: days }).map((_, i) => {
+            const date = new Date();
+            date.setDate(now.getDate() - (days - i - 1));
+            const dateStr = date.toISOString().split('T')[0];
+
+            const dayOrders = orders.filter(o =>
+                o.created_at?.startsWith(dateStr) &&
+                ['Delivered', 'Paid', 'Dispatched'].includes(o.status)
+            );
+
+            const revenue = dayOrders.reduce((s, o) => s + (o.total_price || 0), 0);
+
             return {
-                name: date.split('-')[2],
+                name: date.toLocaleDateString('en-KE', { day: '2-digit' }),
                 revenue,
-                profit: revenue * 0.3, // Estimated 30% margin
+                profit: revenue * 0.3,
                 users: dayOrders.length
             };
         });
-    }, [orders]);
+    }, [orders, timeframe]);
 
     const performanceStats = React.useMemo(() => {
         const delivered = orders.filter(o => o.status === 'Delivered');
@@ -126,8 +130,8 @@ export default function AdminAnalyticsPage() {
     );
 
     return (
-        <div className="p-8 space-y-10 bg-background min-h-screen text-left">
-            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-border pb-8">
+        <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
+            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <div className="h-2 w-2 rounded-full bg-primary animate-pulse"></div>
@@ -160,7 +164,7 @@ export default function AdminAnalyticsPage() {
             {/* Performance HUD */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
                 {performanceStats.map((item) => (
-                    <Card key={item.label} className="p-8 rounded-[3rem] bg-card border-border shadow-sm group hover:shadow-xl transition-all h-full flex flex-col justify-between">
+                    <Card key={item.label} className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm group hover:shadow-xl transition-all h-full flex flex-col justify-between">
                         <div>
                             <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
                             <div className="flex items-end justify-between">
@@ -189,7 +193,7 @@ export default function AdminAnalyticsPage() {
 
                 <div className="lg:col-span-8 space-y-10">
                     {/* Revenue Dynamics */}
-                    <Card className="p-10 rounded-[3.5rem] border border-border bg-card shadow-sm">
+                    <Card className="p-10 rounded-[3.5rem] border border-slate-100 bg-white shadow-sm">
                         <div className="flex items-center justify-between mb-12">
                             <div>
                                 <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Revenue Dynamics</h2>
@@ -207,7 +211,15 @@ export default function AdminAnalyticsPage() {
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border/30" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: 'currentColor' }} className="text-muted-foreground" />
+                                    <XAxis
+                                        dataKey="name"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 10, fontWeight: 900, fill: 'currentColor' }}
+                                        className="text-muted-foreground"
+                                        minTickGap={30}
+                                        interval="preserveStartEnd"
+                                    />
                                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: 'currentColor' }} className="text-muted-foreground" />
                                     <Tooltip contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.1)', fontWeight: 900, fontSize: '10px' }} />
                                     <Area type="monotone" dataKey="revenue" stroke="#ff6b00" strokeWidth={4} fill="url(#colorRev)" />
@@ -219,20 +231,27 @@ export default function AdminAnalyticsPage() {
 
                     {/* Customer Growth */}
                     <div className="grid md:grid-cols-2 gap-8">
-                        <Card className="p-10 rounded-[3rem] border border-border bg-card shadow-sm">
+                        <Card className="p-10 rounded-[3rem] border border-slate-100 bg-white shadow-sm">
                             <h3 className="text-sm font-black uppercase text-foreground tracking-tighter mb-8">User Acquisition</h3>
                             <div className="h-64 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={chartData}>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border/30" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900 }} className="text-muted-foreground" />
+                                        <XAxis
+                                            dataKey="name"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fontSize: 9, fontWeight: 900 }}
+                                            className="text-muted-foreground"
+                                            minTickGap={20}
+                                        />
                                         <Bar dataKey="users" fill="#ff6b00" radius={[10, 10, 10, 10]} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         </Card>
 
-                        <Card className="p-10 rounded-[3rem] border border-border bg-card shadow-sm flex flex-col items-center">
+                        <Card className="p-10 rounded-[3rem] border border-slate-100 bg-white shadow-sm flex flex-col items-center">
                             <h3 className="text-sm font-black uppercase text-foreground tracking-tighter mb-8 w-full text-left">Segment Distribution</h3>
                             <div className="h-64 w-full relative">
                                 <ResponsiveContainer width="100%" height="100%">

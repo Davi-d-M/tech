@@ -450,21 +450,21 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div className="p-4 sm:p-8 space-y-8 bg-slate-50 min-h-screen text-left">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
+    <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl text-balance uppercase tracking-tighter">Order Control</h1>
-          <p className="text-slate-500 text-sm font-medium">Manage dispatch status and generate customer receipts.</p>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Order Control</h1>
+          <p className="text-slate-500 text-sm font-medium mt-1">Manage dispatch status and generate customer receipts.</p>
         </div>
         <div className="flex gap-2">
-            <Button onClick={handleExportCSV} variant="outline" className="rounded-xl flex items-center gap-2 border-slate-200 bg-white">
-                <Table className="h-4 w-4" /> Export CSV
+            <Button onClick={handleExportCSV} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest transition-all">
+                <Table className="h-4 w-4 mr-2" /> Export CSV
             </Button>
-            <Button onClick={() => loadOrders()} variant="outline" className="rounded-xl flex items-center gap-2 border-slate-200 bg-white">
-                <RefreshCcw className="h-4 w-4" /> Sync Data
+            <Button onClick={() => loadOrders()} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest transition-all">
+                <RefreshCcw className="h-4 w-4 mr-2" /> Sync Data
             </Button>
         </div>
-      </div>
+      </header>
 
       <div className="relative">
           <Input
@@ -477,7 +477,7 @@ export default function AdminOrdersPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-6 text-left group hover:shadow-xl transition-all">
+        <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex items-center gap-6 text-left group hover:shadow-xl transition-all">
           <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
             <DollarSign className="h-6 w-6" />
           </div>
@@ -488,7 +488,7 @@ export default function AdminOrdersPage() {
             </h3>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-6 text-left group hover:shadow-xl transition-all">
+        <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex items-center gap-6 text-left group hover:shadow-xl transition-all">
           <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
             <Tag className="h-6 w-6" />
           </div>
@@ -497,7 +497,7 @@ export default function AdminOrdersPage() {
             <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter">{summary.pending}</h3>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-6 text-left group hover:shadow-xl transition-all">
+        <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm flex items-center gap-6 text-left group hover:shadow-xl transition-all">
           <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
             <Package className="h-6 w-6" />
           </div>
@@ -510,7 +510,7 @@ export default function AdminOrdersPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm sticky top-8">
+          <div className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm sticky top-8">
             <h2 className="text-lg font-black text-foreground mb-8 flex items-center gap-2 uppercase tracking-tighter">
               <Plus className="h-5 w-5 text-primary" /> Log Manual Order
             </h2>
@@ -593,7 +593,7 @@ export default function AdminOrdersPage() {
         </div>
 
         <div className="lg:col-span-2 space-y-6 text-left">
-          <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden text-left flex flex-col min-h-[600px]">
+          <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden text-left flex flex-col min-h-[600px]">
             {selectedOrders.length > 0 && (
                 <div className="bg-white/90 backdrop-blur-2xl p-6 flex items-center justify-between z-30 animate-in slide-in-from-top-2 border-b border-slate-100 shrink-0">
                     <div className="flex items-center gap-4 ml-4">

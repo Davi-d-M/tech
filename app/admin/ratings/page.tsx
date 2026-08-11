@@ -67,21 +67,16 @@ export default function AdminRatingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8 text-left">
-      <div className="mx-auto flex max-w-4xl flex-col gap-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-black tracking-tighter text-foreground uppercase">
-              Trust Control
-            </h1>
-            <p className="text-slate-500 text-sm font-medium mt-1">
-              Set the star rating (0-5) for each gadget in your catalog.
-            </p>
-          </div>
-          <Button onClick={fetchRatings} variant="outline" className="rounded-xl flex items-center gap-2 border-slate-200 bg-white">
-            <RefreshCcw className="h-4 w-4" /> Sync
-          </Button>
+    <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
+        <div>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Trust Control</h1>
+          <p className="text-slate-500 text-sm font-medium mt-1">Set the star rating (0-5) for each gadget in your catalog.</p>
         </div>
+        <Button onClick={fetchRatings} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest transition-all">
+          <RefreshCcw className="h-4 w-4 mr-2" /> Sync Records
+        </Button>
+      </header>
 
         {message && (
           <div className={`p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border animate-in fade-in zoom-in-95 ${
@@ -91,7 +86,7 @@ export default function AdminRatingsPage() {
           </div>
         )}
 
-        <div className="rounded-[2rem] border border-slate-100 bg-white overflow-hidden shadow-sm">
+        <div className="rounded-[3rem] border border-slate-100 bg-white overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em] border-b border-slate-100">
@@ -126,24 +121,23 @@ export default function AdminRatingsPage() {
                           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded-lg">{product.rating.toFixed(1)}</span>
                         </div>
                       </td>
-                      <td className="px-8 py-6 text-right">
-                        <Button
-                          size="sm"
-                          className="rounded-xl h-10 px-6 font-black uppercase text-[9px] tracking-widest shadow-lg shadow-primary/10"
-                          disabled={savingId === product.id}
-                          onClick={() => handleSave(product)}
-                        >
-                          {savingId === product.id ? 'Wait...' : 'Commit'}
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                          <td className="px-8 py-6 text-right">
+                            <Button
+                              size="sm"
+                              className="rounded-xl h-10 px-6 font-black uppercase text-[9px] tracking-widest shadow-lg shadow-primary/10"
+                              disabled={savingId === product.id}
+                              onClick={() => handleSave(product)}
+                            >
+                              {savingId === product.id ? 'Wait...' : 'Commit'}
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

@@ -116,23 +116,22 @@ export default function AdminCouponsPage() {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
+    <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
         <div>
           <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter text-left">Gift & Coupons</h1>
           <p className="text-slate-500 text-sm font-medium mt-1">Generate discount codes to drive sales and reward loyal customers.</p>
         </div>
-        <Button onClick={fetchCoupons} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest">
+        <Button onClick={fetchCoupons} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest transition-all">
             <RefreshCcw className="h-4 w-4 mr-2" /> Refresh
         </Button>
       </header>
 
       <div className="grid lg:grid-cols-3 gap-12">
 
-          {/* Create Form */}
           <div className="lg:col-span-1">
-              <Card className="rounded-[2.5rem] border-slate-100 shadow-sm p-10 bg-white">
-                  <h2 className="text-xl font-black text-foreground uppercase mb-10 flex items-center gap-4">
+              <Card className="rounded-[3rem] border border-slate-100 shadow-sm p-10 bg-white space-y-10">
+                  <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-4">
                       <Plus className="h-5 w-5 text-primary" /> New Coupon
                   </h2>
                   <form onSubmit={handleSubmit} className="space-y-6 text-left">

@@ -135,8 +135,8 @@ export default function EarningsCenter({ balance, totalEarned, orders = [] }: { 
                             </Bar>
                             <Tooltip
                                 cursor={{ fill: 'transparent' }}
-                                content={(props: any) => {
-                                    const { active, payload } = props;
+                                content={(props) => {
+                                    const { active, payload } = props as { active?: boolean; payload?: readonly { value: number }[] };
                                     if (active && payload && payload.length) {
                                         return (
                                             <div className="bg-background text-foreground px-4 py-2 rounded-xl shadow-2xl border-none text-[10px] font-black uppercase">

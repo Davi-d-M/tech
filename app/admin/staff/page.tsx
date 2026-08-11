@@ -302,7 +302,7 @@ export default function AdminStaffPage() {
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Enterprise Role</label>
                             <select
                                 value={newRole}
-                                onChange={e => setNewRole(e.target.value as any)}
+                                onChange={e => setNewRole(e.target.value as 'owner' | 'super_admin' | 'admin' | 'finance' | 'operations' | 'support' | 'staff' | 'viewer')}
                                 className="w-full h-14 px-4 rounded-2xl border border-border bg-secondary text-xs font-black uppercase outline-none text-foreground"
                             >
                                 <option value="staff">Staff</option>
@@ -406,7 +406,7 @@ export default function AdminStaffPage() {
                                                       <span className="font-black text-foreground uppercase text-xs tracking-tight block truncate">{member.email || 'Unknown'}</span>
                                                       <select
                                                         value={member.role}
-                                                        onChange={e => updateStaffRole(member.id, e.target.value as any)}
+                                                        onChange={e => updateStaffRole(member.id, e.target.value as 'admin' | 'staff' | 'viewer')}
                                                         className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1 block italic bg-transparent border-none outline-none cursor-pointer hover:text-primary transition-colors"
                                                       >
                                                         <option value="staff">Staff</option>

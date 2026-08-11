@@ -246,11 +246,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
         {!showAdminPin && (
           <div className="grid grid-cols-2 gap-2">
             <button
-                onClick={() => {
-                setShowAdminPin(true)
-                setMessage('')
-                setAdminPin('')
-                }}
+                onClick={() => router.push('/admin/login')}
                 className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground hover:bg-slate-50 p-3 rounded-xl transition-all border border-transparent hover:border-slate-100"
             >
                 🔐 Admin

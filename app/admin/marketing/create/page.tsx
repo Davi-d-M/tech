@@ -48,9 +48,9 @@ export default function CreateCampaign() {
         audience_id: 'all'
     });
 
-    const [products, setProducts] = React.useState<any[]>([]);
-    const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
-    const [segments, setSegments] = React.useState<any[]>([
+    const [products, setProducts] = React.useState<{ id: number; name: string; image_url: string; price: number; stock: number; category?: string }[]>([]);
+    const [selectedProduct, setSelectedProduct] = React.useState<{ id: number; name: string; image_url: string; price: number; stock: number; category?: string } | null>(null);
+    const [segments, setSegments] = React.useState<{ id: string; name: string; estimated_reach: number }[]>([
         { id: 'all', name: 'Everyone', estimated_reach: 2481 }
     ]);
 
@@ -78,7 +78,7 @@ export default function CreateCampaign() {
 
     const handleProductSelect = (id: string) => {
         const prod = products.find(p => p.id === Number(id));
-        setSelectedProduct(prod);
+        setSelectedProduct(prod || null);
         setCampaign(prev => ({ ...prev, product_id: id }));
     };
 
@@ -212,7 +212,7 @@ export default function CreateCampaign() {
                                             <button
                                                 key={p.id}
                                                 type="button"
-                                                onClick={() => handleProductSelect(p.id)}
+                                                onClick={() => handleProductSelect(String(p.id))}
                                                 className={cn(
                                                     "p-4 rounded-2xl border text-left transition-all flex gap-3 items-center",
                                                     campaign.product_id === String(p.id) ? "bg-primary/5 border-primary shadow-sm" : "bg-secondary border-border hover:border-muted text-muted-foreground"
@@ -336,26 +336,35 @@ export default function CreateCampaign() {
                                 </div>
 
                                 <div className="py-10 bg-slate-50 rounded-[2.5rem] border border-dashed border-border min-h-[600px] flex items-center justify-center">
-                                    {activePreview === 'instagram' && (
-                                        <InstagramPreview
-                                            imageUrl={selectedProduct.image_url}
-                                            caption={channels.instagram.caption}
-                                        />
-                                    )}
-                                    {activePreview === 'whatsapp' && (
-                                        <WhatsAppPreview
-                                            imageUrl={selectedProduct.image_url}
-                                            body={channels.whatsapp.body}
-                                        />
-                                    )}
-                                    {activePreview === 'email' && (
-                                        <EmailPreview
-                                            productName={selectedProduct.name}
-                                            productPrice={selectedProduct.price}
-                                            imageUrl={selectedProduct.image_url}
-                                            subject={channels.email.subject}
-                                            body={channels.email.body}
-                                        />
+                                    {selectedProduct ? (
+                                        <>
+                                            {activePreview === 'instagram' && (
+                                                <InstagramPreview
+                                                    imageUrl={selectedProduct.image_url}
+                                                    caption={channels.instagram.caption}
+                                                />
+                                            )}
+                                            {activePreview === 'whatsapp' && (
+                                                <WhatsAppPreview
+                                                    imageUrl={selectedProduct.image_url}
+                                                    body={channels.whatsapp.body}
+                                                />
+                                            )}
+                                            {activePreview === 'email' && (
+                                                <EmailPreview
+                                                    productName={selectedProduct.name}
+                                                    productPrice={selectedProduct.price}
+                                                    imageUrl={selectedProduct.image_url}
+                                                    subject={channels.email.subject}
+                                                    body={channels.email.body}
+                                                />
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="text-center space-y-4 opacity-30">
+                                            <Zap size={48} className="mx-auto" />
+                                            <p className="text-[10px] font-black uppercase tracking-widest">Select Product to Load Preview</p>
+                                        </div>
                                     )}
                                 </div>
 

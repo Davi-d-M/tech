@@ -232,7 +232,7 @@ export default function AdminDispatchPage() {
             <div className="grid lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 space-y-10">
                     <div className="h-[650px] w-full relative">
-                        <LiveDispatchMap riders={riders as any} onSelectRider={(r: any) => setSelectedRider(r)} />
+                        <LiveDispatchMap riders={riders} onSelectRider={(r) => setSelectedRider(r as Rider)} />
                     </div>
 
                     <section className="space-y-6">

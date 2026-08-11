@@ -91,7 +91,7 @@ export default function AdminMessagesPage() {
   });
 
   return (
-    <div className="p-8 space-y-8 bg-slate-50 min-h-screen text-left">
+    <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left pb-40">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
         <div>
           <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Support Inbox</h1>

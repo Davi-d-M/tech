@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import {
@@ -65,34 +65,35 @@ export default function CustomerIntelligence() {
   const [reviews, setReviews] = useState<{ id: string; rating: number; comment: string; created_at: string; is_verified_owner: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadData() {
-      if (!supabase || !phone) return;
+  const loadData = useCallback(async () => {
+    if (!supabase || !phone) return;
 
-      try {
-        const initialRes = await supabase.from('profiles').select('*').eq('phone_number', phone).maybeSingle();
-        const profileData = initialRes.data as CustomerProfile;
+    try {
+      const initialRes = await supabase.from('profiles').select('*').eq('phone_number', phone).maybeSingle();
+      const profileData = initialRes.data as CustomerProfile;
 
-        const [ordersRes, productsRes, referralsRes, reviewsRes] = await Promise.all([
-          supabase.from('orders').select('*').eq('customer_phone', phone).order('created_at', { ascending: false }),
-          supabase.from('products').select('id, name, category'),
-          profileData?.referral_code ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] }),
-          supabase.from('reviews').select('*').or(`customer_phone.eq.${phone},customer_name.eq.${profileData?.full_name || 'NONE'}`).order('created_at', { ascending: false })
-        ]);
+      const [ordersRes, productsRes, referralsRes, reviewsRes] = await Promise.all([
+        supabase.from('orders').select('*').eq('customer_phone', phone).order('created_at', { ascending: false }),
+        supabase.from('products').select('id, name, category'),
+        profileData?.referral_code ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] }),
+        supabase.from('reviews').select('*').or(`customer_phone.eq.${phone},customer_name.eq.${profileData?.full_name || 'NONE'}`).order('created_at', { ascending: false })
+      ]);
 
-        if (ordersRes.data) setOrders(ordersRes.data as Order[]);
-        if (profileData) setProfile(profileData);
-        if (productsRes.data) setProducts(productsRes.data as ProductInfo[]);
-        if (referralsRes.data) setReferrals(referralsRes.data as { id: number; total_price: number; created_at: string }[]);
-        if (reviewsRes.data) setReviews(reviewsRes.data as { id: string; rating: number; comment: string; created_at: string; is_verified_owner: boolean }[]);
-      } catch (err: unknown) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      if (ordersRes.data) setOrders(ordersRes.data as Order[]);
+      if (profileData) setProfile(profileData);
+      if (productsRes.data) setProducts(productsRes.data as ProductInfo[]);
+      if (referralsRes.data) setReferrals(referralsRes.data as { id: number; total_price: number; created_at: string }[]);
+      if (reviewsRes.data) setReviews(reviewsRes.data as { id: string; rating: number; comment: string; created_at: string; is_verified_owner: boolean }[]);
+    } catch (err: unknown) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    loadData();
   }, [phone]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const stats = useMemo(() => {
     const delivered = orders.filter(o => o.status === 'Delivered');
@@ -151,8 +152,8 @@ export default function CustomerIntelligence() {
         tierColor = "text-primary bg-primary/10 border-primary/20";
     }
 
-    return { totalSpend, avgOrder, risk, riskColor, favCat, tier, TierIcon, tierColor, age };
-  }, [orders, products, profile]);
+    return { totalSpend, avgOrder, risk, riskColor, favCat, tier, TierIcon, tierColor, age, referralCount: referrals.length };
+  }, [orders, products, profile, referrals]);
 
   if (loading) {
     return (

@@ -212,28 +212,28 @@ export default function AdminBroadcastPage() {
 
                 <div className="lg:col-span-4 space-y-8">
                     {/* Marketing Reach Summary */}
-                    <Card className="p-10 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
+                    <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group">
                         <div className="relative z-10">
                             <Zap className="h-8 w-8 mb-8 text-primary animate-pulse" />
-                            <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-6">Audience Intel</h3>
+                            <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-6 text-foreground">Audience Intel</h3>
                             <div className="space-y-6">
-                                <div className="flex justify-between items-center py-4 border-b border-background/10">
-                                    <span className="text-[10px] font-black uppercase text-background/50">Tactical Reach</span>
-                                    <span className="text-4xl font-black text-background tracking-tighter leading-none">{subscribers.length}</span>
+                                <div className="flex justify-between items-center py-4 border-b border-slate-50">
+                                    <span className="text-[10px] font-black uppercase text-slate-400">Tactical Reach</span>
+                                    <span className="text-4xl font-black text-foreground tracking-tighter leading-none">{subscribers.length}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 rounded-2xl bg-background/5 border border-background/10">
-                                        <p className="text-[8px] font-black uppercase text-background/50 mb-1">Open Rate</p>
-                                        <p className="text-xl font-black text-background tracking-tighter">72.4%</p>
+                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                        <p className="text-[8px] font-black uppercase text-slate-400 mb-1">Open Rate</p>
+                                        <p className="text-xl font-black text-foreground tracking-tighter">72.4%</p>
                                     </div>
-                                    <div className="p-4 rounded-2xl bg-background/5 border border-background/10">
-                                        <p className="text-[8px] font-black uppercase text-background/50 mb-1">CTR</p>
-                                        <p className="text-xl font-black text-background tracking-tighter">18.9%</p>
+                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                        <p className="text-[8px] font-black uppercase text-slate-400 mb-1">CTR</p>
+                                        <p className="text-xl font-black text-foreground tracking-tighter">18.9%</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
+                        <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
                     </Card>
 
                     {/* Campaign Performance Pulse */}

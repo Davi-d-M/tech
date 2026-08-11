@@ -1,27 +1,25 @@
-# Tasks - Total Integrity & Theme Harmonization 💎⚖️
+# Tasks - UI Consistency & Build Stabilization 🎨🛡️
 
-## Phase 1: Reference Stabilization
-- [x] Fix `ShieldAlert` ReferenceError in Layout.
-- [x] Fix `useMemo` Missing Reference in Reviews.
-- [x] Fix `Vault` Syntax Error (Missing brace).
+## Phase 1: Analytics & Logic Fixes
+- [ ] Fix Analytics `chartData` timezone/date matching.
+- [ ] Refine Analytics X-Axis labels (collision fix).
+- [ ] Include `Paid`/`Dispatched` orders in revenue chart.
 
-## Phase 2: Theme Cleanup (Goodbye Dark Mode)
-- [x] Standardize Dashboard cards to white.
-- [x] Standardize Security Hub cards to white.
-- [x] Standardize Finance Hub cards to white.
-- [x] Standardize Marketing Hub cards to white.
+## Phase 2: Access & Navigation
+- [ ] Update `AuthForm` Admin link to `/admin/login`.
+- [ ] Verify Staff Login visibility.
 
-## Phase 3: Access Logistics
-- [x] Add Rider Terminal link to AuthForm.
-- [x] Add Rider Terminal link to Admin Login.
-- [x] Create dedicated Rider Login page.
-- [x] Restore Staff Login tab in Admin Login.
+## Phase 3: Theme Harmonization (Light Mode)
+- [ ] Standardize Staff Hub cards.
+- [ ] Lighten Broadcast Hub "Audience Intel" card.
+- [ ] Sync Vault Hub icons and theme.
 
-## Phase 4: Data Integrity
-- [x] Connect Apex Intelligence co-pilot to real volume.
-- [x] Connect Marketing KPIs to real campaigns.
-- [x] Calculate real Conv. Rate in Analytics.
+## Phase 4: Build Stability (Lint & Types)
+- [ ] Resolve `profileRes` redeclaration in Customer Details.
+- [ ] Fix missing `Input` in Rider Login.
+- [ ] Fix `Rider` type mismatch in Dispatch.
+- [ ] Clean up unused variables (`cn`, `loading`, etc.).
 
-## Phase 5: Final Check
-- [ ] Run `npm run lint`.
-- [ ] Push to `main`.
+## Phase 5: Verification
+- [ ] Run `npm run build`.
+- [ ] Final UI sanity check.

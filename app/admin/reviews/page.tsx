@@ -281,7 +281,7 @@ export default function AdminReviewHub() {
           <div className="grid gap-8">
               {filteredReviews.map(review => (
                   <div key={review.id} className={cn(
-                      "bg-white rounded-[2.5rem] border p-10 shadow-sm transition-all hover:shadow-xl group relative overflow-hidden",
+                      "bg-white rounded-[3rem] border p-10 shadow-sm transition-all hover:shadow-xl group relative overflow-hidden",
                       review.is_hidden ? "opacity-60 grayscale border-dashed" : "border-slate-100"
                   )}>
                       <div className="flex flex-col lg:flex-row justify-between gap-10">

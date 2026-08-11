@@ -247,14 +247,14 @@ export default function AdminSettingsPage() {
     }
 
     return (
-        <div className="p-8 space-y-10 bg-background min-h-screen text-left selection:bg-primary/20 pb-40">
-            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-border pb-8">
+        <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left selection:bg-primary/20 pb-40">
+            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
                 <div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Brand OS</h1>
                     <p className="text-muted-foreground text-sm font-medium mt-1">Professional Content Management & Storefront Identity Hub.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button onClick={fetchSettings} variant="outline" className="rounded-xl h-12 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest hover:bg-secondary transition-all">
+                    <Button onClick={fetchSettings} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white text-foreground font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all">
                         <RefreshCcw className="h-4 w-4 mr-2" /> Sync Records
                     </Button>
                     <Button
@@ -321,7 +321,7 @@ export default function AdminSettingsPage() {
                     {/* IDENTITY TAB */}
                     {activeTab === 'identity' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
-                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
                                 <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Info className="h-5 w-5 text-primary" /> Core Identity</h2>
                                 <div className="space-y-6">
                                     <div className="grid sm:grid-cols-2 gap-6">
@@ -532,7 +532,7 @@ export default function AdminSettingsPage() {
                     {/* SEO & SOCIAL TAB */}
                     {activeTab === 'seo' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
-                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
                                 <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Globe className="h-5 w-5 text-primary" /> Search Intelligence</h2>
                                 <div className="space-y-6 text-left">
                                     <div className="space-y-2 text-left">
@@ -550,7 +550,7 @@ export default function AdminSettingsPage() {
                                 </div>
                             </Card>
 
-                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
                                 <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Activity className="h-5 w-5 text-primary" /> Social Extraction</h2>
                                 <div className="grid sm:grid-cols-2 gap-6 text-left">
                                     {[
@@ -574,7 +574,7 @@ export default function AdminSettingsPage() {
                     {/* CATALOG TAB */}
                     {activeTab === 'catalog' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
-                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
                                 <div className="flex justify-between items-center text-left">
                                     <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Smartphone className="h-5 w-5 text-primary" /> Category Manager</h2>
                                     <Button onClick={() => setCatalog({ ...catalog, categories: [...catalog.categories, { id: '', label: '' }] })} variant="outline" className="h-10 rounded-xl text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-2" /> New Category</Button>
@@ -703,7 +703,7 @@ export default function AdminSettingsPage() {
                     {/* ADVANCED TAB */}
                     {activeTab === 'advanced' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
-                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 relative overflow-hidden text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 relative overflow-hidden text-left">
                                 <div className="relative z-10 flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><ShieldAlert className="h-6 w-6" /></div>
@@ -780,7 +780,7 @@ export default function AdminSettingsPage() {
                 <div className="lg:col-span-4 space-y-10 text-left">
 
                     {/* STORE PULSE WIDGET */}
-                    <Card className="p-8 rounded-[3rem] bg-card border border-border shadow-sm space-y-8 relative overflow-hidden group text-left">
+                    <Card className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-8 relative overflow-hidden group text-left">
                         <div className="relative z-10 space-y-8 text-left">
                             <div className="flex items-center justify-between text-left">
                                 <h3 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em]">Store Pulse</h3>
@@ -816,7 +816,7 @@ export default function AdminSettingsPage() {
                         <h3 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em] ml-4 flex items-center gap-2 text-left">
                             <Eye className="h-3 w-3" /> Real-time Simulation
                         </h3>
-                        <div className="bg-card rounded-[3rem] border border-border shadow-2xl overflow-hidden group text-left">
+                        <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden group text-left">
                             {/* Mini Header */}
                             <div className="bg-card p-6 border-b border-border flex justify-between items-center text-left">
                                 <div className="flex items-center gap-2 text-left">

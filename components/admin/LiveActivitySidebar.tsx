@@ -35,7 +35,7 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
         const channel = supabase.channel('enterprise-pulse');
 
         channel
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload: any) => {
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload: { new: { customer_name: string; total_price: number } }) => {
                 const newEvent: ActivityEvent = {
                     id: Math.random().toString(),
                     label: `New Order from ${payload.new.customer_name}`,
