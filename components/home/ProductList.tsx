@@ -44,9 +44,9 @@ const CATEGORIES = [
     { id: 'accessories', label: 'Others', icon: Grid2X2 },
 ];
 
-export default function ProductList() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function ProductList({ initialProducts }: { initialProducts?: Product[] }) {
+  const [products, setProducts] = useState<Product[]>(initialProducts || []);
+  const [loading, setLoading] = useState(!initialProducts);
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('newest');
@@ -90,8 +90,10 @@ export default function ProductList() {
       }
     }
 
-    fetchProducts();
-  }, []);
+    if (!initialProducts || initialProducts.length === 0) {
+        fetchProducts();
+    }
+  }, [initialProducts]);
 
   // Listen for Global Search Event & URL Params
   useEffect(() => {

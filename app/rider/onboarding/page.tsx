@@ -9,7 +9,6 @@ import {
     User,
     CreditCard,
     Camera,
-    Upload,
     Truck,
     CheckCircle2,
     Loader2
@@ -21,7 +20,7 @@ import { registerBiometrics } from '@/lib/biometricService';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-type Step = 'welcome' | 'phone' | 'otp' | 'identity' | 'vehicle' | 'verification' | 'biometrics' | 'success';
+type Step = 'welcome' | 'phone' | 'otp' | 'identity' | 'vehicle' | 'verification' | 'biometrics' | 'pending' | 'success';
 
 export default function RiderOnboarding() {
     const [step, setStep] = useState<Step>('welcome');
@@ -75,7 +74,27 @@ export default function RiderOnboarding() {
                     type: 'sms'
                 });
                 if (verifyError) throw verifyError;
-                setStep('identity');
+
+                // CHECK FOR EXISTING RIDER
+                const { data: rider } = await supabase
+                    .from('rider_status')
+                    .select('rider_phone, verification_status, rider_name')
+                    .eq('rider_phone', phone.replace(/^0/, ''))
+                    .maybeSingle();
+
+                if (rider) {
+                    if (rider.verification_status === 'Verified') {
+                        localStorage.setItem('apex_rider_phone', rider.rider_phone);
+                        localStorage.setItem('rider_name', rider.rider_name);
+                        setStep('success'); // Direct to success/dashboard
+                    } else if (rider.verification_status === 'Pending') {
+                        setStep('pending');
+                    } else {
+                        setStep('identity'); // If rejected or other, restart
+                    }
+                } else {
+                    setStep('identity');
+                }
             }
         } catch (err: unknown) {
             setError((err as Error).message || "Verification failed.");
@@ -116,16 +135,17 @@ export default function RiderOnboarding() {
 
             // Upload Rider Photo
             const riderPath = `riders/${phone}-${Date.now()}-selfie`;
-            await supabase.storage.from(BUCKET).upload(riderPath, riderPhoto);
-            const { data: rData } = supabase.storage.from(BUCKET).getPublicUrl(riderPath);
+            const currentSupabase = supabase;
+            await currentSupabase.storage.from(BUCKET).upload(riderPath, riderPhoto);
+            const { data: rData } = currentSupabase.storage.from(BUCKET).getPublicUrl(riderPath);
 
             // Upload Vehicle Photo
             const vehiclePath = `riders/${phone}-${Date.now()}-vehicle`;
-            await supabase.storage.from(BUCKET).upload(vehiclePath, vehiclePhoto);
-            const { data: vData } = supabase.storage.from(BUCKET).getPublicUrl(vehiclePath);
+            await currentSupabase.storage.from(BUCKET).upload(vehiclePath, vehiclePhoto);
+            const { data: vData } = currentSupabase.storage.from(BUCKET).getPublicUrl(vehiclePath);
 
             // Update Rider Status with new info
-            const { error: updateError } = await supabase
+            const { error: updateError } = await currentSupabase
                 .from('rider_status')
                 .upsert({
                     rider_phone: phone,
@@ -316,6 +336,23 @@ export default function RiderOnboarding() {
                                     </Button>
                                     <Button variant="ghost" onClick={() => setStep('success')} className="w-full text-slate-400 font-black uppercase text-[10px]">Maybe Later</Button>
                                 </div>
+                            </div>
+                        )}
+
+                        {step === 'pending' && (
+                            <div className="space-y-8 text-center animate-in zoom-in-95 duration-700">
+                                <div className="h-24 w-24 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 mx-auto shadow-inner animate-pulse">
+                                    <ShieldCheck className="h-12 w-12" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h2 className="text-2xl font-black text-foreground uppercase">Under Review</h2>
+                                    <p className="text-sm text-slate-500 font-medium italic">&quot;Your unit credentials have been logged. We are currently verifying your data. Please check back in a few hours.&quot;</p>
+                                </div>
+                                <Link href="/" className="block">
+                                    <Button variant="outline" className="w-full h-16 rounded-2xl font-black uppercase text-[10px] border-slate-100">
+                                        Back to Store
+                                    </Button>
+                                </Link>
                             </div>
                         )}
 

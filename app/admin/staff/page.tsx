@@ -250,7 +250,7 @@ export default function AdminStaffPage() {
                       <p className="text-muted-foreground text-xs font-bold uppercase italic">Awaiting competition data...</p>
                   ) : (
                       leaderboard.slice(0, 4).map((member, i) => (
-                          <div key={member.id} className="bg-secondary border border-border rounded-[2rem] p-6 flex items-center gap-4 group/card hover:bg-card hover:shadow-xl transition-all hover:border-primary/10 h-full">
+                          <div key={member.id} className="bg-slate-50 border border-slate-200 rounded-[2rem] p-6 flex items-center gap-4 group/card hover:bg-white hover:shadow-xl transition-all hover:border-primary/10 h-full">
                               <div className="relative shrink-0">
                                   <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center text-background font-black text-xs uppercase shadow-xl shadow-primary/20 transition-transform group-hover:scale-110">
                                       {member.email.substring(0, 2).toUpperCase()}
@@ -299,7 +299,7 @@ export default function AdminStaffPage() {
                       <div className="space-y-2">
                           <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Email Address</label>
                           <div className="relative">
-                              <Input value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="staff@apexstores.com" className="rounded-2xl h-14 bg-secondary border-border pl-12 text-sm font-bold text-foreground" required />
+                              <Input value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="staff@apexstores.com" className="rounded-2xl h-14 bg-slate-50 border-slate-200 pl-12 text-sm font-bold text-foreground" required />
                               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                           </div>
                       </div>
@@ -310,7 +310,7 @@ export default function AdminStaffPage() {
                             <select
                                 value={newRole}
                                 onChange={e => setNewRole(e.target.value as 'owner' | 'super_admin' | 'admin' | 'finance' | 'operations' | 'support' | 'staff' | 'viewer')}
-                                className="w-full h-14 px-4 rounded-2xl border border-border bg-secondary text-xs font-black uppercase outline-none text-foreground"
+                                className="w-full h-14 px-4 rounded-2xl border border-slate-200 bg-slate-50 text-xs font-black uppercase outline-none text-foreground"
                             >
                                 <option value="staff">Staff</option>
                                 <option value="super_admin">Super Admin</option>
@@ -327,7 +327,7 @@ export default function AdminStaffPage() {
                                 value={newPin}
                                 onChange={e => setNewPin(e.target.value.replace(/\D/g, ''))}
                                 placeholder="1234"
-                                className="rounded-2xl h-14 bg-secondary border-border text-sm font-bold text-foreground"
+                                className="rounded-2xl h-14 bg-slate-50 border-slate-200 text-sm font-bold text-foreground"
                             />
                         </div>
                       </div>
@@ -396,7 +396,7 @@ export default function AdminStaffPage() {
                       <div className="overflow-x-auto">
                           <table className="w-full text-left">
                               <thead>
-                                  <tr className="bg-secondary text-muted-foreground font-black uppercase text-[9px] tracking-[0.2em]">
+                                  <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
                                       <th className="px-8 py-6">Identity</th>
                                       <th className="px-8 py-6">PIN</th>
                                       <th className="px-8 py-6">Permissions</th>

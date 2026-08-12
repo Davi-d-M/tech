@@ -1,21 +1,28 @@
 import { supabase } from '@/lib/supabaseClient';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
+interface Product {
+  id: number;
+  name: string;
+  description: string | null;
+  image_url: string;
+  stock: number;
+  price: number;
+  brand?: string | null;
+}
+
 export async function GET() {
-  if (!supabase) {
-    return new NextResponse('Supabase not configured', { status: 500 });
-  }
-
-  const { data: products, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('hide_product', false);
-
-  if (error) {
-    return new NextResponse('Error fetching products', { status: 500 });
-  }
-
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com';
+
+  let products: Product[] = [];
+  if (supabase) {
+    const { data } = await supabase
+        .from('products')
+        .select('id, name, description, image_url, stock, price, brand');
+    products = (data || []) as Product[];
+  }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">

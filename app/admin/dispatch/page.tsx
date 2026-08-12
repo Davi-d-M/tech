@@ -97,7 +97,16 @@ export default function AdminDispatchPage() {
 
             const { data: ordersData } = await supabase.from('orders').select('*').neq('status', 'Delivered');
 
-            setRiders((ridersData as unknown as Rider[]) || []);
+            // Handle wallet array from Supabase join and align with Rider interface
+            const processedRiders = (ridersData || []).map((r) => {
+                const rider = r as Rider & { wallet?: { balance: number; total_earned: number } | { balance: number; total_earned: number }[] };
+                return {
+                    ...rider,
+                    wallet: Array.isArray(rider.wallet) ? rider.wallet[0] : rider.wallet
+                };
+            });
+
+            setRiders(processedRiders as Rider[]);
             setOrders(ordersData || []);
         } catch {
             console.error("Pipeline link unstable.");
@@ -169,6 +178,23 @@ export default function AdminDispatchPage() {
             setTimeout(() => setMessage(null), 5000);
         } finally {
             setAssigning(null);
+        }
+    };
+
+    const handleVerifyRider = async (phone: string) => {
+        if (!supabase) return;
+        try {
+            const { error } = await supabase
+                .from('rider_status')
+                .update({ verification_status: 'Verified' })
+                .eq('rider_phone', phone);
+
+            if (error) throw error;
+            setRiders(prev => prev.map(r => r.rider_phone === phone ? { ...r, verification_status: 'Verified' } : r));
+            setMessage({ type: 'success', text: "Unit Authorized for Missions. ✅" });
+            setTimeout(() => setMessage(null), 3000);
+        } catch {
+            setMessage({ type: 'error', text: "Authorization Failed." });
         }
     };
 
@@ -319,6 +345,11 @@ export default function AdminDispatchPage() {
                                         rider.status === 'Offline' && "opacity-60"
                                     )}
                                 >
+                                    {rider.verification_status === 'Pending' && (
+                                        <div className="absolute top-0 right-0 left-0 bg-primary/10 py-2 text-center border-b border-primary/20 animate-pulse">
+                                            <span className="text-[7px] font-black uppercase text-primary tracking-widest">Awaiting Verification</span>
+                                        </div>
+                                    )}
                                     <div className="relative z-10 space-y-6">
                                         <div className="flex justify-between items-start">
                                             <div className="flex items-center gap-4">
@@ -345,6 +376,15 @@ export default function AdminDispatchPage() {
                                                 <p className="text-xl font-black text-foreground">{rider.rating}</p>
                                             </div>
                                         </div>
+
+                                        {rider.verification_status === 'Pending' && (
+                                            <Button
+                                                onClick={(e) => { e.stopPropagation(); handleVerifyRider(rider.rider_phone); }}
+                                                className="w-full h-10 rounded-xl bg-primary text-white font-black uppercase text-[8px] tracking-widest shadow-lg shadow-primary/20"
+                                            >
+                                                Approve Unit
+                                            </Button>
+                                        )}
                                     </div>
                                 </Card>
                             ))}
@@ -357,6 +397,28 @@ export default function AdminDispatchPage() {
                         <div className="flex items-center gap-3">
                             <Trophy className="h-6 w-6 text-amber-500" />
                             <h3 className="text-xl font-black uppercase tracking-tighter text-foreground">Logistics Legends</h3>
+                        </div>
+                        <div className="space-y-6">
+                            {riders.sort((a, b) => b.total_deliveries - a.total_deliveries).slice(0, 3).map((rider, i) => (
+                                <div key={rider.id} className="flex items-center justify-between p-4 rounded-2xl bg-secondary/50 border border-border group hover:bg-white hover:shadow-xl transition-all">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-xs">
+                                            {i + 1}
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] font-black uppercase text-foreground">{rider.rider_name}</p>
+                                            <p className="text-[8px] font-bold text-slate-400 uppercase">{rider.area_zone}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-black text-primary">{rider.total_deliveries}</p>
+                                        <p className="text-[7px] font-black uppercase text-slate-300">Drops</p>
+                                    </div>
+                                </div>
+                            ))}
+                            {riders.length === 0 && (
+                                <p className="text-[10px] font-black text-slate-400 uppercase italic text-center">Awaiting competition data...</p>
+                            )}
                         </div>
                     </Card>
                 </div>
@@ -463,7 +525,13 @@ export default function AdminDispatchPage() {
                                         </div>
                                     </div>
 
-                                    <Button className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest relative z-10 shadow-xl shadow-primary/20">
+                                    <Button
+                                        onClick={() => {
+                                            // Real-time redirection to maps if coordinates exist
+                                            window.open(`https://www.google.com/maps/search/?api=1&query=${selectedRider.current_location || 'Nairobi'}`, '_blank');
+                                        }}
+                                        className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest relative z-10 shadow-xl shadow-primary/20"
+                                    >
                                         View Flight Path
                                     </Button>
 

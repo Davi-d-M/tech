@@ -12,7 +12,8 @@ import {
     Search,
     Download,
     Trash2,
-    MoreVertical
+    MoreVertical,
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,25 +27,89 @@ interface Document {
     size: string;
     created_at: string;
     authorized_by: string;
+    storage_path?: string;
 }
 
 export default function DocumentVault() {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [documents, setDocuments] = React.useState<Document[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [uploading, setUploading] = React.useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const fetchDocs = React.useCallback(async () => {
+        if (!supabase) return;
+        setLoading(true);
+        try {
+            const { data, error } = await supabase.from('admin_vault').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            setDocuments(data || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     React.useEffect(() => {
-        async function fetchDocs() {
-            if (!supabase) return;
-            try {
-                const { data, error } = await supabase.from('admin_vault').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                setDocuments(data || []);
-            } catch (err) {
-                console.error(err);
-            }
-        }
         fetchDocs();
-    }, []);
+    }, [fetchDocs]);
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files?.[0] || !supabase) return;
+        setUploading(true);
+        try {
+            const file = e.target.files[0];
+            const BUCKET = 'admin-vault';
+            const path = `docs/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+
+            const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, file);
+            if (uploadError) throw uploadError;
+
+            await supabase.from('admin_vault').insert([{
+                name: file.name,
+                type: 'Contract', // Default type
+                size: (file.size / 1024 / 1024).toFixed(1) + ' MB',
+                authorized_by: 'Admin Hub',
+                storage_path: path
+            }]);
+
+            fetchDocs();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const deleteDoc = async (id: string, path?: string) => {
+        if (!supabase || !confirm("Delete this document?")) return;
+        try {
+            if (path) {
+                await supabase.storage.from('admin-vault').remove([path]);
+            }
+            const { error } = await supabase.from('admin_vault').delete().eq('id', id);
+            if (error) throw error;
+            setDocuments(prev => prev.filter(d => d.id !== id));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const downloadDoc = async (path?: string, name?: string) => {
+        if (!supabase || !path) return;
+        try {
+            const { data, error } = await supabase.storage.from('admin-vault').download(path);
+            if (error) throw error;
+            const url = window.URL.createObjectURL(data);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = name || 'document';
+            a.click();
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     return (
         <div className="p-8 space-y-10 bg-background min-h-screen text-left">
@@ -58,12 +123,20 @@ export default function DocumentVault() {
                     <p className="text-muted-foreground text-sm font-medium mt-1">Centralized document management with immutable audit trails.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="rounded-xl h-12 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest transition-all">
-                        <RefreshCcw className="h-4 w-4 mr-2" /> Sync Vault
+                    <Button onClick={fetchDocs} disabled={loading} variant="outline" className="rounded-xl h-12 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest transition-all">
+                        <RefreshCcw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} /> Sync Vault
                     </Button>
-                    <Button className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all">
-                        <Plus className="h-4 w-4 mr-2" /> Secure Upload
-                    </Button>
+                    <div className="relative">
+                        <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
+                        <Button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                            className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all"
+                        >
+                            {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
+                            Secure Upload
+                        </Button>
+                    </div>
                 </div>
             </header>
 
@@ -99,14 +172,14 @@ export default function DocumentVault() {
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
                             placeholder="Find document by ID or name..."
-                            className="h-14 rounded-2xl bg-secondary border-border pl-12 text-sm font-bold shadow-inner"
+                            className="h-14 rounded-2xl bg-slate-50 border-slate-200 pl-12 text-sm font-bold shadow-inner"
                         />
                     </div>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-secondary text-muted-foreground font-black uppercase text-[9px] tracking-[0.2em]">
+                            <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
                                 <th className="px-10 py-6">Document Identity</th>
                                 <th className="px-10 py-6">Type</th>
                                 <th className="px-10 py-6 text-center">Size</th>
@@ -143,10 +216,20 @@ export default function DocumentVault() {
                                     </td>
                                     <td className="px-10 py-8 text-right">
                                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white hover:text-primary transition-all shadow-sm">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-10 w-10 rounded-xl hover:bg-white hover:text-primary transition-all shadow-sm"
+                                                onClick={() => downloadDoc(doc.storage_path, doc.name)}
+                                            >
                                                 <Download className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-white hover:text-rose-500 transition-all shadow-sm">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-10 w-10 rounded-xl hover:bg-white hover:text-rose-50 transition-all shadow-sm"
+                                                onClick={() => deleteDoc(doc.id, doc.storage_path)}
+                                            >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                             <Button size="icon" className="h-10 w-10 rounded-xl bg-primary text-white hover:scale-105 transition-all shadow-lg shadow-primary/20">

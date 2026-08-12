@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
         if (authHeader) {
             const token = authHeader.replace('Bearer ', '');
-            const { data: { user }, error: authError } = await supabase!.auth.getUser(token);
+            const { data: { user }, error: authError } = await supabase.auth.getUser(token);
             if (!authError && user) {
                 userId = user.id; // Override with verified UID
             } else if (authError) {
@@ -47,7 +47,8 @@ export async function POST(request: Request) {
 }
 
 async function handleUpdateStreak(userId: string) {
-    const { data: profile, error: fetchError } = await supabase!
+    if (!supabase) throw new Error("DB not connected");
+    const { data: profile, error: fetchError } = await supabase
         .from('profiles')
         .select('current_streak, last_streak_update')
         .eq('id', userId)
@@ -71,7 +72,7 @@ async function handleUpdateStreak(userId: string) {
         }
     }
 
-    const { error: updateError } = await supabase!
+    const { error: updateError } = await supabase
         .from('profiles')
         .update({
             current_streak: newStreak,
@@ -85,7 +86,8 @@ async function handleUpdateStreak(userId: string) {
 }
 
 async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
-    const { data: lastClaim } = await supabase!
+    if (!supabase) throw new Error("DB not connected");
+    const { data: lastClaim } = await supabase
         .from('daily_rewards_log')
         .select('created_at')
         .eq('user_id', userId)
@@ -114,7 +116,7 @@ async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
     ];
     const prize = rewards[Math.floor(Math.random() * rewards.length)];
 
-    const { error: logError } = await supabase!
+    const { error: logError } = await supabase
         .from('daily_rewards_log')
         .insert([{
             user_id: userId,
@@ -126,16 +128,17 @@ async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
     if (logError) throw logError;
 
     if (prize.type === 'xp') {
-        const { data: profile } = await supabase!.from('profiles').select('loyalty_points').eq('id', userId).single();
-        await supabase!.from('profiles').update({ loyalty_points: (profile?.loyalty_points || 0) + prize.amount }).eq('id', userId);
-        await supabase!.from('loyalty_ledger').insert([{ profile_id: userId, amount: prize.amount, description: `Daily ${type} reward: ${prize.label}` }]);
+        const { data: profile } = await supabase.from('profiles').select('loyalty_points').eq('id', userId).single();
+        await supabase.from('profiles').update({ loyalty_points: (profile?.loyalty_points || 0) + prize.amount }).eq('id', userId);
+        await supabase.from('loyalty_ledger').insert([{ profile_id: userId, amount: prize.amount, description: `Daily ${type} reward: ${prize.label}` }]);
     }
 
     return NextResponse.json({ ok: true, prize });
 }
 
 async function handleUpdateMissionProgress(userId: string, type: string, increment: number) {
-    const { data: mission } = await supabase!
+    if (!supabase) throw new Error("DB not connected");
+    const { data: mission } = await supabase
         .from('user_missions')
         .select('*')
         .eq('user_id', userId)
@@ -161,7 +164,7 @@ async function handleUpdateMissionProgress(userId: string, type: string, increme
         completed = true;
     }
 
-    const { error } = await supabase!
+    const { error } = await supabase
         .from('user_missions')
         .upsert({
             user_id: userId,
@@ -183,20 +186,21 @@ async function handleUpdateMissionProgress(userId: string, type: string, increme
             'share-product': 25,
         };
         const xp = xpMap[type] || 0;
-        const { data: profile } = await supabase!.from('profiles').select('loyalty_points').eq('id', userId).single();
-        await supabase!.from('profiles').update({ loyalty_points: (profile?.loyalty_points || 0) + xp }).eq('id', userId);
-        await supabase!.from('loyalty_ledger').insert([{ profile_id: userId, amount: xp, description: `Completed mission: ${type}` }]);
+        const { data: profile } = await supabase.from('profiles').select('loyalty_points').eq('id', userId).single();
+        await supabase.from('profiles').update({ loyalty_points: (profile?.loyalty_points || 0) + xp }).eq('id', userId);
+        await supabase.from('loyalty_ledger').insert([{ profile_id: userId, amount: xp, description: `Completed mission: ${type}` }]);
     }
 
     return NextResponse.json({ ok: true, progress: newProgress, completed });
 }
 
 async function handleSyncAllStats(userId: string) {
+    if (!supabase) throw new Error("DB not connected");
     // 1. Recalculate Commissions from Orders
-    const { data: profile } = await supabase!.from('profiles').select('referral_code').eq('id', userId).single();
+    const { data: profile } = await supabase.from('profiles').select('referral_code').eq('id', userId).single();
     if (!profile?.referral_code) return NextResponse.json({ ok: false, error: "No referral code" });
 
-    const { data: orders } = await supabase!
+    const { data: orders } = await supabase
         .from('orders')
         .select('total_price')
         .eq('referred_by_code', profile.referral_code)
@@ -205,7 +209,7 @@ async function handleSyncAllStats(userId: string) {
     const totalCom = (orders || []).reduce((sum, o) => sum + (o.total_price * 0.05), 0);
 
     // 2. Update Profile
-    await supabase!
+    await supabase
         .from('profiles')
         .update({ total_commission_earned: Math.round(totalCom) })
         .eq('id', userId);

@@ -27,6 +27,12 @@ interface Product {
   order_count?: number;
 }
 
+declare global {
+  interface Window {
+    fbq?: (action: string, eventName: string, params?: Record<string, unknown>) => void;
+  }
+}
+
 export default function ProductCard({ product }: { product: Product }) {
   const [imageError, setImageError] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -166,6 +172,17 @@ export default function ProductCard({ product }: { product: Product }) {
                 e.preventDefault();
                 e.stopPropagation();
                 setShowQuickView(true);
+
+                // Meta Tracking: ViewContent
+                if (typeof window !== 'undefined' && window.fbq) {
+                    window.fbq('track', 'ViewContent', {
+                        content_name: product.name,
+                        content_ids: [product.id],
+                        content_type: 'product',
+                        value: product.price,
+                        currency: 'KES'
+                    });
+                }
               }}
             >
               <Eye className="h-4 w-4 mr-2" />

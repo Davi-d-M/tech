@@ -39,9 +39,9 @@ export default function AdminAnalyticsPage() {
     const [timeframe, setTimeframe] = React.useState<'7d' | '30d' | '90d' | 'YTD'>('30d');
     const [loading, setLoading] = React.useState(true);
     const [products, setProducts] = React.useState<{ category: string | null }[]>([]);
-    const [orders, setOrders] = React.useState<{ id: number; total_price: number; created_at: string; status: string; customer_phone: string; referred_by_code?: string | null }[]>([]);
-
+    const [orders, setOrders] = React.useState<{ id: number; total_price: number; unit_cost?: number; created_at: string; status: string; customer_phone: string; referred_by_code?: string | null }[]>([]);
     const [affiliateSales, setAffiliateSales] = React.useState(0);
+    const [isExploded, setIsExploded] = React.useState(false);
 
     React.useEffect(() => {
         async function fetchData() {
@@ -81,13 +81,19 @@ export default function AdminAnalyticsPage() {
         const days = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : 90;
         const now = new Date();
 
+        // Pre-process orders to have local date strings for faster matching
+        const ordersWithLocalDate = orders.map(o => ({
+            ...o,
+            localDateStr: new Date(o.created_at).toLocaleDateString('en-CA')
+        }));
+
         return Array.from({ length: days }).map((_, i) => {
             const date = new Date();
             date.setDate(now.getDate() - (days - i - 1));
-            const dateStr = date.toISOString().split('T')[0];
+            const dateStr = date.toLocaleDateString('en-CA');
 
-            const dayOrders = orders.filter(o =>
-                o.created_at?.startsWith(dateStr) &&
+            const dayOrders = ordersWithLocalDate.filter(o =>
+                o.localDateStr === dateStr &&
                 ['Delivered', 'Paid', 'Dispatched'].includes(o.status)
             );
 
@@ -107,20 +113,48 @@ export default function AdminAnalyticsPage() {
         const totalRevenue = delivered.reduce((s, o) => s + (o.total_price || 0), 0);
         const convRate = orders.length > 0 ? (delivered.length / orders.length) * 100 : 0;
 
-        // Calculate 30d revenue
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        // Dynamic Trend Calculation
+        const calculateTrend = (current: number, previous: number) => {
+            if (previous === 0) return '+0.0%';
+            const change = ((current - previous) / previous) * 100;
+            return (change >= 0 ? '+' : '') + change.toFixed(1) + '%';
+        };
+
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+
         const rev30d = orders
             .filter(o => o.status === 'Delivered' && new Date(o.created_at) > thirtyDaysAgo)
             .reduce((s, o) => s + (o.total_price || 0), 0);
 
+        const revPrev30d = orders
+            .filter(o => o.status === 'Delivered' && new Date(o.created_at) > sixtyDaysAgo && new Date(o.created_at) <= thirtyDaysAgo)
+            .reduce((s, o) => s + (o.total_price || 0), 0);
+
+        const margin = totalRevenue > 0
+            ? ((totalRevenue - delivered.reduce((s, o) => s + (o.unit_cost || 0), 0)) / totalRevenue) * 100
+            : 0;
+
         return [
-            { label: 'Revenue (30d)', val: formatPrice(rev30d), trend: '+18.3%', color: 'primary' },
-            { label: 'Net Margin', val: '30.0%', trend: '+2.1%', color: 'emerald' },
-            { label: 'Cust. LTV', val: formatPrice(totalRevenue / (new Set(orders.map(o => o.customer_phone)).size || 1)), trend: '+4.5%', color: 'indigo' },
-            { label: 'Conv. Rate', val: `${convRate.toFixed(1)}%`, trend: '-0.2%', color: 'amber' },
+            { label: 'Revenue (30d)', val: formatPrice(rev30d), trend: calculateTrend(rev30d, revPrev30d), color: 'primary' },
+            { label: 'Net Margin', val: `${margin.toFixed(1)}%`, trend: '+0.0%', color: 'emerald' },
+            { label: 'Cust. LTV', val: formatPrice(totalRevenue / (new Set(orders.map(o => o.customer_phone)).size || 1)), trend: '+0.0%', color: 'indigo' },
+            { label: 'Conv. Rate', val: `${convRate.toFixed(1)}%`, trend: '-0.0%', color: 'amber' },
         ];
     }, [orders]);
+
+    const handleDownloadReport = () => {
+        const headers = ['Day', 'Revenue', 'Profit', 'Units'];
+        const rows = chartData.map(d => [d.name, d.revenue, d.profit, d.users]);
+        const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("download", `Apex_Analytics_Report_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     if (loading) return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-background">
@@ -155,7 +189,11 @@ export default function AdminAnalyticsPage() {
                                 </button>
                         ))}
                     </div>
-                    <Button variant="outline" className="rounded-xl h-11 px-6 border-border bg-card font-black uppercase text-[9px] tracking-widest hover:bg-secondary">
+                    <Button
+                        onClick={handleDownloadReport}
+                        variant="outline"
+                        className="rounded-xl h-11 px-6 border-border bg-card font-black uppercase text-[9px] tracking-widest hover:bg-secondary"
+                    >
                         <Download className="h-3.5 w-3.5 mr-2" /> Report
                     </Button>
                 </div>
@@ -199,9 +237,15 @@ export default function AdminAnalyticsPage() {
                                 <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Revenue Dynamics</h2>
                                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-2">Cash Flow vs Profit extraction</p>
                             </div>
-                            <Button variant="ghost" className="text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5">Exploded View &rarr;</Button>
+                            <Button
+                                variant="ghost"
+                                onClick={() => setIsExploded(!isExploded)}
+                                className="text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5"
+                            >
+                                {isExploded ? '← Collapse View' : 'Exploded View →'}
+                            </Button>
                         </div>
-                        <div className="h-80 w-full">
+                        <div className={cn("h-80 w-full transition-all duration-700", isExploded ? "h-[600px]" : "h-80")}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={chartData}>
                                     <defs>
@@ -299,29 +343,29 @@ export default function AdminAnalyticsPage() {
                             <div className="space-y-8">
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-background/50">
-                                        <span>Fulfillment Time</span>
-                                        <span className="text-primary">1.2h</span>
+                                        <span>Success Rate</span>
+                                        <span className="text-primary">{((orders.filter(o => o.status === 'Delivered').length / (orders.length || 1)) * 100).toFixed(1)}%</span>
                                     </div>
                                     <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
-                                        <div className="h-full bg-primary w-[85%]"></div>
+                                        <div className="h-full bg-primary" style={{ width: `${(orders.filter(o => o.status === 'Delivered').length / (orders.length || 1)) * 100}%` }}></div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-background/50">
-                                        <span>Delivery Time (NBO)</span>
-                                        <span className="text-emerald-500">42m</span>
+                                        <span>Affiliate Share</span>
+                                        <span className="text-emerald-500">{((affiliateSales / (orders.filter(o => o.status === 'Delivered').reduce((s,o) => s+(o.total_price||0), 0) || 1)) * 100).toFixed(1)}%</span>
                                     </div>
                                     <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
-                                        <div className="h-full bg-emerald-500 w-[92%]"></div>
+                                        <div className="h-full bg-emerald-500" style={{ width: `${(affiliateSales / (orders.filter(o => o.status === 'Delivered').reduce((s,o) => s+(o.total_price||0), 0) || 1)) * 100}%` }}></div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-background/50">
                                         <span>Cancellation Rate</span>
-                                        <span className="text-rose-500">0.8%</span>
+                                        <span className="text-rose-500">{((orders.filter(o => o.status === 'Cancelled').length / (orders.length || 1)) * 100).toFixed(1)}%</span>
                                     </div>
                                     <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
-                                        <div className="h-full bg-rose-500 w-[12%]"></div>
+                                        <div className="h-full bg-rose-500" style={{ width: `${(orders.filter(o => o.status === 'Cancelled').length / (orders.length || 1)) * 100}%` }}></div>
                                     </div>
                                 </div>
                             </div>

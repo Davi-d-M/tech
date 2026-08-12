@@ -76,7 +76,7 @@ export default function TodayCommandCenter() {
         {
             label: 'Support Tickets',
             val: stats.support_tickets,
-            href: '/admin/reviews', // Or wherever messages are handled
+            href: '/admin/messages',
             icon: MessageSquare,
             color: 'indigo',
             status: 'ACTIVE'

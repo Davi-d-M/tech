@@ -335,6 +335,7 @@ function UploadContent() {
       const BUCKET = 'apexstores-assets';
 
       if (selectedVideo) {
+          if (!supabase) throw new Error("Database not connected");
           const path = `videos/${Date.now()}-${selectedVideo.name}`;
           await supabase.storage.from(BUCKET).upload(path, selectedVideo);
           const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
@@ -342,9 +343,9 @@ function UploadContent() {
       }
 
       if (selectedFiles.length > 0 && supabase) {
+          const client = supabase;
           const uploads = selectedFiles.map(async f => {
               const path = `products/${Date.now()}-${f.name}`;
-              const client = supabase!;
               await client.storage.from(BUCKET).upload(path, f);
               return client.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
           });

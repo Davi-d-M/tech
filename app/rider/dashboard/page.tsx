@@ -102,9 +102,14 @@ function RiderDashboardContent() {
 
             const { data: orders } = await supabase.from('orders').select('*').eq('rider_phone', riderPhone.trim()).order('created_at', { ascending: false });
 
+            // AUTO-SELECT ACTIVE MISSION
+            const currentMissions = (orders as Mission[]) || [];
+            const dispatched = currentMissions.find(m => m.status === 'Dispatched');
+            if (dispatched) setActiveMission(dispatched);
+
             localStorage.setItem('apex_rider_phone', riderPhone);
             localStorage.setItem('apex_rider_pin', riderPin);
-            setMissions((orders as Mission[]) || []);
+            setMissions(currentMissions);
             setIsIdentified(true);
             setIsOnline(rider.status !== 'Offline');
         } catch {
@@ -126,19 +131,77 @@ function RiderDashboardContent() {
     };
 
     const handleToggleOnline = async () => {
-        if (!supabase) return;
+        if (!supabase || !phone) return;
+        setLoading(true);
         const newStatus = isOnline ? 'Offline' : 'Idle';
-        const { error } = await supabase.from('rider_status').update({ status: newStatus, online_since: isOnline ? null : new Date().toISOString() }).eq('rider_phone', phone);
-        if (!error) setIsOnline(!isOnline);
+
+        try {
+            const { error } = await supabase
+                .from('rider_status')
+                .update({
+                    status: newStatus,
+                    online_since: isOnline ? null : new Date().toISOString()
+                })
+                .eq('rider_phone', phone);
+
+            if (!error) {
+                setIsOnline(!isOnline);
+                // Also update local session status
+                localStorage.setItem('apex_rider_status', newStatus);
+            } else {
+                throw error;
+            }
+        } catch (err) {
+            console.error("Status Sync Error:", err);
+            setAuthError("Failed to update status on grid.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleCompleteMission = async (orderId: number) => {
-        if (!supabase) return;
-        const { error } = await supabase.from('orders').update({ status: 'Delivered' }).eq('id', orderId);
-        if (!error) {
+        if (!supabase || !phone) return;
+        setLoading(true);
+        try {
+            // 1. Update Order Status
+            const { error: orderError } = await supabase
+                .from('orders')
+                .update({ status: 'Delivered', updated_at: new Date().toISOString() })
+                .eq('id', orderId);
+
+            if (orderError) throw orderError;
+
+            // 2. Calculate Commission (Standard 430 per drop)
+            const commission = 430;
+
+            // 3. Update Wallet Balance
+            const { error: walletError } = await supabase.rpc('credit_rider_wallet', {
+                phone_input: phone,
+                amount_input: commission
+            });
+
+            // Fallback if RPC doesn't exist yet: Direct Update (Less Secure)
+            if (walletError) {
+                const { data: wallet } = await supabase.from('rider_wallets').select('balance, total_earned').eq('rider_phone', phone).single();
+                if (wallet) {
+                    await supabase.from('rider_wallets').update({
+                        balance: (wallet.balance || 0) + commission,
+                        total_earned: (wallet.total_earned || 0) + commission,
+                        updated_at: new Date().toISOString()
+                    }).eq('rider_phone', phone);
+                }
+            }
+
+            // 4. UI Update
             setMissions(prev => prev.map(m => m.id === orderId ? { ...m, status: 'Delivered' } : m));
             setActiveMission(null);
-            setWallet(prev => ({ ...prev, balance: prev.balance + 430, total_earned: prev.total_earned + 430 }));
+            setWallet(prev => ({ ...prev, balance: prev.balance + commission, total_earned: prev.total_earned + commission }));
+
+        } catch (err) {
+            console.error("Mission Finalization Error:", err);
+            setAuthError("Mission verify failed. Grid update pending.");
+        } finally {
+            setLoading(false);
         }
     };
 

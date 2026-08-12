@@ -9,6 +9,7 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
+  preload: false, // Fix for "Failed to fetch Inter" in restricted network build envs
 });
 
 export const metadata: Metadata = {
@@ -53,12 +54,22 @@ export const metadata: Metadata = {
 
 import PublicLayoutShield from "@/components/layout/PublicLayoutShield";
 import JsonLd from "@/components/seo/JsonLd";
+import { supabase } from "@/lib/supabaseClient";
+import { type StoreSettings } from "@/lib/useSettings";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch settings on server for all pages
+  const { data: settingsRes } = await (supabase?.from('settings').select('*') || Promise.resolve({ data: [] }));
+  const settings = {} as StoreSettings;
+  (settingsRes || []).forEach(item => {
+      const key = item.key as keyof StoreSettings;
+      (settings as unknown as Record<string, unknown>)[key] = item.value;
+  });
+
   return (
     <html lang="en">
       <body
@@ -83,9 +94,25 @@ export default function RootLayout({
             </Script>
         )}
 
+        {/* Meta Pixel Protocol */}
+        <Script id="fb-pixel" strategy="afterInteractive">
+            {`
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID || 'YOUR_PIXEL_ID'}');
+                fbq('track', 'PageView');
+            `}
+        </Script>
+
         <CartProvider>
           <WishlistProvider>
-            <PublicLayoutShield>
+            <PublicLayoutShield initialSettings={settings}>
                 {children}
             </PublicLayoutShield>
           </WishlistProvider>

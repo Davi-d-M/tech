@@ -40,6 +40,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
+    // Meta Tracking
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'AddToCart', {
+            content_name: item.name,
+            content_ids: [item.id],
+            content_type: 'product',
+            value: item.price,
+            currency: 'KES'
+        });
+    }
+
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
 

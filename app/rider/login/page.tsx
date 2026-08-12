@@ -35,7 +35,8 @@ export default function RiderLogin() {
             }
 
             // Save rider session (client-side for now)
-            localStorage.setItem('rider_phone', phone);
+            localStorage.setItem('apex_rider_phone', phone);
+            localStorage.setItem('apex_rider_pin', pin);
             localStorage.setItem('rider_name', data.rider_name);
 
             router.push(`/rider/dashboard?phone=${phone}`);

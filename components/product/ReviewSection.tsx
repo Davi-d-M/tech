@@ -116,7 +116,7 @@ export default function ReviewSection({ productId, isLive = true }: { productId:
       // 3. Update Mission Progress
       if (user) {
           try {
-              const { data: { session } } = await supabase!.auth.getSession();
+              const { data: { session } } = await supabase.auth.getSession();
               await fetch('/api/member/gamification', {
                   method: 'POST',
                   headers: {

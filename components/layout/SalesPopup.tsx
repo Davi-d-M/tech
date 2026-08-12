@@ -37,7 +37,8 @@ export default function SalesPopup() {
 
         async function processSalesData(data: { product_id: number; customer_name: string; note: string; created_at: string }[]) {
             const prodIds = data.map(o => o.product_id);
-            const { data: prods } = await supabase!.from('products').select('id, name').in('id', prodIds);
+            if (!supabase) return;
+            const { data: prods } = await supabase.from('products').select('id, name').in('id', prodIds);
 
             const enriched: Sale[] = data.map(order => {
                 const product = prods?.find((p: { id: number; name: string }) => p.id === order.product_id);
@@ -63,8 +64,9 @@ export default function SalesPopup() {
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'orders' },
                 async (payload: { new: { product_id: number; customer_name: string; note: string } }) => {
+                    if (!supabase) return;
                     // Enrich new order data
-                    const { data: prod } = await supabase!
+                    const { data: prod } = await supabase
                         .from('products')
                         .select('name')
                         .eq('id', payload.new.product_id)

@@ -21,10 +21,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 
 export default function AdminBroadcastPage() {
     const [subscribers, setSubscribers] = React.useState<{ id: string | number; email: string; created_at: string }[]>([]);
+    const [campaignOrders, setCampaignOrders] = React.useState<{ total_price: number }[]>([]);
     const [sending, setSending] = React.useState(false);
     const [channel, setChannel] = React.useState<'email' | 'whatsapp'>('email');
     const [audience, setAudience] = React.useState<'all' | 'new' | 'vip' | 'inactive'>('all');
@@ -59,6 +60,17 @@ export default function AdminBroadcastPage() {
             setSubscribers(data || []);
         }
 
+        async function fetchCampaignROI() {
+            if (!supabase) return;
+            // Fetch orders attributed to referrals/campaigns
+            const { data } = await supabase
+                .from('orders')
+                .select('total_price')
+                .not('referred_by_code', 'is', null)
+                .eq('status', 'Delivered');
+            setCampaignOrders(data || []);
+        }
+
         async function checkResend() {
             try {
                 const res = await fetch('/api/health');
@@ -70,8 +82,13 @@ export default function AdminBroadcastPage() {
         }
 
         fetchSubscribers();
+        fetchCampaignROI();
         checkResend();
     }, []);
+
+    const totalCampaignRevenue = React.useMemo(() => {
+        return campaignOrders.reduce((sum, o) => sum + (o.total_price || 0), 0);
+    }, [campaignOrders]);
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -126,7 +143,7 @@ export default function AdminBroadcastPage() {
                                     <button
                                         key={t.id}
                                         onClick={() => applyTemplate(t.content)}
-                                        className="px-5 py-2.5 rounded-xl bg-secondary border border-border text-[9px] font-black uppercase text-muted-foreground hover:border-primary hover:text-primary transition-all active:scale-95"
+                                        className="px-5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[9px] font-black uppercase text-slate-400 hover:border-primary hover:text-primary transition-all active:scale-95"
                                     >
                                         {t.label}
                                     </button>
@@ -146,7 +163,7 @@ export default function AdminBroadcastPage() {
                                         onClick={() => setAudience(a.id as 'all' | 'new' | 'vip' | 'inactive')}
                                             className={cn(
                                                 "p-4 rounded-2xl border transition-all text-left flex flex-col gap-2",
-                                                audience === a.id ? "bg-primary/5 border-primary text-primary" : "bg-secondary border-border text-muted-foreground hover:border-muted"
+                                                audience === a.id ? "bg-primary/5 border-primary text-primary" : "bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-300"
                                             )}
                                         >
                                             <a.icon size={16} />
@@ -160,14 +177,14 @@ export default function AdminBroadcastPage() {
                             <div className="space-y-8">
                                 <div className="space-y-4">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Dispatch Channel</label>
-                                    <div className="flex p-1 bg-secondary rounded-2xl border border-border">
+                                    <div className="flex p-1 bg-slate-50 rounded-2xl border border-slate-200">
                                         <button onClick={() => setChannel('email')} className={cn("flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all", channel === 'email' ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground")}><Mail size={14} /> Email</button>
                                         <button onClick={() => setChannel('whatsapp')} className={cn("flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all", channel === 'whatsapp' ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground")}><Phone size={14} /> WhatsApp</button>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Schedule Timing</label>
-                                    <div className="flex p-1 bg-secondary rounded-2xl border border-border">
+                                    <div className="flex p-1 bg-slate-50 rounded-2xl border border-slate-200">
                                         <button onClick={() => setSchedule('now')} className={cn("flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all", schedule === 'now' ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground")}><Zap size={14} /> Instant</button>
                                         <button onClick={() => setSchedule('later')} className={cn("flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all", schedule === 'later' ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground")}><Calendar size={14} /> Scheduled</button>
                                     </div>
@@ -180,13 +197,13 @@ export default function AdminBroadcastPage() {
                             {channel === 'email' && (
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tactical Subject</label>
-                                    <Input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Flash Sale: 20% OFF Everything!" className="h-14 rounded-2xl bg-secondary border-border text-sm font-bold text-foreground" />
+                                    <Input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Flash Sale: 20% OFF Everything!" className="h-14 rounded-2xl bg-slate-50 border-slate-200 text-sm font-bold text-foreground" />
                                 </div>
                             )}
 
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payload Narrative (Message)</label>
-                                <Textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Write your announcement here..." rows={8} className="rounded-[2rem] bg-secondary border-border text-sm font-medium resize-none p-8 text-foreground" />
+                                <Textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Write your announcement here..." rows={8} className="rounded-[2rem] bg-slate-50 border-slate-200 text-sm font-medium resize-none p-8 text-foreground" />
                             </div>
 
                             <Button disabled={sending || subscribers.length === 0 || (channel === 'email' && resendActive === false)} className="w-full h-20 rounded-[1.5rem] bg-primary text-white font-black uppercase text-sm tracking-[0.3em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
@@ -243,14 +260,14 @@ export default function AdminBroadcastPage() {
                             <h3 className="text-xl font-black uppercase tracking-tighter text-foreground">ROI Extraction</h3>
                         </div>
                         <div className="space-y-6">
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-center text-left">
                                 <span className="text-[10px] font-black uppercase text-muted-foreground">Revenue Generated</span>
-                                <span className="text-lg font-black text-foreground">KSh 384,200</span>
+                                <span className="text-lg font-black text-foreground">{formatPrice(totalCampaignRevenue)}</span>
                             </div>
-                            <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-                                <div className="h-full bg-primary w-[65%]"></div>
+                            <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                                <div className="h-full bg-primary" style={{ width: `${Math.min(100, (totalCampaignRevenue / 50000) * 100)}%` }}></div>
                             </div>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase italic">Measured across last 3 deployments.</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase italic">Measured across delivered referral orders.</p>
                         </div>
                     </div>
                 </div>

@@ -3,29 +3,33 @@
 import { usePathname } from 'next/navigation';
 import Header from './Header';
 import Footer from './Footer';
-import LiveTicker from './LiveTicker';
-import AbandonedCartBar from './AbandonedCartBar';
-import SupportBubble from './SupportBubble';
-import ExitIntentPopup from './ExitIntentPopup';
-import SignInTrigger from './SignInTrigger';
-import CompareBar from '../product/CompareBar';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { useSettings } from '@/lib/useSettings';
+import { useSettings, type StoreSettings } from '@/lib/useSettings';
 
-export default function PublicLayoutShield({ children }: { children: React.ReactNode }) {
+// Lazy Load Non-Critical Components
+const LiveTicker = dynamic(() => import('./LiveTicker'), { ssr: false });
+const AbandonedCartBar = dynamic(() => import('./AbandonedCartBar'), { ssr: false });
+const SupportBubble = dynamic(() => import('./SupportBubble'), { ssr: false });
+const ExitIntentPopup = dynamic(() => import('./ExitIntentPopup'), { ssr: false });
+const SignInTrigger = dynamic(() => import('./SignInTrigger'), { ssr: false });
+const CompareBar = dynamic(() => import('../product/CompareBar'), { ssr: false });
+
+export default function PublicLayoutShield({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
     return (
         <Suspense fallback={null}>
-            <ShieldContent>{children}</ShieldContent>
+            <ShieldContent initialSettings={initialSettings}>{children}</ShieldContent>
         </Suspense>
     );
 }
 
-function ShieldContent({ children }: { children: React.ReactNode }) {
+function ShieldContent({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const { settings } = useSettings();
+    const { settings: hookSettings } = useSettings();
+    const settings = initialSettings || hookSettings;
     const isAdmin = pathname?.startsWith('/admin');
 
     // 0. Dynamic Favicon
@@ -112,9 +116,9 @@ function ShieldContent({ children }: { children: React.ReactNode }) {
         <>
             <LiveTicker />
             <AbandonedCartBar />
-            <Header />
+            <Header initialSettings={settings} />
             <main className="flex-grow">{children}</main>
-            <Footer />
+            <Footer initialSettings={settings} />
             <ExitIntentPopup />
             <CompareBar />
             <SupportBubble />

@@ -217,7 +217,7 @@ export async function POST(request: Request) {
 
     const { data: riderData, error: riderError } = await supabase
         .from('rider_status')
-        .select('id, rider_phone, pin')
+        .select('id, rider_phone, pin, verification_status')
         .eq('rider_phone', phone.trim())
         .maybeSingle();
 
@@ -229,6 +229,12 @@ export async function POST(request: Request) {
     if (riderData.pin !== password) {
         await supabase.from('login_attempts').insert([{ success: false, ip_address: ip }]);
         return NextResponse.json({ error: 'Incorrect PIN.' }, { status: 401 });
+    }
+
+    if (riderData.verification_status !== 'Verified') {
+        return NextResponse.json({
+            error: `Tactical Alert: Your account status is ${riderData.verification_status || 'Pending'}. Access restricted until Admin Approval.`
+        }, { status: 403 });
     }
 
     await supabase.from('login_attempts').insert([{ success: true, ip_address: ip }]);

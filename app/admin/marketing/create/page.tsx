@@ -100,6 +100,20 @@ export default function CreateCampaign() {
 
     const launchCampaign = async () => {
         if (!supabase) return;
+
+        // Final Validation
+        if (!campaign.name || !campaign.product_id) {
+            setMessage({ type: 'error', text: "Incomplete Mission Specs: Name and Product required." });
+            setStep('context');
+            return;
+        }
+
+        if (!channels.instagram.caption && !channels.whatsapp.body && !channels.email.body) {
+            setMessage({ type: 'error', text: "Payload Empty: At least one channel must have content." });
+            setStep('content');
+            return;
+        }
+
         setLoading(true);
         setMessage(null);
         try {
@@ -126,6 +140,12 @@ export default function CreateCampaign() {
             ];
 
             await supabase.from('campaign_channels').insert(channelData);
+
+            // Log Audit
+            if (email) {
+                const { logAuditAction } = await import('@/lib/auditService');
+                await logAuditAction(email, 'INITIATE_CAMPAIGN', { name: campaign.name, type: campaign.type });
+            }
 
             setMessage({ type: 'success', text: "Mission initiated successfully! Redirecting..." });
             setTimeout(() => {

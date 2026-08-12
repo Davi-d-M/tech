@@ -13,14 +13,22 @@ import { logAuditAction } from '@/lib/auditService';
 function AdminLoginContent() {
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<'pin' | 'email'>('pin');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
       const modeParam = searchParams.get('mode');
-      if (modeParam === 'email') setMode('email');
+      if (modeParam === 'email') {
+          setMode('email');
+      } else {
+          const savedMode = localStorage.getItem('apex_admin_mode');
+          if (savedMode === 'email' || savedMode === 'pin') setMode(savedMode as 'pin' | 'email');
+      }
+
+      const savedEmail = localStorage.getItem('apex_admin_email');
+      if (savedEmail) setEmail(savedEmail);
   }, [searchParams]);
 
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
   const [status, setStatus] = useState<{ type: 'idle' | 'error'; message: string }>({
     type: 'idle',
     message: '',
@@ -51,6 +59,10 @@ function AdminLoginContent() {
       if (!response.ok) {
         throw new Error(payload.error || 'Login failed.');
       }
+
+      // Persist login metadata
+      localStorage.setItem('apex_admin_mode', mode);
+      if (mode === 'email') localStorage.setItem('apex_admin_email', email);
 
       const adminEmail = mode === 'email' ? email : 'owner@apexstores.com';
       await logAuditAction(adminEmail, 'OS_SESSION_START', { mode, ip: payload.ip || 'logged' });

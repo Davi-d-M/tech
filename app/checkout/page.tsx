@@ -67,6 +67,7 @@ type SanitizedOrderPayload = Omit<OrderPayload, 'note' | 'referred_by_code'>;
 
 declare global {
   interface Window {
+    fbq?: (action: string, eventName: string, params?: Record<string, unknown>) => void;
     PaystackPop: {
       setup: (options: Record<string, unknown>) => {
         openIframe: () => void;
@@ -313,16 +314,32 @@ function CheckoutContent() {
             amount: Math.round(total * 100), // KES to Cents
             currency: 'KES',
             ref: checkoutRequestId,
-            callback: () => {
-                // Payment successful - Update order to Paid
-                supabase!.from('orders').update({
-                    status: 'Paid',
-                    payment_verified_at: new Date().toISOString()
-                }).eq('checkout_request_id', checkoutRequestId)
-                .then(() => finalizeOrder(orderId));
+            callback: async (response: any) => {
+                if (response.status === 'success' && supabase) {
+                    await supabase.from('orders').update({
+                        status: 'Paid',
+                        payment_verified_at: new Date().toISOString(),
+                        note: `Paystack Ref: ${response.reference}`
+                    }).eq('checkout_request_id', checkoutRequestId);
+
+                    // FORCE REDIRECT - prevent being stuck in Paystack modal
+                    window.location.href = `/checkout/success?orderId=${orderId}`;
+                }
             },
-            onClose: () => {
+            onClose: async () => {
                 setIsPlacingOrder(false);
+
+                // Mark order as Failed in DB for accurate analytics
+                if (supabase && orderId) {
+                    const { data: currentOrder } = await supabase.from('orders').select('status').eq('id', orderId).single();
+                    if (currentOrder?.status === 'Pending') {
+                        await supabase.from('orders').update({
+                            status: 'Payment Failed',
+                            note: 'Transaction cancelled by user (Window Closed)'
+                        }).eq('id', orderId);
+                    }
+                }
+
                 setCheckoutStatus({
                     type: "error",
                     message: "Payment process was interrupted. Please re-initiate payment to secure your order."
@@ -420,6 +437,17 @@ function CheckoutContent() {
 
   const finalizeOrder = async (orderId?: number) => {
     const finalId = orderId || placedOrderId;
+
+    // Meta Tracking: Purchase
+    if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'Purchase', {
+            value: total,
+            currency: 'KES',
+            content_ids: cart.map(item => item.id),
+            content_type: 'product'
+        });
+    }
+
     // 1. Update Loyalty Points & Referral Bonuses
     const client = supabase;
     if (user && client) {

@@ -133,6 +133,21 @@ export async function POST(request: Request) {
             }
         }
 
+        if (event.event === 'charge.failed') {
+            const data = event.data;
+            const reference = data.reference;
+
+            if (supabase) {
+                await supabase
+                    .from('orders')
+                    .update({
+                        status: 'Payment Failed',
+                        note: `Payment failed: ${data.gateway_response || 'Unknown Error'}`
+                    })
+                    .eq('checkout_request_id', reference);
+            }
+        }
+
         return NextResponse.json({ received: true }, { status: 200 });
 
     } catch (error: unknown) {

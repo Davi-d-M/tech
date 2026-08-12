@@ -1,25 +1,19 @@
-# Tasks - UI Consistency & Build Stabilization 🎨🛡️
+# Tasks - Meta Ecosystem & UI Connectivity 🔗🎨
 
-## Phase 1: Analytics & Logic Fixes
-- [ ] Fix Analytics `chartData` timezone/date matching.
-- [ ] Refine Analytics X-Axis labels (collision fix).
-- [ ] Include `Paid`/`Dispatched` orders in revenue chart.
+## Phase 1: Meta Pixel & Ads Tracking
+- [x] Inject Meta Pixel script into `app/layout.tsx`.
+- [x] Add `AddToCart` event tracking in `CartContext.tsx`.
+- [x] Add `Purchase` event tracking in `checkout/page.tsx`.
+- [x] Add `ViewContent` tracking for product quick views in `ProductCard.tsx`.
 
-## Phase 2: Access & Navigation
-- [ ] Update `AuthForm` Admin link to `/admin/login`.
-- [ ] Verify Staff Login visibility.
+## Phase 2: UI Functional Glue
+- [x] Finalize "Initiate Launch" field validation in `marketing/create/page.tsx`.
+- [x] Ensure "Go Online" in `rider/dashboard/page.tsx` correctly updates `rider_status` table.
+- [x] Verify all Marketing Wizard steps transitions are smooth.
 
-## Phase 3: Theme Harmonization (Light Mode)
-- [ ] Standardize Staff Hub cards.
-- [ ] Lighten Broadcast Hub "Audience Intel" card.
-- [ ] Sync Vault Hub icons and theme.
+## Phase 3: Technical Documentation
+- [x] Update `connectivity_blueprint.artifact.md` with Meta API / Token instructions.
 
-## Phase 4: Build Stability (Lint & Types)
-- [ ] Resolve `profileRes` redeclaration in Customer Details.
-- [ ] Fix missing `Input` in Rider Login.
-- [ ] Fix `Rider` type mismatch in Dispatch.
-- [ ] Clean up unused variables (`cn`, `loading`, etc.).
-
-## Phase 5: Verification
+## Phase 4: Verification
 - [ ] Run `npm run build`.
-- [ ] Final UI sanity check.
+- [ ] Sanity check tracking events in browser console.

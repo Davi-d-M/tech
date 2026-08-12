@@ -45,13 +45,14 @@ export default function GlobalCommandPalette({ isOpen, setIsOpen }: CommandPalet
         }
 
         const delayDebounceFn = setTimeout(async () => {
+            if (!supabase) return;
             setLoading(true);
             try {
                 // Multi-Table Tactical Scan
                 const [orders, products, riders] = await Promise.all([
-                    supabase!.from('orders').select('id, customer_name, total_price').ilike('customer_name', `%${query}%`).limit(3),
-                    supabase!.from('products').select('id, name, price, image_url').ilike('name', `%${query}%`).limit(3),
-                    supabase!.from('rider_status').select('rider_name, rider_phone').ilike('rider_name', `%${query}%`).limit(2)
+                    supabase.from('orders').select('id, customer_name, total_price').ilike('customer_name', `%${query}%`).limit(3),
+                    supabase.from('products').select('id, name, price, image_url').ilike('name', `%${query}%`).limit(3),
+                    supabase.from('rider_status').select('rider_name, rider_phone').ilike('rider_name', `%${query}%`).limit(2)
                 ]);
 
                 const formatted: SearchResult[] = [];

@@ -1,5 +1,3 @@
-"use client";
-
 import ProductList from "@/components/home/ProductList";
 import DynamicHero from "@/components/home/DynamicHero";
 import PromotionalBanner from "@/components/home/PromotionalBanner";
@@ -8,16 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Suspense, useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { type StoreSettings } from "@/lib/useSettings";
 
-export default function Home() {
-  return (
-    <Suspense fallback={<div className="p-32 text-center font-black uppercase text-slate-400 animate-pulse">Establishing Tech Pipeline...</div>}>
-        <HomeContent />
-    </Suspense>
-  );
-}
+export const revalidate = 60; // Revalidate every minute
 
 interface Post {
   slug: string;
@@ -26,27 +18,44 @@ interface Post {
   excerpt: string;
 }
 
-function HomeContent() {
-  const [posts, setPosts] = useState<Post[]>([]);
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  old_price?: number;
+  description?: string;
+  image_url?: string;
+  image?: string;
+  rating?: number;
+  category?: string;
+  stock?: number;
+  sizes?: string[];
+  is_new?: boolean;
+}
 
-  useEffect(() => {
-    async function fetchPosts() {
-        if (!supabase) return;
-        const { data } = await supabase
-            .from('blog_posts')
-            .select('*')
-            .eq('is_published', true)
-            .limit(2);
-        setPosts(data || []);
-    }
-    fetchPosts();
-  }, []);
+export default async function Home() {
+  // 1. Fetch All Data in Parallel on Server
+  const [postsRes, productsRes, settingsRes] = await Promise.all([
+    supabase?.from('blog_posts').select('*').eq('is_published', true).limit(2) || Promise.resolve({ data: [] }),
+    supabase?.from('products').select('*').order('created_at', { ascending: false }) || Promise.resolve({ data: [] }),
+    supabase?.from('settings').select('*') || Promise.resolve({ data: [] })
+  ]);
+
+  const posts = (postsRes.data || []) as Post[];
+  const initialProducts = (productsRes.data || []) as Product[];
+
+  // Process Settings
+  const settingsData = settingsRes.data || [];
+  const settings = {} as StoreSettings;
+  settingsData.forEach(item => {
+      (settings as unknown as Record<string, unknown>)[item.key] = item.value;
+  });
 
   return (
     <div className="bg-white min-h-screen text-left">
 
       {/* 1. Premium Hero Section */}
-      <DynamicHero />
+      <DynamicHero initialSettings={settings} />
 
       {/* 2. Flash Sale Banner */}
       <PromotionalBanner />
@@ -69,7 +78,7 @@ function HomeContent() {
         </div>
 
         {/* 4. Product Grid & Filter Tabs */}
-        <ProductList />
+        <ProductList initialProducts={initialProducts} />
 
       </div>
 
@@ -89,7 +98,7 @@ function HomeContent() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {posts.length > 0 ? posts.map((post) => (
-                      <Link key={post.slug as string} href={`/blog/${post.slug}`} className="group relative rounded-[2.5rem] overflow-hidden bg-slate-100 aspect-[16/9] shadow-2xl transition-all hover:-translate-y-2 border border-slate-200">
+                      <Link key={post.slug} href={`/blog/${post.slug}`} className="group relative rounded-[2.5rem] overflow-hidden bg-slate-100 aspect-[16/9] shadow-2xl transition-all hover:-translate-y-2 border border-slate-200">
                           <div className="w-full h-full flex items-center justify-center bg-slate-50 text-slate-300 overflow-hidden relative">
                               <Image
                                 src={post.image_url || '/placeholder.jpg'}

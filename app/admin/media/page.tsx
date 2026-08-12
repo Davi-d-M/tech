@@ -67,8 +67,9 @@ export default function AdminMediaHub() {
 
                 if (error) continue;
 
+                const currentSupabase = supabase;
                 const enriched = data.map(file => {
-                    const { data: { publicUrl } } = supabase!.storage.from(BUCKET_NAME).getPublicUrl(`${folder}/${file.name}`);
+                    const publicUrl = currentSupabase.storage.from(BUCKET_NAME).getPublicUrl(`${folder}/${file.name}`).data.publicUrl || '';
                     return {
                         ...file,
                         url: publicUrl,
@@ -92,12 +93,13 @@ export default function AdminMediaHub() {
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || !supabase) return;
+        const currentSupabase = supabase;
         setUploading(true);
         try {
             const files = Array.from(e.target.files);
             const uploadPromises = files.map(async (file) => {
                 const filePath = `${activeTab}/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-                return supabase!.storage.from(BUCKET_NAME).upload(filePath, file);
+                return currentSupabase.storage.from(BUCKET_NAME).upload(filePath, file);
             });
 
             await Promise.all(uploadPromises);

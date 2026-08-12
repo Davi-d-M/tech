@@ -128,11 +128,12 @@ export default function AdminSettingsPage() {
     }, []);
 
     const uploadAsset = async (file: File, folder: string) => {
+        if (!supabase) throw new Error("Database not connected");
         const BUCKET = 'apexstores-assets';
         const path = `${folder}/${folder.split('/')[0]}-${Date.now()}`;
-        const { error: uploadError } = await supabase!.storage.from(BUCKET).upload(path, file);
+        const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, file);
         if (uploadError) throw uploadError;
-        const { data } = supabase!.storage.from(BUCKET).getPublicUrl(path);
+        const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
         return data.publicUrl;
     };
 

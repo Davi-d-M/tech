@@ -34,10 +34,10 @@ export default function MarketingOverview() {
         async function fetchMarketingData() {
             if (!supabase) return;
             try {
-                const [campRes, ordersRes, profilesRes] = await Promise.all([
+                const [campRes, ordersRes, visitorsRes] = await Promise.all([
                     supabase.from('marketing_campaigns').select('*, products(name)').order('created_at', { ascending: false }).limit(3),
                     supabase.from('orders').select('id, referred_by_code').not('referred_by_code', 'is', null),
-                    supabase.from('profiles').select('id').not('referral_code', 'is', null)
+                    supabase.from('active_visitors').select('session_id', { count: 'exact', head: true })
                 ]);
 
                 if (campRes.data) {
@@ -46,7 +46,7 @@ export default function MarketingOverview() {
                         ...prev,
                         activeCampaigns: campRes.data.filter(c => c.status === 'Published' || c.status === 'Live').length,
                         generatedOrders: ordersRes.data?.length || 0,
-                        totalReach: (profilesRes.data?.length || 0) * 12 // Simulated reach multiplier per creator
+                        totalReach: visitorsRes.count || 0
                     }));
                 }
             } catch (err) {
@@ -178,13 +178,13 @@ export default function MarketingOverview() {
                                             <div className="h-full bg-emerald-500 w-[72%]"></div>
                                         </div>
                                     </div>
-                                    <div className="space-y-3">
+                                    <div className="space-y-3 text-left">
                                         <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-widest">
-                                            <span>Instagram Reach</span>
-                                            <span className="text-primary">8.4K</span>
+                                            <span>Organic Reach</span>
+                                            <span className="text-primary">{stats.totalReach.toLocaleString()}</span>
                                         </div>
                                         <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-                                            <div className="h-full bg-primary w-[55%]"></div>
+                                            <div className="h-full bg-primary" style={{ width: `${Math.min(100, (stats.totalReach / 5000) * 100)}%` }}></div>
                                         </div>
                                     </div>
                                 </div>

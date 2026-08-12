@@ -129,7 +129,8 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
     const shareText = `Check out ${product.name} from Apexstores - ${formatPrice(product.price)} ${url}`;
 
     // Log Share Mission
-    const { data: { session } } = await supabase!.auth.getSession();
+    if (!supabase) return;
+    const { data: { session } } = await supabase.auth.getSession();
     if (session) {
         fetch('/api/member/gamification', {
             method: 'POST',
@@ -176,7 +177,8 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                         loop
                         playsInline
                         onPlay={async () => {
-                            const { data: { session } } = await supabase!.auth.getSession();
+                            if (!supabase) return;
+                            const { data: { session } } = await supabase.auth.getSession();
                             if (session) {
                                 fetch('/api/member/gamification', {
                                     method: 'POST',

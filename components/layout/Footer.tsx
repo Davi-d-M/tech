@@ -15,11 +15,12 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import { useSettings } from "@/lib/useSettings";
+import { useSettings, type StoreSettings } from "@/lib/useSettings";
 import { cn } from "@/lib/utils";
 
-export default function Footer() {
-  const { settings, loading } = useSettings();
+export default function Footer({ initialSettings }: { initialSettings?: StoreSettings }) {
+  const { settings: hookSettings, loading } = useSettings();
+  const settings = initialSettings || hookSettings;
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'idle', message: string }>({ type: 'idle', message: "" });
