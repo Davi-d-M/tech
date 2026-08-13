@@ -11,7 +11,8 @@ import {
     Camera,
     Truck,
     CheckCircle2,
-    Loader2
+    Loader2,
+    Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,10 +23,13 @@ import Link from 'next/link';
 
 type Step = 'welcome' | 'phone' | 'otp' | 'identity' | 'vehicle' | 'verification' | 'biometrics' | 'pending' | 'success';
 
+const normalizePhone = (p: string) => p.replace(/^\+254/, '').replace(/^0/, '').trim();
+
 export default function RiderOnboarding() {
     const [step, setStep] = useState<Step>('welcome');
     const [loading, setLoading] = useState(false);
     const [phone, setPhone] = useState('');
+    const [riderName, setRiderName] = useState(''); // Added to track name for new users
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [idNumber, setIdNumber] = useState('');
     const [licenseNumber, setLicenseNumber] = useState('');
@@ -36,7 +40,8 @@ export default function RiderOnboarding() {
     const [error, setError] = useState<string | null>(null);
 
     const handleSendOTP = async () => {
-        if (phone.length < 10) {
+        const normalized = normalizePhone(phone);
+        if (normalized.length < 9) {
             setError("Valid phone number required");
             return;
         }
@@ -46,7 +51,7 @@ export default function RiderOnboarding() {
             // Real OTP Send logic with Supabase Auth
             if (supabase) {
                 const { error: otpError } = await supabase.auth.signInWithOtp({
-                    phone: phone.startsWith('+') ? phone : `+254${phone.replace(/^0/, '')}`
+                    phone: `+254${normalized}`
                 });
                 if (otpError) throw otpError;
                 setStep('otp');
@@ -68,8 +73,9 @@ export default function RiderOnboarding() {
         try {
             // Real OTP Verify logic with Supabase Auth
             if (supabase) {
+                const normalized = normalizePhone(phone);
                 const { error: verifyError } = await supabase.auth.verifyOtp({
-                    phone: phone.startsWith('+') ? phone : `+254${phone.replace(/^0/, '')}`,
+                    phone: `+254${normalized}`,
                     token: otp.join(''),
                     type: 'sms'
                 });
@@ -79,7 +85,7 @@ export default function RiderOnboarding() {
                 const { data: rider } = await supabase
                     .from('rider_status')
                     .select('rider_phone, verification_status, rider_name')
-                    .eq('rider_phone', phone.replace(/^0/, ''))
+                    .eq('rider_phone', normalized)
                     .maybeSingle();
 
                 if (rider) {
@@ -107,16 +113,28 @@ export default function RiderOnboarding() {
         setLoading(true);
         setError(null);
         try {
-            const cred = await registerBiometrics(phone);
+            const normalized = normalizePhone(phone);
+            const cred = await registerBiometrics(normalized);
             if (cred) {
                 // Save credential to Supabase rider_status
                 if (supabase) {
-                    await supabase.from('rider_status').update({ biometric_key: cred }).eq('rider_phone', phone);
+                    await supabase.from('rider_status').update({ biometric_key: cred }).eq('rider_phone', normalized);
                 }
             }
-            setStep('success');
+
+            // Check current status - usually pending for new users
+            if (supabase) {
+                const { data } = await supabase.from('rider_status').select('verification_status').eq('rider_phone', normalized).maybeSingle();
+                if (data?.verification_status === 'Verified') {
+                    setStep('success');
+                } else {
+                    setStep('pending');
+                }
+            } else {
+                setStep('pending');
+            }
         } catch {
-            setError("Biometric setup failed. You can skip for now.");
+            setStep('pending');
         } finally {
             setLoading(false);
         }
@@ -127,20 +145,25 @@ export default function RiderOnboarding() {
             setError("Both photos are required for verification");
             return;
         }
+        if (!riderName.trim()) {
+            setError("Full Name is required");
+            return;
+        }
         setLoading(true);
         setError(null);
         try {
             if (!supabase) return;
+            const normalized = normalizePhone(phone);
             const BUCKET = 'rider-verifications';
 
             // Upload Rider Photo
-            const riderPath = `riders/${phone}-${Date.now()}-selfie`;
+            const riderPath = `riders/${normalized}-${Date.now()}-selfie`;
             const currentSupabase = supabase;
             await currentSupabase.storage.from(BUCKET).upload(riderPath, riderPhoto);
             const { data: rData } = currentSupabase.storage.from(BUCKET).getPublicUrl(riderPath);
 
             // Upload Vehicle Photo
-            const vehiclePath = `riders/${phone}-${Date.now()}-vehicle`;
+            const vehiclePath = `riders/${normalized}-${Date.now()}-vehicle`;
             await currentSupabase.storage.from(BUCKET).upload(vehiclePath, vehiclePhoto);
             const { data: vData } = currentSupabase.storage.from(BUCKET).getPublicUrl(vehiclePath);
 
@@ -148,7 +171,8 @@ export default function RiderOnboarding() {
             const { error: updateError } = await currentSupabase
                 .from('rider_status')
                 .upsert({
-                    rider_phone: phone,
+                    rider_phone: normalized,
+                    rider_name: riderName.trim(),
                     id_number: idNumber,
                     license_number: licenseNumber,
                     plate_number: plateNumber,
@@ -258,8 +282,12 @@ export default function RiderOnboarding() {
                                 </div>
                                 <div className="space-y-4">
                                     <div className="relative">
-                                        <Input value={idNumber} onChange={e => setIdNumber(e.target.value)} placeholder="National ID Number" className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-bold" />
+                                        <Input value={riderName} onChange={e => setRiderName(e.target.value)} placeholder="Full Name" className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-bold" />
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                                    </div>
+                                    <div className="relative">
+                                        <Input value={idNumber} onChange={e => setIdNumber(e.target.value)} placeholder="National ID Number" className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-bold" />
+                                        <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                                     </div>
                                     <div className="relative">
                                         <Input value={licenseNumber} onChange={e => setLicenseNumber(e.target.value)} placeholder="Driver's License No." className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-bold" />
@@ -334,7 +362,17 @@ export default function RiderOnboarding() {
                                     <Button onClick={handleBiometricEnroll} disabled={loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20">
                                         Enable Biometrics
                                     </Button>
-                                    <Button variant="ghost" onClick={() => setStep('success')} className="w-full text-slate-400 font-black uppercase text-[10px]">Maybe Later</Button>
+                                    <Button
+                                        variant="ghost"
+                                        onClick={async () => {
+                                            if (!supabase) { setStep('pending'); return; }
+                                            const { data } = await supabase.from('rider_status').select('verification_status').eq('rider_phone', normalizePhone(phone)).maybeSingle();
+                                            setStep(data?.verification_status === 'Verified' ? 'success' : 'pending');
+                                        }}
+                                        className="w-full text-slate-400 font-black uppercase text-[10px]"
+                                    >
+                                        Maybe Later
+                                    </Button>
                                 </div>
                             </div>
                         )}
@@ -344,15 +382,48 @@ export default function RiderOnboarding() {
                                 <div className="h-24 w-24 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 mx-auto shadow-inner animate-pulse">
                                     <ShieldCheck className="h-12 w-12" />
                                 </div>
-                                <div className="space-y-2">
-                                    <h2 className="text-2xl font-black text-foreground uppercase">Under Review</h2>
-                                    <p className="text-sm text-slate-500 font-medium italic">&quot;Your unit credentials have been logged. We are currently verifying your data. Please check back in a few hours.&quot;</p>
+                                <div className="space-y-2 text-left">
+                                    <h2 className="text-2xl font-black text-foreground uppercase text-center">Under Review</h2>
+                                    <p className="text-sm text-slate-500 font-medium italic text-center">Your unit credentials have been logged and established on the grid.</p>
+
+                                    <div className="mt-8 p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Zap size={16} /></div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-foreground">Mission Briefing</p>
+                                        </div>
+                                        <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                                            &quot;Protocol established. Please check back in <strong>two hours</strong>. Once your data is verified by the command center, you will be authorized to accept missions.&quot;
+                                        </p>
+                                    </div>
                                 </div>
-                                <Link href="/" className="block">
-                                    <Button variant="outline" className="w-full h-16 rounded-2xl font-black uppercase text-[10px] border-slate-100">
-                                        Back to Store
+                                <div className="space-y-3">
+                                    <Button
+                                        onClick={async () => {
+                                            if (!supabase) return;
+                                            setLoading(true);
+                                            const { data } = await supabase.from('rider_status').select('verification_status, rider_name').eq('rider_phone', normalizePhone(phone)).maybeSingle();
+                                            if (data?.verification_status === 'Verified') {
+                                                localStorage.setItem('apex_rider_phone', normalizePhone(phone));
+                                                localStorage.setItem('rider_name', data.rider_name);
+                                                setStep('success');
+                                            } else {
+                                                setError("Verification still pending. Check back soon, bro.");
+                                                setTimeout(() => setError(null), 3000);
+                                            }
+                                            setLoading(false);
+                                        }}
+                                        disabled={loading}
+                                        className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+                                    >
+                                        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Check Authorization Status"}
                                     </Button>
-                                </Link>
+                                    <Link href="/" className="block">
+                                        <Button variant="ghost" className="w-full text-slate-400 font-black uppercase text-[10px]">
+                                            Back to Store
+                                        </Button>
+                                    </Link>
+                                </div>
+                                {error && <p className="text-[9px] font-black uppercase text-amber-600 text-center animate-pulse">{error}</p>}
                             </div>
                         )}
 

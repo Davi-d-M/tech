@@ -1,25 +1,16 @@
-# Tasks - Rider Lifecycle & Flow Optimization 🚚🛡️
+# Tasks - Rider Onboarding Flow Fix 🚚🛡️
 
-## Phase 1: Rider Smart Entry
-- [ ] Implement existing rider detection after OTP in `onboarding/page.tsx`.
-- [ ] Add "Verification in Progress" screen for `Pending` riders.
-- [ ] Ensure `Verified` riders are redirected to dashboard immediately.
+## Phase 1: Logic & Flow Updates
+- [ ] Implement `normalizePhone` and update `handleVerifyOTP` in `onboarding/page.tsx`.
+- [ ] Refine `handleVerificationSubmit` to handle new applicants correctly.
+- [ ] Update `handleBiometricEnroll` to route based on status.
 
-## Phase 2: Admin Approval & Gating
-- [ ] Enhance "Approve Unit" UI and logic in `admin/dispatch/page.tsx`.
-- [ ] Enforce strict `verification_status` check in `api/admin/login` route.
+## Phase 2: UI & Messaging
+- [ ] Update the `pending` step with the "2-hour check back" message.
+- [ ] Add a "Sync Status" button for pending riders.
 
-## Phase 3: Payment Flow
-- [ ] Refine Paystack redirect logic in `checkout/page.tsx` to ensure modal closes and redirects.
+## Phase 3: API Alignment
+- [ ] Standardize phone lookup in `api/admin/login` route.
 
-## Phase 4: Data Dynamism (Rider)
-- [ ] Connect `RiderDashboard` stats and `EarningsCenter` to live Supabase tables.
-
-## Phase 5: "Zero Idle Buttons" Final Sweep
-- [ ] Wire up "New Protocol" in Operations Board.
-- [ ] Connect "Analyze Funnel" in Marketing Overview.
-- [ ] Implement real variance check for "Investigate Protocol" in Settings.
-
-## Phase 6: Verification
-- [ ] Run `npm run build`.
-- [ ] Final flow check.
+## Phase 4: Verification
+- [ ] Manual flow test for new vs. existing riders.

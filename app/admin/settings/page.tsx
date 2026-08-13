@@ -52,7 +52,7 @@ const DEFAULTS = {
     store_info: { name: "APEXSTORES", hours: "9am - 6pm", google_maps: "", footer_copy: "© 2026 Apexstores™" }
 };
 
-type TabId = 'identity' | 'homepage' | 'theme' | 'seo' | 'ops' | 'catalog' | 'advanced';
+type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'advanced';
 
 export default function AdminSettingsPage() {
     const { email } = useAdmin();
@@ -262,6 +262,7 @@ export default function AdminSettingsPage() {
                         onClick={() => {
                             if (activeTab === 'identity') handleSave('branding', branding, true);
                             else if (activeTab === 'homepage') handleSave('homepage', homepage, true);
+                            else if (activeTab === 'promotions') handleSave('promotions', promotions, true);
                             else if (activeTab === 'theme') handleSave('theme_config', theme, true);
                             else if (activeTab === 'seo') handleSave('seo_config', seo, true);
                             else if (activeTab === 'ops') {
@@ -296,6 +297,7 @@ export default function AdminSettingsPage() {
                 {[
                     { id: 'identity', label: 'Identity', icon: Info },
                     { id: 'homepage', label: 'Homepage', icon: HomeIcon },
+                    { id: 'promotions', label: 'Promotions', icon: Zap },
                     { id: 'theme', label: 'Theme', icon: Palette },
                     { id: 'seo', label: 'SEO & Social', icon: Globe },
                     { id: 'ops', label: 'Operations', icon: Truck },
@@ -496,6 +498,81 @@ export default function AdminSettingsPage() {
                                     </div>
                                 </div>
                             </Card>
+                        </div>
+                    )}
+
+                    {/* PROMOTIONS TAB */}
+                    {activeTab === 'promotions' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 text-left">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Zap className="h-5 w-5 text-primary" /> Flash Sale Configuration</h2>
+                                    <button
+                                        onClick={() => setPromotions({...promotions, is_active: !promotions.is_active})}
+                                        className={cn(
+                                            "w-20 h-10 rounded-full transition-all relative p-1 flex items-center shadow-inner",
+                                            promotions.is_active ? "bg-emerald-500" : "bg-secondary"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "h-8 w-8 rounded-full bg-white shadow-xl transition-all flex items-center justify-center",
+                                            promotions.is_active ? "translate-x-10" : "translate-x-0"
+                                        )}>
+                                            {promotions.is_active ? <CheckCircle2 size={16} className="text-emerald-500" /> : <ShieldAlert size={16} className="text-slate-300" />}
+                                        </div>
+                                    </button>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="space-y-2 text-left">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Flash Sale Headline & Subtext</label>
+                                        <Input
+                                            value={promotions.flash_sale_text}
+                                            onChange={e => setPromotions({...promotions, flash_sale_text: e.target.value})}
+                                            className="h-14 rounded-2xl bg-secondary border-border font-black text-lg text-foreground"
+                                            placeholder="e.g. FLASH SALE: 20% OFF EVERYTHING!"
+                                        />
+                                        <p className="text-[7px] font-bold text-primary uppercase italic px-1">* FORMAT: [Headline]: [Subtext] (to match the banner styling)</p>
+                                    </div>
+
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2 text-left">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Discount Percent (%)</label>
+                                            <div className="relative">
+                                                <Input
+                                                    type="number"
+                                                    value={promotions.discount_percent}
+                                                    onChange={e => setPromotions({...promotions, discount_percent: Number(e.target.value)})}
+                                                    className="h-14 rounded-2xl bg-secondary border-border pl-12 font-black text-lg text-foreground"
+                                                />
+                                                <Zap className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2 text-left">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Sale Expiry Date</label>
+                                            <div className="relative">
+                                                <Input
+                                                    type="datetime-local"
+                                                    value={promotions.flash_sale_end ? new Date(promotions.flash_sale_end).toISOString().slice(0, 16) : ''}
+                                                    onChange={e => setPromotions({...promotions, flash_sale_end: new Date(e.target.value).toISOString()})}
+                                                    className="h-14 rounded-2xl bg-secondary border-border pl-12 font-bold text-foreground"
+                                                />
+                                                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+
+                            <div className="p-8 rounded-[3rem] bg-indigo-50 border border-indigo-100 flex items-start gap-4">
+                                <Info className="h-6 w-6 text-indigo-500 shrink-0 mt-0.5" />
+                                <div className="space-y-1">
+                                    <p className="text-xs font-black uppercase text-indigo-700">Dynamic Deal Logic</p>
+                                    <p className="text-[10px] text-indigo-600 font-medium leading-relaxed italic">
+                                        &quot;When active, this deal will appear on the global homepage and apply automatically to the store theme. The countdown timer will automatically sync to the Expiry Date provided.&quot;
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -876,6 +953,7 @@ export default function AdminSettingsPage() {
                             onClick={() => {
                                 if (activeTab === 'identity') handleSave('branding', branding, true);
                                 else if (activeTab === 'homepage') handleSave('homepage', homepage, true);
+                                else if (activeTab === 'promotions') handleSave('promotions', promotions, true);
                                 else if (activeTab === 'theme') handleSave('theme_config', theme, true);
                                 else if (activeTab === 'seo') handleSave('seo_config', seo, true);
                                 else if (activeTab === 'ops') {

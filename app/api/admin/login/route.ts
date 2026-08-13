@@ -201,6 +201,8 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Phone and PIN required.' }, { status: 400 });
     }
 
+    const normalizedPhone = phone.replace(/^\+254/, '').replace(/^0/, '').trim();
+
     const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
     const { count: failCount } = await supabase
         .from('login_attempts')
@@ -218,7 +220,7 @@ export async function POST(request: Request) {
     const { data: riderData, error: riderError } = await supabase
         .from('rider_status')
         .select('id, rider_phone, pin, verification_status')
-        .eq('rider_phone', phone.trim())
+        .eq('rider_phone', normalizedPhone)
         .maybeSingle();
 
     if (riderError || !riderData) {
@@ -240,8 +242,6 @@ export async function POST(request: Request) {
     await supabase.from('login_attempts').insert([{ success: true, ip_address: ip }]);
     await supabase.from('login_attempts').delete().eq('success', false).eq('ip_address', ip);
 
-    // Note: We don't necessarily need a cookie for the rider dashboard as it uses local storage phone/pin,
-    // but we can set one for extra security if we want. For now, returning ok: true is enough as per AuthForm logic.
     return NextResponse.json({ ok: true, role: 'rider' });
   }
 
