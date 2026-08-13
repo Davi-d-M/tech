@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   longitude NUMERIC,
   birth_date DATE,
   referral_code TEXT UNIQUE,
+  referral_clicks INTEGER DEFAULT 0, -- NEW: Track link engagement
   loyalty_points INTEGER DEFAULT 0,
   total_commission_earned NUMERIC DEFAULT 0,
   status_flag TEXT DEFAULT 'Active',
@@ -289,3 +290,13 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- 14. REFERRAL TRACKING RPC
+CREATE OR REPLACE FUNCTION public.increment_referral_clicks(code_input TEXT)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE public.profiles
+    SET referral_clicks = referral_clicks + 1
+    WHERE referral_code = code_input;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

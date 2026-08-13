@@ -65,6 +65,14 @@ interface OrderPayload {
 
 type SanitizedOrderPayload = Omit<OrderPayload, 'note' | 'referred_by_code'>;
 
+interface PaystackResponse {
+  status: string;
+  reference: string;
+  transaction: string;
+  message: string;
+  redirecturl?: string;
+}
+
 declare global {
   interface Window {
     fbq?: (action: string, eventName: string, params?: Record<string, unknown>) => void;
@@ -314,7 +322,7 @@ function CheckoutContent() {
             amount: Math.round(total * 100), // KES to Cents
             currency: 'KES',
             ref: checkoutRequestId,
-            callback: async (response: any) => {
+            callback: async (response: PaystackResponse) => {
                 if (response.status === 'success' && supabase) {
                     await supabase.from('orders').update({
                         status: 'Paid',
