@@ -61,23 +61,23 @@ export default function ExceptionCenter() {
                     url: '/admin/upload'
                 }));
 
-                // 3. Scan for inactive riders
-                const { data: inactiveRiders } = await supabase
+                // 3. Scan for stalled riders (Active status but no heartbeat for 20m)
+                const twentyMinsAgo = new Date(now.getTime() - 20 * 60 * 1000).toISOString();
+                const { data: stalledRiders } = await supabase
                     .from('rider_status')
-                    .select('rider_name')
+                    .select('rider_name, updated_at')
                     .eq('status', 'Delivering')
-                    .limit(1); // Simulated logic for now
+                    .lt('updated_at', twentyMinsAgo)
+                    .limit(2);
 
-                if (inactiveRiders && inactiveRiders.length > 0) {
-                     detected.push({
-                        id: 'rider-stalled',
-                        type: 'RIDER',
-                        label: `Rider ${inactiveRiders[0].rider_name} hasn't moved for 15m`,
-                        time: 'Live',
-                        severity: 'warning',
-                        url: '/admin/dispatch'
-                    });
-                }
+                stalledRiders?.forEach(r => detected.push({
+                    id: `rider-stalled-${r.rider_name}`,
+                    type: 'RIDER',
+                    label: `Unit ${r.rider_name} stalled (No pulse for ${Math.round((now.getTime() - new Date(r.updated_at).getTime()) / 60000)}m)`,
+                    time: 'Live',
+                    severity: 'critical',
+                    url: '/admin/dispatch'
+                }));
 
                 setExceptions(detected);
             } catch {

@@ -57,7 +57,13 @@ export default function RiderOnboarding() {
                 setStep('otp');
             }
         } catch (err: unknown) {
-            setError((err as Error).message || "Failed to send OTP.");
+            const msg = (err as Error).message;
+            if (msg.includes("SMS") || msg.includes("provider")) {
+                setError("SMS service offline. [DEVELOPMENT BYPASS] Moving to next step...");
+                setTimeout(() => setStep('otp'), 2000);
+            } else {
+                setError(msg || "Failed to send OTP.");
+            }
         } finally {
             setLoading(false);
         }
@@ -237,6 +243,7 @@ export default function RiderOnboarding() {
                                     />
                                     <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                                 </div>
+                                {error && <p className="text-[10px] font-black text-rose-500 uppercase animate-pulse">{error}</p>}
                                 <Button onClick={handleSendOTP} disabled={loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
                                     {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Verify Identity"}
                                 </Button>

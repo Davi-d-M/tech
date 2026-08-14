@@ -40,6 +40,8 @@ import {
   Lock,
   XCircle,
   Check,
+  CheckCircle2,
+  Send,
   Sparkles,
   Flame,
   FileDown,
@@ -51,6 +53,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { formatPrice, cn, getReferralLink } from '@/lib/utils';
 import { useSettings } from '@/lib/useSettings';
@@ -116,6 +119,10 @@ interface Warranty {
 interface ServiceRequest {
   id: string;
   status: string;
+  subject: string;
+  message: string;
+  admin_response?: string | null;
+  created_at: string;
 }
 
 interface PurchasedItem {
@@ -150,6 +157,11 @@ export default function ProfilePage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [warranties, setWarranties] = useState<Warranty[]>([]);
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+  const [isSupportFormOpen, setIsSupportFormOpen] = useState(false);
+  const [supportSubject, setSupportSubject] = useState('');
+  const [supportMessage, setSupportMessage] = useState('');
+  const [isSendingTicket, setIsSendingTicket] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [purchasedItems, setPurchasedItems] = useState<PurchasedItem[]>([]);
   const [referralUrl, setReferralUrl] = useState('');
   const [abandonedBag, setAbandonedBag] = useState<AbandonedCart | null>(null);
@@ -238,7 +250,7 @@ export default function ProfilePage() {
               supabase.from('user_devices').select('*').eq('user_id', session.user.id),
               supabase.from('user_achievements').select('*').eq('user_id', session.user.id),
               supabase.from('warranties').select('*').eq('user_id', session.user.id),
-              supabase.from('service_requests').select('*').eq('user_id', session.user.id)
+              supabase.from('messages').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false })
           ]);
           setDevices(devicesRes.data || []);
           setAchievements(achievementsRes.data || []);
@@ -411,6 +423,38 @@ export default function ProfilePage() {
     router.push('/');
   };
 
+  const handleSubmitTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase || !user || !supportMessage.trim()) return;
+
+    setIsSendingTicket(true);
+    try {
+        const { error } = await supabase.from('messages').insert([{
+            user_id: user.id,
+            name: profile?.full_name || user.email?.split('@')[0] || 'Member',
+            email: user.email,
+            subject: supportSubject.trim() || 'General In-App Support',
+            message: supportMessage.trim()
+        }]);
+
+        if (error) throw error;
+
+        setToast({ type: 'success', text: "Ticket Transmission Successful. 🛰️" });
+        setSupportSubject('');
+        setSupportMessage('');
+        setIsSupportFormOpen(false);
+
+        // Refresh list
+        const { data } = await supabase.from('messages').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+        setServiceRequests(data || []);
+    } catch (err: unknown) {
+        setToast({ type: 'error', text: (err as Error).message });
+    } finally {
+        setIsSendingTicket(false);
+        setTimeout(() => setToast(null), 3000);
+    }
+  };
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase || !user) return;
@@ -486,7 +530,62 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 text-left">
+    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 text-left relative">
+      {toast && (
+          <div className="fixed top-24 right-8 z-[500] animate-in slide-in-from-right-8 duration-500">
+              <Card className={cn(
+                  "p-6 rounded-[2rem] border-2 shadow-2xl flex items-center gap-4",
+                  toast.type === 'success' ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600"
+              )}>
+                  <CheckCircle2 size={24} />
+                  <p className="text-sm font-black uppercase tracking-widest">{toast.text}</p>
+              </Card>
+          </div>
+      )}
+
+      {isSupportFormOpen && (
+          <div className="fixed inset-0 z-[400] flex items-center justify-center bg-background/20 backdrop-blur-md p-6">
+              <Card className="max-w-md w-full bg-white rounded-[3rem] border border-border shadow-2xl p-10 space-y-8 animate-in zoom-in-95 duration-300">
+                  <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Headphones size={24} /></div>
+                        <h3 className="text-2xl font-black uppercase text-foreground tracking-tighter">Support Grid</h3>
+                      </div>
+                      <button onClick={() => setIsSupportFormOpen(false)} className="text-slate-300 hover:text-rose-500 transition-colors"><X size={24} /></button>
+                  </div>
+
+                  <form onSubmit={handleSubmitTicket} className="space-y-6">
+                      <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Mission Subject</label>
+                          <Input
+                            value={supportSubject}
+                            onChange={e => setSupportSubject(e.target.value)}
+                            className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground"
+                            placeholder="e.g. Technical Help with AirPods"
+                          />
+                      </div>
+                      <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Payload Details (Message)</label>
+                          <Textarea
+                            required
+                            value={supportMessage}
+                            onChange={e => setSupportMessage(e.target.value)}
+                            className="min-h-[150px] rounded-2xl bg-secondary border-border font-medium text-foreground resize-none p-5"
+                            placeholder="Describe your technical inquiry..."
+                          />
+                      </div>
+                      <Button
+                        type="submit"
+                        disabled={isSendingTicket}
+                        className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                      >
+                          {isSendingTicket ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : <><Send className="h-4 w-4 mr-2" /> Launch Ticket</>}
+                      </Button>
+                  </form>
+              </Card>
+          </div>
+      )}
+
       <div className="max-w-7xl mx-auto space-y-10">
 
                 {/* 1. ELITE HERO SECTION */}
@@ -850,11 +949,11 @@ export default function ProfilePage() {
 
                 {/* 🛡️ SERVICE & REPAIR HUB */}
                 <section className="space-y-6">
-                    <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center justify-between px-2 text-left">
                         <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Service Center</h2>
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{serviceRequests.length} Active Tickets</span>
                     </div>
-                    <div className="grid sm:grid-cols-2 gap-6">
+                    <div className="grid lg:grid-cols-3 gap-6">
                         <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm space-y-6 text-left">
                             <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Hammer className="h-4 w-4" /> Technical Support</h3>
                             <div className="space-y-4">
@@ -866,7 +965,7 @@ export default function ProfilePage() {
                                     <button
                                         key={type.label}
                                         onClick={() => type.href.startsWith('http') ? window.open(type.href, '_blank') : router.push(type.href)}
-                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all group"
+                                        className="w-full flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-slate-50 transition-all group border border-slate-50"
                                     >
                                         <span className="text-[10px] font-black uppercase text-foreground">{type.label}</span>
                                         <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all" />
@@ -874,13 +973,14 @@ export default function ProfilePage() {
                                 ))}
                             </div>
                         </Card>
+
                         <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-center text-left group hover:border-primary/20 transition-all">
                             <div className="relative z-10 space-y-4">
                                 <Headphones className="h-10 w-10 text-primary" />
                                 <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-foreground">Global <br /> <span className="text-primary italic">Support Hub</span></h3>
                                 <p className="text-[10px] text-slate-400 font-medium italic">&quot;Real-time technical extraction. No bots, just elite engineers.&quot;</p>
                                 <Button
-                                    onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}`, '_blank')}
+                                    onClick={() => setIsSupportFormOpen(true)}
                                     className="w-full h-12 rounded-xl bg-primary text-white font-black uppercase text-[9px] tracking-widest active:scale-95 shadow-lg shadow-primary/20"
                                 >
                                     Enter Support Grid
@@ -888,6 +988,47 @@ export default function ProfilePage() {
                             </div>
                             <Zap className="absolute -bottom-10 -right-10 h-32 w-32 text-primary/5 rotate-12" />
                         </Card>
+
+                        {/* My Active Tickets */}
+                        <div className="lg:col-span-1">
+                            <Card className="h-full rounded-[2.5rem] bg-slate-50/50 border border-slate-100 p-8 flex flex-col">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2"><MessageSquare className="h-4 w-4" /> Response Feed</h3>
+                                <div className="flex-1 space-y-4 overflow-y-auto no-scrollbar max-h-[300px]">
+                                    {serviceRequests.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center h-full text-center opacity-30">
+                                            <ShieldCheck className="h-8 w-8 mb-2" />
+                                            <p className="text-[8px] font-black uppercase tracking-widest italic">Link status: Secure</p>
+                                        </div>
+                                    ) : (
+                                        serviceRequests.map(req => (
+                                            <div key={req.id} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3 relative group overflow-hidden">
+                                                <div className="flex justify-between items-start">
+                                                    <p className="text-[10px] font-black uppercase text-foreground truncate max-w-[120px]">{req.subject}</p>
+                                                    <span className={cn(
+                                                        "text-[7px] font-black uppercase px-2 py-0.5 rounded-full",
+                                                        req.status === 'New' ? "bg-primary/10 text-primary animate-pulse" :
+                                                        req.status === 'Replied' ? "bg-emerald-100 text-emerald-600" :
+                                                        "bg-slate-100 text-slate-400"
+                                                    )}>{req.status}</span>
+                                                </div>
+
+                                                <p className="text-[9px] text-slate-500 font-medium italic line-clamp-1">&quot;{req.message}&quot;</p>
+
+                                                {req.admin_response && (
+                                                    <div className="pt-3 border-t border-slate-50 animate-in fade-in slide-in-from-top-1 duration-500">
+                                                        <div className="flex items-center gap-2 mb-1.5">
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                                            <p className="text-[8px] font-black uppercase text-primary tracking-widest">Command Center Response</p>
+                                                        </div>
+                                                        <p className="text-[10px] font-bold text-slate-700 leading-relaxed">&quot;{req.admin_response}&quot;</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </Card>
+                        </div>
                     </div>
                 </section>
 

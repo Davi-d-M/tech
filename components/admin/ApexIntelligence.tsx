@@ -20,21 +20,54 @@ export default function ApexIntelligence() {
         async function fetchIntel() {
             if (!supabase) return;
             try {
+                // 1. Fetch Orders for Growth & Top Product
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
                 const [ordersRes, productsRes] = await Promise.all([
-                    supabase.from('orders').select('total_price, created_at, status'),
-                    supabase.from('products').select('name, stock').lte('stock', 5)
+                    supabase.from('orders')
+                        .select('total_price, created_at, status, product_id')
+                        .eq('status', 'Delivered')
+                        .gte('created_at', thirtyDaysAgo.toISOString()),
+                    supabase.from('products')
+                        .select('name, stock')
+                        .order('stock', { ascending: true })
+                        .limit(5)
                 ]);
 
-                // Calculate growth (simple check)
-                const lastWeek = new Date();
-                lastWeek.setDate(lastWeek.getDate() - 7);
-                const revenue = ordersRes.data?.filter(o => o.status === 'Delivered' && new Date(o.created_at) > lastWeek).reduce((s, o) => s + (o.total_price || 0), 0) || 0;
+                // Calculate WoW Growth
+                const now = new Date();
+                const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+                const currentWeek = ordersRes.data?.filter(o => new Date(o.created_at) >= sevenDaysAgo)
+                    .reduce((s, o) => s + (o.total_price || 0), 0) || 0;
+                const prevWeek = ordersRes.data?.filter(o => new Date(o.created_at) >= fourteenDaysAgo && new Date(o.created_at) < sevenDaysAgo)
+                    .reduce((s, o) => s + (o.total_price || 0), 0) || 0;
+
+                const growth = prevWeek > 0 ? ((currentWeek - prevWeek) / prevWeek) * 100 : 0;
+
+                // Find Top Product
+                const productCounts: Record<number, number> = {};
+                ordersRes.data?.forEach(o => {
+                    if (o.product_id) productCounts[o.product_id] = (productCounts[o.product_id] || 0) + 1;
+                });
+                const topProductId = Object.keys(productCounts).sort((a, b) => productCounts[Number(b)] - productCounts[Number(a)])[0];
+
+                let topProductName = 'N/A';
+                if (topProductId) {
+                    const { data: p } = await supabase.from('products').select('name').eq('id', topProductId).single();
+                    topProductName = p?.name || 'Top Seller';
+                }
+
+                // Inventory Briefing
+                const criticalStock = productsRes.data?.filter(p => p.stock <= 5) || [];
 
                 setIntel({
-                    revenueGrowth: revenue > 0 ? 18.4 : 0, // Simulated growth but using real volume
-                    topProduct: 'AMAYA AM-05',
-                    riskCount: productsRes.data?.length || 0,
-                    restockRec: productsRes.data?.[0]?.name || 'SIM Card Tray'
+                    revenueGrowth: Number(growth.toFixed(1)),
+                    topProduct: topProductName,
+                    riskCount: criticalStock.length,
+                    restockRec: criticalStock[0]?.name || 'N/A'
                 });
             } catch (err) {
                 console.error(err);

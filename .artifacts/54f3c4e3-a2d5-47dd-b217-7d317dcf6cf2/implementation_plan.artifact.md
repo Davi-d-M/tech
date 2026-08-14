@@ -1,35 +1,47 @@
-# Implementation Plan - Rider Onboarding Flow Fix 🚚🛡️
+# Implementation Plan - Intelligence Hub, Loading Protocol & Security Shield 🛡️🚀
 
-The rider onboarding flow is currently experiencing friction during the identity verification phase and lacks the correct end-state messaging for new applicants.
+This plan upgrades the Admin intelligence hub to real-time data, implements global high-fidelity loading screens, and enforces absolute security on the Admin Panel via Next.js Middleware.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Phone Normalization**: I am standardizing all phone numbers to omit the leading `0` or `+254` when storing in the database. This ensures that a rider who signs up as `07...` is correctly identified when they log in later as `7...`.
-> - **Flow Redirection**: New riders will now be redirected to a "Under Review" screen after completing the biometrics step, rather than being sent directly to the dashboard (which they can't access yet anyway).
-> - **End-State Message**: As requested, the final screen will explicitly instruct riders to check back in **two hours** for admin approval.
+> - **Security Shield (Middleware)**: I will implement a `middleware.ts` file. This ensures that any request to `/admin` or its sub-pages is intercepted at the server edge. If the `admin_session` cookie is missing or invalid, the user is redirected to `/admin/login` **before** any page content is even considered for rendering. This fixes the PIN bypass issue.
+> - **Rider Pulse**: I'm adding `updated_at` to the `rider_status` table so we can detect stalled riders in the Exception Center.
 
 ## Proposed Changes
 
-### 1. Robust Onboarding Logic ⚡
-- [MODIFY] [Rider Onboarding](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/onboarding/page.tsx):
-    - Implement `normalizePhone` helper to ensure consistency.
-    - Update `handleVerifyOTP` to correctly detect existing `Pending` vs `Verified` riders.
-    - Fix `handleVerificationSubmit` to use normalized phone numbers.
-    - Update `handleBiometricEnroll` to check the current `verification_status` and route to either `success` (for verified) or `pending` (for new/pending) screens.
+### 1. Absolute Security (Admin PIN Shield) 🔐
+- [NEW] [middleware.ts](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/middleware.ts):
+    - Intercept all routes starting with `/admin` (except `/admin/login`).
+    - Verify the `admin_session` cookie using the logic in `lib/adminAuth.ts`.
+    - Redirect to `/admin/login` if not authorized.
 
-### 2. Final Message Update 📝
-- [MODIFY] [Rider Onboarding](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/onboarding/page.tsx):
-    - Update the `pending` step UI to include the "Check back in 2 hours" instruction.
-    - Add a "Sync Status" button to the pending screen to allow riders to check if they've been approved without refreshing the whole page.
+### 2. Accurate Intelligence & Anomalies 🧠
+- [MODIFY] [ApexIntelligence.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/ApexIntelligence.tsx):
+    - **Real Growth**: Calculate Week-over-Week (WoW) revenue growth from delivered orders.
+    - **Top Asset**: Query the most frequently ordered product in the last 30 days.
+    - **Inventory Briefing**: Restock recommendation now matches the product with the absolute lowest stock.
+- [MODIFY] [ExceptionCenter.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/ExceptionCenter.tsx):
+    - **Heartbeat Detection**: Flag riders whose `updated_at` is older than 20 minutes as "stalled".
+    - **Order Latency**: Dynamically calculate minutes delayed for pending orders.
 
-### 3. System Integrity 🔐
-- [MODIFY] [Admin Login API](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/api/admin/login/route.ts):
-    - Ensure the rider login portion of the API also uses normalized phone numbers for matching.
+### 3. High-Fidelity Loading Protocol ⏳
+- [NEW] [app/loading.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/loading.tsx):
+    - Full-screen pulsed logo for the main shop.
+- [NEW] [app/admin/loading.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/loading.tsx):
+    - Specialized loader for the Admin hub: "Apex OS Initializing... Accessing Secure Ledgers".
+
+### 4. Database Heartbeat 🔐
+- [MODIFY] [master_system_sync.sql](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/supabase/migrations/20260812_master_system_sync.sql):
+    - Add `updated_at` column to `public.rider_status`.
+    - Add a trigger to auto-update this timestamp on every status or location update.
 
 ## Verification Plan
 
+### Automated Tests
+- Run `npm run build` to confirm middleware and loaders are correctly integrated.
+
 ### Manual Verification
-1. **Onboarding Test**: Enter a phone number -> Verify OTP -> Complete Identity/Vehicle/Photos -> Verify that the final screen says "Check back in 2 hours".
-2. **Re-Entry Test**: A rider who has submitted but is still `Pending` should land on the "Under Review" screen immediately after OTP verification.
-3. **Approved Test**: Once you approve a rider in the [Dispatch Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/dispatch/page.tsx), they should land on the `success` screen after OTP.
+1. **Security Check**: Try to visit `/admin` in an Incognito window. You should be blocked instantly.
+2. **AI Sync**: Check if the "Top Asset" in the briefing matches your top-selling product.
+3. **Stall Test**: Manually update a rider's `updated_at` to 1 hour ago in Supabase -> Exception Center should flag them.

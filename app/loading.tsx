@@ -1,17 +1,18 @@
-export default function RootLoading() {
+export default function GlobalLoading() {
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-8">
-      <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-6"></div>
-      <div className="space-y-4 text-center">
-        <div className="h-8 w-64 bg-slate-100 animate-pulse rounded-xl mx-auto"></div>
-        <div className="h-4 w-48 bg-slate-50 animate-pulse rounded-lg mx-auto"></div>
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white gap-6">
+      <div className="relative">
+        <div className="h-24 w-24 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary shadow-2xl animate-pulse">
+            <svg viewBox="0 0 24 24" className="h-12 w-12 fill-current" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"/>
+            </svg>
+        </div>
+        <div className="absolute -inset-4 border-2 border-primary/20 rounded-[2.5rem] animate-[spin_3s_linear_infinite]" />
       </div>
-      <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 w-full max-w-5xl opacity-20">
-          {[...Array(4)].map((_, i) => (
-              <div key={i} className="aspect-square bg-slate-100 rounded-[2.5rem] animate-pulse"></div>
-          ))}
+      <div className="text-center space-y-2">
+        <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Apex OS Initializing</h2>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">Establishing Secure Uplink...</p>
       </div>
-      <p className="fixed bottom-10 text-[9px] font-black uppercase text-slate-300 tracking-[0.4em]">Initializing Titan Protocol...</p>
     </div>
   );
 }
