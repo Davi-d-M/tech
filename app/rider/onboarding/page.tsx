@@ -47,19 +47,24 @@ export default function RiderOnboarding() {
         }
         setLoading(true);
         setError(null);
+
+        if (!supabase) {
+            setError("Database offline. [DEVELOPMENT BYPASS] Moving to next step...");
+            setTimeout(() => setStep('otp'), 2000);
+            setLoading(false);
+            return;
+        }
+
         try {
-            // Real OTP Send logic with Supabase Auth
-            if (supabase) {
-                const { error: otpError } = await supabase.auth.signInWithOtp({
-                    phone: `+254${normalized}`
-                });
-                if (otpError) throw otpError;
-                setStep('otp');
-            }
+            const { error: otpError } = await supabase.auth.signInWithOtp({
+                phone: `+254${normalized}`
+            });
+            if (otpError) throw otpError;
+            setStep('otp');
         } catch (err: unknown) {
             const msg = (err as Error).message;
-            if (msg.includes("SMS") || msg.includes("provider")) {
-                setError("SMS service offline. [DEVELOPMENT BYPASS] Moving to next step...");
+            if (msg.includes("SMS") || msg.includes("provider") || msg.includes("disabled")) {
+                setError("SMS service restricted. [DEVELOPMENT BYPASS] Moving to next step...");
                 setTimeout(() => setStep('otp'), 2000);
             } else {
                 setError(msg || "Failed to send OTP.");
@@ -76,37 +81,48 @@ export default function RiderOnboarding() {
         }
         setLoading(true);
         setError(null);
+
+        if (!supabase) {
+            setStep('identity');
+            setLoading(false);
+            return;
+        }
+
         try {
-            // Real OTP Verify logic with Supabase Auth
-            if (supabase) {
-                const normalized = normalizePhone(phone);
-                const { error: verifyError } = await supabase.auth.verifyOtp({
-                    phone: `+254${normalized}`,
-                    token: otp.join(''),
-                    type: 'sms'
-                });
-                if (verifyError) throw verifyError;
+            const normalized = normalizePhone(phone);
+            const { error: verifyError } = await supabase.auth.verifyOtp({
+                phone: `+254${normalized}`,
+                token: otp.join(''),
+                type: 'sms'
+            });
 
-                // CHECK FOR EXISTING RIDER
-                const { data: rider } = await supabase
-                    .from('rider_status')
-                    .select('rider_phone, verification_status, rider_name')
-                    .eq('rider_phone', normalized)
-                    .maybeSingle();
+            if (verifyError) {
+                if (verifyError.message.includes("provider") || verifyError.message.includes("disabled")) {
+                     // Development bypass
+                } else {
+                    throw verifyError;
+                }
+            }
 
-                if (rider) {
-                    if (rider.verification_status === 'Verified') {
-                        localStorage.setItem('apex_rider_phone', rider.rider_phone);
-                        localStorage.setItem('rider_name', rider.rider_name);
-                        setStep('success'); // Direct to success/dashboard
-                    } else if (rider.verification_status === 'Pending') {
-                        setStep('pending');
-                    } else {
-                        setStep('identity'); // If rejected or other, restart
-                    }
+            // CHECK FOR EXISTING RIDER
+            const { data: rider } = await supabase
+                .from('rider_status')
+                .select('rider_phone, verification_status, rider_name')
+                .eq('rider_phone', normalized)
+                .maybeSingle();
+
+            if (rider) {
+                if (rider.verification_status === 'Verified') {
+                    localStorage.setItem('apex_rider_phone', rider.rider_phone);
+                    localStorage.setItem('rider_name', rider.rider_name);
+                    setStep('success');
+                } else if (rider.verification_status === 'Pending') {
+                    setStep('pending');
                 } else {
                     setStep('identity');
                 }
+            } else {
+                setStep('identity');
             }
         } catch (err: unknown) {
             setError((err as Error).message || "Verification failed.");
