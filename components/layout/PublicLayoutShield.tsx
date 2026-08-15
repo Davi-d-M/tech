@@ -80,8 +80,8 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
             if (!supabase || !isOperational) return;
 
             // Non-blocking heartbeat
-            if ('requestIdleCallback' in window) {
-                (window as any).requestIdleCallback(async () => {
+            if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+                (window as Window & { requestIdleCallback: (callback: IdleRequestCallback) => number }).requestIdleCallback(async () => {
                     if (!supabase) return;
                     const { data: { session } } = await supabase.auth.getSession();
                     const cartData = localStorage.getItem('cart');

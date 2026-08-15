@@ -1,15 +1,17 @@
-# Tasks - Performance Optimization & System Repair 🚀⚡
+# Tasks - Ultra-Streamlined Rider Flow (No PIN, No OTP) 🚚⚡
 
-## Phase 1: Performance - Eliminating Lag
-- [ ] Remove root global loader `app/loading.tsx`.
-- [ ] Implement `unstable_cache` for store settings in `app/layout.tsx`.
-- [ ] Optimize `ApexIntelligence.tsx` DB queries.
-- [ ] De-prioritize `active_visitors` heartbeat in `PublicLayoutShield.tsx`.
+## Phase 1: Onboarding Streamlining
+- [ ] Remove `otp` step from `Step` type and flow.
+- [ ] Implement `handleIdentify` with existing rider detection.
+- [ ] Remove `pin` field from `identity` step.
+- [ ] Remove `handleVerifyOTP`.
 
-## Phase 2: System Repair - Admin Panel
-- [ ] Hardened `lib/adminAuth.ts` with high-performance operations.
-- [ ] Verify Middleware redirect logic.
+## Phase 2: Login & API Simplification
+- [ ] Remove PIN field from `rider/login/page.tsx`.
+- [ ] Remove PIN requirement in `api/admin/login` for riders.
+- [ ] Remove PIN logic from `rider/dashboard/page.tsx`.
 
 ## Phase 3: Verification
 - [ ] Run `npm run build`.
-- [ ] Perform manual speed and auth check.
+- [ ] Manual test: New onboarding flow.
+- [ ] Manual test: Login flow (Phone only).

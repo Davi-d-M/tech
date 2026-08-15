@@ -1,41 +1,42 @@
-# Implementation Plan - Rider Flow Simplification & Admin Access Fix 🚚🔐
+# Implementation Plan - Ultra-Streamlined Rider Flow (No PIN, No OTP) 🚚⚡
 
-This plan simplifies the rider entry process by removing the PIN requirement and resolves potential authentication blocks for staff members.
+This plan removes all secondary authentication layers (PIN and OTP) for riders, relying entirely on **Phone Identification** and **Admin Approval Gating** for security.
 
 ## User Review Required
 
-> [!IMPORTANT]
-> - **Rider PIN Removal**: As requested, I am removing the Secret PIN requirement for riders. Authorization will now rely on phone verification (OTP) and Admin approval status.
-> - **Admin Access Stability**: I will further harden the authentication logic to ensure staff members are not incorrectly blocked by the middleware.
+> [!CAUTION]
+> - **Security Notice**: With both PIN and OTP removed, any user who knows a rider's phone number can access their dashboard. However, they can only "Accept Missions" if the Admin has manually verified and approved that specific phone number in the Dispatch Hub.
 
 ## Proposed Changes
 
-### 1. Rider Flow Simplification ⚡
-- [MODIFY] [Rider Login Page](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/login/page.tsx):
-    - Remove the "Secret PIN" input field.
-    - Update the login logic to only require the phone number.
-- [MODIFY] [Rider Dashboard](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/dashboard/page.tsx):
-    - Remove the initial identification card (PIN step).
-    - If a phone number is stored in local storage, automatically verify the account status with Supabase.
-- [MODIFY] [Login API](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/api/admin/login/route.ts):
-    - Update `mode === 'rider'` to skip PIN validation.
-    - Keep the `verification_status === 'Verified'` check to ensure admin gating.
-
-### 2. Admin Authentication Hardening 🛡️
-- [MODIFY] [adminAuth.ts](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/lib/adminAuth.ts):
-    - Standardize on `atob`/`btoa` for all environments to ensure consistency between API routes (Node) and Middleware (Edge).
-    - Add descriptive error logging for verification failures.
-- [MODIFY] [middleware.ts](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/middleware.ts):
-    - Ensure it correctly handles the `/admin` root and sub-paths.
-
-### 3. Rider Onboarding Polish 🎨
+### 1. Onboarding: Frictionless Entry 🚀
 - [MODIFY] [Rider Onboarding](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/onboarding/page.tsx):
-    - Ensure the transition from OTP to Identity/Vehicle is seamless.
-    - Explicitly set the `rider_phone` in local storage after successful registration.
+    - Remove the `otp` step from the flow.
+    - `handleIdentify` (formerly `handleSendOTP`):
+        - Normalize the phone number.
+        - Check if the rider already exists in `rider_status`.
+        - If `Verified` -> Redirect to success/dashboard.
+        - If `Pending` -> Redirect to pending screen.
+        - If `New` -> Redirect to `identity` step.
+    - Remove the `pin` field from the `identity` step.
+    - Remove `handleVerifyOTP` entirely.
+
+### 2. Login: One-Tap Authorization 🔐
+- [MODIFY] [Rider Login](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/login/page.tsx):
+    - Remove the "Secret PIN" input field.
+    - The "Establish Uplink" button will now only send the phone number to the login API.
+- [MODIFY] [Login API](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/api/admin/login/route.ts):
+    - Remove PIN check for `mode === 'rider'`.
+    - Strictly enforce `verification_status === 'Verified'`.
+
+### 3. Dashboard: Automatic Recognition 📊
+- [MODIFY] [Rider Dashboard](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/dashboard/page.tsx):
+    - Remove PIN logic from the identification card.
+    - If a phone is in local storage, automatically fetch stats and missions.
 
 ## Verification Plan
 
 ### Manual Verification
-1. **Rider Login**: Visit `/rider/login`. Enter phone number. Click login. Should land on Dashboard (if verified).
-2. **Staff Login**: Perform a standard Staff login (Email/Password). Verify access to the Admin Hub.
-3. **Middleware Check**: Attempt to access `/admin` without logging in. Should be redirected to `/admin/login`.
+1. **New Rider**: Enter phone -> Go straight to Name/ID/License -> Vehicle -> Photos -> Agreement -> Pending.
+2. **Approved Rider**: Enter phone in Login -> Land directly on Dashboard HUD.
+3. **Pending Rider**: Enter phone -> See "Under Review (Check back in 2 hours)" screen.

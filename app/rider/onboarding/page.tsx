@@ -21,7 +21,7 @@ import { registerBiometrics } from '@/lib/biometricService';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-type Step = 'welcome' | 'phone' | 'otp' | 'identity' | 'vehicle' | 'verification' | 'biometrics' | 'pending' | 'success';
+type Step = 'welcome' | 'phone' | 'identity' | 'vehicle' | 'verification' | 'agreement' | 'biometrics' | 'pending' | 'success';
 
 const normalizePhone = (p: string) => p.replace(/^\+254/, '').replace(/^0/, '').trim();
 
@@ -29,17 +29,49 @@ export default function RiderOnboarding() {
     const [step, setStep] = useState<Step>('welcome');
     const [loading, setLoading] = useState(false);
     const [phone, setPhone] = useState('');
-    const [riderName, setRiderName] = useState(''); // Added to track name for new users
-    const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [riderName, setRiderName] = useState('');
     const [idNumber, setIdNumber] = useState('');
     const [licenseNumber, setLicenseNumber] = useState('');
     const [plateNumber, setPlateNumber] = useState('');
     const [vehicleType, setVehicleType] = useState('Motorbike');
     const [riderPhoto, setRiderPhoto] = useState<File | null>(null);
     const [vehiclePhoto, setVehiclePhoto] = useState<File | null>(null);
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleSendOTP = async () => {
+    const handleDownloadAgreement = async () => {
+        const { default: jsPDF } = await import('jspdf');
+        const doc = new jsPDF();
+        const margin = 20;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const textWidth = pageWidth - (margin * 2);
+        let y = 20;
+
+        const addText = (text: string, isBold = false) => {
+            doc.setFont("helvetica", isBold ? "bold" : "normal");
+            const lines = doc.splitTextToSize(text, textWidth);
+            if (y + (lines.length * 7) > 280) { doc.addPage(); y = 20; }
+            doc.text(lines, margin, y);
+            y += (lines.length * 7) + 5;
+        };
+
+        doc.setFontSize(14);
+        addText("DRIVER PARTNER & TRANSPORT NETWORK SERVICES AGREEMENT", true);
+        doc.setFontSize(10);
+        addText("1. PURPOSE: The Company operates a digital transport network platform connecting passengers with drivers.");
+        addText("2. INDEPENDENT CONTRACTOR: The Driver is an independent contractor, not an employee.");
+        addText("3. ELIGIBILITY: Driver must provide valid ID, License, and PSV badge.");
+        addText("4. VEHICLE: Vehicle must be mechanically safe, insured, and presentable.");
+        addText("5. CONDUCT: Driver shall drive safely, treat passengers respectfully, and avoid fraud.");
+        addText("6. FARES: Calculated by the platform. Independent management of availability.");
+        addText("7. PRIVACY: Comply with data protection laws. Use data only for service.");
+        addText("8. TERMINATION: Either party may terminate with notice.");
+        addText("9. DISPUTES: Governed by the laws of Kenya.");
+
+        doc.save("TechPax_Driver_Agreement.pdf");
+    };
+
+    const handleIdentify = async () => {
         const normalized = normalizePhone(phone);
         if (normalized.length < 9) {
             setError("Valid phone number required");
@@ -48,87 +80,11 @@ export default function RiderOnboarding() {
         setLoading(true);
         setError(null);
 
-        if (!supabase) {
-            setError("Database offline. [DEVELOPMENT BYPASS] Moving to next step...");
-            setTimeout(() => setStep('otp'), 2000);
-            setLoading(false);
-            return;
-        }
-
-        try {
-            const { error: otpError } = await supabase.auth.signInWithOtp({
-                phone: `+254${normalized}`
-            });
-            if (otpError) throw otpError;
-            setStep('otp');
-        } catch (err: unknown) {
-            const msg = (err as Error).message;
-            if (msg.includes("SMS") || msg.includes("provider") || msg.includes("disabled")) {
-                setError("SMS service restricted. [DEVELOPMENT BYPASS] Moving to next step...");
-                setTimeout(() => setStep('otp'), 2000);
-            } else {
-                setError(msg || "Failed to send OTP.");
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleVerifyOTP = async () => {
-        if (otp.join('').length < 6) {
-            setError("Complete the 6-digit code");
-            return;
-        }
-        setLoading(true);
-        setError(null);
-
-        if (!supabase) {
+        // [USER REQUEST] REMOVED OTP STEP - Direct Proceed to Identity
+        setTimeout(() => {
             setStep('identity');
             setLoading(false);
-            return;
-        }
-
-        try {
-            const normalized = normalizePhone(phone);
-            const { error: verifyError } = await supabase.auth.verifyOtp({
-                phone: `+254${normalized}`,
-                token: otp.join(''),
-                type: 'sms'
-            });
-
-            if (verifyError) {
-                if (verifyError.message.includes("provider") || verifyError.message.includes("disabled")) {
-                     // Development bypass
-                } else {
-                    throw verifyError;
-                }
-            }
-
-            // CHECK FOR EXISTING RIDER
-            const { data: rider } = await supabase
-                .from('rider_status')
-                .select('rider_phone, verification_status, rider_name')
-                .eq('rider_phone', normalized)
-                .maybeSingle();
-
-            if (rider) {
-                if (rider.verification_status === 'Verified') {
-                    localStorage.setItem('apex_rider_phone', rider.rider_phone);
-                    localStorage.setItem('rider_name', rider.rider_name);
-                    setStep('success');
-                } else if (rider.verification_status === 'Pending') {
-                    setStep('pending');
-                } else {
-                    setStep('identity');
-                }
-            } else {
-                setStep('identity');
-            }
-        } catch (err: unknown) {
-            setError((err as Error).message || "Verification failed.");
-        } finally {
-            setLoading(false);
-        }
+        }, 800);
     };
 
     const handleBiometricEnroll = async () => {
@@ -195,6 +151,7 @@ export default function RiderOnboarding() {
                 .upsert({
                     rider_phone: normalized,
                     rider_name: riderName.trim(),
+                    pin: '1234', // Fixed internal pin since Secret PIN removed from UI
                     id_number: idNumber,
                     license_number: licenseNumber,
                     plate_number: plateNumber,
@@ -205,7 +162,7 @@ export default function RiderOnboarding() {
                 }, { onConflict: 'rider_phone' });
 
             if (updateError) throw updateError;
-            setStep('biometrics');
+            setStep('agreement');
         } catch (err: unknown) {
             setError((err as Error).message || "Verification upload failed.");
         } finally {
@@ -260,39 +217,8 @@ export default function RiderOnboarding() {
                                     <Phone className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                                 </div>
                                 {error && <p className="text-[10px] font-black text-rose-500 uppercase animate-pulse">{error}</p>}
-                                <Button onClick={handleSendOTP} disabled={loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
+                                <Button onClick={handleIdentify} disabled={loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
                                     {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Verify Identity"}
-                                </Button>
-                            </div>
-                        )}
-
-                        {step === 'otp' && (
-                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-center">
-                                <div className="space-y-2">
-                                    <h3 className="text-xl font-black text-foreground uppercase">Verification</h3>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sent to {phone}</p>
-                                </div>
-                                <div className="flex justify-between gap-2">
-                                    {otp.map((digit, i) => (
-                                        <Input
-                                            key={i}
-                                            id={`otp-${i}`}
-                                            value={digit}
-                                            onChange={e => {
-                                                const val = e.target.value.slice(-1);
-                                                const newOtp = [...otp];
-                                                newOtp[i] = val;
-                                                setOtp(newOtp);
-                                                if (val && i < 5) document.getElementById(`otp-${i+1}`)?.focus();
-                                            }}
-                                            maxLength={1}
-                                            className="h-14 w-12 text-center rounded-xl bg-slate-50 border-slate-100 font-black text-lg p-0 focus:ring-2 focus:ring-primary/20"
-                                        />
-                                    ))}
-                                </div>
-                                {error && <p className="text-[10px] font-black text-rose-500 uppercase">{error}</p>}
-                                <Button onClick={handleVerifyOTP} disabled={loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
-                                    {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Verify Code"}
                                 </Button>
                             </div>
                         )}
@@ -301,7 +227,7 @@ export default function RiderOnboarding() {
                             <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-left">
                                 <div className="space-y-2">
                                     <h3 className="text-xl font-black text-foreground uppercase">Identity Profile</h3>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Required Documents</p>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Required Documents & Credentials</p>
                                 </div>
                                 <div className="space-y-4">
                                     <div className="relative">
@@ -367,8 +293,40 @@ export default function RiderOnboarding() {
                                 </div>
                                 {error && <p className="text-[10px] font-black text-rose-500 uppercase">{error}</p>}
                                 <Button onClick={handleVerificationSubmit} disabled={loading} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
-                                    {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Deploy for Review"}
+                                    {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Review Agreement"}
                                 </Button>
+                            </div>
+                        )}
+
+                        {step === 'agreement' && (
+                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-left">
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-black text-foreground uppercase">Service Agreement</h3>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Legal Protocol</p>
+                                </div>
+                                <div className="h-64 overflow-y-auto p-6 bg-slate-50 rounded-3xl border border-slate-100 text-[10px] font-medium leading-relaxed text-slate-600 space-y-4">
+                                    <p className="font-black text-foreground uppercase">DRIVER PARTNER & TRANSPORT NETWORK SERVICES AGREEMENT</p>
+                                    <p>1. PURPOSE: The Company operates a digital transport network platform. The Driver wishes to provide transportation services as an independent contractor.</p>
+                                    <p>2. ELIGIBILITY: Driver must provide valid ID, License, and PSV badge.</p>
+                                    <p>3. VEHICLE: Vehicle must be mechanically safe, insured, and presentable.</p>
+                                    <p>4. CONDUCT: Driver shall drive safely, treat passengers respectfully, and avoid fraud.</p>
+                                    <p>5. INDEPENDENCE: The Driver is an independent contractor. No employment relationship is created.</p>
+                                    <p>6. PRIVACY: Driver shall comply with Kenyan data protection requirements.</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="flex items-start gap-3 cursor-pointer group">
+                                        <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} className="mt-1 h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20" />
+                                        <span className="text-[10px] font-bold text-slate-500 group-hover:text-foreground transition-colors uppercase italic leading-tight">
+                                            I have read, understood and agree to be bound by the Driver Partner & Transport Network Services Agreement.
+                                        </span>
+                                    </label>
+                                    <Button onClick={handleDownloadAgreement} variant="outline" className="w-full h-12 rounded-xl border-slate-200 text-slate-400 font-black uppercase text-[10px] tracking-widest hover:bg-slate-50">
+                                        Download PDF Copy
+                                    </Button>
+                                    <Button onClick={() => setStep('biometrics')} disabled={!agreedToTerms} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all shadow-xl shadow-primary/20">
+                                        Confirm & Proceed
+                                    </Button>
+                                </div>
                             </div>
                         )}
 

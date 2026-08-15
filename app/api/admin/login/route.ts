@@ -198,10 +198,10 @@ export async function POST(request: Request) {
     return response;
   }
 
-  // 4. Rider Login Mode (Phone Only for now)
+  // 4. Rider Login Mode (Phone + PIN)
   if (mode === 'rider') {
-    if (!phone || !supabase) {
-        return NextResponse.json({ error: 'Phone number required.' }, { status: 400 });
+    if (!phone || !password || !supabase) {
+        return NextResponse.json({ error: 'Phone and PIN required.' }, { status: 400 });
     }
 
     const normalizedPhone = phone.replace(/^\+254/, '').replace(/^0/, '').trim();
@@ -222,13 +222,18 @@ export async function POST(request: Request) {
 
     const { data: riderData, error: riderError } = await supabase
         .from('rider_status')
-        .select('id, rider_phone, verification_status')
+        .select('id, rider_phone, pin, verification_status')
         .eq('rider_phone', normalizedPhone)
         .maybeSingle();
 
     if (riderError || !riderData) {
         await supabase.from('login_attempts').insert([{ success: false, ip_address: ip }]);
         return NextResponse.json({ error: 'Rider not found or unauthorized.' }, { status: 403 });
+    }
+
+    if (riderData.pin !== password) {
+        await supabase.from('login_attempts').insert([{ success: false, ip_address: ip }]);
+        return NextResponse.json({ error: 'Incorrect PIN.' }, { status: 401 });
     }
 
     if (riderData.verification_status !== 'Verified') {

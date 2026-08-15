@@ -2,17 +2,30 @@ const SESSION_SECRET =
   process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || 'apexstores';
 
 /**
- * Universal Base64 Encoder
+ * Universal Base64 Encoder (Safe for Unicode and Edge Runtime)
  */
 function toBase64(str: string): string {
-  return btoa(unescape(encodeURIComponent(str)));
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    let binary = "";
+    const bytes = new Uint8Array(data);
+    for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
 }
 
 /**
- * Universal Base64 Decoder
+ * Universal Base64 Decoder (Safe for Unicode and Edge Runtime)
  */
 function fromBase64(str: string): string {
-  return decodeURIComponent(escape(atob(str)));
+    const binary = atob(str);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    const decoder = new TextDecoder();
+    return decoder.decode(bytes);
 }
 
 /**
@@ -66,11 +79,10 @@ export async function verifySessionCookie(value?: string): Promise<{ role: strin
 
     const expectedSignature = await signToken(`${token}.${base64Payload}`);
 
-    // Standard equality check is fine here
+    // Standard equality check
     const isSignatureValid = (signature === expectedSignature);
 
     if (!isSignatureValid) {
-      console.warn("Auth Signature Mismatch");
       return null;
     }
 

@@ -2,8 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-import { Phone, Truck, Loader2, ArrowLeft } from 'lucide-react';
+import { Phone, Truck, Loader2, ArrowLeft, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
@@ -11,6 +10,7 @@ import Link from 'next/link';
 export default function RiderLogin() {
     const router = useRouter();
     const [phone, setPhone] = React.useState('');
+    const [pin, setPin] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
 
@@ -23,7 +23,7 @@ export default function RiderLogin() {
             const res = await fetch('/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mode: 'rider', phone })
+                body: JSON.stringify({ mode: 'rider', phone, password: pin })
             });
 
             const data = await res.json();
@@ -31,6 +31,7 @@ export default function RiderLogin() {
 
             // Save rider session
             localStorage.setItem('apex_rider_phone', phone);
+            localStorage.setItem('apex_rider_pin', pin);
             router.push(`/rider/dashboard?phone=${phone}`);
         } catch (err: unknown) {
             setError((err as Error).message);
@@ -64,6 +65,22 @@ export default function RiderLogin() {
                                 required
                             />
                             <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2 text-left">
+                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Secret PIN</label>
+                        <div className="relative">
+                            <Input
+                                type="password"
+                                value={pin}
+                                onChange={e => setPin(e.target.value)}
+                                placeholder="••••"
+                                className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 text-sm font-bold"
+                                maxLength={4}
+                                required
+                            />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                         </div>
                     </div>
 

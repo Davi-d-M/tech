@@ -183,16 +183,21 @@ export default function AdminDispatchPage() {
 
     const handleVerifyRider = async (phone: string) => {
         if (!supabase) return;
+        const pin = Math.floor(1000 + Math.random() * 9000).toString(); // Generate random 4-digit PIN
         try {
             const { error } = await supabase
                 .from('rider_status')
-                .update({ verification_status: 'Verified' })
+                .update({
+                    verification_status: 'Verified',
+                    pin: pin
+                })
                 .eq('rider_phone', phone);
 
             if (error) throw error;
-            setRiders(prev => prev.map(r => r.rider_phone === phone ? { ...r, verification_status: 'Verified' } : r));
-            setMessage({ type: 'success', text: "Unit Authorized for Missions. ✅" });
-            setTimeout(() => setMessage(null), 3000);
+            setRiders(prev => prev.map(r => r.rider_phone === phone ? { ...r, verification_status: 'Verified', pin } : r));
+            setMessage({ type: 'success', text: `Unit Authorized. Issued PIN: ${pin}. ✅` });
+            // In a production app, we would also trigger an SMS/Email to the rider here
+            setTimeout(() => setMessage(null), 10000); // Show for longer so admin can note PIN
         } catch {
             setMessage({ type: 'error', text: "Authorization Failed." });
         }
