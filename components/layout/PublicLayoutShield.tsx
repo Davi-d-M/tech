@@ -74,32 +74,57 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
             localStorage.setItem('apex_session_id', sessionId);
         }
 
-        let isOperational = true;
+        const isOperational = true;
 
         const sendHeartbeat = async () => {
             if (!supabase || !isOperational) return;
-            const { data: { session } } = await supabase.auth.getSession();
-            const cartData = localStorage.getItem('cart');
-            let cartValue = 0;
-            if (cartData) {
-                try {
-                    const parsed = JSON.parse(cartData);
-                    cartValue = parsed.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
-                } catch { }
-            }
 
-            const { error } = await supabase.from('active_visitors').upsert({
-                session_id: sessionId,
-                customer_name: session?.user?.email?.split('@')[0] || null,
-                current_page: pathname,
-                last_active_at: new Date().toISOString(),
-                cart_value: cartValue,
-                status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
-            });
+            // Non-blocking heartbeat
+            if ('requestIdleCallback' in window) {
+                (window as any).requestIdleCallback(async () => {
+                    if (!supabase) return;
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const cartData = localStorage.getItem('cart');
+                    let cartValue = 0;
+                    if (cartData) {
+                        try {
+                            const parsed = JSON.parse(cartData);
+                            cartValue = parsed.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
+                        } catch { }
+                    }
 
-            if (error && (error.code === '42P01' || (error as { status?: number }).status === 403)) {
-                // Table doesn't exist or Forbidden - stop trying to avoid console clutter
-                isOperational = false;
+                    await supabase.from('active_visitors').upsert({
+                        session_id: sessionId,
+                        customer_name: session?.user?.email?.split('@')[0] || null,
+                        current_page: pathname,
+                        last_active_at: new Date().toISOString(),
+                        cart_value: cartValue,
+                        status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
+                    });
+                });
+            } else {
+                // Fallback for Safari
+                setTimeout(async () => {
+                    if (!supabase) return;
+                    const { data: { session } } = await supabase.auth.getSession();
+                    const cartData = localStorage.getItem('cart');
+                    let cartValue = 0;
+                    if (cartData) {
+                        try {
+                            const parsed = JSON.parse(cartData);
+                            cartValue = parsed.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
+                        } catch { }
+                    }
+
+                    await supabase.from('active_visitors').upsert({
+                        session_id: sessionId,
+                        customer_name: session?.user?.email?.split('@')[0] || null,
+                        current_page: pathname,
+                        last_active_at: new Date().toISOString(),
+                        cart_value: cartValue,
+                        status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
+                    });
+                }, 1);
             }
         };
 

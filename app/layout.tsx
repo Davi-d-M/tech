@@ -54,16 +54,16 @@ export const metadata: Metadata = {
 
 import PublicLayoutShield from "@/components/layout/PublicLayoutShield";
 import JsonLd from "@/components/seo/JsonLd";
-import { supabase } from "@/lib/supabaseClient";
 import { type StoreSettings } from "@/lib/useSettings";
+import { getCachedSettings } from "@/lib/cachedData";
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch settings on server for all pages
-  const { data: settingsRes } = await (supabase?.from('settings').select('*') || Promise.resolve({ data: [] }));
+  // Fetch settings with shared cache
+  const { data: settingsRes } = await getCachedSettings();
   const settings = {} as StoreSettings;
   (settingsRes || []).forEach(item => {
       const key = item.key as keyof StoreSettings;

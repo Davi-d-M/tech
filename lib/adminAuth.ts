@@ -2,6 +2,28 @@ const SESSION_SECRET =
   process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || 'apexstores';
 
 /**
+ * Universal Base64 Encoder
+ */
+function toBase64(str: string): string {
+    try {
+        return Buffer.from(str).toString('base64');
+    } catch {
+        return btoa(unescape(encodeURIComponent(str)));
+    }
+}
+
+/**
+ * Universal Base64 Decoder
+ */
+function fromBase64(str: string): string {
+    try {
+        return Buffer.from(str, 'base64').toString('utf8');
+    } catch {
+        return decodeURIComponent(escape(atob(str)));
+    }
+}
+
+/**
  * Portable signing function using Web Crypto API (Edge Runtime Compatible)
  */
 async function signToken(token: string) {
@@ -32,8 +54,7 @@ export async function createSessionCookie(role: string = 'owner', permissions: R
   const token = crypto.randomUUID();
   const payload = JSON.stringify({ role, permissions });
 
-  // Use Base64 encoding that is portable
-  const base64Payload = btoa(payload);
+  const base64Payload = toBase64(payload);
 
   const signature = await signToken(`${token}.${base64Payload}`);
   return `${signature}.${token}.${base64Payload}`;
@@ -56,7 +77,7 @@ export async function verifySessionCookie(value?: string): Promise<{ role: strin
 
     if (!isSignatureValid) return null;
 
-    const payload = JSON.parse(atob(base64Payload));
+    const payload = JSON.parse(fromBase64(base64Payload));
     return payload;
   } catch (err) {
     console.error("Auth Verification Error:", err);

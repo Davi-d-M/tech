@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { supabase } from "@/lib/supabaseClient";
+import { getCachedHomeData } from "@/lib/cachedData";
 import { type StoreSettings } from "@/lib/useSettings";
 
-export const revalidate = 60; // Revalidate every minute
+export const revalidate = 300; // Shared with cache
 
 interface Post {
   slug: string;
@@ -34,12 +34,8 @@ interface Product {
 }
 
 export default async function Home() {
-  // 1. Fetch All Data in Parallel on Server
-  const [postsRes, productsRes, settingsRes] = await Promise.all([
-    supabase?.from('blog_posts').select('*').eq('is_published', true).limit(2) || Promise.resolve({ data: [] }),
-    supabase?.from('products').select('*').order('created_at', { ascending: false }) || Promise.resolve({ data: [] }),
-    supabase?.from('settings').select('*') || Promise.resolve({ data: [] })
-  ]);
+  // 1. Fetch All Data in Parallel on Server (Shared Cache)
+  const [postsRes, productsRes, settingsRes] = await getCachedHomeData();
 
   const posts = (postsRes.data || []) as Post[];
   const initialProducts = (productsRes.data || []) as Product[];

@@ -1,10 +1,15 @@
-# Tasks - Admin Login & Middleware Fix 🛡️🔐
+# Tasks - Performance Optimization & System Repair 🚀⚡
 
-## Phase 1: Authentication Logic Fix
-- [/] Refactor `lib/adminAuth.ts` for Edge compatibility and shared usage.
-- [ ] Simplify `middleware.ts` to use shared auth library.
-- [ ] Verify `app/api/admin/login/route.ts` cookie setting.
+## Phase 1: Performance - Eliminating Lag
+- [ ] Remove root global loader `app/loading.tsx`.
+- [ ] Implement `unstable_cache` for store settings in `app/layout.tsx`.
+- [ ] Optimize `ApexIntelligence.tsx` DB queries.
+- [ ] De-prioritize `active_visitors` heartbeat in `PublicLayoutShield.tsx`.
 
-## Phase 2: Verification
+## Phase 2: System Repair - Admin Panel
+- [ ] Hardened `lib/adminAuth.ts` with high-performance operations.
+- [ ] Verify Middleware redirect logic.
+
+## Phase 3: Verification
 - [ ] Run `npm run build`.
-- [ ] Test login flow in browser.
+- [ ] Perform manual speed and auth check.

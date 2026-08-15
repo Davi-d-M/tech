@@ -26,7 +26,7 @@ export default function ApexIntelligence() {
 
                 const [ordersRes, productsRes] = await Promise.all([
                     supabase.from('orders')
-                        .select('total_price, created_at, status, product_id')
+                        .select('total_price, created_at, product_id')
                         .eq('status', 'Delivered')
                         .gte('created_at', thirtyDaysAgo.toISOString()),
                     supabase.from('products')
