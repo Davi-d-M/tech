@@ -1,39 +1,41 @@
-# Implementation Plan - Performance Optimization & System Repair 🚀⚡
+# Implementation Plan - Rider Flow Simplification & Admin Access Fix 🚚🔐
 
-This plan addresses the "extreme slowness" reported by the user and fixes the "blank admin login" issue by optimizing data fetching, removing intrusive loaders, and hardening the authentication logic for high-performance delivery.
+This plan simplifies the rider entry process by removing the PIN requirement and resolves potential authentication blocks for staff members.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Removal of Root Loader**: I am removing `app/loading.tsx` (the global loader). While it looked premium, root-level loaders in Next.js can cause a "flash of loading" on every navigation, making the app feel sluggish. I will replace it with granular, component-level skeletons.
-> - **Base64 Refactor**: I will move away from `atob`/`btoa` to a more robust `Buffer`-based approach in Server Components, which is significantly faster and more reliable in standard Node.js environments.
+> - **Rider PIN Removal**: As requested, I am removing the Secret PIN requirement for riders. Authorization will now rely on phone verification (OTP) and Admin approval status.
+> - **Admin Access Stability**: I will further harden the authentication logic to ensure staff members are not incorrectly blocked by the middleware.
 
 ## Proposed Changes
 
-### 1. Eliminating Slowness (Performance Pass) ⚡
-- [DELETE] [app/loading.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/loading.tsx):
-    - Remove the root-level global loader to eliminate navigation lag.
-- [MODIFY] [layout.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/layout.tsx) & [page.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/page.tsx):
-    - Implement `unstable_cache` for the `settings` fetch. This ensures the database is only queried once per minute instead of on every single request.
-- [MODIFY] [ApexIntelligence.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/ApexIntelligence.tsx):
-    - Optimize order fetching. Instead of `select('*')`, only select the specific fields needed (`total_price`, `created_at`) to reduce payload size.
+### 1. Rider Flow Simplification ⚡
+- [MODIFY] [Rider Login Page](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/login/page.tsx):
+    - Remove the "Secret PIN" input field.
+    - Update the login logic to only require the phone number.
+- [MODIFY] [Rider Dashboard](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/dashboard/page.tsx):
+    - Remove the initial identification card (PIN step).
+    - If a phone number is stored in local storage, automatically verify the account status with Supabase.
+- [MODIFY] [Login API](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/api/admin/login/route.ts):
+    - Update `mode === 'rider'` to skip PIN validation.
+    - Keep the `verification_status === 'Verified'` check to ensure admin gating.
 
-### 2. Fixing the Blank Admin Login 🛡️
+### 2. Admin Authentication Hardening 🛡️
 - [MODIFY] [adminAuth.ts](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/lib/adminAuth.ts):
-    - Standardize on `Buffer` for Base64 operations. This is the native, high-performance way to handle data in Node.js/Server components and avoids environment-specific crashes.
+    - Standardize on `atob`/`btoa` for all environments to ensure consistency between API routes (Node) and Middleware (Edge).
+    - Add descriptive error logging for verification failures.
 - [MODIFY] [middleware.ts](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/middleware.ts):
-    - Harden the error handling. If an auth check fails, it will now gracefully redirect rather than potentially hanging or crashing.
+    - Ensure it correctly handles the `/admin` root and sub-paths.
 
-### 3. Responsive UI (Main Thread Optimization) 💎
-- [MODIFY] [PublicLayoutShield.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/layout/PublicLayoutShield.tsx):
-    - Move the `active_visitors` heartbeat to a `Web Worker` or simply wrap it in `requestIdleCallback`. This ensures tracking logic never blocks user button clicks.
+### 3. Rider Onboarding Polish 🎨
+- [MODIFY] [Rider Onboarding](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/onboarding/page.tsx):
+    - Ensure the transition from OTP to Identity/Vehicle is seamless.
+    - Explicitly set the `rider_phone` in local storage after successful registration.
 
 ## Verification Plan
 
-### Automated Tests
-- Run `npm run build` to verify the new cached architecture.
-
 ### Manual Verification
-1. **Speed Test**: Navigate between Shop and Profile. Navigations should be near-instant without a loading screen.
-2. **Admin Test**: Log in to `/admin/login`. The page should render the "Control Center" UI immediately.
-3. **Responsiveness**: Click the "Add to Cart" button multiple times. Expect instant feedback without main-thread lag.
+1. **Rider Login**: Visit `/rider/login`. Enter phone number. Click login. Should land on Dashboard (if verified).
+2. **Staff Login**: Perform a standard Staff login (Email/Password). Verify access to the Admin Hub.
+3. **Middleware Check**: Attempt to access `/admin` without logging in. Should be redirected to `/admin/login`.

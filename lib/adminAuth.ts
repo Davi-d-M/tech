@@ -5,22 +5,14 @@ const SESSION_SECRET =
  * Universal Base64 Encoder
  */
 function toBase64(str: string): string {
-    try {
-        return Buffer.from(str).toString('base64');
-    } catch {
-        return btoa(unescape(encodeURIComponent(str)));
-    }
+  return btoa(unescape(encodeURIComponent(str)));
 }
 
 /**
  * Universal Base64 Decoder
  */
 function fromBase64(str: string): string {
-    try {
-        return Buffer.from(str, 'base64').toString('utf8');
-    } catch {
-        return decodeURIComponent(escape(atob(str)));
-    }
+  return decodeURIComponent(escape(atob(str)));
 }
 
 /**
@@ -67,15 +59,20 @@ export async function verifySessionCookie(value?: string): Promise<{ role: strin
   if (!value) return null;
 
   try {
-    const [signature, token, base64Payload] = value.split('.');
-    if (!signature || !token || !base64Payload) return null;
+    const parts = value.split('.');
+    if (parts.length !== 3) return null;
+
+    const [signature, token, base64Payload] = parts;
 
     const expectedSignature = await signToken(`${token}.${base64Payload}`);
 
     // Standard equality check is fine here
     const isSignatureValid = (signature === expectedSignature);
 
-    if (!isSignatureValid) return null;
+    if (!isSignatureValid) {
+      console.warn("Auth Signature Mismatch");
+      return null;
+    }
 
     const payload = JSON.parse(fromBase64(base64Payload));
     return payload;

@@ -20,26 +20,17 @@ export default function RiderLogin() {
         setError(null);
 
         try {
-            if (!supabase) throw new Error("Infrastructure Offline.");
+            const res = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode: 'rider', phone })
+            });
 
-            const { data, error: fetchError } = await supabase
-                .from('rider_status')
-                .select('*')
-                .eq('rider_phone', phone.replace(/^0/, '').trim())
-                .single();
-
-            if (fetchError || !data) {
-                throw new Error("Rider Profile Not Found.");
-            }
-
-            if (data.verification_status !== 'Verified') {
-                throw new Error(`Status: ${data.verification_status || 'Pending'}. Approval Required.`);
-            }
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Authorization Denied.");
 
             // Save rider session
             localStorage.setItem('apex_rider_phone', phone);
-            localStorage.setItem('rider_name', data.rider_name);
-
             router.push(`/rider/dashboard?phone=${phone}`);
         } catch (err: unknown) {
             setError((err as Error).message);
