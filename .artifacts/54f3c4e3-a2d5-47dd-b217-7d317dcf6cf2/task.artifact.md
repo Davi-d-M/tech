@@ -1,17 +1,16 @@
-# Tasks - Ultra-Streamlined Rider Flow (No PIN, No OTP) 🚚⚡
+# Tasks - Admin Reorganization & Redirect Fix 🛡️🚀
 
-## Phase 1: Onboarding Streamlining
-- [ ] Remove `otp` step from `Step` type and flow.
-- [ ] Implement `handleIdentify` with existing rider detection.
-- [ ] Remove `pin` field from `identity` step.
-- [ ] Remove `handleVerifyOTP`.
+## Phase 1: Structural Reorganization
+- [x] Create `app/admin/(dashboard)` directory.
+- [x] Move administrative feature folders into `(dashboard)` group.
+- [x] Move authenticated layout files into `(dashboard)` group.
+- [x] Move the main dashboard `page.tsx` into `(dashboard)` group.
 
-## Phase 2: Login & API Simplification
-- [ ] Remove PIN field from `rider/login/page.tsx`.
-- [ ] Remove PIN requirement in `api/admin/login` for riders.
-- [ ] Remove PIN logic from `rider/dashboard/page.tsx`.
+## Phase 2: Logic Stabilization
+- [x] Refine `middleware.ts` to ensure clean redirection.
+- [x] Verify `app/admin/login/page.tsx` is isolated from protected layouts.
 
 ## Phase 3: Verification
-- [ ] Run `npm run build`.
-- [ ] Manual test: New onboarding flow.
-- [ ] Manual test: Login flow (Phone only).
+- [x] Run `npm run build` to check for import/path errors.
+- [x] Manual test: Verify `/admin/login` renders correctly.
+- [x] Manual test: Verify unauthenticated `/admin` redirect.

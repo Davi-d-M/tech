@@ -1,42 +1,36 @@
-# Implementation Plan - Ultra-Streamlined Rider Flow (No PIN, No OTP) 🚚⚡
+# Implementation Plan - Admin Panel Access & Redirect Loop Fix 🛡️🚀
 
-This plan removes all secondary authentication layers (PIN and OTP) for riders, relying entirely on **Phone Identification** and **Admin Approval Gating** for security.
+This plan resolves the "blank screen" issue on the Admin Login page by eliminating an infinite redirect loop and separating the authenticated dashboard layout from the public login page.
 
 ## User Review Required
 
-> [!CAUTION]
-> - **Security Notice**: With both PIN and OTP removed, any user who knows a rider's phone number can access their dashboard. However, they can only "Accept Missions" if the Admin has manually verified and approved that specific phone number in the Dispatch Hub.
+> [!IMPORTANT]
+> - **Architecture Change**: I am moving the Admin Dashboard pages into a Route Group `(dashboard)`. This allows the dashboard pages to share an authenticated layout (with sidebar/header) while keeping the Login page separate and clean.
+> - **Redirect Loop Fix**: By moving the authenticated layout out of the path of the Login page, we stop the infinite "Login -> Layout -> Redirect to Login" cycle that is causing the blank screen.
 
 ## Proposed Changes
 
-### 1. Onboarding: Frictionless Entry 🚀
-- [MODIFY] [Rider Onboarding](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/onboarding/page.tsx):
-    - Remove the `otp` step from the flow.
-    - `handleIdentify` (formerly `handleSendOTP`):
-        - Normalize the phone number.
-        - Check if the rider already exists in `rider_status`.
-        - If `Verified` -> Redirect to success/dashboard.
-        - If `Pending` -> Redirect to pending screen.
-        - If `New` -> Redirect to `identity` step.
-    - Remove the `pin` field from the `identity` step.
-    - Remove `handleVerifyOTP` entirely.
+### 1. Structural Reorganization (Next.js Route Groups) 📂
+- [NEW] Create directory `app/admin/(dashboard)` to house the protected panel.
+- [MOVE] Move all administrative feature folders (e.g., `orders`, `analytics`, `dispatch`, etc.) from `app/admin/` into `app/admin/(dashboard)/`.
+- [MOVE] Move the dashboard home page `app/admin/page.tsx` into `app/admin/(dashboard)/page.tsx`.
+- [MOVE] Move the layouts `app/admin/layout.tsx` and `app/admin/layout-client.tsx` into `app/admin/(dashboard)/`.
 
-### 2. Login: One-Tap Authorization 🔐
-- [MODIFY] [Rider Login](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/login/page.tsx):
-    - Remove the "Secret PIN" input field.
-    - The "Establish Uplink" button will now only send the phone number to the login API.
-- [MODIFY] [Login API](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/api/admin/login/route.ts):
-    - Remove PIN check for `mode === 'rider'`.
-    - Strictly enforce `verification_status === 'Verified'`.
+### 2. Login Page Isolation 🔐
+- Keep `app/admin/login/page.tsx` where it is. Because it is now *outside* the `(dashboard)` group, it will no longer be wrapped by the authentication-checking layout.
+- This ensures the Login page can render freely without being intercepted by a layout that demands a session.
 
-### 3. Dashboard: Automatic Recognition 📊
-- [MODIFY] [Rider Dashboard](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/dashboard/page.tsx):
-    - Remove PIN logic from the identification card.
-    - If a phone is in local storage, automatically fetch stats and missions.
+### 3. Middleware Hardening 🛡️
+- [MODIFY] [middleware.ts](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/middleware.ts):
+    - Ensure it continues to correctly protect all `/admin` routes except for the login page.
+    - Added explicit handling for the `/admin` root to ensure unauthorized users are redirected to login.
 
 ## Verification Plan
 
+### Automated Tests
+- Run `npm run build` to ensure all file moves are correctly linked and there are no broken relative imports.
+
 ### Manual Verification
-1. **New Rider**: Enter phone -> Go straight to Name/ID/License -> Vehicle -> Photos -> Agreement -> Pending.
-2. **Approved Rider**: Enter phone in Login -> Land directly on Dashboard HUD.
-3. **Pending Rider**: Enter phone -> See "Under Review (Check back in 2 hours)" screen.
+1. **Unauthenticated Access**: Visit `/admin`. Expect instant redirect to `/admin/login`.
+2. **Login Page Rendering**: Visit `/admin/login`. The page should now render perfectly (no blank screen) with the "Control Center" UI.
+3. **Authenticated Access**: Log in. Verify you land on the Dashboard and can see the sidebar and stats.
