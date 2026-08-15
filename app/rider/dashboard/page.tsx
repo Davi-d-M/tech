@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     Truck,
-    Zap,
     LogOut,
     PhoneCall,
     Search,
@@ -48,7 +47,6 @@ function RiderDashboardContent() {
     const phoneParam = searchParams.get('phone');
 
     const [phone, setPhone] = useState('');
-    const [pin, setPin] = useState('');
     const [isIdentified, setIsIdentified] = useState(false);
     const [loading, setLoading] = useState(false);
     const [missions, setMissions] = useState<Mission[]>([]);
@@ -62,17 +60,15 @@ function RiderDashboardContent() {
 
     useEffect(() => {
         const savedPhone = localStorage.getItem('apex_rider_phone');
-        const savedPin = localStorage.getItem('apex_rider_pin');
-        if (savedPhone && savedPin) {
+        if (savedPhone) {
             setPhone(savedPhone);
-            setPin(savedPin);
-            verifyAndFetch(savedPhone, savedPin);
+            verifyAndFetch(savedPhone);
         } else if (phoneParam) {
             setPhone(phoneParam);
         }
     }, [phoneParam]);
 
-    const verifyAndFetch = async (riderPhone: string, riderPin: string) => {
+    const verifyAndFetch = async (riderPhone: string) => {
         if (!supabase) return;
         setLoading(true);
         setAuthError(null);
@@ -80,12 +76,16 @@ function RiderDashboardContent() {
             const { data: rider, error: authErr } = await supabase
                 .from('rider_status')
                 .select('*')
-                .eq('rider_phone', riderPhone.trim())
-                .eq('pin', riderPin.trim())
+                .eq('rider_phone', riderPhone.replace(/^0/, '').trim())
                 .maybeSingle();
 
             if (authErr || !rider) {
-                setAuthError("Identity Verification Failed. Check Phone & PIN.");
+                setAuthError("Identity Link Terminated. Check Phone Number.");
+                return;
+            }
+
+            if (rider.verification_status !== 'Verified') {
+                setAuthError(`Status: ${rider.verification_status || 'Pending'}. Approval Required.`);
                 return;
             }
 
@@ -108,7 +108,6 @@ function RiderDashboardContent() {
             if (dispatched) setActiveMission(dispatched);
 
             localStorage.setItem('apex_rider_phone', riderPhone);
-            localStorage.setItem('apex_rider_pin', riderPin);
             setMissions(currentMissions);
             setIsIdentified(true);
             setIsOnline(rider.status !== 'Offline');
@@ -123,7 +122,7 @@ function RiderDashboardContent() {
         try {
             const cred = await authenticateBiometrics();
             if (cred && phone) {
-                verifyAndFetch(phone, '1234'); // PIN fallback
+                verifyAndFetch(phone);
             }
         } catch {
             // Biometric auth failed or cancelled
@@ -140,7 +139,8 @@ function RiderDashboardContent() {
                 .from('rider_status')
                 .update({
                     status: newStatus,
-                    online_since: isOnline ? null : new Date().toISOString()
+                    online_since: isOnline ? null : new Date().toISOString(),
+                    updated_at: new Date().toISOString() // Heartbeat update
                 })
                 .eq('rider_phone', phone);
 
@@ -158,6 +158,22 @@ function RiderDashboardContent() {
             setLoading(false);
         }
     };
+
+    // PULSE HEARTBEAT while online
+    useEffect(() => {
+        if (!isOnline || !phone || !supabase) return;
+
+        const pulse = setInterval(async () => {
+            if (supabase) {
+                await supabase
+                    .from('rider_status')
+                    .update({ updated_at: new Date().toISOString() })
+                    .eq('rider_phone', phone);
+            }
+        }, 5 * 60 * 1000); // Every 5 minutes
+
+        return () => clearInterval(pulse);
+    }, [isOnline, phone]);
 
     const handleCompleteMission = async (orderId: number) => {
         if (!supabase || !phone) return;
@@ -211,7 +227,6 @@ function RiderDashboardContent() {
         setIsIdentified(false);
         setMissions([]);
         setPhone('');
-        setPin('');
     };
 
     if (!isIdentified) {
@@ -232,16 +247,12 @@ function RiderDashboardContent() {
                                 <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="07XXXXXXXX" className="h-16 rounded-2xl bg-slate-50 border-slate-100 pl-14 text-sm font-black" />
                                 <PhoneCall className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                             </div>
-                            <div className="relative">
-                                <Input type="password" value={pin} onChange={e => setPin(e.target.value)} placeholder="PIN" maxLength={4} className="h-16 rounded-2xl bg-slate-50 border-slate-100 pl-14 text-sm font-black" />
-                                <Zap className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
-                            </div>
                         </div>
 
                         {authError && <p className="text-[9px] font-black uppercase text-rose-500 text-center">{authError}</p>}
 
                         <div className="grid grid-cols-2 gap-3">
-                            <Button onClick={() => verifyAndFetch(phone, pin)} disabled={loading} className="h-16 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all">
+                            <Button onClick={() => verifyAndFetch(phone)} disabled={loading} className="h-16 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all">
                                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Initialize"}
                             </Button>
                             <Button onClick={handleBioAuth} variant="outline" className="h-16 rounded-2xl border-slate-100 text-slate-400 hover:text-primary active:scale-95 transition-all">

@@ -73,7 +73,8 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: 'owner' });
-    response.cookies.set('admin_session', createSessionCookie('owner', ownerPermissions), {
+    const sessionValue = await createSessionCookie('owner', ownerPermissions);
+    response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -122,7 +123,8 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    response.cookies.set('admin_session', createSessionCookie(staffData.role, permissions), {
+    const sessionValue = await createSessionCookie(staffData.role, permissions);
+    response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -185,7 +187,8 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    response.cookies.set('admin_session', createSessionCookie(staffData.role, permissions), {
+    const sessionValue = await createSessionCookie(staffData.role, permissions);
+    response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -195,10 +198,10 @@ export async function POST(request: Request) {
     return response;
   }
 
-  // 4. Rider Login Mode
+  // 4. Rider Login Mode (Phone Only for now)
   if (mode === 'rider') {
-    if (!phone || !password || !supabase) {
-        return NextResponse.json({ error: 'Phone and PIN required.' }, { status: 400 });
+    if (!phone || !supabase) {
+        return NextResponse.json({ error: 'Phone number required.' }, { status: 400 });
     }
 
     const normalizedPhone = phone.replace(/^\+254/, '').replace(/^0/, '').trim();
@@ -219,18 +222,13 @@ export async function POST(request: Request) {
 
     const { data: riderData, error: riderError } = await supabase
         .from('rider_status')
-        .select('id, rider_phone, pin, verification_status')
+        .select('id, rider_phone, verification_status')
         .eq('rider_phone', normalizedPhone)
         .maybeSingle();
 
     if (riderError || !riderData) {
         await supabase.from('login_attempts').insert([{ success: false, ip_address: ip }]);
         return NextResponse.json({ error: 'Rider not found or unauthorized.' }, { status: 403 });
-    }
-
-    if (riderData.pin !== password) {
-        await supabase.from('login_attempts').insert([{ success: false, ip_address: ip }]);
-        return NextResponse.json({ error: 'Incorrect PIN.' }, { status: 401 });
     }
 
     if (riderData.verification_status !== 'Verified') {

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
         const isInternal = authHeader === `Bearer ${process.env.PAYSTACK_SECRET_KEY || process.env.ADMIN_PASSWORD}`;
 
         const cookieStore = await cookies();
-        const session = verifySessionCookie(cookieStore.get('admin_session')?.value);
+        const session = await verifySessionCookie(cookieStore.get('admin_session')?.value);
 
         if (!isInternal && !session) {
             return NextResponse.json({ error: "Unauthorized Access Detected 🛡️" }, { status: 401 });

@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     try {
         // SECURITY: Verify authorized admin session
         const cookieStore = await cookies();
-        const session = verifySessionCookie(cookieStore.get('admin_session')?.value);
+        const session = await verifySessionCookie(cookieStore.get('admin_session')?.value);
 
         if (!session || session.role !== 'owner') {
             return NextResponse.json({ error: "Unauthorized Access Detected 🛡️" }, { status: 401 });

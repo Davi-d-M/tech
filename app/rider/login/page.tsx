@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import { Phone, Lock, Truck, Loader2, ArrowLeft } from 'lucide-react';
+import { Phone, Truck, Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
@@ -11,7 +11,6 @@ import Link from 'next/link';
 export default function RiderLogin() {
     const router = useRouter();
     const [phone, setPhone] = React.useState('');
-    const [pin, setPin] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
 
@@ -26,17 +25,19 @@ export default function RiderLogin() {
             const { data, error: fetchError } = await supabase
                 .from('rider_status')
                 .select('*')
-                .eq('rider_phone', phone)
-                .eq('pin', pin)
+                .eq('rider_phone', phone.replace(/^0/, '').trim())
                 .single();
 
             if (fetchError || !data) {
-                throw new Error("Invalid Tactical Credentials.");
+                throw new Error("Rider Profile Not Found.");
             }
 
-            // Save rider session (client-side for now)
+            if (data.verification_status !== 'Verified') {
+                throw new Error(`Status: ${data.verification_status || 'Pending'}. Approval Required.`);
+            }
+
+            // Save rider session
             localStorage.setItem('apex_rider_phone', phone);
-            localStorage.setItem('apex_rider_pin', pin);
             localStorage.setItem('rider_name', data.rider_name);
 
             router.push(`/rider/dashboard?phone=${phone}`);
@@ -72,22 +73,6 @@ export default function RiderLogin() {
                                 required
                             />
                             <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
-                        </div>
-                    </div>
-
-                    <div className="space-y-2 text-left">
-                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Secret PIN</label>
-                        <div className="relative">
-                            <Input
-                                type="password"
-                                value={pin}
-                                onChange={e => setPin(e.target.value)}
-                                placeholder="••••"
-                                className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 text-sm font-bold"
-                                maxLength={4}
-                                required
-                            />
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                         </div>
                     </div>
 

@@ -18,7 +18,7 @@ export default async function AdminLayout({
 }>) {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get('admin_session')?.value;
-  const sessionData = verifySessionCookie(sessionCookie);
+  const sessionData = await verifySessionCookie(sessionCookie);
 
   if (!sessionData) {
     redirect('/admin/login');
