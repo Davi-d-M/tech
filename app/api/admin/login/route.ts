@@ -101,7 +101,7 @@ export async function POST(request: Request) {
 
     const { data: staffData, error: staffError } = await supabase
         .from('staff')
-        .select('role, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
+        .select('role, supplier_id, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
         .eq('id', data.user.id)
         .maybeSingle();
 
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    const sessionValue = await createSessionCookie(staffData.role, permissions);
+    const sessionValue = await createSessionCookie(staffData.role, permissions, staffData.supplier_id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -156,7 +156,7 @@ export async function POST(request: Request) {
 
     const { data: staffData, error: staffError } = await supabase
         .from('staff')
-        .select('id, role, pin, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
+        .select('id, role, pin, supplier_id, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
         .eq('email', (email || '').trim().toLowerCase())
         .single();
 
@@ -187,7 +187,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    const sessionValue = await createSessionCookie(staffData.role, permissions);
+    const sessionValue = await createSessionCookie(staffData.role, permissions, staffData.supplier_id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

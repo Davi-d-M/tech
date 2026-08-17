@@ -45,9 +45,10 @@ import { logAuditAction } from '@/lib/auditService';
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;
-  role: string;
+  role: 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer';
   email: string;
   permissions: Permissions;
+  supplier_id?: string | null;
 }
 
 export default function AdminLayoutClient({
@@ -55,6 +56,7 @@ export default function AdminLayoutClient({
   role,
   email,
   permissions,
+  supplier_id,
 }: AdminLayoutClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -162,7 +164,7 @@ export default function AdminLayoutClient({
   };
 
   return (
-    <AdminProvider role={role} email={email} permissions={permissions}>
+    <AdminProvider role={role} email={email} permissions={permissions} supplier_id={supplier_id}>
       <AdminErrorBoundary>
           <div className="min-h-screen bg-background flex flex-col md:flex-row text-left">
 

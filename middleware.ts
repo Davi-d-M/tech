@@ -5,13 +5,11 @@ import { verifySessionCookie } from '@/lib/adminAuth';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 🛡️ Shield the Admin Panel
-  // Explicitly ignore static files and the login page
-  if (
-    pathname.startsWith('/admin') &&
-    !pathname.startsWith('/admin/login') &&
-    !pathname.includes('.')
-  ) {
+  // 1. Protected Paths
+  const isAdminPath = pathname.startsWith('/admin') && !pathname.startsWith('/admin/login');
+  const isSupplierPath = pathname.startsWith('/supplier');
+
+  if ((isAdminPath || isSupplierPath) && !pathname.includes('.')) {
     try {
       const sessionCookie = request.cookies.get('admin_session')?.value;
       const sessionData = await verifySessionCookie(sessionCookie);
@@ -19,8 +17,20 @@ export async function middleware(request: NextRequest) {
       if (!sessionData) {
         return NextResponse.redirect(new URL('/admin/login', request.url));
       }
+
+      // 2. Role-Based Routing
+      // Prevent Suppliers from entering Admin
+      if (isAdminPath && sessionData.role === 'supplier') {
+        return NextResponse.redirect(new URL('/supplier', request.url));
+      }
+
+      // Prevent Staff from entering Supplier (unless Owner/Admin)
+      if (isSupplierPath && sessionData.role === 'staff') {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+
     } catch (err) {
-      console.error("Middleware Auth Bypass:", err);
+      console.error("Middleware Auth Error:", err);
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
   }
@@ -29,5 +39,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/supplier/:path*'],
 };

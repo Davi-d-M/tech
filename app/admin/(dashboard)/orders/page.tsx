@@ -28,6 +28,8 @@ import { generateReceiptPDF, getWhatsAppReceiptLink } from '@/lib/receiptService
 import { useAdmin } from '@/context/AdminContext';
 import { logAuditAction } from '@/lib/auditService';
 
+import { OrderStatus as MachineStatus, getAvailableActions, isValidTransition } from '@/lib/apex-os/state-machine';
+
 interface OrderRecord {
   id: number;
   created_at: string;
@@ -38,13 +40,17 @@ interface OrderRecord {
   shoe_id: number | null; // For backwards compatibility
   quantity: number;
   total_price: number;
-  status: string;
+  status: MachineStatus; // Use state machine types
   payment_method: string;
   size?: string; // Captures the specific variant name
   note?: string | null;
   rider_name?: string | null;
   rider_phone?: string | null;
   captured_by?: string;
+  // Apex OS Extensions
+  serial_number?: string;
+  imei?: string;
+  supplier_cost?: number;
 }
 
 interface ManualOrderForm {
@@ -165,8 +171,20 @@ export default function AdminOrdersPage() {
     };
   }, [orders]);
 
-  const updateOrderStatus = async (orderId: number, status: OrderStatus) => {
+  const updateOrderStatus = async (orderId: number, status: MachineStatus) => {
     if (!supabase || !canManageOrders) return;
+
+    const orderToUpdate = orders.find(o => o.id === orderId);
+    if (!orderToUpdate) return;
+
+    // Apex OS: State Machine Enforcement
+    if (!isValidTransition(orderToUpdate.status, status)) {
+        setStatusMessage({
+            type: 'error',
+            text: `Protocol Violation: Cannot move from ${orderToUpdate.status} to ${status}.`
+        });
+        return;
+    }
 
     setUpdatingId(orderId);
     setStatusMessage({ type: 'idle', text: '' });
@@ -707,15 +725,36 @@ export default function AdminOrdersPage() {
                                 <td className="px-8 py-6 text-left">
                                 <div className="flex flex-col gap-2">
                                     <select
-                                        className="rounded-xl border-none px-4 py-2 text-[9px] font-black uppercase tracking-widest outline-none ring-0 transition-all cursor-pointer text-primary bg-primary/10 hover:bg-primary/20"
+                                        className={cn(
+                                            "rounded-xl border-none px-4 py-2 text-[9px] font-black uppercase tracking-widest outline-none ring-0 transition-all cursor-pointer",
+                                            order.status === 'Cancelled' || order.status === 'Payment Failed' ? "bg-rose-50 text-rose-600" : "text-primary bg-primary/10 hover:bg-primary/20"
+                                        )}
                                         value={order.status}
-                                        onChange={(e) => updateOrderStatus(order.id, e.target.value as OrderStatus)}
+                                        onChange={(e) => updateOrderStatus(order.id, e.target.value as MachineStatus)}
                                         disabled={updatingId === order.id}
                                     >
-                                        {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                                        <option value={order.status}>{order.status}</option>
+                                        {getAvailableActions(order.status).map(s => (
+                                            <option key={s} value={s}>{s}</option>
+                                        ))}
                                     </select>
 
-                                    {order.status !== 'Delivered' && (
+                                    {order.status === 'Packed' && !order.serial_number && (
+                                        <button
+                                            onClick={() => {
+                                                const imei = prompt("ENTER IMEI/SERIAL FOR VERIFICATION:");
+                                                if (imei) {
+                                                    supabase!.from('orders').update({ serial_number: imei }).eq('id', order.id)
+                                                        .then(() => loadOrders());
+                                                }
+                                            }}
+                                            className="text-[8px] font-black uppercase text-rose-500 animate-pulse text-left pl-1"
+                                        >
+                                            Missing Serial!
+                                        </button>
+                                    )}
+
+                                    {order.status !== 'Delivered' && order.status !== 'Cancelled' && (
                                         <button
                                             onClick={() => {
                                                 setAssigningRiderId(order.id);

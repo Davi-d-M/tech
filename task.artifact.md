@@ -1,19 +1,19 @@
-# Tasks - Meta Ecosystem & UI Connectivity 🔗🎨
+# Tasks - Supplier OS & Product Approval Workflow 🛡️🤝
 
-## Phase 1: Meta Pixel & Ads Tracking
-- [x] Inject Meta Pixel script into `app/layout.tsx`.
-- [x] Add `AddToCart` event tracking in `CartContext.tsx`.
-- [x] Add `Purchase` event tracking in `checkout/page.tsx`.
-- [x] Add `ViewContent` tracking for product quick views in `ProductCard.tsx`.
+## Phase 1: Infrastructure & Security
+- [x] Update `supabase` schema (Products status, Staff supplier link).
+- [x] Update `AdminContext.tsx` with supplier role support.
+- [x] Standardize `createSessionCookie` for supplier roles.
 
-## Phase 2: UI Functional Glue
-- [x] Finalize "Initiate Launch" field validation in `marketing/create/page.tsx`.
-- [x] Ensure "Go Online" in `rider/dashboard/page.tsx` correctly updates `rider_status` table.
-- [x] Verify all Marketing Wizard steps transitions are smooth.
+## Phase 2: Supplier Portal (`/supplier`)
+- [x] Create `/supplier` layout and root page.
+- [x] Build "Inventory Pulse" (Stock & Lead Time updates).
+- [x] Build "Proposal Engine" (New gadget submission form).
 
-## Phase 3: Technical Documentation
-- [x] Update `connectivity_blueprint.artifact.md` with Meta API / Token instructions.
+## Phase 3: Admin Approval Hub
+- [x] Add "Supplier Proposals" tab to Admin Warehouse Hub.
+- [x] Implement Admin Approval logic (Authorize for Grid).
 
 ## Phase 4: Verification
 - [ ] Run `npm run build`.
-- [ ] Sanity check tracking events in browser console.
+- [ ] Manual end-to-end test (Supplier propose -> Admin approve -> Live).

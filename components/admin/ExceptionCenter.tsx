@@ -2,143 +2,124 @@
 
 import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { AlertTriangle, Clock, ShieldAlert, Zap, Truck, Package, CreditCard, ChevronRight } from 'lucide-react';
+import {
+    AlertTriangle,
+    Clock,
+    ShieldAlert,
+    Zap,
+    Truck,
+    Package,
+    CreditCard,
+    ChevronRight,
+    Search,
+    Loader2,
+    Shield
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-
-interface Exception {
-    id: string;
-    type: 'ORDER' | 'INVENTORY' | 'PAYMENT' | 'RIDER' | 'SYSTEM';
-    label: string;
-    time: string;
-    severity: 'critical' | 'warning' | 'info';
-    url: string;
-}
+import { scanForExceptions, ApexException } from '@/lib/apex-os/intelligence';
 
 export default function ExceptionCenter() {
-    const [exceptions, setExceptions] = React.useState<Exception[]>([]);
+    const [exceptions, setExceptions] = React.useState<ApexException[]>([]);
     const [loading, setLoading] = React.useState(true);
 
-    React.useEffect(() => {
-        async function scanForExceptions() {
-            if (!supabase) return;
-
-            const detected: Exception[] = [];
-            const now = new Date();
-
-            try {
-                // 1. Scan for delayed orders (Pending > 2 hours)
-                const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString();
-                const { data: delayedOrders } = await supabase
-                    .from('orders')
-                    .select('id, created_at')
-                    .eq('status', 'Pending')
-                    .lt('created_at', twoHoursAgo)
-                    .limit(2);
-
-                delayedOrders?.forEach(o => detected.push({
-                    id: `delayed-${o.id}`,
-                    type: 'ORDER',
-                    label: `Order #${o.id} delayed ${Math.round((now.getTime() - new Date(o.created_at).getTime()) / 60000)}m`,
-                    time: 'Just now',
-                    severity: 'critical',
-                    url: '/admin/orders'
-                }));
-
-                // 2. Scan for critical inventory
-                const { data: lowStock } = await supabase
-                    .from('products')
-                    .select('name, stock')
-                    .lte('stock', 3)
-                    .limit(2);
-
-                lowStock?.forEach(p => detected.push({
-                    id: `stock-${p.name}`,
-                    type: 'INVENTORY',
-                    label: `${p.name} — ${p.stock} units remaining`,
-                    time: 'Recently',
-                    severity: 'warning',
-                    url: '/admin/upload'
-                }));
-
-                // 3. Scan for stalled riders (Active status but no heartbeat for 20m)
-                const twentyMinsAgo = new Date(now.getTime() - 20 * 60 * 1000).toISOString();
-                const { data: stalledRiders } = await supabase
-                    .from('rider_status')
-                    .select('rider_name, updated_at')
-                    .eq('status', 'Delivering')
-                    .lt('updated_at', twentyMinsAgo)
-                    .limit(2);
-
-                stalledRiders?.forEach(r => detected.push({
-                    id: `rider-stalled-${r.rider_name}`,
-                    type: 'RIDER',
-                    label: `Unit ${r.rider_name} stalled (No pulse for ${Math.round((now.getTime() - new Date(r.updated_at).getTime()) / 60000)}m)`,
-                    time: 'Live',
-                    severity: 'critical',
-                    url: '/admin/dispatch'
-                }));
-
-                setExceptions(detected);
-            } catch {
-                console.error("Exception Scan failed.");
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        scanForExceptions();
-        const interval = setInterval(scanForExceptions, 60000);
-        return () => clearInterval(interval);
+    const runScan = React.useCallback(async () => {
+        const results = await scanForExceptions();
+        setExceptions(results);
+        setLoading(false);
     }, []);
 
-    if (loading && exceptions.length === 0) return null;
-    if (exceptions.length === 0) return null;
+    React.useEffect(() => {
+        runScan();
+        const interval = setInterval(runScan, 60000);
+        return () => clearInterval(interval);
+    }, [runScan]);
+
+    if (loading && exceptions.length === 0) return (
+        <div className="p-20 text-center animate-pulse opacity-30">
+            <Loader2 className="h-8 w-8 mx-auto animate-spin" />
+            <p className="text-[10px] font-black uppercase mt-4">Scanning Operations...</p>
+        </div>
+    );
+
+    if (exceptions.length === 0) return (
+        <section className="bg-white rounded-[3rem] border border-slate-100 p-12 text-center relative overflow-hidden group">
+            <div className="relative z-10 flex flex-col items-center gap-4">
+                <div className="h-16 w-16 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shadow-inner">
+                    <ShieldCheck className="h-8 w-8" />
+                </div>
+                <div className="space-y-1">
+                    <h2 className="text-xl font-black text-foreground uppercase tracking-tighter leading-none">Link Status: Secure</h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Apex OS detecting zero operational anomalies.</p>
+                </div>
+            </div>
+            <ShieldCheck className="absolute -bottom-10 -right-10 h-64 w-64 text-emerald-500/5 rotate-12 -z-0" />
+        </section>
+    );
 
     const iconMap = {
-        ORDER: Clock,
+        LOGISTICS: Truck,
         INVENTORY: Package,
-        PAYMENT: CreditCard,
-        RIDER: Truck,
-        SYSTEM: Zap
+        FINANCE: CreditCard,
+        RISK: Shield,
+        SUPPLIER: Zap
     };
 
     return (
         <section className="bg-white rounded-[3rem] border border-rose-100 p-10 relative overflow-hidden shadow-sm animate-in fade-in duration-1000">
-            <div className="relative z-10 space-y-8 text-left">
+            <div className="relative z-10 space-y-10 text-left">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-500 shadow-sm animate-pulse">
-                            <ShieldAlert className="h-5 w-5" />
+                    <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 shadow-sm animate-pulse border border-rose-100">
+                            <ShieldAlert className="h-6 w-6" />
                         </div>
-                        <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Exception Center</h2>
+                        <div>
+                            <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Exception Center</h2>
+                            <p className="text-[9px] font-black text-rose-500 uppercase tracking-widest mt-1">Anomaly Detection Protocol Active</p>
+                        </div>
                     </div>
-                    <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-4 py-2 rounded-full border border-rose-100">
-                        {exceptions.length} Anomalies Detected
-                    </span>
+                    <div className="flex items-center gap-3">
+                        <button onClick={runScan} className="h-10 px-4 rounded-xl border border-border text-[9px] font-black uppercase hover:bg-slate-50 transition-all">Re-Scan</button>
+                        <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-4 py-2 rounded-full border border-rose-100">
+                            {exceptions.length} Critial Alerts
+                        </span>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {exceptions.map(ex => {
-                        const Icon = iconMap[ex.type];
+                        const Icon = iconMap[ex.type] || Zap;
                         return (
-                            <Link key={ex.id} href={ex.url}>
-                                <div className="p-6 rounded-3xl bg-slate-50 border border-border flex items-center justify-between group hover:bg-white hover:border-rose-200 transition-all hover:shadow-xl">
-                                    <div className="flex items-center gap-4">
-                                        <div className={cn(
-                                            "h-10 w-10 rounded-xl flex items-center justify-center",
-                                            ex.severity === 'critical' ? "bg-rose-100 text-rose-600" : "bg-amber-100 text-amber-600"
-                                        )}>
-                                            <Icon className="h-5 w-5" />
+                            <Link key={ex.id} href={ex.order_id ? `/admin/orders` : '#'}>
+                                <div className={cn(
+                                    "p-8 rounded-[2.5rem] border transition-all hover:shadow-2xl relative group",
+                                    ex.severity === 'Critical' ? "bg-rose-50/50 border-rose-100 hover:bg-white hover:border-rose-300" : "bg-slate-50 border-border hover:bg-white hover:border-primary/20"
+                                )}>
+                                    {ex.severity === 'Critical' && <div className="absolute top-0 left-0 h-full w-2 bg-rose-500 rounded-l-[2.5rem]"></div>}
+
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-center gap-6">
+                                            <div className={cn(
+                                                "h-14 w-14 rounded-2xl flex items-center justify-center shadow-sm",
+                                                ex.severity === 'Critical' ? "bg-rose-100 text-rose-600" : "bg-amber-100 text-amber-600"
+                                            )}>
+                                                <Icon className="h-7 w-7" />
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-1">
+                                                    <span className={cn(
+                                                        "text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded",
+                                                        ex.severity === 'Critical' ? "bg-rose-600 text-white" : "bg-amber-500 text-white"
+                                                    )}>{ex.severity}</span>
+                                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{ex.type} &bull; {ex.time}</p>
+                                                </div>
+                                                <h4 className="text-sm font-black text-foreground uppercase tracking-tight">{ex.title}</h4>
+                                                <p className="text-[10px] text-slate-500 font-medium mt-1 leading-relaxed italic">&quot;{ex.description}&quot;</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-1">{ex.type} &bull; {ex.time}</p>
-                                            <p className="text-[11px] font-black text-foreground uppercase tracking-tight">{ex.label}</p>
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity pt-4">
+                                            <ChevronRight className="h-5 w-5 text-primary" />
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="text-[9px] font-black text-primary uppercase">Resolve</span>
-                                        <ChevronRight className="h-3 w-3 text-primary" />
                                     </div>
                                 </div>
                             </Link>
@@ -152,4 +133,24 @@ export default function ExceptionCenter() {
             </div>
         </section>
     );
+}
+
+function ShieldCheck(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  )
 }

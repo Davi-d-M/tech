@@ -19,9 +19,10 @@ export interface Permissions {
 }
 
 interface AdminContextProps {
-  role: string;
+  role: 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer';
   email: string;
   permissions: Permissions;
+  supplier_id?: string | null; // NEW: For multi-supplier isolation
 }
 
 const AdminContext = createContext<AdminContextProps | undefined>(undefined);
@@ -30,6 +31,7 @@ export const AdminProvider = ({
     children,
     role = 'viewer',
     email = '',
+    supplier_id = null,
     permissions = {
         can_view_revenue: false,
         can_manage_inventory: false,
@@ -46,12 +48,13 @@ export const AdminProvider = ({
     }
 }: {
     children: React.ReactNode,
-    role?: string,
+    role?: AdminContextProps['role'],
     email?: string,
+    supplier_id?: string | null,
     permissions?: Permissions
 }) => {
   return (
-    <AdminContext.Provider value={{ role, email, permissions: permissions as Permissions }}>
+    <AdminContext.Provider value={{ role: role as AdminContextProps['role'], email, permissions: permissions as Permissions, supplier_id }}>
       {children}
     </AdminContext.Provider>
   );

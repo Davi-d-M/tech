@@ -37,7 +37,7 @@ const Line = dynamic(() => import('recharts').then(mod => mod.Line), { ssr: fals
 import TodayCommandCenter from '@/components/admin/TodayCommandCenter';
 import ExceptionCenter from '@/components/admin/ExceptionCenter';
 import SystemPulseWidget from '@/components/admin/SystemPulseWidget';
-import ApexIntelligence from '@/components/admin/ApexIntelligence';
+import ApexIntelligence from '@/components/admin/ApexIntelligence2';
 
 interface OrderRecord {
   id: number;

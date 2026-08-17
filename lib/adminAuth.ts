@@ -53,11 +53,15 @@ async function signToken(token: string) {
 }
 
 /**
- * Creates a session cookie with role and granular permissions
+ * Creates a session cookie with role, granular permissions, and optional supplier ID
  */
-export async function createSessionCookie(role: string = 'owner', permissions: Record<string, boolean | string[]> = {}) {
+export async function createSessionCookie(
+    role: string = 'owner',
+    permissions: Record<string, boolean | string[]> = {},
+    supplier_id: string | null = null
+) {
   const token = crypto.randomUUID();
-  const payload = JSON.stringify({ role, permissions });
+  const payload = JSON.stringify({ role, permissions, supplier_id });
 
   const base64Payload = toBase64(payload);
 
@@ -66,9 +70,13 @@ export async function createSessionCookie(role: string = 'owner', permissions: R
 }
 
 /**
- * Verifies the cookie and returns the role and permissions if valid
+ * Verifies the cookie and returns the role, permissions, and supplier ID if valid
  */
-export async function verifySessionCookie(value?: string): Promise<{ role: string; permissions: Record<string, boolean | string[]> } | null> {
+export async function verifySessionCookie(value?: string): Promise<{
+    role: string;
+    permissions: Record<string, boolean | string[]>;
+    supplier_id?: string | null;
+} | null> {
   if (!value) return null;
 
   try {

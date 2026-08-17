@@ -3,15 +3,15 @@ import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 import { verifySessionCookie } from '@/lib/adminAuth';
-import AdminLayoutClient from './layout-client';
 import { Permissions } from '@/context/AdminContext';
+import SupplierLayoutClient from './layout-client';
 
 export const metadata = {
   robots: 'noindex, nofollow',
-  title: 'Apexstores | Admin',
+  title: 'Apexstores | Supplier Portal',
 };
 
-export default async function AdminLayout({
+export default async function SupplierLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -22,15 +22,15 @@ export default async function AdminLayout({
     const sessionCookie = cookieStore.get('admin_session')?.value;
     sessionData = await verifySessionCookie(sessionCookie);
   } catch (err) {
-    console.error("Layout Session Verification Error:", err);
+    console.error("Supplier Layout Auth Error:", err);
   }
 
-  if (!sessionData) {
+  if (!sessionData || (sessionData.role !== 'supplier' && sessionData.role !== 'owner' && sessionData.role !== 'admin')) {
     redirect('/admin/login');
   }
 
   // Fetch the current user session to get the email
-  let userEmail = 'Master Admin';
+  let userEmail = 'Supply Partner';
   if (supabase) {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user?.email) {
@@ -39,13 +39,13 @@ export default async function AdminLayout({
   }
 
   return (
-    <AdminLayoutClient
+    <SupplierLayoutClient
         role={sessionData.role as any}
         email={userEmail}
         permissions={sessionData.permissions as unknown as Permissions}
         supplier_id={sessionData.supplier_id}
     >
       {children}
-    </AdminLayoutClient>
+    </SupplierLayoutClient>
   );
 }

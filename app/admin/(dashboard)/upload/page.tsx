@@ -114,6 +114,7 @@ export default function AdminUploadPage() {
 function UploadContent() {
   const { role, email } = useAdmin();
   const { settings } = useSettings();
+  const [activeTab, setActiveTab] = useState<'live' | 'proposals'>('live');
   const [form, setForm] = useState(initialForm);
   const [variantStock, setVariantStock] = useState<Record<string, string>>({});
   const [techSpecs, setTechSpecs] = useState<{ key: string, value: string }[]>([]);
@@ -903,6 +904,23 @@ function UploadContent() {
 
               <div className="sticky bottom-10 z-[50] animate-in slide-in-from-bottom-6 duration-1000">
                   <div className="bg-slate-50 p-4 rounded-[2.5rem] shadow-2xl flex gap-3 border border-slate-200">
+                      {editingId && products.find(p => p.id === editingId)?.status === 'Pending' && (
+                          <Button
+                              type="button"
+                              onClick={async () => {
+                                  if(!supabase) return;
+                                  setIsSubmitting(true);
+                                  await supabase.from('products').update({ status: 'Live' }).eq('id', editingId);
+                                  cancelEditing();
+                                  fetchProducts();
+                                  setMessage({ type: 'success', text: 'Gadget Authorized for Grid! ✅' });
+                                  setIsSubmitting(false);
+                              }}
+                              className="h-16 px-8 rounded-2xl bg-emerald-500 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-600 transition-all active:scale-95"
+                          >
+                              Authorize for Grid
+                          </Button>
+                      )}
                       <Button type="submit" disabled={isSubmitting} className="flex-1 h-16 rounded-2xl bg-primary text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/20">
                         {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : <Rocket className="h-5 w-5 mr-3" />}
                         {editingId ? 'Save Product Changes' : 'Deploy New Gadget'}
@@ -947,16 +965,22 @@ function UploadContent() {
 
                   <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col h-[500px]">
                       <div className="p-8 border-b border-slate-50 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
+                          <div className="flex flex-col gap-4">
                               <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">Inventory Feed</h2>
-                              <Button onClick={cancelEditing} variant="ghost" size="sm" className="h-8 rounded-lg bg-primary/5 text-primary text-[8px] font-black uppercase hover:bg-primary hover:text-white"><Plus className="h-3 w-3 mr-1" /> New</Button>
+                              <div className="flex p-1 bg-slate-50 rounded-xl border border-slate-100 w-fit">
+                                  <button onClick={() => setActiveTab('live')} className={cn("px-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all", activeTab === 'live' ? "bg-white text-foreground shadow-sm" : "text-slate-400")}>Active Grid</button>
+                                  <button onClick={() => setActiveTab('proposals')} className={cn("px-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all", activeTab === 'proposals' ? "bg-white text-rose-500 shadow-sm" : "text-slate-400")}>Proposals</button>
+                              </div>
                           </div>
-                          <button onClick={fetchProducts} className="text-slate-300 hover:text-primary transition-colors">
-                              <RefreshCcw className={cn("h-4 w-4", loadingProducts && "animate-spin")} />
-                          </button>
+                          <div className="flex items-center gap-3">
+                              <Button onClick={cancelEditing} variant="ghost" size="sm" className="h-8 rounded-lg bg-primary/5 text-primary text-[8px] font-black uppercase hover:bg-primary hover:text-white"><Plus className="h-3 w-3 mr-1" /> New</Button>
+                              <button onClick={fetchProducts} className="text-slate-300 hover:text-primary transition-colors">
+                                  <RefreshCcw className={cn("h-4 w-4", loadingProducts && "animate-spin")} />
+                              </button>
+                          </div>
                       </div>
                       <div className="flex-1 overflow-y-auto divide-y divide-slate-50 no-scrollbar">
-                          {products.map(p => (
+                          {products.filter(p => activeTab === 'live' ? (p.status !== 'Pending') : (p.status === 'Pending')).map(p => (
                                 <div key={p.id} className={cn(
                                     "h-24 w-full hover:bg-slate-50 group flex items-center justify-between cursor-pointer p-6 transition-all",
                                     editingId === p.id && "bg-primary/5 border-l-4 border-primary"

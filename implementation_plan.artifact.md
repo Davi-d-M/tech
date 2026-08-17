@@ -1,47 +1,50 @@
-# Implementation Plan - Performance & Speed Optimization 🚀⚡
+# Implementation Plan - Supplier OS & Product Approval Workflow 🛡️🤝
 
-This plan addresses the "slowness" by transitioning from a heavy client-side architecture to modern Next.js Server Components and optimizing asset delivery.
+This plan introduces a dedicated **Supplier Portal**, allowing your partners to manage their own inventory levels and propose new products for your approval. This decentralizes operations while keeping you in total control.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Architecture Shift**: We are moving data fetching from the browser to the server. This means the page will arrive to the user with data already populated, drastically reducing "blank" loading states.
-> - **Environment Variables**: Ensure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are correct, as they will now be used during server-side execution.
+> - **Shared Auth**: Suppliers will use the same login infrastructure as Staff, but will be locked into a specialized `/supplier` dashboard.
+> - **Approval Gating**: No product added by a supplier will appear on the public website until an Admin clicks "Authorize".
+> - **Linked Identities**: We will add a `supplier_id` to the `staff` table. This ensures Supplier A can only see and edit Supplier A's products.
 
 ## Proposed Changes
 
-### 1. Server-Side Data Fetching (Core Speed) 🧠
-- [MODIFY] [Home Page](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/page.tsx):
-    - Remove `"use client"`.
-    - Convert to an `async` function and fetch `blog_posts` directly from Supabase on the server.
-- [MODIFY] [Product List](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/home/ProductList.tsx):
-    - Accept `initialProducts` as a prop.
-    - Fetch products on the server in `app/page.tsx` and pass them down to eliminate the "Syncing Catalog..." delay.
-- [MODIFY] [Dynamic Hero](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/home/DynamicHero.tsx):
-    - Accept `settings` as a prop instead of fetching them in the browser using a hook.
+### 1. Database & Security Evolution 🔐
+- [MODIFY] [master_system_sync.sql](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/supabase/migrations/20260812_master_system_sync.sql):
+    - Add `status` column to `public.products` (`'Live'`, `'Pending'`, `'Rejected'`).
+    - Add `supplier_id` to `public.staff` to link a login to a specific supply partner.
+- [MODIFY] [AdminContext.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/context/AdminContext.tsx):
+    - Add `supplier` as a recognized role.
+    - Add `supplier_id` to the context properties.
 
-### 2. Asset & Rendering Optimization 🎨
-- [MODIFY] [Dynamic Hero](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/home/DynamicHero.tsx):
-    - Replace raw `<img>` with `next/image` using `priority={true}` to optimize the Largest Contentful Paint (LCP).
-- [MODIFY] [Public Layout Shield](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/layout/PublicLayoutShield.tsx):
-    - Use `next/dynamic` to lazy-load non-critical components (`SupportBubble`, `ExitIntentPopup`, `AbandonedCartBar`) only when the browser is idle.
+### 2. Supplier Dashboard (`/supplier`) 🚀
+- [NEW] Create directory `app/supplier/` with a specialized layout.
+- [NEW] **Inventory Command**: A lean page where suppliers can:
+    - Pulse-update stock quantities for their active products.
+    - Update lead times (e.g., "Ready for pickup in 2 hours").
+- [NEW] **Proposal Builder**: A form for suppliers to submit new gadgets.
+    - Fields: Name, Specs, Suggested Price, Images.
+    - Status is automatically set to `Pending`.
 
-### 3. Caching Strategy 💾
-- [MODIFY] [Supabase Client](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/lib/supabaseClient.ts):
-    - Ensure the client is compatible with both server and client environments.
-- Implement Next.js `revalidate` logic (e.g., 60 seconds) to ensure the server-rendered pages stay fresh without fetching on every single request.
+### 3. Admin Authorization Hub 💎
+- [MODIFY] [Warehouse Hub (Admin)](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/upload/page.tsx):
+    - Add a "Supplier Proposals" tab.
+    - Display all products with `status = 'Pending'`.
+    - **Approval Action**: Admin reviews the entry, adjusts the final retail price, and clicks "Authorize for Grid" (sets status to `Live`).
 
-### 4. Layout Efficiency 🏗️
-- [MODIFY] [Header](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/layout/Header.tsx):
-    - Convert to accept `settings` as a prop to avoid the settings-fetch waterfall.
+### 4. Middleware & Routing 🛡️
+- [MODIFY] [middleware.ts](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/middleware.ts):
+    - Ensure suppliers are redirected to `/supplier` and admins to `/admin`.
+    - Prevent suppliers from accessing administrative routes (Finance, Audit, etc.).
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure server-side rendering logic is correctly implemented.
-- Use Chrome DevTools "Network" tab to verify that data is present in the initial HTML document (no waterfall).
+- Run `npm run build` to confirm new route segments and props are type-safe.
 
 ### Manual Verification
-1. **Initial Load**: Visit the home page and verify the Hero and Product grid appear almost instantly without "Syncing..." spinners.
-2. **LCP Audit**: Verify the main Hero image loads immediately as it is now prioritized.
-3. **Interactivity**: Ensure filters, cart, and search still work perfectly as client-side "islands" of interactivity.
+1. **Supplier Proposal**: Log in as a Supplier -> Submit a new gadget -> Verify it does NOT show on the homepage.
+2. **Admin Review**: Log in as Admin -> Go to Warehouse -> See the proposal -> Edit the price -> Click Approve.
+3. **Live Sync**: Verify the gadget is now Live and the Supplier is correctly attributed.

@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS public.products (
   is_new BOOLEAN DEFAULT true,
   sale_end_date TIMESTAMP WITH TIME ZONE,
   rating NUMERIC DEFAULT 5.0,
+  status TEXT DEFAULT 'Live', -- NEW: Live, Pending, Rejected
+  supplier_id BIGINT, -- NEW: Link to supplier
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
@@ -153,6 +155,7 @@ CREATE TABLE IF NOT EXISTS public.staff (
   email TEXT UNIQUE NOT NULL,
   role TEXT DEFAULT 'staff',
   pin TEXT,
+  supplier_id BIGINT, -- NEW: Link to specific supply partner
   can_view_revenue BOOLEAN DEFAULT false,
   can_manage_inventory BOOLEAN DEFAULT true,
   can_manage_orders BOOLEAN DEFAULT true,
