@@ -1,19 +1,24 @@
-# Tasks - Supplier OS & Product Approval Workflow 🛡️🤝
+# Tasks - Apex OS Master Sync Phase 2 🛡️⚙️
 
-## Phase 1: Infrastructure & Security
-- [x] Update `supabase` schema (Products status, Staff supplier link).
-- [x] Update `AdminContext.tsx` with supplier role support.
-- [x] Standardize `createSessionCookie` for supplier roles.
+## Phase 1: The Golden Flow (Multi-Item Refactor)
+- [x] Create Master Migration `20260817_order_refactor_header.sql`.
+- [x] Refactor `app/checkout/page.tsx` for 1:N Order Header-Items structure.
+- [x] Update `app/admin/(dashboard)/orders/page.tsx` to display Master Orders.
+- [x] Add IMEI logging per order item in Admin UI.
+- [x] Implement dynamic cost/profit automation in SQL.
 
-## Phase 2: Supplier Portal (`/supplier`)
-- [x] Create `/supplier` layout and root page.
-- [x] Build "Inventory Pulse" (Stock & Lead Time updates).
-- [x] Build "Proposal Engine" (New gadget submission form).
+## Phase 2: CRM & Support OS
+- [x] Add CRM Segment badges to Customer Dashboard.
+- [x] Implement dynamic LTV calculation and segmentation in Admin UI.
+- [x] Refactor `profiles` triggers to auto-update LTV on order completion.
+- [x] Create `Support Case Command` hub with priority/SLA tracking.
+- [x] Build `Warranty Hub` for reverse logistics and diagnostics.
 
-## Phase 3: Admin Approval Hub
-- [x] Add "Supplier Proposals" tab to Admin Warehouse Hub.
-- [x] Implement Admin Approval logic (Authorize for Grid).
+## Phase 3: Supplier & Intelligence
+- [x] Create Supplier Scorecard dashboard with algorithmic ranking.
+- [x] Build `Rules Engine` (lib/apex-os/rules-engine.ts) for business gating.
+- [x] Implement `Operational Kill Switch` in System Pulse widget.
 
 ## Phase 4: Verification
 - [ ] Run `npm run build`.
-- [ ] Manual end-to-end test (Supplier propose -> Admin approve -> Live).
+- [ ] Perform a full "Golden Transaction" test mission.

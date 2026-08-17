@@ -16,7 +16,7 @@ import {
   Calendar
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
@@ -37,6 +37,10 @@ interface CustomerProfile {
     full_name: string | null;
     birth_date: string | null;
     address: string | null;
+    segment?: string;
+    lifetime_value?: number;
+    total_orders?: number;
+    last_purchase_at?: string;
 }
 
 interface CustomerStats {
@@ -49,6 +53,7 @@ interface CustomerStats {
   referredCount: number;
   age: string;
   location: string;
+  segment: string;
 }
 
 export default function AdminCustomersPage() {
@@ -60,18 +65,13 @@ export default function AdminCustomersPage() {
   const [searchQuery, setSearchQuery] = React.useState('');
 
   React.useEffect(() => {
-    if (role !== 'owner' && role !== 'admin') {
-        setIsLoading(false);
-        return;
-    }
-
     async function loadCustomers() {
       if (!supabase) return;
 
       try {
         const [ordersRes, profilesRes] = await Promise.all([
           supabase.from('orders').select('id, customer_name, customer_phone, total_price, created_at, referred_by_code'),
-          supabase.from('profiles').select('phone_number, referral_code, full_name, birth_date, address')
+          supabase.from('profiles').select('phone_number, referral_code, full_name, birth_date, address, segment, lifetime_value, total_orders, last_purchase_at')
         ]);
 
         if (ordersRes.data) setOrders(ordersRes.data as OrderRecord[]);
@@ -119,6 +119,9 @@ export default function AdminCustomersPage() {
         existing.totalOrders += 1;
         existing.totalSpend += Number(order.total_price || 0);
         existing.referredCount = Math.max(existing.referredCount, referredCount);
+        if (new Date(order.created_at) > new Date(existing.lastOrder)) {
+            existing.lastOrder = order.created_at;
+        }
       } else {
         map.set(key, {
           name: order.customer_name || profile?.full_name || 'Anonymous',
@@ -129,15 +132,31 @@ export default function AdminCustomersPage() {
           isVIP: false,
           referredCount,
           age,
-          location: profile?.address || 'No Address'
+          location: profile?.address || 'No Address',
+          segment: profile?.segment || 'New Customer'
         });
       }
     });
 
-    return Array.from(map.values()).map(c => ({
-        ...c,
-        isVIP: c.totalSpend > 50000 || c.totalOrders > 5
-    })).sort((a, b) => b.totalSpend - a.totalSpend);
+    return Array.from(map.values()).map(c => {
+        // Calculate Dynamic Segment if not set or for high-fidelity updates
+        let segment = c.segment;
+        const now = new Date();
+        const lastOrderDate = new Date(c.lastOrder);
+        const daysSinceLastOrder = (now.getTime() - lastOrderDate.getTime()) / (1000 * 3600 * 24);
+
+        if (c.totalSpend >= 100000 || c.totalOrders >= 10) segment = 'VIP Elite';
+        else if (c.totalSpend >= 50000) segment = 'High Value';
+        else if (daysSinceLastOrder > 60) segment = 'At Risk';
+        else if (daysSinceLastOrder > 120) segment = 'Dormant';
+        else if (c.totalOrders > 1) segment = 'Repeat Buyer';
+
+        return {
+            ...c,
+            segment,
+            isVIP: segment === 'VIP Elite'
+        };
+    }).sort((a, b) => b.totalSpend - a.totalSpend);
   }, [orders, profiles]);
 
   const filteredCustomers = React.useMemo(() => {
@@ -239,8 +258,9 @@ export default function AdminCustomersPage() {
               <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-[0.2em]">
                 <th className="px-8 py-5">Customer</th>
                 <th className="px-8 py-5">Contact</th>
+                <th className="px-8 py-5">Intel</th>
+                <th className="px-8 py-5">Segment</th>
                 <th className="px-8 py-5">Impact</th>
-                <th className="px-8 py-5">Engagement</th>
                 <th className="px-8 py-5">LTV</th>
                 <th className="px-8 py-5 text-right">Actions</th>
               </tr>
@@ -248,7 +268,7 @@ export default function AdminCustomersPage() {
             <tbody className="divide-y divide-slate-50">
               {filteredCustomers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-8 py-12 text-center text-slate-400 font-medium italic">No customers found matching your search.</td>
+                  <td colSpan={7} className="px-8 py-12 text-center text-slate-400 font-medium italic">No customers found matching your search.</td>
                 </tr>
               ) : (
                 filteredCustomers.map((customer) => (
@@ -292,6 +312,19 @@ export default function AdminCustomersPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
+                        <span className={cn(
+                            "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                            customer.segment === 'VIP Elite' ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" :
+                            customer.segment === 'High Value' ? "bg-indigo-50 text-indigo-600 border-indigo-100" :
+                            customer.segment === 'Repeat Buyer' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                            customer.segment === 'At Risk' ? "bg-amber-50 text-amber-600 border-amber-100 animate-pulse" :
+                            customer.segment === 'Dormant' ? "bg-slate-100 text-slate-400 border-slate-200" :
+                            "bg-slate-50 text-slate-500 border-slate-100"
+                        )}>
+                            {customer.segment}
+                        </span>
+                    </td>
+                    <td className="px-8 py-6">
                       <div className="flex items-center gap-2">
                         <Users className="h-3 w-3 text-slate-300" />
                         <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{customer.referredCount} Refs</span>
@@ -299,26 +332,11 @@ export default function AdminCustomersPage() {
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <span className="px-3 py-1 rounded-lg bg-primary/10 text-primary text-[9px] font-black uppercase tracking-widest">
+                        <span className="px-3 py-1 rounded-lg bg-primary/5 text-primary text-[9px] font-black uppercase tracking-widest">
                           {customer.totalOrders} Orders
                         </span>
-                        {customer.totalSpend >= 100000 ? (
-                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 animate-pulse">
-                                <Gem className="h-3 w-3" /> Diamond
-                            </span>
-                        ) : customer.totalSpend >= 50000 ? (
-                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-                                <Crown className="h-3 w-3" /> Gold
-                            </span>
-                        ) : customer.totalSpend >= 20000 ? (
-                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 text-primary text-[9px] font-black uppercase tracking-widest border border-primary/10">
-                                <Star className="h-3 w-3" /> Silver
-                            </span>
-                        ) : null}
                       </div>
-                    </td>
-                    <td className="px-8 py-6 font-black text-foreground">
-                      {formatPrice(customer.totalSpend)}
+                      <p className="font-black text-foreground mt-1 text-sm">{formatPrice(customer.totalSpend)}</p>
                     </td>
                     <td className="px-8 py-6 text-right">
                         <Button variant="ghost" size="sm" className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2 hover:bg-white hover:shadow-xl transition-all">

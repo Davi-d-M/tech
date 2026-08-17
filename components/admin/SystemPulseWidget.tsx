@@ -2,12 +2,14 @@
 
 import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Activity, Database, Globe, Smartphone, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Activity, Database, Globe, Smartphone, CheckCircle2, ShieldAlert, Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 export default function SystemPulseWidget() {
     const [latency, setLatency] = React.useState({ db: 0, api: 0, logistics: 0 });
     const [status, setStatus] = React.useState({ db: 'online', api: 'online', logistics: 'active' });
+    const [killSwitchActive, setKillSwitchActive] = React.useState(false);
 
     React.useEffect(() => {
         async function checkLatency() {
@@ -37,6 +39,18 @@ export default function SystemPulseWidget() {
         { label: 'Edge API', val: `${latency.api}ms`, icon: Globe, status: status.api },
         { label: 'Logistics', val: `${latency.logistics}ms`, icon: Smartphone, status: status.logistics },
     ];
+
+    const toggleKillSwitch = async () => {
+        if (!supabase) return;
+        const next = !killSwitchActive;
+        setKillSwitchActive(next);
+
+        // Persist to settings
+        await supabase.from('settings').upsert({
+            key: 'system_lockdown',
+            value: { active: next, timestamp: new Date().toISOString() }
+        });
+    };
 
     return (
         <div className="p-8 rounded-[3rem] bg-white text-foreground border border-slate-100 shadow-sm relative overflow-hidden group">
@@ -71,13 +85,25 @@ export default function SystemPulseWidget() {
                     ))}
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex justify-between items-center">
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic">Stable Uplink</span>
-                    <div className="flex gap-1">
-                        <div className="h-1 w-4 rounded-full bg-emerald-500/20">
-                            <div className="h-full bg-emerald-500 w-full animate-pulse"></div>
-                        </div>
+                <div className="pt-6 border-t border-slate-100 space-y-4">
+                    <div className="flex justify-between items-center px-1">
+                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Kill Switch</span>
+                        <span className={cn(
+                            "text-[7px] font-black uppercase",
+                            killSwitchActive ? "text-rose-600 animate-pulse" : "text-slate-300"
+                        )}>{killSwitchActive ? 'LOCKDOWN ACTIVE' : 'SECURE'}</span>
                     </div>
+                    <Button
+                        onClick={toggleKillSwitch}
+                        variant={killSwitchActive ? 'default' : 'outline'}
+                        className={cn(
+                            "w-full h-12 rounded-xl text-[9px] font-black uppercase transition-all active:scale-95",
+                            killSwitchActive ? "bg-rose-600 text-white border-rose-600" : "border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-100"
+                        )}
+                    >
+                        <Power className="h-3 w-3 mr-2" />
+                        {killSwitchActive ? 'Deactivate Lockdown' : 'Initiate Lockdown'}
+                    </Button>
                 </div>
             </div>
 

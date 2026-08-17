@@ -101,6 +101,8 @@ interface Product {
   height_cm?: number;
   variant_stock?: Record<string, number>;
   tech_specs?: Record<string, string>;
+  status?: string;
+  supplier_id?: number;
 }
 
 export default function AdminUploadPage() {

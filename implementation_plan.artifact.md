@@ -1,50 +1,48 @@
-# Implementation Plan - Supplier OS & Product Approval Workflow 🛡️🤝
+# Implementation Plan - Multi-Item Order Architecture & Golden Flow 🚀🛡️
 
-This plan introduces a dedicated **Supplier Portal**, allowing your partners to manage their own inventory levels and propose new products for your approval. This decentralizes operations while keeping you in total control.
+This plan evolves the order system from a single-product record into a professional **Header + Items** structure. This is the foundation for advanced logistics, multi-supplier fulfillment, and accurate financial auditing.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Shared Auth**: Suppliers will use the same login infrastructure as Staff, but will be locked into a specialized `/supplier` dashboard.
-> - **Approval Gating**: No product added by a supplier will appear on the public website until an Admin clicks "Authorize".
-> - **Linked Identities**: We will add a `supplier_id` to the `staff` table. This ensures Supplier A can only see and edit Supplier A's products.
+> - **Architecture Shift**: Orders will now consist of one "Master Order" (Customer, Total, Status) and multiple "Order Items" (Product, IMEI, Supplier).
+> - **Inventory Lock**: We will implement a "Reserved" state for inventory. When an order is placed, stock is subtracted immediately but only linked to a specific IMEI during the "Packing" phase.
+> - **Paystack Sync**: The checkout flow will be updated to send the single "Master Order" ID to Paystack instead of multiple line items.
 
 ## Proposed Changes
 
-### 1. Database & Security Evolution 🔐
-- [MODIFY] [master_system_sync.sql](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/supabase/migrations/20260812_master_system_sync.sql):
-    - Add `status` column to `public.products` (`'Live'`, `'Pending'`, `'Rejected'`).
-    - Add `supplier_id` to `public.staff` to link a login to a specific supply partner.
-- [MODIFY] [AdminContext.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/context/AdminContext.tsx):
-    - Add `supplier` as a recognized role.
-    - Add `supplier_id` to the context properties.
+### 1. Database & Schema Refinement 📂
+- [MODIFY] [apex_os_complete.sql](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/supabase/migrations/20260817_apex_os_complete.sql):
+    - Ensure `orders` table can act as a standalone header (nullable product fields).
+    - Add triggers to automatically update the Master Order `total_price` if items change.
+    - Ensure `order_items` is the source of truth for `unit_cost` and `supplier_id`.
 
-### 2. Supplier Dashboard (`/supplier`) 🚀
-- [NEW] Create directory `app/supplier/` with a specialized layout.
-- [NEW] **Inventory Command**: A lean page where suppliers can:
-    - Pulse-update stock quantities for their active products.
-    - Update lead times (e.g., "Ready for pickup in 2 hours").
-- [NEW] **Proposal Builder**: A form for suppliers to submit new gadgets.
-    - Fields: Name, Specs, Suggested Price, Images.
-    - Status is automatically set to `Pending`.
+### 2. Checkout Flow Refactor 🛒
+- [MODIFY] [Checkout Page](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/checkout/page.tsx):
+    - Update `saveOrder` logic:
+        1. Insert 1 row into `orders` (The Header).
+        2. Insert all cart items into `order_items` linked to that header ID.
+    - Ensure Paystack reference links to the single Master Order.
 
-### 3. Admin Authorization Hub 💎
-- [MODIFY] [Warehouse Hub (Admin)](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/upload/page.tsx):
-    - Add a "Supplier Proposals" tab.
-    - Display all products with `status = 'Pending'`.
-    - **Approval Action**: Admin reviews the entry, adjusts the final retail price, and clicks "Authorize for Grid" (sets status to `Live`).
+### 3. Admin Command Center (Orders Hub) 💎
+- [MODIFY] [Orders Dashboard](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/orders/page.tsx):
+    - Refactor the table to show **Master Orders**.
+    - Add an "Expandable" row or Modal to view/manage individual items within an order.
+    - Add **IMEI Assignment** per item during the fulfillment process.
 
-### 4. Middleware & Routing 🛡️
-- [MODIFY] [middleware.ts](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/middleware.ts):
-    - Ensure suppliers are redirected to `/supplier` and admins to `/admin`.
-    - Prevent suppliers from accessing administrative routes (Finance, Audit, etc.).
+### 4. Logistics & Profit Logic 🧠
+- [MODIFY] [Financial Ledger Trigger](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/supabase/migrations/20260817_apex_os_complete.sql):
+    - Update the profit calculation to sum up the `unit_cost` of all items in the master order.
+- [MODIFY] [Intelligence Scanner](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/lib/apex-os/intelligence.ts):
+    - Update anomaly detection to check item-level fulfillment speed.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to confirm new route segments and props are type-safe.
+- Run `npm run build` to verify type-safety for the new 1:N order structure.
+- SQL test: Insert master order + items and verify `total_price` matches the sum.
 
 ### Manual Verification
-1. **Supplier Proposal**: Log in as a Supplier -> Submit a new gadget -> Verify it does NOT show on the homepage.
-2. **Admin Review**: Log in as Admin -> Go to Warehouse -> See the proposal -> Edit the price -> Click Approve.
-3. **Live Sync**: Verify the gadget is now Live and the Supplier is correctly attributed.
+1. **Multi-Buy Test**: Add 3 different gadgets to cart -> Complete Checkout -> Verify 1 Order appears in Admin with 3 items inside.
+2. **State Machine Test**: Try to move a multi-item order through states (Paid -> Stock Reserved -> Packed).
+3. **Financial Audit**: Verify the Ledger records the total cost of all 3 gadgets correctly.

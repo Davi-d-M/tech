@@ -30,27 +30,31 @@ import { logAuditAction } from '@/lib/auditService';
 
 import { OrderStatus as MachineStatus, getAvailableActions, isValidTransition } from '@/lib/apex-os/state-machine';
 
+interface OrderItem {
+    id: number;
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+    unit_cost: number;
+    size: string;
+    serial_number?: string;
+    imei?: string;
+}
+
 interface OrderRecord {
   id: number;
   created_at: string;
   customer_name: string;
   customer_phone: string;
   customer_email?: string | null;
-  product_id: number | null;
-  shoe_id: number | null; // For backwards compatibility
-  quantity: number;
   total_price: number;
-  status: MachineStatus; // Use state machine types
+  status: MachineStatus;
   payment_method: string;
-  size?: string; // Captures the specific variant name
   note?: string | null;
   rider_name?: string | null;
   rider_phone?: string | null;
   captured_by?: string;
-  // Apex OS Extensions
-  serial_number?: string;
-  imei?: string;
-  supplier_cost?: number;
+  order_items?: OrderItem[];
 }
 
 interface ManualOrderForm {
@@ -59,15 +63,13 @@ interface ManualOrderForm {
   product_id: string;
   quantity: string;
   total_price: string;
-  status: OrderStatus;
+  status: MachineStatus;
   payment_method: PaymentMethod;
   note: string;
 }
 
-const statusOptions = ['Pending', 'Paid', 'Dispatched', 'Delivered', 'Cancelled', 'Payment Failed'] as const;
 const paymentOptions = ['M-Pesa', 'COD', 'Paystack'] as const;
 
-type OrderStatus = (typeof statusOptions)[number];
 type PaymentMethod = (typeof paymentOptions)[number];
 
 const initialManualOrder: ManualOrderForm = {
@@ -76,7 +78,7 @@ const initialManualOrder: ManualOrderForm = {
   product_id: '',
   quantity: '1',
   total_price: '',
-  status: 'Pending',
+  status: 'Created',
   payment_method: 'M-Pesa',
   note: '',
 };
@@ -127,7 +129,7 @@ export default function AdminOrdersPage() {
 
     try {
       const [ordersRes, productsRes] = await Promise.all([
-          supabase.from('orders').select('*').order('created_at', { ascending: false }),
+          supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }),
           supabase.from('products').select('id, name, price, cost_price, stock, variant_stock')
       ]);
 
@@ -159,10 +161,10 @@ export default function AdminOrdersPage() {
 
   const summary = React.useMemo(() => {
     const totalRevenue = orders
-      .filter(o => o.status === 'Delivered')
+      .filter(o => o.status === 'Delivered' || o.status === 'Completed')
       .reduce((sum, order) => sum + Number(order.total_price || 0), 0);
-    const pending = orders.filter((order) => order.status === 'Pending').length;
-    const delivered = orders.filter((order) => order.status === 'Delivered').length;
+    const pending = orders.filter((order) => order.status === 'Created' || order.status === 'Payment Pending').length;
+    const delivered = orders.filter((order) => order.status === 'Delivered' || order.status === 'Completed').length;
 
     return {
       totalRevenue,
@@ -216,54 +218,35 @@ export default function AdminOrdersPage() {
 
       await logAuditAction(email, 'UPDATE_ORDER_STATUS', { id: orderId, newStatus: status });
 
-      const currentProductId = orderToUpdate?.product_id || orderToUpdate?.shoe_id;
+      if (status === 'Delivered' && oldStatus !== 'Delivered' && orderToUpdate?.order_items) {
+        for (const item of orderToUpdate.order_items) {
+            const { data: productData } = await supabase
+              .from('products')
+              .select('stock, variant_stock')
+              .eq('id', item.product_id)
+              .single();
 
-      if (status === 'Delivered' && oldStatus !== 'Delivered' && currentProductId) {
-        const { data: productData } = await supabase
-          .from('products')
-          .select('stock, variant_stock')
-          .eq('id', currentProductId)
-          .single();
+            if (productData) {
+              const qty = item.quantity || 1;
+              const currentStock = Number(productData.stock || 0);
+              const newStock = Math.max(0, currentStock - qty);
 
-        if (productData) {
-          const qty = orderToUpdate?.quantity || 1;
-          const currentStock = Number(productData.stock || 0);
-          const newStock = Math.max(0, currentStock - qty);
+              let updatedVariantStock = productData.variant_stock || {};
+              if (item.size && updatedVariantStock[item.size] !== undefined) {
+                  const currentVStock = Number(updatedVariantStock[item.size] || 0);
+                  updatedVariantStock = { ...updatedVariantStock, [item.size]: Math.max(0, currentVStock - qty) };
 
-          let updatedVariantStock = productData.variant_stock || {};
-          if (orderToUpdate?.size && updatedVariantStock[orderToUpdate.size] !== undefined) {
-              const currentVStock = Number(updatedVariantStock[orderToUpdate.size] || 0);
-              updatedVariantStock = { ...updatedVariantStock, [orderToUpdate.size]: Math.max(0, currentVStock - qty) };
-
-              await supabase
-                .from('products')
-                .update({
-                    stock: newStock,
-                    variant_stock: updatedVariantStock
-                })
-                .eq('id', currentProductId);
-          } else {
-              await supabase
-                .from('products')
-                .update({
-                    stock: newStock
-                })
-                .eq('id', currentProductId);
-          }
-
-          if (newStock <= 3) {
-              fetch('/api/admin/notify-admin', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                      type: 'LOW_STOCK',
-                      details: {
-                          productName: orderToUpdate?.customer_name ? productNameMap.get(currentProductId) : 'A Product',
-                          currentStock: newStock
-                      }
-                  })
-              }).catch(e => console.error("Low stock notify error:", e));
-          }
+                  await supabase
+                    .from('products')
+                    .update({ stock: newStock, variant_stock: updatedVariantStock })
+                    .eq('id', item.product_id);
+              } else {
+                  await supabase
+                    .from('products')
+                    .update({ stock: newStock })
+                    .eq('id', item.product_id);
+              }
+            }
         }
       }
 
@@ -306,13 +289,13 @@ export default function AdminOrdersPage() {
   };
 
   const handleDownloadReceipt = async (order: OrderRecord) => {
-      const productName = order.product_id ? productNameMap.get(order.product_id) : 'Gadget';
-      const doc = await generateReceiptPDF({...order, product_name: productName} as Parameters<typeof generateReceiptPDF>[0]);
+      const productName = order.order_items?.[0] ? productNameMap.get(order.order_items[0].product_id) : 'Multiple Gadgets';
+      const doc = await generateReceiptPDF({...order, product_name: productName} as any);
       doc.save(`Receipt_Apexstores_${order.id}.pdf`);
   };
 
   const handleShareOnWhatsApp = (order: OrderRecord) => {
-      const link = getWhatsAppReceiptLink(order as Parameters<typeof getWhatsAppReceiptLink>[0]);
+      const link = getWhatsAppReceiptLink(order as any);
       window.open(link, '_blank');
   };
 
@@ -407,7 +390,7 @@ export default function AdminOrdersPage() {
       );
   };
 
-  const handleBulkStatusUpdate = async (status: OrderStatus) => {
+  const handleBulkStatusUpdate = async (status: MachineStatus) => {
       if (selectedOrders.length === 0 || !supabase) return;
       setIsBulkUpdating(true);
       try {
@@ -457,7 +440,7 @@ export default function AdminOrdersPage() {
       }
   };
 
-  if (!canManageOrders && role !== 'owner') {
+  if (role !== 'owner' && role !== 'admin' && role !== 'staff') {
       return (
           <div className="p-24 flex flex-col items-center justify-center text-center">
               <ShieldAlert className="h-16 w-16 text-primary mb-6" />
@@ -596,9 +579,9 @@ export default function AdminOrdersPage() {
                   <select
                     className="rounded-2xl border border-slate-100 bg-slate-50/50 h-12 px-3 text-xs font-black uppercase tracking-widest outline-none"
                     value={manualOrder.status}
-                    onChange={(e) => setManualOrder({...manualOrder, status: e.target.value as OrderStatus})}
+                    onChange={(e) => setManualOrder({...manualOrder, status: e.target.value as MachineStatus})}
                   >
-                    {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                    {(['Created', 'Paid', 'Dispatched', 'Delivered'] as MachineStatus[]).map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
               </div>
@@ -619,7 +602,7 @@ export default function AdminOrdersPage() {
                         <p className="text-[11px] font-black uppercase text-foreground tracking-[0.2em]">{selectedOrders.length} Orders Selected</p>
                     </div>
                     <div className="flex gap-3">
-                        {statusOptions.map(s => (
+                        {(['Paid', 'Dispatched', 'Delivered', 'Cancelled'] as MachineStatus[]).map(s => (
                             <Button
                                 key={s}
                                 size="sm"
@@ -675,8 +658,8 @@ export default function AdminOrdersPage() {
                     </thead>
                     <tbody className="divide-y divide-slate-50">
                         {filteredOrders.map((order) => {
-                            const unitCost = products.find(p => p.id === order.product_id)?.cost_price || 0;
-                            const profit = Number(order.total_price) - (Number(unitCost) * (order.quantity || 1));
+                            const totalCost = order.order_items?.reduce((sum, item) => sum + (item.unit_cost * item.quantity), 0) || 0;
+                            const profit = Number(order.total_price) - Number(totalCost);
                             const isSelected = selectedOrders.includes(order.id);
 
                             return (
@@ -700,13 +683,40 @@ export default function AdminOrdersPage() {
                                 </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                <div className="flex flex-col text-left min-w-[150px]">
-                                    <span className="font-black text-foreground uppercase text-[11px] truncate">
-                                    {(order.product_id || order.shoe_id) ? productNameMap.get((order.product_id || order.shoe_id)!) || `Item #${order.product_id || order.shoe_id}` : 'Manual Entry'}
-                                    </span>
-                                    <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest mt-1">
-                                        x{order.quantity} Units {order.size && `(${order.size})`} â€” {formatPrice(order.total_price)}
-                                    </span>
+                                <div className="flex flex-col text-left min-w-[200px] gap-2">
+                                    {order.order_items && order.order_items.length > 0 ? (
+                                        order.order_items.map((item, idx) => (
+                                            <div key={item.id} className="border-b border-slate-50 last:border-0 pb-2 mb-2 last:pb-0 last:mb-0">
+                                                <span className="font-black text-foreground uppercase text-[11px] block truncate">
+                                                    {productNameMap.get(item.product_id) || `Item #${item.product_id}`}
+                                                </span>
+                                                <div className="flex items-center justify-between gap-2 mt-1">
+                                                    <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">
+                                                        x{item.quantity} Units {item.size && `(${item.size})`}
+                                                    </span>
+                                                    {order.status === 'Packed' && !item.serial_number && (
+                                                        <button
+                                                            onClick={() => {
+                                                                const imei = prompt(`ENTER IMEI/SERIAL FOR ${productNameMap.get(item.product_id)}:`);
+                                                                if (imei && supabase) {
+                                                                    supabase.from('order_items').update({ serial_number: imei }).eq('id', item.id)
+                                                                        .then(() => loadOrders());
+                                                                }
+                                                            }}
+                                                            className="text-[8px] font-black uppercase text-rose-500 animate-pulse"
+                                                        >
+                                                            Log IMEI
+                                                        </button>
+                                                    )}
+                                                    {item.serial_number && (
+                                                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter">SN: {item.serial_number}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <span className="text-[10px] text-slate-400 italic">No Items Logged</span>
+                                    )}
                                 </div>
                                 </td>
                                 <td className="px-8 py-6">
@@ -738,21 +748,6 @@ export default function AdminOrdersPage() {
                                             <option key={s} value={s}>{s}</option>
                                         ))}
                                     </select>
-
-                                    {order.status === 'Packed' && !order.serial_number && (
-                                        <button
-                                            onClick={() => {
-                                                const imei = prompt("ENTER IMEI/SERIAL FOR VERIFICATION:");
-                                                if (imei) {
-                                                    supabase!.from('orders').update({ serial_number: imei }).eq('id', order.id)
-                                                        .then(() => loadOrders());
-                                                }
-                                            }}
-                                            className="text-[8px] font-black uppercase text-rose-500 animate-pulse text-left pl-1"
-                                        >
-                                            Missing Serial!
-                                        </button>
-                                    )}
 
                                     {order.status !== 'Delivered' && order.status !== 'Cancelled' && (
                                         <button
@@ -843,9 +838,10 @@ export default function AdminOrdersPage() {
                                     <select
                                         className="h-8 rounded-lg border-none text-[9px] font-black uppercase tracking-widest px-3 outline-none ring-0 text-primary bg-primary/10"
                                         value={order.status}
-                                        onChange={(e) => updateOrderStatus(order.id, e.target.value as OrderStatus)}
+                                        onChange={(e) => updateOrderStatus(order.id, e.target.value as MachineStatus)}
                                     >
-                                        {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                                        <option value={order.status}>{order.status}</option>
+                                        {getAvailableActions(order.status).map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
                                 </div>
 

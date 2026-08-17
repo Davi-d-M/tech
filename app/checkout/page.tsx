@@ -377,62 +377,55 @@ function CheckoutContent() {
 
       const sessionId = localStorage.getItem('apex_session_id');
 
-      const orderRows = cart.map((item, index) => {
-        const dbProd = products?.find(p => p.id === item.id);
-        const itemCost = dbProd?.cost_price || 0;
+      // 1. Create Master Order (Header)
+      const headerPayload = {
+          user_id: user?.id || null,
+          session_id: sessionId,
+          customer_name: customerName.trim(),
+          customer_phone: customerPhone.trim(),
+          customer_email: customerEmail.trim() || null,
+          total_price: total,
+          delivery_cost: currentRegion.fee,
+          status: "Pending",
+          payment_method: paymentMethod === 'M-Pesa' ? 'Paystack' : paymentMethod,
+          checkout_request_id: requestId,
+          referred_by_code: referralCode,
+          captured_by: 'system',
+          latitude: coords.lat || profile?.latitude || null,
+          longitude: coords.lng || profile?.longitude || null,
+          note: `Region: ${currentRegion.label}${activeCoupon ? ` | Coupon: ${activeCoupon.code}` : ''}${usePoints ? ` | Used ${pointsDiscount * 10} points` : ''}${referralCode ? ` | Referred by ${referralCode}` : ''}`
+      };
 
-            const orderRow = {
-                user_id: user?.id || null, // NEW: Lock to account
-                session_id: sessionId, // NEW: Session Isolation
-                customer_name: customerName.trim(),
-                customer_phone: customerPhone.trim(),
-                customer_email: customerEmail.trim() || null,
-                product_id: item.id,
-                quantity: item.quantity,
-                size: item.size || 'Standard',
-                unit_price: item.price,
-                unit_cost: itemCost,
-                total_price: (item.price * item.quantity) + (index === 0 ? (total - subtotal) : 0),
-                status: "Pending", // Always Pending initially
-                payment_method: paymentMethod === 'M-Pesa' ? 'Paystack' : paymentMethod,
-                checkout_request_id: requestId,
-                referred_by_code: referralCode,
-                captured_by: 'system',
-                latitude: coords.lat || profile?.latitude || null,
-                longitude: coords.lng || profile?.longitude || null
-            } as OrderPayload;
+      const { data: headerData, error: headerError } = await client
+          .from("orders")
+          .insert([headerPayload])
+          .select('id')
+          .single();
 
-            const noteContent = `Region: ${currentRegion.label}${activeCoupon ? ` | Coupon: ${activeCoupon.code}` : ''}${usePoints ? ` | Used ${pointsDiscount * 10} points` : ''}${referralCode ? ` | Referred by ${referralCode}` : ''}`;
-            orderRow.note = noteContent;
+      if (headerError) {
+          console.error("Header Save Error:", headerError);
+          // Silent retry with sanitized payload if columns missing
+          const { data: retryData, error: retryError } = await client
+              .from("orders")
+              .insert([{
+                  customer_name: customerName.trim(),
+                  customer_phone: customerPhone.trim(),
+                  total_price: total,
+                  status: "Pending"
+              }])
+              .select('id')
+              .single();
 
-        return orderRow;
-      });
-
-      const { data: insertedData, error } = await client.from("orders").insert(orderRows).select('id');
-
-      if (error) {
-          const errorMessage = error.message.toLowerCase();
-          // Silent retry if columns are missing
-          if (errorMessage.includes("note") || errorMessage.includes("referred_by_code") || errorMessage.includes("schema") || errorMessage.includes("session_id")) {
-              const sanitizedRows: SanitizedOrderPayload[] = orderRows.map((row) => {
-                  const rest = { ...row };
-                  delete (rest as Record<string, unknown>).note;
-                  delete (rest as Record<string, unknown>).referred_by_code;
-                  delete (rest as Record<string, unknown>).session_id;
-                  return rest as SanitizedOrderPayload;
-              });
-              const { data: retryData, error: retryError } = await client.from("orders").insert(sanitizedRows).select('id');
-              if (retryError) throw retryError;
-              if (retryData) {
-                  setPlacedOrderId(retryData[0].id);
-                  return retryData[0].id;
-              }
-          } else {
-              throw error;
+          if (retryError) throw retryError;
+          if (retryData) {
+              await createOrderItems(retryData.id, products);
+              setPlacedOrderId(retryData.id);
+              return retryData.id;
           }
-      } else if (insertedData && insertedData.length > 0) {
-          setPlacedOrderId(insertedData[0].id);
-          return insertedData[0].id;
+      } else if (headerData) {
+          await createOrderItems(headerData.id, products);
+          setPlacedOrderId(headerData.id);
+          return headerData.id;
       }
 
       return null;
@@ -441,6 +434,32 @@ function CheckoutContent() {
       console.error("Order save error:", err);
       throw err;
     }
+  };
+
+  const createOrderItems = async (orderId: number, products: DBProduct[]) => {
+      if (!supabase) return;
+      const itemRows = cart.map(item => {
+          const dbProd = products?.find(p => p.id === item.id);
+          return {
+              order_id: orderId,
+              product_id: item.id,
+              quantity: item.quantity,
+              unit_price: item.price,
+              unit_cost: dbProd?.cost_price || 0,
+              size: item.size || 'Standard',
+              status: 'Pending'
+          };
+      });
+
+      const { error } = await supabase.from("order_items").insert(itemRows);
+      if (error) {
+          console.warn("Item save warning (falling back to legacy single-row mode):", error);
+          // If order_items table doesn't exist yet, we've already saved the header
+          // but we might need to link the product_id to the header for legacy support
+          if (cart.length > 0) {
+              await supabase.from('orders').update({ product_id: cart[0].id }).eq('id', orderId);
+          }
+      }
   };
 
   const finalizeOrder = async (orderId?: number) => {

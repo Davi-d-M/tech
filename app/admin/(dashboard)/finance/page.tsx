@@ -28,7 +28,7 @@ import { useAdmin } from '@/context/AdminContext';
 interface LedgerEntry {
     id: number;
     order_id: number;
-    entry_type: 'REVENUE' | 'SUPPLIER_PAYABLE' | 'DELIVERY_FEE' | 'PAYMENT_FEE' | 'REFUND';
+    entry_type: 'REVENUE' | 'SUPPLIER_PAYABLE' | 'DELIVERY_FEE' | 'PAYMENT_FEE' | 'REFUND' | 'COST';
     amount: number;
     description: string;
     is_reconciled: boolean;
@@ -97,8 +97,9 @@ export default function AdminFinancePage() {
         const contributionProfit = revenue - cost - fees;
         const margin = revenue > 0 ? (contributionProfit / revenue) * 100 : 0;
         const unreconciled = ledger.filter(l => !l.is_reconciled).length;
+        const totalVariances = ledger.filter(l => !l.is_reconciled).reduce((s, l) => s + Math.abs(l.amount), 0);
 
-        return { revenue, contributionProfit, margin, unreconciled, payables: cost };
+        return { revenue, contributionProfit, margin, unreconciled, payables: cost, totalVariances };
     }, [ledger]);
 
     if (loading) return (
@@ -144,10 +145,10 @@ export default function AdminFinancePage() {
             {/* Financial KPIs 2.0 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
                 {[
-                    { label: 'Gross Revenue', val: stats.revenue, icon: Wallet, color: 'primary' },
-                    { label: 'Supplier Payables', val: stats.payables, icon: Target, color: 'amber' },
-                    { label: 'Contribution Profit', val: stats.contributionProfit, icon: TrendingUp, color: 'emerald' },
-                    { label: 'Net Efficiency', val: `${stats.margin.toFixed(1)}%`, icon: DollarSign, color: 'indigo' },
+                    { label: 'Available Cash', val: stats.revenue - stats.payables, icon: Wallet, color: 'emerald' },
+                    { label: 'Unreconciled', val: stats.totalVariances, icon: Target, color: 'amber' },
+                    { label: 'Net Profit', val: stats.contributionProfit, icon: TrendingUp, color: 'primary' },
+                    { label: 'Margin Efficiency', val: `${stats.margin.toFixed(1)}%`, icon: DollarSign, color: 'indigo' },
                 ].map((item) => (
                     <Card key={item.label} className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm group hover:shadow-xl transition-all relative overflow-hidden h-full flex flex-col justify-between">
                         <div className="relative z-10 space-y-8">
