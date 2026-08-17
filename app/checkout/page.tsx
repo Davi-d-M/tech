@@ -41,30 +41,6 @@ interface DBProduct {
   cost_price: number;
 }
 
-interface OrderPayload {
-  user_id: string | null;
-  session_id: string | null; // NEW: Session Isolation
-  customer_name: string;
-  customer_phone: string;
-  customer_email: string | null;
-  product_id: number;
-  quantity: number;
-  size: string;
-  unit_price: number;
-  unit_cost: number;
-  total_price: number;
-  status: string;
-  payment_method: string;
-  checkout_request_id: string | null;
-  referred_by_code: string | null;
-  captured_by: string;
-  latitude?: number | null;
-  longitude?: number | null;
-  note?: string;
-}
-
-type SanitizedOrderPayload = Omit<OrderPayload, 'note' | 'referred_by_code'>;
-
 interface PaystackResponse {
   status: string;
   reference: string;
@@ -118,7 +94,7 @@ function CheckoutContent() {
     async function checkLockdown() {
         if (!supabase) return;
         const { data } = await supabase.from('settings').select('value').eq('key', 'system_lockdown').maybeSingle();
-        const val = data?.value as any;
+        const val = data?.value as { active?: boolean };
         if (val?.active) {
             setIsSystemLockdown(true);
         }

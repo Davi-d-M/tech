@@ -42,7 +42,7 @@ export default async function SupplierLayout({
 
   return (
     <SupplierLayoutClient
-        role={sessionData.role as any}
+        role={sessionData.role as 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer'}
         email={userEmail}
         permissions={sessionData.permissions as unknown as Permissions}
         supplier_id={sessionData.supplier_id}

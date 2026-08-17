@@ -71,7 +71,7 @@ interface AuditLog {
 }
 
 export default function AdminDashboard() {
-  const { role, email } = useAdmin();
+  const { email } = useAdmin();
   const [orders, setOrders] = React.useState<OrderRecord[]>([]);
   const [products, setProducts] = React.useState<ProductRecord[]>([]);
   const [auditLogs, setAuditLogs] = React.useState<AuditLog[]>([]);

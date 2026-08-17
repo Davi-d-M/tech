@@ -48,11 +48,14 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-        const { error } = await supabase.from('messages').insert([{
-            name: formData.name.trim(),
-            email: formData.email.trim(),
+        const { error } = await supabase.from('support_tickets').insert([{
+            customer_name: formData.name.trim(),
+            customer_email: formData.email.trim(),
             subject: formData.subject.trim(),
-            message: formData.message.trim()
+            description: formData.message.trim(),
+            category: 'General',
+            priority: 'Medium',
+            status: 'Open'
         }]);
 
         if (error) throw error;

@@ -19,7 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { cn, formatPrice } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 
 interface WarrantyCase {
@@ -36,11 +36,10 @@ interface WarrantyCase {
 }
 
 export default function WarrantyHub() {
-    const { role } = useAdmin();
+    useAdmin();
     const [cases, setCases] = React.useState<WarrantyCase[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [searchQuery, setSearchQuery] = React.useState('');
-    const [filter, setFilter] = React.useState('all');
 
     const fetchCases = React.useCallback(async () => {
         if (!supabase) return;

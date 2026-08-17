@@ -1,9 +1,18 @@
-import { OrderStatus } from './state-machine';
+export interface RulesContext {
+    total_price?: number;
+    supplier_rating?: number;
+    margin?: number;
+    risk_score?: number;
+    requires_approval?: boolean;
+    status?: string;
+    alert_type?: string;
+    [key: string]: string | number | boolean | undefined | null;
+}
 
 export interface BusinessRule {
     id: string;
-    condition: (context: any) => boolean;
-    action: (context: any) => any;
+    condition: (context: RulesContext) => boolean;
+    action: (context: RulesContext) => RulesContext;
     description: string;
 }
 
@@ -32,7 +41,7 @@ export const GLOBAL_RULES: BusinessRule[] = [
     }
 ];
 
-export function evaluateRules(context: any) {
+export function evaluateRules(context: RulesContext) {
     let result = { ...context };
     GLOBAL_RULES.forEach(rule => {
         if (rule.condition(result)) {

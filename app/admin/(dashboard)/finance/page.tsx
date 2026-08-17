@@ -16,7 +16,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formatPrice, cn } from '@/lib/utils';
-import { useAdmin } from '@/context/AdminContext';
 
 interface LedgerEntry {
     id: number;
@@ -29,7 +28,6 @@ interface LedgerEntry {
 }
 
 export default function AdminFinancePage() {
-    const { role } = useAdmin();
     const [loading, setLoading] = React.useState(true);
     const [ledger, setLedger] = React.useState<LedgerEntry[]>([]);
     const [isReconciling, setIsReconciling] = React.useState(false);
@@ -74,8 +72,9 @@ export default function AdminFinancePage() {
 
             setMessage({ type: 'success', text: "Ledger reconciliation complete. 100% Integrity match. ✅" });
             fetchLedger();
-        } catch (err: any) {
-            setMessage({ type: 'error', text: err.message });
+        } catch (err: unknown) {
+            const error = err as Error;
+            setMessage({ type: 'error', text: error.message });
         } finally {
             setIsReconciling(false);
         }

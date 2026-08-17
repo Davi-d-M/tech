@@ -15,7 +15,6 @@ import {
   Store,
   Tag,
   Star,
-  ShoppingBag,
   ShieldCheck,
   ShieldAlert as SecurityIcon,
   Zap,
@@ -68,7 +67,6 @@ export default function AdminLayoutClient({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isActivityOpen, setIsActivityOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
       const savedSidebar = localStorage.getItem('admin_sidebar_collapsed');
@@ -76,8 +74,6 @@ export default function AdminLayoutClient({
       if (savedSidebar === 'true') {
           setIsSidebarCollapsed(true);
       }
-
-      setHasHydrated(true);
 
       const handleKeyDown = (e: KeyboardEvent) => {
           if ((e.ctrlKey || e.metaKey) && e.key === 'k') {

@@ -19,11 +19,10 @@ import {
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function ProposeGadget() {
-    const { supplier_id, email } = useAdmin();
+    const { supplier_id } = useAdmin();
     const [loading, setLoading] = React.useState(false);
     const [success, setSuccess] = React.useState(false);
     const [formData, setFormData] = React.useState({

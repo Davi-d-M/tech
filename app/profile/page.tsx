@@ -120,7 +120,7 @@ interface ServiceRequest {
   id: string;
   status: string;
   subject: string;
-  message: string;
+  description: string;
   admin_response?: string | null;
   created_at: string;
 }
@@ -250,7 +250,7 @@ export default function ProfilePage() {
               supabase.from('user_devices').select('*').eq('user_id', session.user.id),
               supabase.from('user_achievements').select('*').eq('user_id', session.user.id),
               supabase.from('warranties').select('*').eq('user_id', session.user.id),
-              supabase.from('messages').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false })
+              supabase.from('support_tickets').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false })
           ]);
           setDevices(devicesRes.data || []);
           setAchievements(achievementsRes.data || []);
@@ -429,12 +429,15 @@ export default function ProfilePage() {
 
     setIsSendingTicket(true);
     try {
-        const { error } = await supabase.from('messages').insert([{
+        const { error } = await supabase.from('support_tickets').insert([{
             user_id: user.id,
-            name: profile?.full_name || user.email?.split('@')[0] || 'Member',
-            email: user.email,
+            customer_name: profile?.full_name || user.email?.split('@')[0] || 'Member',
+            customer_email: user.email,
             subject: supportSubject.trim() || 'General In-App Support',
-            message: supportMessage.trim()
+            description: supportMessage.trim(),
+            category: 'General',
+            priority: 'Medium',
+            status: 'Open'
         }]);
 
         if (error) throw error;
@@ -445,7 +448,7 @@ export default function ProfilePage() {
         setIsSupportFormOpen(false);
 
         // Refresh list
-        const { data } = await supabase.from('messages').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+        const { data } = await supabase.from('support_tickets').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
         setServiceRequests(data || []);
     } catch (err: unknown) {
         setToast({ type: 'error', text: (err as Error).message });
@@ -1006,13 +1009,13 @@ export default function ProfilePage() {
                                                     <p className="text-[10px] font-black uppercase text-foreground truncate max-w-[120px]">{req.subject}</p>
                                                     <span className={cn(
                                                         "text-[7px] font-black uppercase px-2 py-0.5 rounded-full",
-                                                        req.status === 'New' ? "bg-primary/10 text-primary animate-pulse" :
-                                                        req.status === 'Replied' ? "bg-emerald-100 text-emerald-600" :
+                                                        req.status === 'Open' ? "bg-primary/10 text-primary animate-pulse" :
+                                                        req.status === 'Resolved' ? "bg-emerald-100 text-emerald-600" :
                                                         "bg-slate-100 text-slate-400"
                                                     )}>{req.status}</span>
                                                 </div>
 
-                                                <p className="text-[9px] text-slate-500 font-medium italic line-clamp-1">&quot;{req.message}&quot;</p>
+                                                <p className="text-[9px] text-slate-500 font-medium italic line-clamp-1">&quot;{req.description}&quot;</p>
 
                                                 {req.admin_response && (
                                                     <div className="pt-3 border-t border-slate-50 animate-in fade-in slide-in-from-top-1 duration-500">
@@ -1263,6 +1266,48 @@ export default function ProfilePage() {
 
                 {/* 📊 ORDER SUMMARY DASHBOARD */}
                 <Card id="order-summary-metrics" className="bg-white rounded-[3rem] p-8 border border-slate-100 space-y-6 text-left shadow-sm">
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 px-2">Purchase History</h3>
+                    <div className="divide-y divide-slate-50 max-h-[400px] overflow-y-auto no-scrollbar">
+                        {orders.length === 0 ? (
+                            <p className="p-8 text-center text-[10px] font-black uppercase text-slate-300 italic">No missions completed yet.</p>
+                        ) : orders.map(order => (
+                            <div key={order.id} className="py-6 flex justify-between items-center group">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-300">
+                                        <Package size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-black text-foreground uppercase">Order #{order.id}</p>
+                                        <p className="text-[8px] font-bold text-slate-400 uppercase">{new Date(order.created_at).toLocaleDateString()} • {order.status}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-black text-foreground">{formatPrice(order.total_price)}</p>
+                                    {order.status === 'Delivered' && (
+                                        <button
+                                            onClick={() => {
+                                                const complaint = prompt("Please describe the technical issue with your gadget:");
+                                                if (complaint && supabase) {
+                                                    supabase.from('warranty_cases').insert([{
+                                                        order_id: order.id,
+                                                        customer_complaint: complaint,
+                                                        status: 'Pending_Pickup'
+                                                    }]).then(() => alert("Warranty Mission Initialized. 🛡️"));
+                                                }
+                                            }}
+                                            className="text-[7px] font-black uppercase text-primary underline"
+                                        >
+                                            Request Warranty
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </Card>
+
+                {/* 📊 PORTFOLIO METRICS */}
+                <Card className="bg-white rounded-[3rem] p-8 border border-slate-100 space-y-6 text-left shadow-sm">
                     <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 px-2">Portfolio Metrics</h3>
                     <div className="grid grid-cols-2 gap-4">
                         {[

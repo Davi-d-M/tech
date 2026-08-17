@@ -8,14 +8,11 @@ import {
     ArrowDownRight,
     TrendingUp,
     AlertTriangle,
-    Package,
-    ShieldCheck,
     Loader2,
     Target,
     Users
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { formatPrice, cn } from '@/lib/utils';
 
 interface IntelligenceData {
     growth: number;
@@ -42,14 +39,13 @@ export default function ApexIntelligence2() {
             if (!supabase) return;
             try {
                 // Tactical Data Scans
-                const [ordersRes, productsRes, suppliersRes] = await Promise.all([
+                const [, productsRes, suppliersRes] = await Promise.all([
                     supabase.from('orders').select('total_price, status, created_at'),
                     supabase.from('products').select('stock'),
                     supabase.from('suppliers').select('rating')
                 ]);
 
                 // Calculate metrics
-                const delivered = ordersRes.data?.filter(o => o.status === 'Delivered') || [];
                 const lowStock = productsRes.data?.filter(p => p.stock < 5).length || 0;
                 const riskySuppliers = suppliersRes.data?.filter(s => s.rating < 80).length || 0;
 

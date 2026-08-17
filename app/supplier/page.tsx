@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { formatPrice, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function SupplierDashboard() {

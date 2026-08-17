@@ -201,19 +201,21 @@ export default function AdminOrdersPage() {
           updatePayload.note = `Status manually updated to Paid by ${email || 'Admin'}`;
       }
 
-      const { error } = await supabase
-        .from('orders')
-        .update(updatePayload)
-        .eq('id', orderId);
+      const { error } = await supabase.rpc('transition_order_state', {
+          order_id_input: orderId,
+          new_state_input: status,
+          reason_input: status === 'Paid' ? `Payment Verified` : 'Manual Status Update',
+          admin_email_input: email || 'Admin'
+      });
 
       if (error) {
-          if (error.message.includes("note") || error.message.includes("schema")) {
-              delete updatePayload.note;
-              const { error: retryError } = await supabase.from('orders').update(updatePayload).eq('id', orderId);
-              if (retryError) throw retryError;
-          } else {
-              throw error;
-          }
+          console.error("RPC Transition Error:", error);
+          // Fallback to direct update if RPC fails (e.g. not migrated yet)
+          const { error: directError } = await supabase
+            .from('orders')
+            .update({ status })
+            .eq('id', orderId);
+          if (directError) throw directError;
       }
 
       await logAuditAction(email, 'UPDATE_ORDER_STATUS', { id: orderId, newStatus: status });
@@ -290,12 +292,12 @@ export default function AdminOrdersPage() {
 
   const handleDownloadReceipt = async (order: OrderRecord) => {
       const productName = order.order_items?.[0] ? productNameMap.get(order.order_items[0].product_id) : 'Multiple Gadgets';
-      const doc = await generateReceiptPDF({...order, product_name: productName} as any);
+      const doc = await generateReceiptPDF({...order, product_name: productName} as Parameters<typeof generateReceiptPDF>[0]);
       doc.save(`Receipt_Apexstores_${order.id}.pdf`);
   };
 
   const handleShareOnWhatsApp = (order: OrderRecord) => {
-      const link = getWhatsAppReceiptLink(order as any);
+      const link = getWhatsAppReceiptLink(order as Parameters<typeof getWhatsAppReceiptLink>[0]);
       window.open(link, '_blank');
   };
 

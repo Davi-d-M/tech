@@ -11,7 +11,6 @@ import {
     Send,
     Loader2,
     ShieldAlert,
-    ChevronRight,
     Tag,
     AlertCircle
 } from 'lucide-react';
@@ -84,11 +83,11 @@ export default function SupportCaseManagement() {
         return matchesQuery && matchesStatus;
     });
 
-    const updateTicketStatus = async (id: number, status: string) => {
+    const updateTicketStatus = async (id: number, status: SupportTicket['status']) => {
         if (!supabase) return;
         const { error } = await supabase.from('support_tickets').update({ status }).eq('id', id);
         if (!error) {
-            setTickets(prev => prev.map(t => t.id === id ? { ...t, status: status as any } : t));
+            setTickets(prev => prev.map(t => t.id === id ? { ...t, status } : t));
             await logAuditAction(adminEmail, 'SUPPORT_TICKET_STATUS_CHANGE', { id, status });
         }
     };
@@ -219,7 +218,7 @@ export default function SupportCaseManagement() {
                                         <select
                                             className="w-full h-12 rounded-xl bg-slate-50 border border-slate-100 px-4 text-[10px] font-black uppercase outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                                             value={t.assigned_to || ''}
-                                            onChange={e => {}}
+                                            onChange={() => {}}
                                         >
                                             <option value="">Unassigned</option>
                                             {staff.map(s => <option key={s.id} value={s.id}>{s.email.split('@')[0]}</option>)}
