@@ -6,14 +6,8 @@ import {
     Zap,
     RefreshCcw,
     Plus,
-    TrendingUp,
-    AlertCircle,
-    CheckCircle2,
-    MoreVertical,
-    Target,
     Activity,
-    Search,
-    ShieldAlert
+    Target
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -32,7 +26,6 @@ interface Supplier {
 }
 
 export default function SupplierScorecards() {
-    const { role } = useAdmin();
     const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
     const [loading, setLoading] = React.useState(true);
 

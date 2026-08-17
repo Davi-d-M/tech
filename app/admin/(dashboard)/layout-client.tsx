@@ -13,6 +13,8 @@ import {
   Menu,
   X,
   Store,
+  Tag,
+  Star,
   ShoppingBag,
   ShieldCheck,
   ShieldAlert as SecurityIcon,
@@ -109,38 +111,41 @@ export default function AdminLayoutClient({
   const isAdmin = role === 'admin' || isOwner;
 
   const allNavItems = [
-    { group: 'INTELLIGENCE', items: [
+    { group: 'COMMAND CENTER', items: [
       { name: 'Today Console', href: '/admin', icon: LayoutDashboard, minRole: 'viewer' },
-      { name: 'Deep Analytics', href: '/admin/analytics', icon: TrendingUp, permission: 'can_view_revenue' },
-      { name: 'System Audit', href: '/admin/audit', icon: HistoryIcon, permission: 'can_view_revenue' },
     ]},
-    { group: 'MARKETING', items: [
-      { name: 'Campaign Hub', href: '/admin/marketing', icon: Zap, permission: 'can_manage_broadcast' },
-      { name: 'Builder', href: '/admin/marketing/create', icon: Plus, permission: 'can_manage_broadcast' },
-      { name: 'Experiments', href: '/admin/marketing/experiments', icon: Activity, permission: 'can_manage_broadcast' },
-      { name: 'Abandoned', href: '/admin/marketing/abandoned', icon: ShoppingBag, permission: 'can_manage_broadcast' },
-      { name: 'Creators', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
-      { name: 'Segments', href: '/admin/marketing/audiences', icon: Users, permission: 'can_manage_broadcast' },
-    ]},
-    { group: 'LOGISTICS', items: [
-      { name: 'Tasks Board', href: '/admin/operations/tasks', icon: LayoutIcon, permission: 'can_manage_orders' },
-      { name: 'Warehouse', href: '/admin/upload', icon: Package, permission: 'can_manage_inventory' },
-      { name: 'Live Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
+    { group: 'COMMERCE', items: [
+      { name: 'Inventory Hub', href: '/admin/upload', icon: Package, permission: 'can_manage_inventory' },
       { name: 'Orders Pipeline', href: '/admin/orders', icon: ShoppingCart, permission: 'can_manage_orders' },
     ]},
-    { group: 'RELATIONS', items: [
+    { group: 'OPERATIONS', items: [
+      { name: 'Live Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
+      { name: 'Tasks Board', href: '/admin/operations/tasks', icon: LayoutIcon, permission: 'can_manage_orders' },
+      { name: 'Suppliers', href: '/admin/operations/suppliers', icon: Zap, permission: 'can_manage_inventory' },
+    ]},
+    { group: 'CUSTOMERS', items: [
       { name: 'Directory', href: '/admin/customers', icon: Users, permission: 'can_manage_customer_care' },
-      { name: 'Reviews Hub', href: '/admin/reviews', icon: MessageSquare, permission: 'can_manage_customer_care' },
+      { name: 'Support Inbox', href: '/admin/messages', icon: MessageSquare, permission: 'can_manage_customer_care' },
+      { name: 'Reviews Hub', href: '/admin/reviews', icon: Star, permission: 'can_manage_customer_care' },
       { name: 'Loyalty Logic', href: '/admin/gamification', icon: Trophy, permission: 'can_manage_settings' },
+    ]},
+    { group: 'GROWTH', items: [
+      { name: 'Marketing Hub', href: '/admin/marketing', icon: TrendingUp, permission: 'can_manage_broadcast' },
+      { name: 'Affiliates', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
+      { name: 'Promotions', href: '/admin/coupons', icon: Tag, permission: 'can_manage_broadcast' },
     ]},
     { group: 'FINANCE', items: [
       { name: 'Finance Fortress', href: '/admin/finance', icon: DollarSign, permission: 'can_view_revenue' },
       { name: 'Payout Requests', href: '/admin/payouts', icon: CreditCard, permission: 'can_view_revenue' },
       { name: 'Document Vault', href: '/admin/vault', icon: Lock, permission: 'can_view_revenue' },
     ]},
+    { group: 'INTELLIGENCE', items: [
+      { name: 'Deep Analytics', href: '/admin/analytics', icon: Activity, permission: 'can_view_revenue' },
+    ]},
     { group: 'ENTERPRISE', items: [
+      { name: 'Staff Control', href: '/admin/staff', icon: ShieldCheck, minRole: 'owner' },
+      { name: 'System Audit', href: '/admin/audit', icon: HistoryIcon, permission: 'can_view_revenue' },
       { name: 'Security Hub', href: '/admin/security', icon: SecurityIcon, permission: 'can_manage_settings' },
-      { name: 'Command & Control', href: '/admin/staff', icon: ShieldCheck, minRole: 'owner' },
       { name: 'Brand Settings', href: '/admin/settings', icon: Settings, permission: 'can_manage_settings' },
     ]},
   ];

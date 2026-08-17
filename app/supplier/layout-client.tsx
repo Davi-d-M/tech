@@ -5,15 +5,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
-  Package,
   LogOut,
   Menu,
   X,
   Store,
   Plus,
   Box,
-  Truck,
-  Activity
+  Truck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';

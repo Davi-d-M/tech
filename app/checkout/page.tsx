@@ -112,6 +112,19 @@ function CheckoutContent() {
     message: "",
   });
   const [placedOrderId, setPlacedOrderId] = useState<number | null>(null);
+  const [isSystemLockdown, setIsSystemLockdown] = useState(false);
+
+  useEffect(() => {
+    async function checkLockdown() {
+        if (!supabase) return;
+        const { data } = await supabase.from('settings').select('value').eq('key', 'system_lockdown').maybeSingle();
+        const val = data?.value as any;
+        if (val?.active) {
+            setIsSystemLockdown(true);
+        }
+    }
+    checkLockdown();
+  }, []);
 
   const searchParams = useSearchParams();
   const [referralCode, setReferralCode] = useState<string | null>(null);
@@ -252,6 +265,13 @@ function CheckoutContent() {
   };
 
   const handlePlaceOrder = async () => {
+    if (isSystemLockdown) {
+        setCheckoutStatus({
+            type: "error",
+            message: "Tactical Pause: Order intake is temporarily suspended for system maintenance. Please try again in a few minutes."
+        });
+        return;
+    }
     if (!supabase) {
       setCheckoutStatus({
         type: "error",

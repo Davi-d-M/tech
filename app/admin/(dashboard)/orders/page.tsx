@@ -685,7 +685,7 @@ export default function AdminOrdersPage() {
                                 <td className="px-8 py-6">
                                 <div className="flex flex-col text-left min-w-[200px] gap-2">
                                     {order.order_items && order.order_items.length > 0 ? (
-                                        order.order_items.map((item, idx) => (
+                                        order.order_items.map((item) => (
                                             <div key={item.id} className="border-b border-slate-50 last:border-0 pb-2 mb-2 last:pb-0 last:mb-0">
                                                 <span className="font-black text-foreground uppercase text-[11px] block truncate">
                                                     {productNameMap.get(item.product_id) || `Item #${item.product_id}`}

@@ -11,6 +11,8 @@ export const metadata = {
   title: 'Apexstores | Admin',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({
   children,
 }: Readonly<{
@@ -29,12 +31,12 @@ export default async function AdminLayout({
     redirect('/admin/login');
   }
 
-  // Fetch the current user session to get the email
+  // Fetch the current user session (Server-side)
   let userEmail = 'Master Admin';
   if (supabase) {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.email) {
-          userEmail = session.user.email;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+          userEmail = user.email;
       }
   }
 

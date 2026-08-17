@@ -13,7 +13,6 @@ import {
     Search,
     AlertTriangle,
     Loader2,
-    ChevronRight,
     MessageSquare,
     Box
 } from 'lucide-react';

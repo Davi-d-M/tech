@@ -64,6 +64,8 @@ export default function CustomerIntelligence() {
   const [products, setProducts] = useState<ProductInfo[]>([]);
   const [referrals, setReferrals] = useState<{ id: number; total_price: number; created_at: string }[]>([]);
   const [reviews, setReviews] = useState<{ id: string; rating: number; comment: string; created_at: string; is_verified_owner: boolean }[]>([]);
+  const [supportTickets, setSupportTickets] = useState<{ id: number; subject: string; status: string; created_at: string }[]>([]);
+  const [loyaltyLedger, setLoyaltyLedger] = useState<{ id: number; amount: number; description: string; created_at: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -73,11 +75,13 @@ export default function CustomerIntelligence() {
       const initialRes = await supabase.from('profiles').select('*').eq('phone_number', phone).maybeSingle();
       const profileData = initialRes.data as CustomerProfile;
 
-      const [ordersRes, productsRes, referralsRes, reviewsRes] = await Promise.all([
+      const [ordersRes, productsRes, referralsRes, reviewsRes, ticketsRes, ledgerRes] = await Promise.all([
         supabase.from('orders').select('*').eq('customer_phone', phone).order('created_at', { ascending: false }),
         supabase.from('products').select('id, name, category'),
         profileData?.referral_code ? supabase.from('orders').select('id, total_price, created_at').eq('referred_by_code', profileData.referral_code) : Promise.resolve({ data: [] }),
-        supabase.from('reviews').select('*').or(`customer_phone.eq.${phone},customer_name.eq.${profileData?.full_name || 'NONE'}`).order('created_at', { ascending: false })
+        supabase.from('reviews').select('*').or(`customer_phone.eq.${phone},customer_name.eq.${profileData?.full_name || 'NONE'}`).order('created_at', { ascending: false }),
+        profileData?.id ? supabase.from('support_tickets').select('*').eq('user_id', profileData.id).order('created_at', { ascending: false }) : Promise.resolve({ data: [] }),
+        profileData?.id ? supabase.from('loyalty_ledger').select('*').eq('profile_id', profileData.id).order('created_at', { ascending: false }) : Promise.resolve({ data: [] })
       ]);
 
       if (ordersRes.data) setOrders(ordersRes.data as Order[]);
@@ -85,6 +89,8 @@ export default function CustomerIntelligence() {
       if (productsRes.data) setProducts(productsRes.data as ProductInfo[]);
       if (referralsRes.data) setReferrals(referralsRes.data as { id: number; total_price: number; created_at: string }[]);
       if (reviewsRes.data) setReviews(reviewsRes.data as { id: string; rating: number; comment: string; created_at: string; is_verified_owner: boolean }[]);
+      if (ticketsRes.data) setSupportTickets(ticketsRes.data);
+      if (ledgerRes.data) setLoyaltyLedger(ledgerRes.data);
     } catch (err: unknown) {
       console.error(err);
     } finally {
@@ -155,6 +161,61 @@ export default function CustomerIntelligence() {
 
     return { totalSpend, avgOrder, risk, riskColor, favCat, tier, TierIcon, tierColor, age, referralCount: referrals.length };
   }, [orders, products, profile, referrals]);
+
+  const timelineEvents = useMemo(() => {
+    const events: { id: string; type: 'Order' | 'Support' | 'Loyalty' | 'Review'; title: string; subtitle: string; date: string; status?: string; value?: string; color?: string }[] = [];
+
+    orders.forEach(o => {
+        const prod = products.find(p => p.id === o.product_id);
+        events.push({
+            id: `ord-${o.id}`,
+            type: 'Order',
+            title: prod?.name || `Gadget #${o.product_id}`,
+            subtitle: `Purchase via ${o.payment_method}`,
+            date: o.created_at,
+            status: o.status,
+            value: formatPrice(o.total_price),
+            color: 'primary'
+        });
+    });
+
+    supportTickets.forEach(t => {
+        events.push({
+            id: `tix-${t.id}`,
+            type: 'Support',
+            title: t.subject,
+            subtitle: `Support Ticket #${t.id}`,
+            date: t.created_at,
+            status: t.status,
+            color: 'rose'
+        });
+    });
+
+    loyaltyLedger.forEach(l => {
+        events.push({
+            id: `loy-${l.id}`,
+            type: 'Loyalty',
+            title: l.description,
+            subtitle: 'Points Adjustment',
+            date: l.created_at,
+            value: `${l.amount > 0 ? '+' : ''}${l.amount} Pts`,
+            color: 'emerald'
+        });
+    });
+
+    reviews.forEach(r => {
+        events.push({
+            id: `rev-${r.id}`,
+            type: 'Review',
+            title: `${r.rating} Star Review`,
+            subtitle: r.comment,
+            date: r.created_at,
+            color: 'amber'
+        });
+    });
+
+    return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [orders, products, supportTickets, loyaltyLedger, reviews]);
 
   const { role, permissions } = useAdmin();
 
@@ -301,32 +362,66 @@ export default function CustomerIntelligence() {
                   <div className="p-10 border-b border-slate-50 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                           <HistoryIcon className="h-6 w-6 text-primary" />
-                          <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Purchase Timeline</h2>
+                          <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Customer Timeline</h2>
                       </div>
-                      <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-4 py-2 rounded-full">{orders.length} Events</span>
+                      <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-4 py-2 rounded-full">{timelineEvents.length} Events</span>
                   </div>
-                  <div className="divide-y divide-slate-50 max-h-[600px] overflow-y-auto no-scrollbar">
-                      {orders.map((order) => {
-                          const prod = products.find(p => p.id === order.product_id);
+                  <div className="divide-y divide-slate-50 max-h-[800px] overflow-y-auto no-scrollbar">
+                      {timelineEvents.length === 0 ? (
+                          <div className="p-20 text-center opacity-30">
+                              <HistoryIcon className="h-10 w-10 mx-auto mb-4" />
+                              <p className="text-[10px] font-black uppercase tracking-widest">No activity logged.</p>
+                          </div>
+                      ) : timelineEvents.map((event) => {
+                          const Icon = event.type === 'Order' ? Package :
+                                       event.type === 'Support' ? MessageSquare :
+                                       event.type === 'Loyalty' ? Zap : Star;
+
                           return (
-                              <div key={order.id} className="p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 hover:bg-slate-50/50 transition-all group">
+                              <div key={event.id} className="p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 hover:bg-slate-50/50 transition-all group">
                                   <div className="flex items-center gap-6">
                                       <div className={cn(
                                           "h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110",
-                                          order.status === 'Delivered' ? "bg-primary/10 text-primary" : "bg-primary/5 text-primary"
+                                          event.color === 'primary' ? "bg-primary text-white shadow-primary/20" :
+                                          event.color === 'rose' ? "bg-rose-500 text-white shadow-rose-500/20" :
+                                          event.color === 'emerald' ? "bg-emerald-500 text-white shadow-emerald-500/20" :
+                                          "bg-amber-500 text-white shadow-amber-500/20"
                                       )}>
-                                          <Package className="h-6 w-6" />
+                                          <Icon className="h-6 w-6" />
                                       </div>
-                                      <div>
-                                          <h4 className="font-black text-foreground uppercase text-sm tracking-tight">{(prod?.name as string) || `Gadget #${order.product_id}`}</h4>
-                                          <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">{new Date(order.created_at).toLocaleDateString()} • {order.status}</p>
+                                      <div className="text-left">
+                                          <div className="flex items-center gap-2 mb-1">
+                                              <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{event.type}</span>
+                                              <span className="text-[10px] font-bold text-slate-300">•</span>
+                                              <span className="text-[9px] font-bold text-slate-400 uppercase">{new Date(event.date).toLocaleDateString()}</span>
+                                          </div>
+                                          <h4 className="font-black text-foreground uppercase text-sm tracking-tight">{event.title}</h4>
+                                          <p className="text-[10px] font-bold text-slate-400 uppercase mt-1 italic">{event.subtitle}</p>
                                       </div>
                                   </div>
                                   <div className="flex items-center gap-8 w-full sm:w-auto justify-between">
-                                      <p className="text-lg font-black text-foreground">{formatPrice(order.total_price)}</p>
-                                      <Link href="/admin/orders">
-                                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-slate-50 group-hover:bg-primary group-hover:text-white transition-all"><ChevronRight className="h-4 w-4" /></Button>
-                                      </Link>
+                                      <div className="text-right">
+                                          {event.value && <p className="text-lg font-black text-foreground">{event.value}</p>}
+                                          {event.status && (
+                                              <span className={cn(
+                                                  "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border",
+                                                  event.status === 'Delivered' || event.status === 'Resolved' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                                  event.status === 'Open' || event.status === 'Pending' ? "bg-primary/10 text-primary border-primary/10" :
+                                                  "bg-slate-50 text-slate-400 border-slate-100"
+                                              )}>
+                                                  {event.status}
+                                              </span>
+                                          )}
+                                      </div>
+                                      {event.type === 'Order' ? (
+                                          <Link href="/admin/orders">
+                                              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-slate-50 group-hover:bg-primary group-hover:text-white transition-all"><ChevronRight className="h-4 w-4" /></Button>
+                                          </Link>
+                                      ) : event.type === 'Support' ? (
+                                          <Link href="/admin/messages">
+                                              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-slate-50 group-hover:bg-rose-500 group-hover:text-white transition-all"><ChevronRight className="h-4 w-4" /></Button>
+                                          </Link>
+                                      ) : null}
                                   </div>
                               </div>
                           );
@@ -334,45 +429,6 @@ export default function CustomerIntelligence() {
                   </div>
               </Card>
 
-              <Card className="rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden bg-white">
-                  <div className="p-10 border-b border-slate-50 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                          <MessageSquare className="h-6 w-6 text-primary" />
-                          <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Customer Feedback</h2>
-                      </div>
-                      <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-4 py-2 rounded-full">{reviews.length} Submissions</span>
-                  </div>
-                  <div className="divide-y divide-slate-50">
-                      {reviews.length === 0 ? (
-                          <div className="p-20 text-center opacity-30">
-                              <MessageSquare className="h-10 w-10 mx-auto mb-4" />
-                              <p className="text-[10px] font-black uppercase tracking-widest">No reviews logged yet.</p>
-                          </div>
-                      ) : (
-                          reviews.map((review) => (
-                              <div key={review.id} className="p-10 space-y-4 hover:bg-slate-50/50 transition-all group">
-                                  <div className="flex justify-between items-start">
-                                      <div className="flex text-amber-400">
-                                          {[...Array(5)].map((_, i) => (
-                                              <Star key={i} className={cn("h-3.5 w-3.5", i < review.rating ? "fill-current" : "text-slate-100")} />
-                                          ))}
-                                      </div>
-                                      <span className="text-[8px] font-black text-slate-300 uppercase">{new Date(review.created_at).toLocaleDateString()}</span>
-                                  </div>
-                                  <p className="text-slate-600 font-medium italic leading-relaxed">&quot;{review.comment}&quot;</p>
-                                  <div className="pt-2 flex items-center gap-4">
-                                      <span className={cn(
-                                          "text-[8px] font-black uppercase px-2 py-1 rounded border",
-                                          review.is_verified_owner ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-50 text-slate-400 border-slate-100"
-                                      )}>
-                                          {review.is_verified_owner ? 'Verified Owner' : 'Standard'}
-                                      </span>
-                                  </div>
-                              </div>
-                          ))
-                      )}
-                  </div>
-              </Card>
           </div>
       </div>
     </div>

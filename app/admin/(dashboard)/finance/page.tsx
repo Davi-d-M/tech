@@ -5,22 +5,15 @@ import { supabase } from '@/lib/supabaseClient';
 import {
     DollarSign,
     TrendingUp,
-    ArrowUpRight,
-    ArrowDownRight,
-    CreditCard,
-    History,
-    Search,
-    Download,
-    CheckCircle2,
-    ShieldAlert,
-    Loader2,
     Wallet,
     Target,
     Zap,
-    Scale
+    Scale,
+    CheckCircle2,
+    ShieldAlert,
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { formatPrice, cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
@@ -38,7 +31,6 @@ interface LedgerEntry {
 export default function AdminFinancePage() {
     const { role } = useAdmin();
     const [loading, setLoading] = React.useState(true);
-    const [searchQuery, setSearchQuery] = React.useState('');
     const [ledger, setLedger] = React.useState<LedgerEntry[]>([]);
     const [isReconciling, setIsReconciling] = React.useState(false);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);

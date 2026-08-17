@@ -25,23 +25,26 @@ export async function scanForExceptions(): Promise<ApexException[]> {
 
     // --- 1. LOGISTICS LATENCY ---
 
-    // Scans for 'Paid' orders not dispatched within 2 hours
+    // 🔴 1. Logistics Latency (Orders stuck in Paid status > 2 hours without dispatch)
     const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString();
     const { data: stuckOrders } = await supabase
         .from('orders')
-        .select('id, customer_name, created_at')
-        .eq('status', 'Paid')
+        .select('id, customer_name, created_at, status')
+        .in('status', ['Paid', 'Stock Reserved', 'Supplier Confirmed'])
         .lt('created_at', twoHoursAgo);
 
     if (stuckOrders) {
         stuckOrders.forEach(order => {
+            let title = 'Fulfillment Failure';
+            if (order.status === 'Supplier Confirmed') title = 'Supplier Dispatch Delay';
+
             exceptions.push({
                 id: `stuck-${order.id}`,
                 code: 'LD_STUCK',
                 type: 'LOGISTICS',
                 severity: 'Critical',
-                title: 'Fulfillment Failure',
-                description: `Order #${order.id} has been PAID for 2+ hours but not dispatched. Check supplier connection.`,
+                title,
+                description: `Order #${order.id} (${order.status}) has been idle for 2+ hours.`,
                 order_id: order.id,
                 time: '2h+ delay'
             });
@@ -86,7 +89,29 @@ export async function scanForExceptions(): Promise<ApexException[]> {
         });
     });
 
-    // --- 3. RISK ENGINE ---
+    // --- 3. FINANCIAL VARIANCE ---
+    const { data: phantomPayments } = await supabase
+        .from('payment_logs')
+        .select('reference, amount, created_at')
+        .eq('event_type', 'charge.success')
+        .is('order_id', null)
+        .gte('created_at', new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString());
+
+    if (phantomPayments) {
+        phantomPayments.forEach(p => {
+            exceptions.push({
+                id: `phantom-${p.reference}`,
+                code: 'FIN_PHANTOM',
+                type: 'FINANCE',
+                severity: 'Critical',
+                title: 'Unlinked Payment',
+                description: `Received KES ${p.amount} (Ref: ${p.reference}) but no matching order exists. High Risk.`,
+                time: 'Anomaly'
+            });
+        });
+    }
+
+    // --- 4. RISK ENGINE ---
 
     // Detect customers with multiple failed orders in 24h
     const { data: repeatFailures } = await supabase

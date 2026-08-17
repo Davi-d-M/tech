@@ -50,6 +50,7 @@ interface OrderRecord {
   product_id: number;
   quantity: number;
   payment_method: string;
+  order_items?: { unit_cost: number; quantity: number }[];
 }
 
 interface ProductRecord {
@@ -69,9 +70,8 @@ interface AuditLog {
     created_at: string;
 }
 
-// ENTERPRISE HUD 2.0 - Stabilized
 export default function AdminDashboard() {
-  useAdmin();
+  const { role, email } = useAdmin();
   const [orders, setOrders] = React.useState<OrderRecord[]>([]);
   const [products, setProducts] = React.useState<ProductRecord[]>([]);
   const [auditLogs, setAuditLogs] = React.useState<AuditLog[]>([]);
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
 
         const [ordersRes, productsRes, auditRes] = await Promise.all([
           supabase.from('orders')
-            .select('id, total_price, unit_price, unit_cost, status, created_at, product_id, quantity')
+            .select('*, order_items(*)')
             .gte('created_at', dateLimit)
             .order('created_at', { ascending: false }),
           supabase.from('products').select('id, stock, name, price, image_url, cost_price'),
@@ -121,16 +121,12 @@ export default function AdminDashboard() {
   }, []);
 
   const stats = React.useMemo(() => {
-    const productCostMap = new Map(products.map(p => [p.id, Number(p.cost_price || 0)]));
-    const deliveredOrders = orders.filter(o => o.status === 'Delivered');
+    const deliveredOrders = orders.filter(o => o.status === 'Delivered' || o.status === 'Completed');
 
     const totalRevenue = deliveredOrders.reduce((sum, o) => sum + Number(o.total_price || 0), 0);
     const totalCost = deliveredOrders.reduce((sum, o) => {
-        const productCost = productCostMap.get(o.product_id);
-        const cost = o.unit_cost !== undefined
-            ? Number(o.unit_cost)
-            : (productCost !== undefined ? productCost : (Number(o.unit_price || 0) * 0.7));
-        return sum + (cost * (o.quantity || 1));
+        const itemCost = o.order_items?.reduce((s, item) => s + (Number(item.unit_cost) * (item.quantity || 1)), 0) || 0;
+        return sum + itemCost;
     }, 0);
 
     const netProfit = totalRevenue - totalCost;
@@ -163,17 +159,12 @@ export default function AdminDashboard() {
           return d.toISOString().split('T')[0];
       }).reverse();
 
-      const productCostMap = new Map(products.map(p => [p.id, Number(p.cost_price || 0)]));
-
       return days.map(date => {
           const dayOrders = orders.filter(o => o.created_at?.startsWith(date));
-          const dayRevenue = dayOrders.filter(o => o.status === 'Delivered').reduce((sum, o) => sum + Number(o.total_price || 0), 0);
-          const dayCost = dayOrders.filter(o => o.status === 'Delivered').reduce((sum, o) => {
-              const productCost = productCostMap.get(o.product_id);
-              const cost = o.unit_cost !== undefined
-                  ? Number(o.unit_cost)
-                  : (productCost !== undefined ? productCost : (Number(o.unit_price || 0) * 0.7));
-              return sum + (cost * (o.quantity || 1));
+          const dayRevenue = dayOrders.filter(o => o.status === 'Delivered' || o.status === 'Completed').reduce((sum, o) => sum + Number(o.total_price || 0), 0);
+          const dayCost = dayOrders.filter(o => o.status === 'Delivered' || o.status === 'Completed').reduce((sum, o) => {
+              const itemCost = o.order_items?.reduce((s, item) => s + (Number(item.unit_cost) * (item.quantity || 1)), 0) || 0;
+              return sum + itemCost;
           }, 0);
 
           return {
@@ -183,7 +174,7 @@ export default function AdminDashboard() {
               profit: dayRevenue - dayCost
           };
       });
-  }, [orders, products]);
+  }, [orders]);
 
   if (isLoading) {
     return (
@@ -195,7 +186,31 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 bg-slate-50 min-h-screen p-8 pb-20">
+    <div className="space-y-12 animate-in fade-in duration-700 bg-slate-50 min-h-screen p-8 pb-20">
+
+      {/* EXECUTIVE HEADER */}
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-10">
+          <div className="text-left">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-2">Apex OS Command</p>
+              <h1 className="text-5xl font-black text-foreground uppercase tracking-tighter leading-none">Good Morning, <span className="text-primary">{email?.split('@')[0]}</span> 👋</h1>
+              <div className="flex items-center gap-4 mt-4">
+                  <div className="flex items-center gap-2">
+                      <span className="text-[9px] font-black uppercase text-slate-400">System Integrity</span>
+                      <div className="h-1.5 w-32 bg-slate-200 rounded-full overflow-hidden">
+                          <div className="h-full bg-emerald-500 w-[91%]"></div>
+                      </div>
+                      <span className="text-[10px] font-black text-emerald-500">91%</span>
+                  </div>
+              </div>
+          </div>
+          <div className="flex gap-2">
+              <Link href="/admin/marketing/create">
+                  <Button className="h-14 px-8 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                      <Send className="h-4 w-4 mr-2" /> Launch Campaign
+                  </Button>
+              </Link>
+          </div>
+      </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
 

@@ -6,12 +6,9 @@ import { supabase } from '@/lib/supabaseClient';
 import {
     Box,
     RefreshCcw,
-    Zap,
     Save,
     Loader2,
-    Search,
-    ChevronRight,
-    Edit2
+    Search
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

@@ -4,19 +4,16 @@ import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     MessageSquare,
-    AlertCircle,
     Clock,
     CheckCircle2,
     Search,
     RefreshCcw,
-    User,
     Send,
     Loader2,
     ShieldAlert,
-    Filter,
     ChevronRight,
     Tag,
-    History
+    AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

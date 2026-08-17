@@ -21,6 +21,27 @@ export async function POST(request: Request) {
 
         const event = JSON.parse(body);
 
+        // 1.5 Log the event for Anomaly Detection
+        if (event.data) {
+            const { reference, amount, customer } = event.data;
+            const { data: matchedOrder } = await supabase
+                .from('orders')
+                .select('id')
+                .eq('checkout_request_id', reference)
+                .maybeSingle();
+
+            const { error: logError } = await supabase.from('payment_logs').insert([{
+                reference,
+                event_type: event.event,
+                amount: (amount || 0) / 100, // Cents to KES
+                customer_email: customer?.email,
+                payload: event,
+                order_id: matchedOrder?.id || null
+            }]);
+
+            if (logError) console.error("Payment log failed", logError);
+        }
+
         // 2. Handle Event
         if (event.event === 'charge.success') {
             const data = event.data;

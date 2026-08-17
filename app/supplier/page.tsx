@@ -8,7 +8,6 @@ import {
     TrendingUp,
     Zap,
     AlertTriangle,
-    CheckCircle2,
     Clock,
     Plus,
     Loader2

@@ -8,9 +8,7 @@ import {
   Search,
   ChevronRight,
   Crown,
-  Star,
   ShieldAlert,
-  Gem,
   Activity as Zap,
   MapPin,
   Calendar
