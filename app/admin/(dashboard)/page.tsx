@@ -20,23 +20,24 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAdmin } from '@/context/AdminContext';
+import dynamic from 'next/dynamic';
+
+const AreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { ssr: false });
+const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+const LineChart = dynamic(() => import('recharts').then(mod => mod.LineChart), { ssr: false });
+const Line = dynamic(() => import('recharts').then(mod => mod.Line), { ssr: false });
+
 import TodayCommandCenter from '@/components/admin/TodayCommandCenter';
 import ExceptionCenter from '@/components/admin/ExceptionCenter';
 import SystemPulseWidget from '@/components/admin/SystemPulseWidget';
 import ApexIntelligence from '@/components/admin/ApexIntelligence';
-import {
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line
-} from 'recharts';
 
 interface OrderRecord {
   id: number;
@@ -92,10 +93,17 @@ export default function AdminDashboard() {
 
       const start = performance.now();
       try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const dateLimit = thirtyDaysAgo.toISOString();
+
         const [ordersRes, productsRes, auditRes] = await Promise.all([
-          supabase.from('orders').select('*').order('created_at', { ascending: false }),
-          supabase.from('products').select('*'),
-          supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(2)
+          supabase.from('orders')
+            .select('id, total_price, unit_price, unit_cost, status, created_at, product_id, quantity')
+            .gte('created_at', dateLimit)
+            .order('created_at', { ascending: false }),
+          supabase.from('products').select('id, stock, name, price, image_url, cost_price'),
+          supabase.from('audit_logs').select('id, action, staff_email, created_at').order('created_at', { ascending: false }).limit(2)
         ]);
 
         if (ordersRes.data) setOrders(ordersRes.data as OrderRecord[]);

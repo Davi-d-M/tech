@@ -16,9 +16,14 @@ export default async function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get('admin_session')?.value;
-  const sessionData = await verifySessionCookie(sessionCookie);
+  let sessionData = null;
+  try {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('admin_session')?.value;
+    sessionData = await verifySessionCookie(sessionCookie);
+  } catch (err) {
+    console.error("Layout Session Verification Error:", err);
+  }
 
   if (!sessionData) {
     redirect('/admin/login');

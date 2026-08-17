@@ -20,13 +20,13 @@ function AdminLoginContent() {
       const modeParam = searchParams.get('mode');
       if (modeParam === 'email') {
           setMode('email');
-      } else {
+      } else if (typeof window !== 'undefined') {
           const savedMode = localStorage.getItem('apex_admin_mode');
           if (savedMode === 'email' || savedMode === 'pin') setMode(savedMode as 'pin' | 'email');
-      }
 
-      const savedEmail = localStorage.getItem('apex_admin_email');
-      if (savedEmail) setEmail(savedEmail);
+          const savedEmail = localStorage.getItem('apex_admin_email');
+          if (savedEmail) setEmail(savedEmail);
+      }
   }, [searchParams]);
 
   const [status, setStatus] = useState<{ type: 'idle' | 'error'; message: string }>({

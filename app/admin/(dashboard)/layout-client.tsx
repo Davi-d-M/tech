@@ -164,12 +164,7 @@ export default function AdminLayoutClient({
   return (
     <AdminProvider role={role} email={email} permissions={permissions}>
       <AdminErrorBoundary>
-        {!hasHydrated ? (
-            <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-            </div>
-        ) : (
-            <div className="min-h-screen bg-background flex flex-col md:flex-row text-left">
+          <div className="min-h-screen bg-background flex flex-col md:flex-row text-left">
 
           <GlobalCommandPalette isOpen={isSearchOpen} setIsOpen={setIsSearchOpen} />
           <LiveActivitySidebar isOpen={isActivityOpen} setIsOpen={setIsActivityOpen} />
@@ -330,7 +325,6 @@ export default function AdminLayoutClient({
               </main>
           </div>
         </div>
-        )}
       </AdminErrorBoundary>
     </AdminProvider>
   );

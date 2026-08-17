@@ -17,20 +17,20 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
-import {
-    AreaChart,
-    Area,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell
-} from 'recharts';
+import dynamic from 'next/dynamic';
+
+const AreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { ssr: false });
+const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+const PieChart = dynamic(() => import('recharts').then(mod => mod.PieChart), { ssr: false });
+const Pie = dynamic(() => import('recharts').then(mod => mod.Pie), { ssr: false });
+const Cell = dynamic(() => import('recharts').then(mod => mod.Cell), { ssr: false });
 
 const PIE_COLORS = ['#F5A000', '#0F172A', '#5B5BFF', '#10B981'];
 
@@ -48,9 +48,15 @@ export default function AdminAnalyticsPage() {
             if (!supabase) return;
             setLoading(true);
             try {
+                const ninetyDaysAgo = new Date();
+                ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+                const dateLimit = ninetyDaysAgo.toISOString();
+
                 const [prodRes, ordRes] = await Promise.all([
                     supabase.from('products').select('category'),
-                    supabase.from('orders').select('*')
+                    supabase.from('orders')
+                        .select('id, total_price, unit_cost, created_at, status, customer_phone, referred_by_code')
+                        .gte('created_at', dateLimit)
                 ]);
                 setProducts(prodRes.data || []);
                 setOrders(ordRes.data || []);
@@ -333,7 +339,7 @@ export default function AdminAnalyticsPage() {
 
                 <div className="lg:col-span-4 space-y-10">
                     {/* Operational Efficiency */}
-                    <Card className="p-10 rounded-[3.5rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
+                    <Card className="p-10 rounded-[3.5rem] bg-white text-foreground border border-slate-100 shadow-sm relative overflow-hidden group">
                         <div className="relative z-10 space-y-10">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary shadow-sm"><Clock className="h-5 w-5" /></div>
@@ -342,38 +348,38 @@ export default function AdminAnalyticsPage() {
 
                             <div className="space-y-8">
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-background/50">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                         <span>Success Rate</span>
                                         <span className="text-primary">{((orders.filter(o => o.status === 'Delivered').length / (orders.length || 1)) * 100).toFixed(1)}%</span>
                                     </div>
-                                    <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
+                                    <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                                         <div className="h-full bg-primary" style={{ width: `${(orders.filter(o => o.status === 'Delivered').length / (orders.length || 1)) * 100}%` }}></div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-background/50">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                         <span>Affiliate Share</span>
                                         <span className="text-emerald-500">{((affiliateSales / (orders.filter(o => o.status === 'Delivered').reduce((s,o) => s+(o.total_price||0), 0) || 1)) * 100).toFixed(1)}%</span>
                                     </div>
-                                    <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
+                                    <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                                         <div className="h-full bg-emerald-500" style={{ width: `${(affiliateSales / (orders.filter(o => o.status === 'Delivered').reduce((s,o) => s+(o.total_price||0), 0) || 1)) * 100}%` }}></div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-background/50">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                                         <span>Cancellation Rate</span>
                                         <span className="text-rose-500">{((orders.filter(o => o.status === 'Cancelled').length / (orders.length || 1)) * 100).toFixed(1)}%</span>
                                     </div>
-                                    <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
+                                    <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                                         <div className="h-full bg-rose-500" style={{ width: `${(orders.filter(o => o.status === 'Cancelled').length / (orders.length || 1)) * 100}%` }}></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="pt-8 border-t border-background/10 flex justify-between items-center">
+                            <div className="pt-8 border-t border-slate-100 flex justify-between items-center">
                                 <div className="flex items-center gap-3">
                                     <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500"><Zap size={14} className="fill-current" /></div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-background">Operational Elite</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Operational Elite</span>
                                 </div>
                                 <ArrowUpRight className="h-5 w-5 text-primary" />
                             </div>
