@@ -236,7 +236,7 @@ export default function AdminMessagesPage() {
                                           <p className="text-[9px] font-black uppercase text-primary mb-2 flex items-center gap-2">
                                               <Zap size={10} className="fill-current" /> Official Apex Response
                                           </p>
-                                          <p className="text-sm font-bold text-slate-700 italic leading-relaxed">&quot;{msg.admin_response}&quot;</p>
+                                          <p className="text-sm font-bold text-foreground italic leading-relaxed">&quot;{msg.admin_response}&quot;</p>
                                           <button
                                             onClick={() => { setReplyingTo(msg.id); setReplyText(msg.admin_response || ''); }}
                                             className="absolute top-4 right-4 text-[8px] font-black uppercase text-slate-400 hover:text-primary opacity-0 group-hover/reply:opacity-100 transition-all"

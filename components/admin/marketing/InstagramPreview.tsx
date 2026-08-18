@@ -43,11 +43,11 @@ export default function InstagramPreview({ imageUrl, caption }: InstagramPreview
             <div className="p-4 space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Heart size={20} className="text-slate-800" />
-                        <MessageCircle size={20} className="text-slate-800" />
-                        <Send size={20} className="text-slate-800" />
+                        <Heart size={20} className="text-foreground" />
+                        <MessageCircle size={20} className="text-foreground" />
+                        <Send size={20} className="text-foreground" />
                     </div>
-                    <Bookmark size={20} className="text-slate-800" />
+                    <Bookmark size={20} className="text-foreground" />
                 </div>
 
                 <div className="space-y-1">

@@ -107,16 +107,16 @@ export default function SupplierDashboard() {
                 </div>
 
                 <div className="lg:col-span-4 space-y-8 text-left">
-                    <Card className="p-10 rounded-[3.5rem] bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden group">
+                    <Card className="p-10 rounded-[3.5rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group">
                         <div className="relative z-10 space-y-8">
-                            <h3 className="text-lg font-black uppercase tracking-tighter">Your Scorecard</h3>
+                            <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Your Scorecard</h3>
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-[8px] font-black uppercase text-slate-400 tracking-widest">
                                         <span>Reliability</span>
                                         <span className="text-emerald-500">100%</span>
                                     </div>
-                                    <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                                    <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
                                         <div className="h-full bg-emerald-500 w-full"></div>
                                     </div>
                                 </div>
@@ -125,16 +125,16 @@ export default function SupplierDashboard() {
                                         <span>Dispatch SLA</span>
                                         <span className="text-primary">98%</span>
                                     </div>
-                                    <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                                    <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
                                         <div className="h-full bg-primary w-[98%]"></div>
                                     </div>
                                 </div>
                             </div>
-                            <p className="text-[10px] font-medium italic text-slate-400 leading-relaxed">
+                            <p className="text-[10px] font-medium italic text-slate-500 leading-relaxed">
                                 &quot;Your performance metrics are synchronized with the Command Center in real-time.&quot;
                             </p>
                         </div>
-                        <TrendingUp className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/10 rotate-12 -z-0" />
+                        <TrendingUp className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/5 rotate-12 -z-0" />
                     </Card>
 
                     <div className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-4">

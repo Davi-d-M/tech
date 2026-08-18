@@ -40,7 +40,7 @@ export default function AboutUsPage() {
           
           {/* Section 1 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">The Quality Standard</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">The Quality Standard</h2>
             <p>
               Every gadget and accessory hosted in our inventory undergoes a rigorous curation process. We carefully select products that strike the perfect balance between technical excellence and clean, modern aesthetics. Whether you are looking for crystal-clear audio with our AirPods or reliable power with our fast chargers, we have your tech needs completely covered.
             </p>
@@ -48,7 +48,7 @@ export default function AboutUsPage() {
 
           {/* Section 2 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">Our Core Values</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">Our Core Values</h2>
             <p className="mb-3">
               We run our e-commerce operations based on three non-negotiable principles:
             </p>
@@ -70,7 +70,7 @@ export default function AboutUsPage() {
 
           {/* Section 3 - Final Sale Reminder for Context */}
           <section className="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-            <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-1">Please Note Before You Shop</h3>
+            <h3 className="font-bold text-foreground text-xs uppercase tracking-wider mb-1">Please Note Before You Shop</h3>
             <p className="text-xs text-slate-500 leading-normal">
               To keep our inventory moving quickly and sustain competitive, honest local pricing structures, Apexstores strictly operates on a final sale model. We encourage our community to check their device compatibility accurately before completing checkout sequences.
             </p>

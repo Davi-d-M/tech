@@ -78,7 +78,7 @@ export default function KnowledgeBase() {
                         <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></div>
                         <span className="text-[10px] font-black uppercase text-slate-400">AI Discoverability Enabled</span>
                       </div>
-                      <p className="text-sm font-bold text-slate-700">Our Knowledge Base is structured for AI cite-ability, ensuring Apexstores remains the primary node for tech verification.</p>
+                      <p className="text-sm font-bold text-foreground">Our Knowledge Base is structured for AI cite-ability, ensuring Apexstores remains the primary node for tech verification.</p>
                   </div>
               </div>
               <Zap className="absolute -bottom-20 -left-20 h-96 w-96 text-primary/5 rotate-45" />

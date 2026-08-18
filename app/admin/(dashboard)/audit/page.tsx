@@ -71,42 +71,42 @@ function DetailRenderer({ log }: { log: AuditLog }) {
             return (
                 <div className="flex items-center gap-2">
                     <Package className="h-3 w-3 text-slate-400" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Order #{d.id} set to <span className="text-primary font-black">{d.newStatus}</span></p>
+                    <p className="text-xs font-bold text-foreground uppercase">Order #{d.id} set to <span className="text-primary font-black">{d.newStatus}</span></p>
                 </div>
             );
         case 'BULK_UPDATE_ORDERS':
             return (
                 <div className="flex items-center gap-2">
                     <History className="h-3 w-3 text-primary" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Bulk Updated <span className="text-primary font-black">{d.count} Orders</span> to {d.newStatus}</p>
+                    <p className="text-xs font-bold text-foreground uppercase">Bulk Updated <span className="text-primary font-black">{d.count} Orders</span> to {d.newStatus}</p>
                 </div>
             );
         case 'ASSIGN_RIDER':
             return (
                 <div className="flex items-center gap-2">
                     <Activity className="h-3 w-3 text-primary" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Rider <span className="text-foreground font-black">{d.rider}</span> assigned to #{d.id}</p>
+                    <p className="text-xs font-bold text-foreground uppercase">Rider <span className="text-foreground font-black">{d.rider}</span> assigned to #{d.id}</p>
                 </div>
             );
         case 'UPDATE_RIDER_STATUS':
             return (
                 <div className="flex items-center gap-2">
                     <Truck className="h-3 w-3 text-primary" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Rider <span className="text-foreground font-black">{d.rider}</span> moved to <span className="text-primary font-black">{d.current_location}</span></p>
+                    <p className="text-xs font-bold text-foreground uppercase">Rider <span className="text-foreground font-black">{d.rider}</span> moved to <span className="text-primary font-black">{d.current_location}</span></p>
                 </div>
             );
         case 'ADD_STAFF':
             return (
                 <div className="flex items-center gap-2">
                     <PlusCircle className="h-3 w-3 text-primary" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Authorized <span className="text-foreground font-black">{d.email}</span> as {d.role}</p>
+                    <p className="text-xs font-bold text-foreground uppercase">Authorized <span className="text-foreground font-black">{d.email}</span> as {d.role}</p>
                 </div>
             );
         case 'UPDATE_PERMISSION':
             return (
                 <div className="flex items-center gap-2">
                     <Shield className="h-3 w-3 text-amber-500" />
-                    <p className="text-xs font-bold text-slate-700 uppercase">Toggle <span className="text-amber-600 font-black">{d.field}</span> to {String(d.value)}</p>
+                    <p className="text-xs font-bold text-foreground uppercase">Toggle <span className="text-amber-600 font-black">{d.field}</span> to {String(d.value)}</p>
                 </div>
             );
         case 'REMOVE_STAFF':

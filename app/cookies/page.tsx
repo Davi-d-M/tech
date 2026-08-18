@@ -22,7 +22,7 @@ export default function CookiePolicyPage() {
           
           {/* Section 1 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">1. What Are Cookies?</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">1. What Are Cookies?</h2>
             <p className="font-medium text-slate-500">
               Cookies are small, harmless text files placed on your computer or mobile device by websites that you visit. They are widely used to make web platforms function correctly, allow users to navigate smoothly between tech categories, and remember system choices (like item arrays or local configurations).
             </p>
@@ -38,7 +38,7 @@ export default function CookiePolicyPage() {
 
           {/* Section 3 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">2. Types of Cookies We Use</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">2. Types of Cookies We Use</h2>
             <p className="mb-3 font-medium text-slate-500">We use a minimal footprint of tracking objects to run our gadget showcase safely:</p>
             <ul className="list-disc pl-5 space-y-3 font-medium text-slate-500">
               <li>
@@ -55,7 +55,7 @@ export default function CookiePolicyPage() {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">3. How to Manage Cookies</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">3. How to Manage Cookies</h2>
             <p className="mb-3 font-medium text-slate-500">
               Most web browsers allow you to control cookie handling through their global settings dashboards. You can configure your browser to block cookies entirely or alert you when a cookie is being sent. 
             </p>
@@ -66,7 +66,7 @@ export default function CookiePolicyPage() {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">4. Updates to This Policy</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">4. Updates to This Policy</h2>
             <p className="font-medium text-slate-500">
               We may periodically update this Cookie Policy to match unexpected layout modifications or changing local regulatory requirements. We recommend reviewing this section occasionally to stay informed about how we maintain clean, secure user experiences.
             </p>

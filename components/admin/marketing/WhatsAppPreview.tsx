@@ -11,7 +11,7 @@ interface WhatsAppPreviewProps {
 
 export default function WhatsAppPreview({ imageUrl, body }: WhatsAppPreviewProps) {
     return (
-        <div className="max-w-[320px] mx-auto bg-[#e5ddd5] rounded-[2.5rem] border-[8px] border-slate-800 h-[560px] overflow-hidden shadow-2xl relative flex flex-col animate-in zoom-in-95 duration-500">
+        <div className="max-w-[320px] mx-auto bg-[#f0f0f0] rounded-[2.5rem] border-[8px] border-slate-200 h-[560px] overflow-hidden shadow-2xl relative flex flex-col animate-in zoom-in-95 duration-500">
             {/* WA Header */}
             <div className="bg-[#075e54] p-6 pt-10 text-white flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center font-black text-xs uppercase">AS</div>
@@ -30,7 +30,7 @@ export default function WhatsAppPreview({ imageUrl, body }: WhatsAppPreviewProps
                         </div>
                     )}
                     <div className="px-2 py-1 space-y-2">
-                        <p className="text-[11px] leading-relaxed text-slate-800 whitespace-pre-wrap">
+                        <p className="text-[11px] leading-relaxed text-foreground whitespace-pre-wrap">
                             {body || "Design your direct message copy in the Content Assistant step..."}
                         </p>
                         <div className="flex justify-end items-center gap-1">

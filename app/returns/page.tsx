@@ -33,7 +33,7 @@ export default function ReturnsAndExchangesPage() {
           
           {/* Section 1 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">1. Why We Enforce a No-Return Policy</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">1. Why We Enforce a No-Return Policy</h2>
             <p>
               Electronics logistics demand immense care to ensure absolute technical integrity and product authenticity. By enforcing a strict final-sale policy, we guarantee that every single charger or pair of AirPods arriving at a customer&apos;s doorstep is 100% brand new, sealed, and untouched by previous buyers. Additionally, this allows us to avoid the heavy operational overhead of reverse shipping, passing those direct savings on to you in the form of lower retail prices in Kenyan Shillings (Ksh).
             </p>
@@ -41,7 +41,7 @@ export default function ReturnsAndExchangesPage() {
 
           {/* Section 2 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">2. How to Ensure the Perfect Choice Before Ordering</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">2. How to Ensure the Perfect Choice Before Ordering</h2>
             <p className="mb-3">
               Because technical specifications can vary across different smartphone models and brands, we highly recommend taking the following preventative steps before finalizing your cart checkout:
             </p>
@@ -54,7 +54,7 @@ export default function ReturnsAndExchangesPage() {
 
           {/* Section 3 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">3. Exceptions for Order Errors</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">3. Exceptions for Order Errors</h2>
             <p>
               We stand firmly behind our fulfillment workflows. The absolute only exception to this policy is if an error was explicitly made by the Apexstores distribution center.
             </p>
@@ -65,7 +65,7 @@ export default function ReturnsAndExchangesPage() {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">4. Order Cancellation Limitations</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">4. Order Cancellation Limitations</h2>
             <p>
               Our automated backend framework hands over dispatch data to delivery drivers and courier agents almost immediately after payment verification. Because of this high-speed logistics setup, orders cannot be cancelled, adjusted, or reassigned once payment confirmation is finalized.
             </p>

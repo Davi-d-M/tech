@@ -217,24 +217,24 @@ export default function AdminFinancePage() {
                     </div>
                 </div>
 
-                <div className="lg:col-span-4 space-y-8">
-                    <Card className="p-10 rounded-[3rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden group">
+                <div className="lg:col-span-4 flex flex-col gap-8 h-full">
+                    <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group flex-1 flex flex-col justify-between">
                         <div className="relative z-10 space-y-10">
-                            <h3 className="text-lg font-black uppercase tracking-tighter">Profit Extraction</h3>
+                            <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Profit Extraction</h3>
                             <div className="space-y-6">
-                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-background/50">
+                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
                                     <span>Contribution Margin</span>
                                     <span className="text-primary">{stats.margin.toFixed(1)}%</span>
                                 </div>
-                                <div className="h-1.5 w-full bg-background/10 rounded-full overflow-hidden">
+                                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                                     <div className="h-full bg-primary" style={{ width: `${stats.margin}%` }}></div>
                                 </div>
-                                <p className="text-[10px] font-medium italic text-background/40 leading-relaxed text-left">
+                                <p className="text-[10px] font-medium italic text-slate-500 leading-relaxed text-left">
                                     &quot;Every mission is clinically measured for unit profitability. Variances are flagged at the source.&quot;
                                 </p>
                             </div>
                         </div>
-                        <DollarSign className="absolute -bottom-10 -left-10 h-48 w-48 text-primary/10 rotate-12 -z-0" />
+                        <DollarSign className="absolute -bottom-10 -left-10 h-48 w-48 text-primary/5 rotate-12 -z-0" />
                     </Card>
 
                     <div className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-6 text-left">

@@ -263,7 +263,7 @@ export default function Contact() {
             <div className="space-y-8 text-left">
               <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden p-2 bg-slate-50">
                 <CardHeader>
-                  <CardTitle className="text-lg font-black uppercase tracking-widest text-slate-800">
+                  <CardTitle className="text-lg font-black uppercase tracking-widest text-foreground">
                     Contact Info
                   </CardTitle>
                 </CardHeader>
@@ -293,7 +293,7 @@ export default function Contact() {
 
               <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden p-2">
                 <CardHeader>
-                  <CardTitle className="text-lg font-black uppercase tracking-widest text-slate-800">
+                  <CardTitle className="text-lg font-black uppercase tracking-widest text-foreground">
                     Why us?
                   </CardTitle>
                 </CardHeader>

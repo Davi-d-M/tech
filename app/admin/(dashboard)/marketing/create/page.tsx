@@ -458,13 +458,13 @@ export default function CreateCampaign() {
                                             </div>
                                         </div>
 
-                                        <Card className="p-8 rounded-[2.5rem] bg-foreground text-background border-none shadow-2xl relative overflow-hidden">
-                                            <div className="relative z-10 space-y-4">
+                                        <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-xl relative overflow-hidden">
+                                            <div className="relative z-10 space-y-4 text-left">
                                                 <div className="flex items-center gap-2">
                                                     <Rocket size={16} className="text-primary animate-pulse" />
-                                                    <p className="text-[10px] font-black uppercase tracking-widest">Ready for Launch</p>
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground">Ready for Launch</p>
                                                 </div>
-                                                <p className="text-xs font-medium leading-relaxed italic opacity-70">Once you initiate the campaign, our AI and channel routers will begin the multi-platform synchronization.</p>
+                                                <p className="text-xs font-medium leading-relaxed italic text-slate-500">Once you initiate the campaign, our AI and channel routers will begin the multi-platform synchronization.</p>
                                             </div>
                                         </Card>
                                     </div>

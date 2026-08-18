@@ -19,7 +19,7 @@ export default function ShippingInfoPage() {
 
         {/* Delivery Zones Table */}
         <div className="mb-8">
-          <h2 className="text-lg font-bold text-slate-800 mb-3">1. Shipping Timelines & Rates</h2>
+          <h2 className="text-lg font-bold text-foreground mb-3">1. Shipping Timelines & Rates</h2>
           <div className="overflow-x-auto border border-slate-200 rounded-xl">
             <table className="min-w-full divide-y divide-slate-200 text-sm">
               <thead className="bg-slate-50">
@@ -61,7 +61,7 @@ export default function ShippingInfoPage() {
           
           {/* Section 2 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">2. Upcountry Pick-up Points</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">2. Upcountry Pick-up Points</h2>
             <p>
               For accessory deliveries outside of Nairobi, packages are securely routed via established regional parcel networks or major courier services. Once dispatch manifests are signed off at the terminals, a digital receipt containing the vehicle plate numbers, courier tracking number, or parcel office desk contact will be pushed out to your phone.
             </p>
@@ -72,7 +72,7 @@ export default function ShippingInfoPage() {
 
           {/* Section 3 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">3. Delivery Address Accuracy</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">3. Delivery Address Accuracy</h2>
             <p>
               To ensure zero delivery hiccups, please ensure your checkout parameters are perfectly accurate. Kindly provide precise details in your shipping forms, including specific estate names, court numbers, building names, apartment/house designations, or targeted shop locations. 
             </p>
@@ -83,7 +83,7 @@ export default function ShippingInfoPage() {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">4. Delivery Inspection</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">4. Delivery Inspection</h2>
             <p>
               While our logistics staff inspects every single item before sealing it inside your package, we highly recommend doing a quick visual check of your package condition right when the courier hands it over to you. As outlined in our returns documentation, all local delivery cycles are absolute, non-refundable final sales unless a handling mismatch error occurred directly at our warehouse.
             </p>

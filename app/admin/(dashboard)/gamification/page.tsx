@@ -412,7 +412,7 @@ export default function AdminGamificationPage() {
                                             <DollarSign className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" size={24} />
                                         </div>
                                     </div>
-                                    <Button onClick={runSimulation} className="w-full h-16 rounded-2xl bg-foreground text-background font-black uppercase tracking-[0.2em] shadow-xl transition-all hover:scale-105 active:scale-95">
+                                    <Button onClick={runSimulation} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
                                         Execute Simulation
                                     </Button>
                                 </div>

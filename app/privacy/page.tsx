@@ -23,7 +23,7 @@ export default function PrivacyPolicyPage() {
           
           {/* Section 1 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">1. Information We Collect</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">1. Information We Collect</h2>
             <p className="mb-3 text-slate-500">
               When you visit or purchase from Apexstores, we collect specific details necessary to complete your order and improve your tech browsing experience:
             </p>
@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Section 2 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">2. How We Use Your Information</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">2. How We Use Your Information</h2>
             <p className="mb-3 text-slate-500">We utilize your gathered data strictly to fulfill your customer demands:</p>
             <ul className="list-disc pl-5 space-y-2 text-slate-500">
               <li>Arranging delivery, managing local carrier dispatch, and generating order confirmation receipts.</li>
@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">3. Data Sharing & Third Parties</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">3. Data Sharing & Third Parties</h2>
             <p className="text-slate-500">
               We only share your information with localized third parties that are strictly necessary to fulfill your shopping journey (such as providing your delivery details to a dispatch rider or courier service). We do not rent, lease, or sell customer databases to any exterior advertisement agencies.
             </p>
@@ -63,7 +63,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">4. Cookies</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">4. Cookies</h2>
             <p className="text-slate-500">
               Our storefront utilizes temporary data cookies to remember items you have added to your tech bag while moving across pages. Disabling cookies inside your browser preferences may cause your persistent cart items to reset during navigation.
             </p>
@@ -71,7 +71,7 @@ export default function PrivacyPolicyPage() {
 
           {/* Section 6 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">5. Contact Us</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">5. Contact Us</h2>
             <p className="text-slate-500">
               For more information regarding our privacy protocols, or if you have any questions regarding your order records, please visit our dedicated contact channel or reach out directly via our support team.
             </p>

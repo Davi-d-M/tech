@@ -204,7 +204,7 @@ export default function ExperimentationCenter() {
                                                 <p className="text-[10px] text-slate-400 font-medium italic">
                                                     {exp.status === 'Ended' ? "Experiment concluded." : "\"Statistical significance reached in favor of Version B yield.\""}
                                                 </p>
-                                                <Button onClick={() => adoptVariant(exp.id, 'B')} disabled={exp.status === 'Ended'} className="rounded-xl h-12 px-8 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-lg">Adopt Version B</Button>
+                                                <Button onClick={() => adoptVariant(exp.id, 'B')} disabled={exp.status === 'Ended'} className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">Adopt Version B</Button>
                                             </div>
                                         </Card>
                                     );

@@ -48,7 +48,7 @@ export default function RiderLogin() {
                         <Truck className="h-8 w-8" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Rider Terminal</h1>
+                        <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Rider Terminal</h1>
                         <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mt-2">Logistics Authorization</p>
                     </div>
                 </div>

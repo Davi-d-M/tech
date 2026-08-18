@@ -310,7 +310,7 @@ export default function AdminReviewHub() {
 
                               {/* Comment Content */}
                               <div className="pl-16 space-y-4">
-                                  <p className="text-slate-700 font-medium leading-relaxed italic text-lg">&quot;{review.comment}&quot;</p>
+                                  <p className="text-foreground font-medium leading-relaxed italic text-lg">&quot;{review.comment}&quot;</p>
 
                                   {review.photo_urls && review.photo_urls.length > 0 && (
                                       <div className="flex gap-3">
@@ -350,9 +350,9 @@ export default function AdminReviewHub() {
 
                                       <button
                                         onClick={() => promoteToMarketing(review)}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-foreground text-background text-[8px] font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl shadow-slate-200"
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white text-[8px] font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl shadow-primary/20"
                                       >
-                                          <Rocket className="h-3 w-3 text-primary" /> Boost to Marketing
+                                          <Rocket className="h-3 w-3 text-white" /> Boost to Marketing
                                       </button>
                                   </div>
                               </div>

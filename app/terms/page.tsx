@@ -22,7 +22,7 @@ export default function TermsAndConditionsPage() {
           
           {/* Section 1 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">1. Scope of Service</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">1. Scope of Service</h2>
             <p className="font-medium text-slate-500">
               Apexstores operates an online electronics retail storefront providing premium gadgets, chargers, and related accessories. We reserve the right to alter, pause, update, or discontinue any product configuration, inventory batch, or website asset at any given moment without prior customer notification.
             </p>
@@ -30,7 +30,7 @@ export default function TermsAndConditionsPage() {
 
           {/* Section 2 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">2. Pricing & Currency</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">2. Pricing & Currency</h2>
             <p className="font-medium text-slate-500">
               All prices listed across our storefront display panels are evaluated in <strong>Kenyan Shillings (Ksh)</strong>. While we work diligently to eliminate formatting bugs, pricing updates or inventory entry adjustments can occasionally happen. In the event an item is ordered under a broken or incorrect price configuration, Apexstores reserves the right to cancel the transaction and issue a correction notice.
             </p>
@@ -52,7 +52,7 @@ export default function TermsAndConditionsPage() {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">4. Delivery, Shipping & Dispatch</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">4. Delivery, Shipping & Dispatch</h2>
             <p className="font-medium text-slate-500">
               Once your transaction clears, your details are handed over to local delivery agents or dispatch riders. Delivery timelines provided during checkout are strictly structural estimates. Apexstores is not liable for structural field delays caused by incorrect address coordinates, unreachable phone numbers, or uncoordinated courier pickups.
             </p>
@@ -60,7 +60,7 @@ export default function TermsAndConditionsPage() {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">5. Intellectual Property</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">5. Intellectual Property</h2>
             <p className="font-medium text-slate-500">
               All text frameworks, interface graphics, UI branding, code modules, item layouts, and unique logo configurations hosted on this platform belong entirely to <strong>Apexstores</strong>. Replicating, stealing, scraping, or reusing these assets for any commercial purpose without express written consent is strictly illegal.
             </p>
@@ -68,7 +68,7 @@ export default function TermsAndConditionsPage() {
 
           {/* Section 6 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3 uppercase tracking-tight">6. Governing Law</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3 uppercase tracking-tight">6. Governing Law</h2>
             <p className="font-medium text-slate-500">
               These Terms & Conditions are constructed under and governed entirely by the laws of the <strong>Republic of Kenya</strong>. Any disputes or issues arising directly from your transactions or engagement with this storefront will fall under the exclusive jurisdiction of the competent local courts.
             </p>

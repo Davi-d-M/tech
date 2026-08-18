@@ -22,7 +22,7 @@ export default function AccessibilityPage() {
           
           {/* Section 1 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">1. Our Commitment</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">1. Our Commitment</h2>
             <p>
               We believe that premium technology should be accessible to everyone. Our goal is to make our storefront fully compatible with assistive technologies such as screen readers, voice recognition software, and keyboard-only navigation. We measure our platform compliance against the World Wide Web Consortium (W3C) Web Content Accessibility Guidelines (WCAG) 2.1 Level AA standards.
             </p>
@@ -30,7 +30,7 @@ export default function AccessibilityPage() {
 
           {/* Section 2 - Core Accessibility Features */}
           <section className="p-5 bg-slate-50 border border-slate-200 rounded-xl">
-            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">🛠️ Built-in Accessibility Features</h2>
+            <h2 className="text-sm font-bold text-foreground uppercase tracking-wider mb-3">🛠️ Built-in Accessibility Features</h2>
             <p className="text-xs leading-relaxed text-slate-600 mb-3">
               Our Next.js frontend architecture incorporates key structural principles to ensure a seamless experience:
             </p>
@@ -44,7 +44,7 @@ export default function AccessibilityPage() {
 
           {/* Section 3 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">2. Supported Specifications</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">2. Supported Specifications</h2>
             <p>
               The Apexstores storefront relies on modern web protocols to function optimally with your operating system&apos;s native accessibility settings and browser extensions:
             </p>
@@ -57,7 +57,7 @@ export default function AccessibilityPage() {
 
           {/* Section 4 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">3. Ongoing Technical Improvements</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">3. Ongoing Technical Improvements</h2>
             <p>
               While we strive to maintain comprehensive accessibility across our entire gadget catalog, checkout screens, and profile management blocks, some legacy pages or third-party integrations (like embedded maps or external payment trackers) may occasionally experience friction. We actively monitor and refactor our codebase to identify and fix these limitations.
             </p>
@@ -65,11 +65,11 @@ export default function AccessibilityPage() {
 
           {/* Section 5 */}
           <section>
-            <h2 className="text-lg font-bold text-slate-800 mb-3">4. Feedback & Contact Channels</h2>
+            <h2 className="text-lg font-bold text-foreground mb-3">4. Feedback & Contact Channels</h2>
             <p className="mb-3">
               We welcome your feedback on the accessibility of Apexstores. If you encounter any accessibility barriers while browsing our collections or completing a purchase, please let us know immediately so we can fix it:
             </p>
-            <ul className="list-none space-y-1 font-medium text-slate-800">
+            <ul className="list-none space-y-1 font-medium text-foreground">
               <li>• Support Channel: Digital Feedback Form</li>
               <li>• Response Timeline: We aim to respond to accessibility inquiries within 2 to 3 business days.</li>
             </ul>
