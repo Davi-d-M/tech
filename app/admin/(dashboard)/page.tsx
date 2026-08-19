@@ -39,6 +39,7 @@ import ExceptionCenter from '@/components/admin/ExceptionCenter';
 import SystemPulseWidget from '@/components/admin/SystemPulseWidget';
 import ApexIntelligence from '@/components/admin/ApexIntelligence2';
 import AskApex from '@/components/admin/AskApex';
+import { runSecurityScan } from '@/lib/apex-os/security-shield';
 
 interface OrderRecord {
   id: number;
@@ -119,6 +120,13 @@ export default function AdminDashboard() {
       }
     }
     loadStats();
+
+    // Shield Monitor Interval (Every 5 mins)
+    const shieldScan = setInterval(() => {
+        runSecurityScan();
+    }, 300000);
+
+    return () => clearInterval(shieldScan);
   }, []);
 
   const stats = React.useMemo(() => {

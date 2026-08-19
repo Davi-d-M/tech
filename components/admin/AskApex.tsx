@@ -11,7 +11,9 @@ import {
     TrendingUp,
     Users,
     Package,
-    DollarSign
+    DollarSign,
+    Mic,
+    MicOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,8 +25,31 @@ export default function AskApex() {
     const [query, setQuery] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
     const [messages, setMessages] = React.useState<{ role: 'user' | 'assistant', text: string | React.ReactNode }[]>([]);
+    const [isListening, setIsListening] = React.useState(false);
 
     const scrollRef = React.useRef<HTMLDivElement>(null);
+
+    const startVoiceCommand = () => {
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Voice Protocol not supported in this browser.");
+            return;
+        }
+
+        const recognition = new (window as any).webkitSpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+        recognition.onresult = (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            setQuery(transcript);
+            // Auto-submit after voice
+            setTimeout(() => {
+                const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+                handleAsk(fakeEvent, transcript);
+            }, 500);
+        };
+        recognition.start();
+    };
 
     React.useEffect(() => {
         if (scrollRef.current) {
@@ -32,11 +57,12 @@ export default function AskApex() {
         }
     }, [messages]);
 
-    const handleAsk = async (e: React.FormEvent) => {
+    const handleAsk = async (e: React.FormEvent, voiceQuery?: string) => {
         e.preventDefault();
-        if (!query.trim() || isLoading) return;
+        const textToAsk = voiceQuery || query;
+        if (!textToAsk.trim() || isLoading) return;
 
-        const userQuery = query.trim();
+        const userQuery = textToAsk.trim();
         setMessages(prev => [...prev, { role: 'user', text: userQuery }]);
         setQuery('');
         setIsLoading(true);
@@ -191,19 +217,34 @@ export default function AskApex() {
 
                     {/* Input */}
                     <form onSubmit={handleAsk} className="p-6 bg-white border-t border-slate-50">
-                        <div className="relative">
-                            <Input
-                                value={query}
-                                onChange={e => setQuery(e.target.value)}
-                                placeholder="Type mission query..."
-                                className="h-16 rounded-2xl bg-slate-50 border-slate-100 pr-16 font-bold text-sm text-foreground focus:ring-4 focus:ring-primary/5 transition-all"
-                            />
+                        <div className="relative flex gap-2">
+                            <div className="relative flex-1">
+                                <Input
+                                    value={query}
+                                    onChange={e => setQuery(e.target.value)}
+                                    placeholder={isListening ? "Listening..." : "Type mission query..."}
+                                    className={cn(
+                                        "h-16 rounded-2xl bg-slate-50 border-slate-100 pr-16 font-bold text-sm text-foreground focus:ring-4 focus:ring-primary/5 transition-all",
+                                        isListening && "animate-pulse border-primary/50 ring-4 ring-primary/5"
+                                    )}
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={!query.trim() || isLoading}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-xl bg-primary text-white p-0 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                                >
+                                    <Send className="h-5 w-5" />
+                                </Button>
+                            </div>
                             <Button
-                                type="submit"
-                                disabled={!query.trim() || isLoading}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-xl bg-primary text-white p-0 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+                                type="button"
+                                onClick={startVoiceCommand}
+                                className={cn(
+                                    "h-16 w-16 rounded-2xl transition-all shadow-xl flex items-center justify-center p-0",
+                                    isListening ? "bg-rose-500 text-white animate-pulse" : "bg-slate-50 text-slate-400 hover:text-primary border border-slate-100"
+                                )}
                             >
-                                <Send className="h-5 w-5" />
+                                {isListening ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
                             </Button>
                         </div>
                     </form>

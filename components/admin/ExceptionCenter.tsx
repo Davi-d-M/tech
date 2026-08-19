@@ -13,17 +13,25 @@ import {
     Shield,
     ShieldCheck
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient';
 import { scanForExceptions, ApexException } from '@/lib/apex-os/intelligence';
 
 export default function ExceptionCenter() {
     const [exceptions, setExceptions] = React.useState<ApexException[]>([]);
+    const [threats, setThreats] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     const runScan = React.useCallback(async () => {
-        const results = await scanForExceptions();
+        const [results, threatRes] = await Promise.all([
+            scanForExceptions(),
+            supabase ? supabase.from('security_threats').select('*').eq('status', 'Flagged').limit(5) : Promise.resolve({ data: [] })
+        ]);
         setExceptions(results);
+        setThreats(threatRes.data || []);
         setLoading(false);
     }, []);
 
@@ -40,15 +48,15 @@ export default function ExceptionCenter() {
         </div>
     );
 
-    if (exceptions.length === 0) return (
+    if (exceptions.length === 0 && threats.length === 0) return (
         <section className="bg-white rounded-[3rem] border border-slate-100 p-12 text-center relative overflow-hidden group">
             <div className="relative z-10 flex flex-col items-center gap-4">
                 <div className="h-16 w-16 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shadow-inner">
                     <ShieldCheck className="h-8 w-8" />
                 </div>
                 <div className="space-y-1">
-                    <h2 className="text-xl font-black text-foreground uppercase tracking-tighter leading-none">Link Status: Secure</h2>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Apex OS detecting zero operational anomalies.</p>
+                    <h2 className="text-xl font-black text-foreground uppercase tracking-tighter leading-none">Ecosystem Integrity: Secure</h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Apex OS detecting zero operational or security anomalies.</p>
                 </div>
             </div>
             <ShieldCheck className="absolute -bottom-10 -right-10 h-64 w-64 text-emerald-500/5 rotate-12 -z-0" />
@@ -79,12 +87,35 @@ export default function ExceptionCenter() {
                     <div className="flex items-center gap-3">
                         <button onClick={runScan} className="h-10 px-4 rounded-xl border border-border text-[9px] font-black uppercase hover:bg-slate-50 transition-all">Re-Scan</button>
                         <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-50 px-4 py-2 rounded-full border border-rose-100">
-                            {exceptions.length} Critial Alerts
+                            {exceptions.length + threats.length} Critical Alerts
                         </span>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Security Threats First */}
+                    {threats.map(t => (
+                        <Card key={t.id} className="p-8 rounded-[2.5rem] border-2 border-rose-200 bg-rose-50/30 shadow-xl relative group animate-pulse">
+                            <div className="flex items-start gap-6">
+                                <div className="h-14 w-14 rounded-2xl bg-rose-500 flex items-center justify-center text-white">
+                                    <Shield size={28} />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <span className="bg-rose-600 text-white text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded">Security Block</span>
+                                        <p className="text-[9px] font-black text-slate-400 uppercase">{t.type} &bull; {new Date(t.created_at).toLocaleTimeString()}</p>
+                                    </div>
+                                    <h4 className="text-sm font-black text-rose-700 uppercase tracking-tight">{t.description}</h4>
+                                    <div className="flex gap-2 mt-4">
+                                        <Button size="sm" className="h-8 rounded-lg bg-rose-600 text-white text-[8px] font-black uppercase">Blacklist IP</Button>
+                                        <Button size="sm" variant="outline" className="h-8 rounded-lg border-rose-200 text-rose-600 text-[8px] font-black uppercase">Clear Alert</Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+
+                    {/* Operational Exceptions */}
                     {exceptions.map(ex => {
                         const Icon = iconMap[ex.type] || Zap;
                         return (

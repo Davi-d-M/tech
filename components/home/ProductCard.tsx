@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { cn, formatPrice } from "@/lib/utils";
-import { Check, Eye, Heart, ShoppingCart, X, ArrowUpDown, MessageSquare, TrendingUp } from "lucide-react";
+import { Check, Eye, Heart, ShoppingCart, X, ArrowUpDown, MessageSquare, TrendingUp, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RestockNotifyButton from "@/components/product/RestockNotifyButton";
 import { useWishlist } from "@/context/WishlistContext";
 import { useSettings } from "@/lib/useSettings";
+import { supabase } from "@/lib/supabaseClient";
 
 interface Product {
   id: number;
@@ -25,6 +26,7 @@ interface Product {
   description?: string;
   is_new?: boolean;
   order_count?: number;
+  min_loyalty_tier?: string; // e.g. 'Explorer', 'Silver', 'Gold', 'Diamond'
 }
 
 declare global {
@@ -33,24 +35,56 @@ declare global {
   }
 }
 
+const TIER_RANK: Record<string, number> = {
+    'Explorer': 0,
+    'Silver': 1,
+    'Gold': 2,
+    'Diamond': 3,
+    'Legend': 4
+};
+
 export default function ProductCard({ product }: { product: Product }) {
   const [imageError, setImageError] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [showQuickView, setShowQuickView] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<string>("");
+  const [userTier, setUserTier] = useState('Explorer');
 
   const { addToCart, toggleCompare, compareList } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { settings } = useSettings();
 
+  useEffect(() => {
+      async function checkTier() {
+          if (!supabase) return;
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+              const { data } = await supabase.from('profiles').select('loyalty_points').eq('id', session.user.id).maybeSingle();
+              if (data) {
+                  const pts = data.loyalty_points || 0;
+                  if (pts >= 5000) setUserTier('Legend');
+                  else if (pts >= 2000) setUserTier('Diamond');
+                  else if (pts >= 1000) setUserTier('Gold');
+                  else if (pts >= 500) setUserTier('Silver');
+              }
+          }
+      }
+      checkTier();
+  }, []);
+
   const imageUrl = product.image || product.image_url || '/placeholder.jpg';
   const isSale = product.old_price && Number(product.old_price) > Number(product.price);
   const isComparing = compareList.some(p => p.id === product.id);
 
+  const minTier = product.min_loyalty_tier || 'Explorer';
+  const isLocked = TIER_RANK[userTier] < TIER_RANK[minTier];
+
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (isLocked) return;
 
     // Require variant selection if variants are available
     if (product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0 && !selectedVariant) {
@@ -93,8 +127,23 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <>
-      <Card className="group overflow-hidden bg-white border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 rounded-[2rem] text-left">
+      <Card className="group overflow-hidden bg-white border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 rounded-[2rem] text-left relative">
       <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-3 sm:p-6">
+
+        {/* Elite Locked Overlay */}
+        {isLocked && (
+            <div className="absolute inset-0 z-30 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
+                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 shadow-sm animate-bounce">
+                    <Lock size={24} />
+                </div>
+                <p className="text-[10px] font-black uppercase text-foreground tracking-widest leading-none">Apex Club Exclusive</p>
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-2">Required: {minTier} Rank</p>
+                <Link href="/rewards" className="mt-4">
+                    <Button size="sm" className="h-8 rounded-lg bg-primary text-white font-black uppercase text-[8px] tracking-widest">Join the Club</Button>
+                </Link>
+            </div>
+        )}
+
         {/* Badges */}
         <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 flex flex-col gap-1 sm:gap-2">
             {isSale && (
@@ -123,9 +172,11 @@ export default function ProductCard({ product }: { product: Product }) {
         <Button
           variant="ghost"
           size="icon"
+          disabled={isLocked}
           className={cn(
             "absolute top-2 right-2 sm:top-4 sm:right-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white shadow-xl hover:bg-white rounded-full h-8 w-8 sm:h-10 sm:w-10",
-            isInWishlist(product.id) && "opacity-100 text-rose-500"
+            isInWishlist(product.id) && "opacity-100 text-rose-500",
+            isLocked && "hidden"
           )}
           onClick={handleToggleLike}
         >
@@ -135,9 +186,11 @@ export default function ProductCard({ product }: { product: Product }) {
         <Button
           variant="ghost"
           size="icon"
+          disabled={isLocked}
           className={cn(
             "absolute top-12 right-2 sm:top-16 sm:right-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white shadow-xl hover:bg-white rounded-full text-slate-400 hover:text-indigo-600 h-8 w-8 sm:h-10 sm:w-10",
-            isComparing && "opacity-100 text-indigo-600 ring-2 ring-indigo-500"
+            isComparing && "opacity-100 text-indigo-600 ring-2 ring-indigo-500",
+            isLocked && "hidden"
           )}
           onClick={(e) => {
               e.preventDefault();
@@ -225,14 +278,19 @@ export default function ProductCard({ product }: { product: Product }) {
                 <Button
                   className={cn(
                     'w-full h-10 sm:h-14 transition-all duration-300 rounded-xl sm:rounded-2xl font-black uppercase text-[8px] sm:text-[10px] tracking-widest shadow-lg active:scale-95',
+                    isLocked ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100 shadow-none' :
                     justAdded
                       ? 'bg-primary text-white hover:bg-primary/90'
                       : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20'
                   )}
                   onClick={handleAddToCart}
-                  disabled={isAdding}
+                  disabled={isAdding || isLocked}
                 >
-                  {isAdding ? (
+                  {isLocked ? (
+                      <div className="flex items-center gap-2">
+                        <Lock className="h-3 w-3 sm:h-4 sm:w-4" /> Locked
+                      </div>
+                  ) : isAdding ? (
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                       Sync...

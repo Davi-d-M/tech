@@ -74,11 +74,18 @@ interface Rider {
     can_view_earnings: boolean;
 }
 
+const WAREHOUSES = [
+    { id: 'all', name: 'Global Network', city: 'All' },
+    { id: 'nairobi', name: 'Nairobi Central Hub', city: 'Nairobi' },
+    { id: 'mombasa', name: 'Mombasa Port Node', city: 'Mombasa' },
+    { id: 'kisumu', name: 'Kisumu Tech Base', city: 'Kisumu' }
+];
+
 export default function AdminDispatchPage() {
     const { role, permissions } = useAdmin();
     const { settings } = useSettings();
     const [riders, setRiders] = useState<Rider[]>([]);
-    const [orders, setOrders] = useState<{ id: number; status: string; customer_name: string; customer_email?: string; rider_name?: string }[]>([]);
+    const [orders, setOrders] = useState<{ id: number; status: string; customer_name: string; customer_email?: string; rider_name?: string, warehouse_location?: string }[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRider, setSelectedRider] = useState<Rider | null>(null);
@@ -87,6 +94,7 @@ export default function AdminDispatchPage() {
 
     const [showHeatmap, setShowHeatmap] = useState(false);
     const [autoDispatch, setAutoDispatch] = useState(false);
+    const [selectedWarehouse, setSelectedWarehouse] = useState('all');
 
     const fetchData = async () => {
         if (!supabase) return;
@@ -211,19 +219,25 @@ export default function AdminDispatchPage() {
         if (pending.length === 0) return;
 
         setLoading(true);
-        setMessage({ type: 'success', text: `Initializing Singularity: Auto-dispatching ${pending.length} units...` });
+        setMessage({ type: 'success', text: `Initializing Singularity: Geo-fencing mission routing...` });
 
         try {
             for (const order of pending) {
-                const available = riders.filter(r => r.status === 'Idle').sort((a,b) => b.health_score - a.health_score);
-                if (available.length > 0) {
-                    const rider = available[0];
+                // Geo-fencing logic: Filter riders by area zone matching order warehouse if specified
+                let eligibleRiders = riders.filter(r => r.status === 'Idle');
+
+                if (order.warehouse_location) {
+                    const hubCity = order.warehouse_location.split(' ')[0];
+                    eligibleRiders = eligibleRiders.filter(r => r.area_zone.includes(hubCity));
+                }
+
+                if (eligibleRiders.length > 0) {
+                    const rider = eligibleRiders.sort((a,b) => b.health_score - a.health_score)[0];
                     await handleAssignRider(order.id, rider);
-                    // Update local state to reflect rider busy
                     rider.status = 'Delivering';
                 }
             }
-            setMessage({ type: 'success', text: "Singularity Deployment Complete. 🦾" });
+            setMessage({ type: 'success', text: "Singularity Deployment Complete. Nodes Synchronized. 🦾" });
         } finally {
             setLoading(false);
             setTimeout(() => setMessage(null), 3000);
@@ -241,7 +255,21 @@ export default function AdminDispatchPage() {
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Logistics Center</h1>
                     <p className="text-muted-foreground text-sm font-medium mt-1">Real-time rider deployment and fleet coordination hub.</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
+                    <div className="bg-white p-1 rounded-2xl border border-slate-100 shadow-sm flex overflow-x-auto no-scrollbar max-w-sm sm:max-w-none mr-2">
+                        {WAREHOUSES.map(w => (
+                            <button
+                                key={w.id}
+                                onClick={() => setSelectedWarehouse(w.id)}
+                                className={cn(
+                                    "px-5 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shrink-0",
+                                    selectedWarehouse === w.id ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-slate-400 hover:text-foreground"
+                                )}
+                            >
+                                {w.name.split(' ')[0]}
+                            </button>
+                        ))}
+                    </div>
                     <Button
                         onClick={() => setAutoDispatch(!autoDispatch)}
                         variant="outline"

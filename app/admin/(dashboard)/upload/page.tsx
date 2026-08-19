@@ -58,6 +58,7 @@ const initialForm = {
   is_best_seller: false,
   allow_backorders: false,
   hide_product: false,
+  min_loyalty_tier: 'Explorer',
   is_dynamic_pricing: false,
   price_min: '',
   price_max: '',
@@ -107,6 +108,7 @@ interface Product {
   tech_specs?: Record<string, string>;
   status?: string;
   supplier_id?: number;
+  min_loyalty_tier?: string;
 }
 
 const WAREHOUSE_HUBS = ["Nairobi Central", "Mombasa Port", "Kisumu Base", "Eldoret Tech Hub"];
@@ -297,6 +299,7 @@ function UploadContent() {
       is_best_seller: product.is_best_seller || false,
       allow_backorders: product.allow_backorders || false,
       hide_product: product.hide_product || false,
+      min_loyalty_tier: product.min_loyalty_tier || 'Explorer',
       is_dynamic_pricing: (product as any).is_dynamic_pricing || false,
       price_min: String((product as any).price_min ?? ''),
       price_max: String((product as any).price_max ?? ''),
@@ -530,6 +533,16 @@ function UploadContent() {
                                       <option key={cat.id} value={cat.id}>{cat.label}</option>
                                   ))}
                               </select></div>
+                              <div className="space-y-2">
+                                  <label className="text-[9px] font-black uppercase text-slate-400">Min. Loyalty Tier (Gating)</label>
+                                  <select name="min_loyalty_tier" value={form.min_loyalty_tier} onChange={handleInputChange} className="w-full h-14 rounded-2xl border-slate-100 bg-slate-50 px-4 text-xs font-black uppercase text-primary">
+                                      <option value="Explorer">Explorer (All)</option>
+                                      <option value="Silver">Silver Rank</option>
+                                      <option value="Gold">Gold Rank</option>
+                                      <option value="Diamond">Diamond Elite</option>
+                                      <option value="Legend">Legend Rank</option>
+                                  </select>
+                              </div>
                               <div className="space-y-2"><label className="text-[9px] font-black uppercase text-slate-400">SKU / ID</label><Input name="sku" value={form.sku} onChange={handleInputChange} className="h-14 rounded-2xl border-slate-100 bg-slate-50 font-mono text-xs" /></div>
                           </div>
                       </CardContent>
