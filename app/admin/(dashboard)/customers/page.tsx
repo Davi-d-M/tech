@@ -30,6 +30,7 @@ interface OrderRecord {
 }
 
 interface CustomerProfile {
+    id: string;
     phone_number: string | null;
     referral_code: string | null;
     full_name: string | null;
@@ -39,9 +40,11 @@ interface CustomerProfile {
     lifetime_value?: number;
     total_orders?: number;
     last_purchase_at?: string;
+    is_partner?: boolean;
 }
 
 interface CustomerStats {
+  id: string;
   name: string;
   phone: string;
   totalOrders: number;
@@ -52,6 +55,7 @@ interface CustomerStats {
   age: string;
   location: string;
   segment: string;
+  isPartner: boolean;
 }
 
 export default function AdminCustomersPage() {
@@ -61,6 +65,7 @@ export default function AdminCustomersPage() {
   const [profiles, setProfiles] = React.useState<CustomerProfile[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [segmentFilter, setSegmentFilter] = React.useState<string>('all');
 
   React.useEffect(() => {
     async function loadCustomers() {
@@ -122,6 +127,7 @@ export default function AdminCustomersPage() {
         }
       } else {
         map.set(key, {
+          id: profile?.id || 'anon',
           name: order.customer_name || profile?.full_name || 'Anonymous',
           phone: key,
           totalOrders: 1,
@@ -131,7 +137,8 @@ export default function AdminCustomersPage() {
           referredCount,
           age,
           location: profile?.address || 'No Address',
-          segment: profile?.segment || 'New Customer'
+          segment: profile?.segment || 'New Customer',
+          isPartner: profile?.is_partner || false
         });
       }
     });
@@ -139,15 +146,18 @@ export default function AdminCustomersPage() {
     return Array.from(map.values()).map(c => {
         // Calculate Dynamic Segment if not set or for high-fidelity updates
         let segment = c.segment;
-        const now = new Date();
-        const lastOrderDate = new Date(c.lastOrder);
-        const daysSinceLastOrder = (now.getTime() - lastOrderDate.getTime()) / (1000 * 3600 * 24);
+        if (c.isPartner) segment = 'Partner';
+        else {
+            const now = new Date();
+            const lastOrderDate = new Date(c.lastOrder);
+            const daysSinceLastOrder = (now.getTime() - lastOrderDate.getTime()) / (1000 * 3600 * 24);
 
-        if (c.totalSpend >= 100000 || c.totalOrders >= 10) segment = 'VIP Elite';
-        else if (c.totalSpend >= 50000) segment = 'High Value';
-        else if (daysSinceLastOrder > 60) segment = 'At Risk';
-        else if (daysSinceLastOrder > 120) segment = 'Dormant';
-        else if (c.totalOrders > 1) segment = 'Repeat Buyer';
+            if (c.totalSpend >= 100000 || c.totalOrders >= 10) segment = 'VIP Elite';
+            else if (c.totalSpend >= 50000) segment = 'High Value';
+            else if (daysSinceLastOrder > 60) segment = 'At Risk';
+            else if (daysSinceLastOrder > 120) segment = 'Dormant';
+            else if (c.totalOrders > 1) segment = 'Repeat Buyer';
+        }
 
         return {
             ...c,
@@ -159,11 +169,12 @@ export default function AdminCustomersPage() {
 
   const filteredCustomers = React.useMemo(() => {
     const query = (searchQuery || '').toLowerCase();
-    return customers.filter(c =>
-      (c.name || '').toLowerCase().includes(query) ||
-      (c.phone || '').includes(query)
-    );
-  }, [customers, searchQuery]);
+    return customers.filter(c => {
+      const matchesSearch = (c.name || '').toLowerCase().includes(query) || (c.phone || '').includes(query);
+      const matchesSegment = segmentFilter === 'all' || c.segment === segmentFilter;
+      return matchesSearch && matchesSegment;
+    });
+  }, [customers, searchQuery, segmentFilter]);
 
   if (isLoading) {
     return (
@@ -186,19 +197,35 @@ export default function AdminCustomersPage() {
   return (
     <div className="p-4 sm:p-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-slate-200 pb-10">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl uppercase">Customer Directory</h1>
-          <p className="text-slate-500 text-sm font-medium">Track your most loyal shoppers and their purchase history.</p>
+          <h1 className="text-4xl font-black tracking-tight text-foreground uppercase tracking-tighter leading-none">Customer Directory</h1>
+          <p className="text-slate-500 text-sm font-medium mt-1">Track your most loyal shoppers and their purchase history.</p>
         </div>
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            placeholder="Search by name or phone..."
-            className="pl-10 rounded-xl border-slate-200 bg-white"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="flex gap-2">
+            <div className="bg-white p-1 rounded-2xl border border-slate-100 shadow-sm flex overflow-x-auto no-scrollbar max-w-sm sm:max-w-none">
+                {['all', 'VIP Elite', 'Repeat Buyer', 'Partner'].map(f => (
+                    <button
+                        key={f}
+                        onClick={() => setSegmentFilter(f)}
+                        className={cn(
+                            "px-5 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shrink-0",
+                            segmentFilter === f ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-slate-400 hover:text-foreground"
+                        )}
+                    >
+                        {f}
+                    </button>
+                ))}
+            </div>
+            <div className="relative w-full sm:w-64">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                    placeholder="Search Grid..."
+                    className="h-14 pl-12 rounded-2xl border-slate-100 bg-white font-bold text-sm"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
         </div>
       </div>
 
@@ -313,7 +340,8 @@ export default function AdminCustomersPage() {
                         <span className={cn(
                             "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
                             customer.segment === 'VIP Elite' ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" :
-                            customer.segment === 'High Value' ? "bg-indigo-50 text-indigo-600 border-indigo-100" :
+                        customer.segment === 'Partner' ? "bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100" :
+                        customer.segment === 'High Value' ? "bg-indigo-50 text-indigo-600 border-indigo-100" :
                             customer.segment === 'Repeat Buyer' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                             customer.segment === 'At Risk' ? "bg-amber-50 text-amber-600 border-amber-100 animate-pulse" :
                             customer.segment === 'Dormant' ? "bg-slate-100 text-slate-400 border-slate-200" :

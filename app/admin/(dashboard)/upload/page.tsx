@@ -24,6 +24,7 @@ import {
     FileText,
     Download,
     DollarSign,
+    Bot,
     X,
     Trash2,
     Camera
@@ -57,6 +58,9 @@ const initialForm = {
   is_best_seller: false,
   allow_backorders: false,
   hide_product: false,
+  is_dynamic_pricing: false,
+  price_min: '',
+  price_max: '',
   seo_title: '',
   seo_description: '',
   seo_keywords: '',
@@ -104,6 +108,8 @@ interface Product {
   status?: string;
   supplier_id?: number;
 }
+
+const WAREHOUSE_HUBS = ["Nairobi Central", "Mombasa Port", "Kisumu Base", "Eldoret Tech Hub"];
 
 export default function AdminUploadPage() {
     return (
@@ -291,6 +297,9 @@ function UploadContent() {
       is_best_seller: product.is_best_seller || false,
       allow_backorders: product.allow_backorders || false,
       hide_product: product.hide_product || false,
+      is_dynamic_pricing: (product as any).is_dynamic_pricing || false,
+      price_min: String((product as any).price_min ?? ''),
+      price_max: String((product as any).price_max ?? ''),
       seo_title: product.seo_title || '',
       seo_description: product.seo_description || '',
       seo_keywords: Array.isArray(product.seo_keywords) ? product.seo_keywords.join(', ') : '',
@@ -609,6 +618,45 @@ function UploadContent() {
                                   <Input name="cost_price" type="number" value={form.cost_price} onChange={handleInputChange} className="h-14 rounded-2xl border-slate-100 bg-slate-50 font-black text-lg" />
                               </div>
                           </div>
+
+                          <div className="pt-6 border-t border-slate-50 space-y-6">
+                              <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                      <Bot className="h-5 w-5 text-indigo-500" />
+                                      <h3 className="text-sm font-black uppercase text-foreground">Dynamic Pricing Engine</h3>
+                                  </div>
+                                  <button
+                                      type="button"
+                                      onClick={() => setForm({...form, is_dynamic_pricing: !form.is_dynamic_pricing})}
+                                      className={cn(
+                                          "w-12 h-6 rounded-full transition-all relative p-1 flex items-center shadow-inner",
+                                          form.is_dynamic_pricing ? "bg-indigo-500" : "bg-slate-200"
+                                      )}
+                                  >
+                                      <div className={cn(
+                                          "h-4 w-4 rounded-full bg-white shadow-sm transition-all",
+                                          form.is_dynamic_pricing ? "translate-x-6" : "translate-x-0"
+                                      )} />
+                                  </button>
+                              </div>
+
+                              {form.is_dynamic_pricing && (
+                                  <div className="grid sm:grid-cols-2 gap-6 animate-in zoom-in-95">
+                                      <div className="space-y-2">
+                                          <label className="text-[8px] font-black uppercase text-slate-400">Min Safety Price (Floor)</label>
+                                          <Input name="price_min" type="number" value={form.price_min} onChange={handleInputChange} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" placeholder="e.g. 1200" />
+                                      </div>
+                                      <div className="space-y-2">
+                                          <label className="text-[8px] font-black uppercase text-slate-400">Max Profit Price (Cap)</label>
+                                          <Input name="price_max" type="number" value={form.price_max} onChange={handleInputChange} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" placeholder="e.g. 2500" />
+                                      </div>
+                                      <p className="sm:col-span-2 text-[9px] text-indigo-500 font-medium italic">
+                                          &quot;Autonomous Agent will fluctuate price between these bounds based on stock velocity and demand.&quot;
+                                      </p>
+                                  </div>
+                              )}
+                          </div>
+
                           <div className="p-8 bg-primary/5 border border-primary/20 rounded-[2.5rem] text-primary flex justify-between items-center relative overflow-hidden shadow-inner">
                               <div className="relative z-10 flex gap-12 text-left">
                                   <div><p className="text-[8px] font-black uppercase text-primary/60 mb-1">Net Unit Profit</p><p className={cn("text-3xl font-black", profitIntel.profit > 0 ? "text-primary" : "text-rose-600")}>{formatPrice(profitIntel.profit)}</p></div>
@@ -689,7 +737,12 @@ function UploadContent() {
                       <CardContent className="p-10 pt-0 space-y-8">
                           <div className="grid sm:grid-cols-2 gap-6 text-left">
                               <div className="space-y-2"><label className="text-[9px] font-black uppercase text-slate-400">Low Stock Alert</label><Input name="low_stock_alert" type="number" value={form.low_stock_alert} onChange={handleInputChange} className="h-14 rounded-2xl border-slate-100 bg-slate-50" /></div>
-                              <div className="space-y-2"><label className="text-[9px] font-black uppercase text-slate-400">Warehouse Shelf</label><Input name="warehouse_location" value={form.warehouse_location} onChange={handleInputChange} className="h-14 rounded-2xl border-slate-100 bg-slate-50 uppercase font-black" /></div>
+                              <div className="space-y-2"><label className="text-[9px] font-black uppercase text-slate-400">Warehouse Deployment Zone</label>
+                                  <select name="warehouse_location" value={form.warehouse_location} onChange={handleInputChange} className="w-full h-14 rounded-2xl border-slate-100 bg-slate-50 px-4 text-xs font-black uppercase">
+                                      <option value="">Select Hub</option>
+                                      {WAREHOUSE_HUBS.map(h => <option key={h} value={h}>{h}</option>)}
+                                  </select>
+                              </div>
                           </div>
                           <div className="space-y-4 pt-4 border-t border-slate-50 text-left">
                               <label className="text-[9px] font-black uppercase text-slate-400">Variant Attributes (Comma Separated)</label>

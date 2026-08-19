@@ -49,6 +49,9 @@ interface CustomerProfile {
   birth_date: string | null;
   referral_code: string | null;
   created_at: string;
+  is_partner?: boolean;
+  credit_limit?: number;
+  relationship_manager?: string;
 }
 
 interface ProductInfo {
@@ -314,10 +317,27 @@ export default function CustomerIntelligence() {
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Location</span>
                           <span className="text-xs font-black text-foreground uppercase truncate max-w-[150px]">{profile?.address || 'No Address'}</span>
                       </div>
-                      <div className="flex justify-between items-center py-4">
+                      <div className="flex justify-between items-center py-4 border-b border-slate-50">
                           <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Preferred Method</span>
                           <span className="text-xs font-black text-foreground uppercase">{orders[0]?.payment_method || 'M-Pesa'}</span>
                       </div>
+                      {profile?.is_partner && (
+                          <div className="pt-6 mt-2 space-y-4 animate-in zoom-in-95">
+                              <div className="p-5 rounded-2xl bg-indigo-50 border border-indigo-100 space-y-4">
+                                  <div className="flex justify-between items-center">
+                                      <p className="text-[10px] font-black uppercase text-indigo-600">Credit Limit</p>
+                                      <span className="text-sm font-black text-indigo-700">{formatPrice(profile.credit_limit || 0)}</span>
+                                  </div>
+                                  <div className="h-1.5 w-full bg-white rounded-full overflow-hidden border border-indigo-100">
+                                      <div className="h-full bg-indigo-500 w-[20%]" />
+                                  </div>
+                              </div>
+                              <div className="flex justify-between items-center px-2">
+                                  <p className="text-[9px] font-black uppercase text-slate-400">Account Manager</p>
+                                  <span className="text-[10px] font-bold text-foreground">{profile.relationship_manager || 'Global Team'}</span>
+                              </div>
+                          </div>
+                      )}
                   </div>
               </Card>
 

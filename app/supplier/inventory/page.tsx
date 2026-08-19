@@ -8,7 +8,10 @@ import {
     RefreshCcw,
     Save,
     Loader2,
-    Search
+    Search,
+    Edit3,
+    X,
+    CheckCircle2
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,6 +33,7 @@ export default function SupplierInventory() {
     const [loading, setLoading] = React.useState(true);
     const [updatingId, setUpdatingId] = React.useState<number | null>(null);
     const [searchQuery, setSearchQuery] = React.useState('');
+    const [isEditing, setIsEditing] = React.useState<Product | null>(null);
 
     const fetchInventory = React.useCallback(async () => {
         if (!supabase || !supplier_id) return;
@@ -119,14 +123,14 @@ export default function SupplierInventory() {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Base Units</span>
-                                <span className={cn(
-                                    "text-xs font-black uppercase",
-                                    p.stock <= 5 ? "text-rose-500 animate-pulse" : "text-emerald-500"
-                                )}>{p.stock} In Stock</span>
-                            </div>
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={() => setIsEditing(p)}
+                                variant="outline"
+                                className="flex-1 h-12 rounded-xl border-slate-100 text-slate-400 hover:text-primary transition-all"
+                            >
+                                <Edit3 size={16} className="mr-2" /> Modify Props
+                            </Button>
                             <div className="flex gap-2">
                                 <Input
                                     type="number"
@@ -137,7 +141,7 @@ export default function SupplierInventory() {
                                             handleUpdateStock(p.id, val);
                                         }
                                     }}
-                                    className="h-12 rounded-xl border-slate-100 bg-slate-50/50 text-center font-black"
+                                    className="h-12 w-20 rounded-xl border-slate-100 bg-slate-50/50 text-center font-black"
                                 />
                                 <Button
                                     disabled={updatingId === p.id}
@@ -159,6 +163,82 @@ export default function SupplierInventory() {
                     </Card>
                 ))}
             </div>
+
+            {/* EDITING MODAL */}
+            {isEditing && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/20 backdrop-blur-md p-6">
+                    <Card className="max-w-xl w-full bg-white rounded-[3.5rem] border border-border shadow-2xl p-10 space-y-8 animate-in zoom-in-95 duration-500 text-left">
+                        <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Edit3 size={24} /></div>
+                                <div className="text-left">
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter text-foreground">Refine Payload</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Modify Listing Attributes</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setIsEditing(null)} className="text-slate-300 hover:text-rose-500 transition-colors"><X size={24} /></button>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="space-y-2 text-left">
+                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Gadget Title</label>
+                                <Input value={isEditing.name} readOnly className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-bold opacity-60" />
+                                <p className="text-[8px] font-bold text-slate-400 uppercase italic leading-relaxed px-1">
+                                    * Title and SKU changes require Command Center authorization.
+                                </p>
+                            </div>
+
+                            <div className="space-y-2 text-left">
+                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Retail Pricing (KES)</label>
+                                <Input type="number" value={isEditing.price} readOnly className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-black text-lg text-primary opacity-60" />
+                            </div>
+
+                            <div className="grid sm:grid-cols-2 gap-6">
+                                <div className="space-y-2 text-left">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Grid Status</label>
+                                    <select
+                                        value={isEditing.status}
+                                        onChange={e => setIsEditing({...isEditing, status: e.target.value})}
+                                        className="w-full h-14 rounded-2xl bg-secondary border border-border px-4 text-xs font-black uppercase text-foreground outline-none focus:ring-2 focus:ring-primary"
+                                    >
+                                        <option value="Live">Live Grid</option>
+                                        <option value="Pending">Draft / Hidden</option>
+                                        <option value="Sold Out">Out of Stock</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2 text-left">
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Current Base Stock</label>
+                                    <Input
+                                        type="number"
+                                        value={isEditing.stock}
+                                        onChange={e => setIsEditing({...isEditing, stock: Number(e.target.value)})}
+                                        className="h-14 rounded-2xl bg-secondary border-border font-black text-lg text-foreground"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-border flex gap-4">
+                            <Button
+                                onClick={async () => {
+                                    if (!supabase || !isEditing) return;
+                                    setLoading(true);
+                                    await supabase.from('products').update({
+                                        status: isEditing.status,
+                                        stock: isEditing.stock,
+                                        updated_at: new Date().toISOString()
+                                    }).eq('id', isEditing.id);
+                                    fetchInventory();
+                                    setIsEditing(null);
+                                }}
+                                className="flex-1 h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                            >
+                                <CheckCircle2 size={18} className="mr-2" /> Sync Attributes
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
 
         </div>
     );

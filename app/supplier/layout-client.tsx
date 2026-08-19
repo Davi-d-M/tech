@@ -11,7 +11,8 @@ import {
   Store,
   Plus,
   Box,
-  Truck
+  Truck,
+  Wallet
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -47,6 +48,7 @@ export default function SupplierLayoutClient({
   const navItems = [
     { name: 'Dashboard', href: '/supplier', icon: LayoutDashboard },
     { name: 'Stock Pulse', href: '/supplier/inventory', icon: Box },
+    { name: 'Settlements', href: '/supplier/settlements', icon: Wallet },
     { name: 'Propose Gadget', href: '/supplier/propose', icon: Plus },
   ];
 

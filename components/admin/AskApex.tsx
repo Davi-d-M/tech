@@ -45,7 +45,7 @@ export default function AskApex() {
             // Apex Intelligence: Local Data-Driven Response Engine
             const response = await processQueryLocally(userQuery);
             setMessages(prev => [...prev, { role: 'assistant', text: response }]);
-        } catch (err) {
+        } catch {
             setMessages(prev => [...prev, { role: 'assistant', text: "Data link interrupted. Please retry, bro." }]);
         } finally {
             setIsLoading(false);

@@ -20,7 +20,9 @@ import {
   PackageCheck,
   CreditCard,
   Phone,
-  User
+  User,
+  Bot,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -84,6 +86,7 @@ export default function AdminDispatchPage() {
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const [showHeatmap, setShowHeatmap] = useState(false);
+    const [autoDispatch, setAutoDispatch] = useState(false);
 
     const fetchData = async () => {
         if (!supabase) return;
@@ -203,6 +206,30 @@ export default function AdminDispatchPage() {
         }
     };
 
+    const runAutonomousSingularity = async () => {
+        const pending = orders.filter(o => o.status === 'Pending');
+        if (pending.length === 0) return;
+
+        setLoading(true);
+        setMessage({ type: 'success', text: `Initializing Singularity: Auto-dispatching ${pending.length} units...` });
+
+        try {
+            for (const order of pending) {
+                const available = riders.filter(r => r.status === 'Idle').sort((a,b) => b.health_score - a.health_score);
+                if (available.length > 0) {
+                    const rider = available[0];
+                    await handleAssignRider(order.id, rider);
+                    // Update local state to reflect rider busy
+                    rider.status = 'Delivering';
+                }
+            }
+            setMessage({ type: 'success', text: "Singularity Deployment Complete. 🦾" });
+        } finally {
+            setLoading(false);
+            setTimeout(() => setMessage(null), 3000);
+        }
+    };
+
     return (
         <div className="p-8 space-y-8 bg-background min-h-screen text-left">
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-border pb-8">
@@ -215,6 +242,16 @@ export default function AdminDispatchPage() {
                     <p className="text-muted-foreground text-sm font-medium mt-1">Real-time rider deployment and fleet coordination hub.</p>
                 </div>
                 <div className="flex gap-2">
+                    <Button
+                        onClick={() => setAutoDispatch(!autoDispatch)}
+                        variant="outline"
+                        className={cn(
+                            "rounded-xl h-12 px-6 border-indigo-200 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95",
+                            autoDispatch ? "bg-indigo-500 text-white shadow-lg" : "bg-white text-indigo-400 hover:bg-indigo-50"
+                        )}
+                    >
+                        <Bot className="h-4 w-4 mr-2" /> Auto-Dispatch {autoDispatch ? 'Armed' : 'Locked'}
+                    </Button>
                     <Button
                         onClick={() => setShowHeatmap(!showHeatmap)}
                         variant="outline"

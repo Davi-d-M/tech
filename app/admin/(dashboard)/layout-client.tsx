@@ -23,6 +23,7 @@ import {
   Target,
   Trophy,
   TrendingUp,
+  Rocket,
   DollarSign,
   Truck,
   CreditCard,
@@ -127,6 +128,7 @@ export default function AdminLayoutClient({
     ]},
     { group: 'GROWTH', items: [
       { name: 'Marketing Hub', href: '/admin/marketing', icon: TrendingUp, permission: 'can_manage_broadcast' },
+      { name: 'Autopilot', href: '/admin/marketing/automation', icon: Rocket, permission: 'can_manage_broadcast' },
       { name: 'Affiliates', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
       { name: 'Promotions', href: '/admin/coupons', icon: Tag, permission: 'can_manage_broadcast' },
     ]},

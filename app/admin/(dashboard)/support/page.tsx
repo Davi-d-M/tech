@@ -14,7 +14,9 @@ import {
     Tag,
     AlertCircle,
     Star,
-    Mail
+    Mail,
+    X,
+    Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,20 +24,6 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 import { logAuditAction } from '@/lib/auditService';
-
-interface SupportTicket {
-    id: number;
-    customer_name: string;
-    customer_email: string;
-    subject: string;
-    description: string;
-    priority: 'Low' | 'Medium' | 'High' | 'Critical';
-    category: string;
-    status: 'Open' | 'InProgress' | 'Resolved' | 'Closed';
-    assigned_to?: string;
-    created_at: string;
-    sla_hours: number;
-}
 
 interface StaffMember {
     id: string;
@@ -126,12 +114,54 @@ export default function SupportCaseManagement() {
         fetchUniversalData();
     }, [fetchUniversalData]);
 
+    const [activeChat, setActiveChat] = React.useState<UniversalItem | null>(null);
+    const [replyText, setReplyText] = React.useState('');
+    const [isSending, setIsSending] = React.useState(false);
+    const chatRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        if (chatRef.current) {
+            chatRef.current.scrollTop = chatRef.current.scrollHeight;
+        }
+    }, [activeChat]);
+
+    const handleSendReply = async () => {
+        if (!activeChat || !replyText.trim()) return;
+        setIsSending(true);
+        try {
+            const tableMap = { Support: 'support_tickets', Message: 'messages', Review: 'reviews' };
+            const id = parseInt(activeChat.id.split('-')[1]);
+
+            const { error } = await supabase!.from(tableMap[activeChat.type]).update({
+                admin_response: replyText.trim(),
+                status: 'Resolved'
+            }).eq('id', id);
+
+            if (error) throw error;
+
+            await logAuditAction(adminEmail, 'LIVE_CHAT_REPLY', { id: activeChat.id });
+            setItems(prev => prev.map(i => i.id === activeChat.id ? { ...i, status: 'Resolved' } : i));
+            setActiveChat(null);
+            setReplyText('');
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsSending(false);
+        }
+    };
+
     const filteredItems = items.filter(t => {
         const matchesQuery = (t.customer_name + t.subject + t.body).toLowerCase().includes(searchQuery.toLowerCase());
         const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
         const matchesType = typeFilter === 'all' || t.type === typeFilter;
         return matchesQuery && matchesStatus && matchesType;
     });
+
+    const getAISuggestion = (item: UniversalItem) => {
+        if (item.type === 'Review') return "Thank you for the elite feedback, bro! 🚀";
+        if (item.body.toLowerCase().includes('delivery')) return "Your mission is currently en route. Estimated extraction in 12 mins. 🚚";
+        return "I'm analyzing your technical payload. Our engineers will assist shortly. 🛡️";
+    };
 
     const updateItemStatus = async (item: UniversalItem, newStatus: string) => {
         if (!supabase) return;
@@ -271,8 +301,11 @@ export default function SupportCaseManagement() {
                                 </div>
 
                                 <div className="lg:w-64 flex flex-col gap-3 justify-center">
-                                    <Button className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
-                                        <Send className="h-3 w-3 mr-2" /> Quick Reply
+                                    <Button
+                                        onClick={() => setActiveChat(item)}
+                                        className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
+                                    >
+                                        <MessageSquare className="h-3 w-3 mr-2" /> Live Mode
                                     </Button>
                                     <Button
                                         onClick={() => updateItemStatus(item, 'Resolved')}
@@ -285,6 +318,67 @@ export default function SupportCaseManagement() {
                             </div>
                         </Card>
                     ))}
+                </div>
+            )}
+
+            {/* LIVE CHAT DRAWER */}
+            {activeChat && (
+                <div className="fixed inset-y-0 right-0 w-[500px] bg-white shadow-2xl z-[200] animate-in slide-in-from-right duration-500 border-l border-slate-100 flex flex-col overflow-hidden">
+                    <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <div className="flex items-center gap-4">
+                            <div className="h-10 w-10 rounded-xl bg-primary text-white flex items-center justify-center font-black text-xs">
+                                {activeChat.customer_name.substring(0, 2).toUpperCase()}
+                            </div>
+                            <div>
+                                <h3 className="font-black text-foreground uppercase text-sm">{activeChat.customer_name}</h3>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{activeChat.type} Integration</p>
+                            </div>
+                        </div>
+                        <button onClick={() => setActiveChat(null)} className="text-slate-300 hover:text-rose-500 transition-colors">
+                            <X className="h-6 w-6" />
+                        </button>
+                    </div>
+
+                    <div ref={chatRef} className="flex-1 overflow-y-auto p-10 space-y-8 no-scrollbar bg-slate-50/30">
+                        <div className="flex justify-start">
+                            <div className="max-w-[85%] p-6 rounded-[2rem] rounded-tl-sm bg-white border border-slate-100 shadow-sm text-sm font-medium leading-relaxed italic text-slate-600">
+                                &quot;{activeChat.body}&quot;
+                            </div>
+                        </div>
+
+                        {activeChat.status === 'Resolved' && (
+                             <div className="flex justify-end">
+                                <div className="max-w-[85%] p-6 rounded-[2rem] rounded-tr-sm bg-primary text-white shadow-lg text-sm font-bold leading-relaxed">
+                                    {activeChat.type === 'Review' ? 'Official response logged for customer feedback.' : 'Mission Resolved. Resolution payload transmitted.'}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="p-8 border-t border-slate-100 bg-white space-y-4">
+                        <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-between animate-in slide-in-from-bottom-2">
+                             <div className="flex items-center gap-3">
+                                 <Sparkles size={14} className="text-indigo-500 animate-pulse" />
+                                 <p className="text-[10px] font-bold text-indigo-700 italic">AI Suggestion: &quot;{getAISuggestion(activeChat)}&quot;</p>
+                             </div>
+                             <button onClick={() => setReplyText(getAISuggestion(activeChat))} className="text-[8px] font-black uppercase text-indigo-600 hover:underline">Apply</button>
+                        </div>
+                        <div className="relative">
+                            <textarea
+                                value={replyText}
+                                onChange={e => setReplyText(e.target.value)}
+                                placeholder="Establish tactical response..."
+                                className="w-full h-32 p-6 rounded-[2rem] bg-slate-50 border-slate-100 text-sm font-medium resize-none focus:ring-4 focus:ring-primary/5 transition-all outline-none"
+                            />
+                            <Button
+                                onClick={handleSendReply}
+                                disabled={!replyText.trim() || isSending}
+                                className="absolute bottom-4 right-4 h-12 px-6 rounded-xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all"
+                            >
+                                {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-3 w-3 mr-2" /> Dispatch</>}
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

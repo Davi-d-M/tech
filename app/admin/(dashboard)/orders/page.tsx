@@ -55,6 +55,7 @@ interface OrderRecord {
   rider_phone?: string | null;
   captured_by?: string;
   order_items?: OrderItem[];
+  warehouse_location?: string;
 }
 
 interface ManualOrderForm {
@@ -689,9 +690,16 @@ export default function AdminOrdersPage() {
                                     {order.order_items && order.order_items.length > 0 ? (
                                         order.order_items.map((item) => (
                                             <div key={item.id} className="border-b border-slate-50 last:border-0 pb-2 mb-2 last:pb-0 last:mb-0">
-                                                <span className="font-black text-foreground uppercase text-[11px] block truncate">
-                                                    {productNameMap.get(item.product_id) || `Item #${item.product_id}`}
-                                                </span>
+                                                <div className="flex justify-between items-start gap-2">
+                                                    <span className="font-black text-foreground uppercase text-[11px] block truncate flex-1">
+                                                        {productNameMap.get(item.product_id) || `Item #${item.product_id}`}
+                                                    </span>
+                                                    {order.warehouse_location && (
+                                                        <span className="text-[7px] font-black uppercase text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded shrink-0">
+                                                            {order.warehouse_location.split(' ')[0]}
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <div className="flex items-center justify-between gap-2 mt-1">
                                                     <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">
                                                         x{item.quantity} Units {item.size && `(${item.size})`}

@@ -1,25 +1,25 @@
-# Tasks - Apex OS Phase 4 🧠🚀
+# Tasks - Apex OS Phase 6: The Apex Singularity 💎🦾🚀
 
-## Phase 1: Ask Apex AI Intelligence
-- [ ] Implement "Ask Apex" floating agent on `app/admin/(dashboard)/page.tsx`.
-- [ ] Add analytical query logic for "Best Customers", "Profit Trends", etc.
+## Phase 1: Autonomous Pricing Engine
+- [x] Implement Dynamic Pricing UI in `app/admin/(dashboard)/upload/page.tsx`.
+- [ ] Create simulation logic for Price Fluctuations based on velocity in `lib/apex-os/autonomous-pricing.ts`.
 
-## Phase 2: Smart Audience Rule Engine
-- [ ] Refactor `app/admin/(dashboard)/marketing/audiences/page.tsx` with Rule Builder.
-- [ ] Add dynamic reach calculation based on LTV and order status.
+## Phase 2: Autonomous Dispatch
+- [x] Add "Auto-Dispatch" toggle to `app/admin/(dashboard)/dispatch/page.tsx`.
+- [ ] Implement the "Autonomous Mode" assignment logic (Auto-pick nearest rider).
 
-## Phase 3: Universal Support Inbox
-- [ ] Create/Consolidate `app/admin/(dashboard)/support/inbox/page.tsx`.
-- [ ] Merge `support_tickets`, `reviews`, and `messages` into one prioritized feed.
+## Phase 3: Supplier Extranet (Self-Service)
+- [ ] Create `app/supplier/settlements/page.tsx` (Earnings & Payout history for partners).
+- [ ] Enhance `app/supplier/inventory/page.tsx` with high-fidelity editing.
 
-## Phase 4: Automated Procurement (PO Generation)
-- [ ] Add "Boost Inventory" sequence to `app/admin/(dashboard)/operations/suppliers/page.tsx`.
-- [ ] Implement PDF Purchase Order generation for "Low Stock" items.
+## Phase 4: VIP High-Touch Support
+- [ ] Create `app/admin/(dashboard)/support/vip-relay/page.tsx` (Integrated video help placeholder).
+- [ ] Add AI Triage logic to the Universal Inbox.
 
-## Phase 5: Localization & Swahili Marketing
-- [ ] Add Swahili/Sheng toggle to `app/admin/(dashboard)/marketing/create/page.tsx`.
-- [ ] Implement AI-driven localized content mapping.
+## Phase 5: Singularity Analytics
+- [x] Implement 12-month P&L Projection in `app/admin/(dashboard)/analytics/page.tsx`.
+- [ ] Add "Capital Allocation" AI recommendations.
 
-## Phase 6: Verification
+## Phase 6: Final Hardening
 - [ ] Run `npm run build`.
-- [ ] Verify PO generation maps to correct supplier data.
+- [ ] Finalize "Singularity" walkthrough.
