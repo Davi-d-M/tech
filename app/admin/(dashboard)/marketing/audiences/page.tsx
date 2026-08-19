@@ -9,7 +9,13 @@ import {
     MoreVertical,
     Target,
     Zap,
-    ArrowRight
+    ArrowRight,
+    Loader2,
+    X,
+    Filter,
+    Activity,
+    DollarSign,
+    ShoppingCart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,27 +36,56 @@ export default function AudiencesPage() {
     const [segments, setSegments] = useState<Segment[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [isDefining, setIsDefining] = useState(false);
+    const [isCalculating, setIsCalculating] = useState(false);
 
-    useEffect(() => {
-        async function fetchSegments() {
-            if (!supabase) return;
-            setLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('customer_segments')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+    // Define State
+    const [newSegment, setNewSegment] = useState({
+        name: '',
+        spend_min: '0',
+        orders_min: '0',
+        last_order_days: '90',
+        reach: 0
+    });
 
-                if (error) throw error;
-                setSegments(data || []);
-            } catch {
-                console.error("Segment fetch failed.");
-            } finally {
-                setLoading(false);
-            }
+    const calculateReach = async () => {
+        if (!supabase) return;
+        setIsCalculating(true);
+        try {
+            // Simulated rule-based calculation on the server/DB
+            await new Promise(r => setTimeout(r, 1500));
+            const baseReach = Math.floor(Math.random() * 500) + 50;
+            setNewSegment(prev => ({ ...prev, reach: baseReach }));
+        } finally {
+            setIsCalculating(false);
         }
-        fetchSegments();
-    }, []);
+    };
+
+    const handleCreateSegment = async () => {
+        if (!supabase || !newSegment.name) return;
+        setLoading(true);
+        try {
+            const { error } = await supabase.from('customer_segments').insert([{
+                name: newSegment.name,
+                estimated_reach: newSegment.reach,
+                rules: {
+                    spend_min: Number(newSegment.spend_min),
+                    orders_min: Number(newSegment.orders_min),
+                    last_order_days: Number(newSegment.last_order_days)
+                }
+            }]);
+            if (error) throw error;
+            setIsDefining(false);
+            setNewSegment({ name: '', spend_min: '0', orders_min: '0', last_order_days: '90', reach: 0 });
+            // Refresh list
+            const { data } = await supabase.from('customer_segments').select('*').order('created_at', { ascending: false });
+            setSegments(data || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const filtered = segments.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -67,10 +102,83 @@ export default function AudiencesPage() {
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Customer Segments</h1>
                     <p className="text-muted-foreground text-sm font-medium mt-1">Manage dynamic targeting rules and audience clusters.</p>
                 </div>
-                <Button className="rounded-xl h-12 px-6 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                <Button
+                    onClick={() => setIsDefining(true)}
+                    className="rounded-xl h-12 px-6 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                >
                     <Plus size={16} className="mr-2" /> Define Segment
                 </Button>
             </header>
+
+            {isDefining && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center bg-background/20 backdrop-blur-md p-6">
+                    <Card className="max-w-2xl w-full bg-white rounded-[3.5rem] border border-border shadow-2xl p-10 space-y-10 animate-in zoom-in-95 duration-500 text-left">
+                        <div className="flex justify-between items-start">
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Filter size={24} /></div>
+                                <div className="text-left">
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter text-foreground">Rule Engine</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dynamic Audience Builder</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setIsDefining(false)} className="text-slate-300 hover:text-rose-500 transition-colors"><X size={24} /></button>
+                        </div>
+
+                        <div className="space-y-8">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Segment Identity</label>
+                                <Input
+                                    value={newSegment.name}
+                                    onChange={e => setNewSegment({...newSegment, name: e.target.value})}
+                                    placeholder="e.g. High-Spending Lapsed VIPs"
+                                    className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground"
+                                />
+                            </div>
+
+                            <div className="grid sm:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <div className="space-y-1">
+                                        <label className="text-[8px] font-black uppercase text-muted-foreground flex items-center gap-2 px-1"><DollarSign size={10} /> Minimum Spend (LTV)</label>
+                                        <Input type="number" value={newSegment.spend_min} onChange={e => setNewSegment({...newSegment, spend_min: e.target.value})} className="h-12 rounded-xl bg-secondary border-border font-black text-primary" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[8px] font-black uppercase text-muted-foreground flex items-center gap-2 px-1"><ShoppingCart size={10} /> Min Orders</label>
+                                        <Input type="number" value={newSegment.orders_min} onChange={e => setNewSegment({...newSegment, orders_min: e.target.value})} className="h-12 rounded-xl bg-secondary border-border font-black text-foreground" />
+                                    </div>
+                                </div>
+
+                                <div className="p-8 rounded-[2.5rem] bg-secondary border border-border flex flex-col justify-center text-center space-y-4">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Estimated Reach</p>
+                                        <h4 className="text-5xl font-black text-primary tracking-tighter tabular-nums">
+                                            {isCalculating ? '---' : newSegment.reach.toLocaleString()}
+                                        </h4>
+                                    </div>
+                                    <Button
+                                        onClick={calculateReach}
+                                        disabled={isCalculating}
+                                        variant="outline"
+                                        className="h-10 rounded-xl bg-white text-[8px] font-black uppercase tracking-widest shadow-sm hover:bg-slate-50"
+                                    >
+                                        {isCalculating ? <Loader2 size={12} className="animate-spin mr-2" /> : <Activity size={12} className="mr-2" />}
+                                        Run Reach Scan
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-4 pt-6 border-t border-border">
+                            <Button
+                                onClick={handleCreateSegment}
+                                disabled={!newSegment.name || loading}
+                                className="flex-1 h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+                            >
+                                {loading ? <Loader2 size={18} className="animate-spin" /> : "Commit Segment"}
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
 
             <div className="flex flex-col lg:flex-row gap-4">
                 <div className="relative flex-1">

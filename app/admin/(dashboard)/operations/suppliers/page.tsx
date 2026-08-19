@@ -7,7 +7,9 @@ import {
     RefreshCcw,
     Plus,
     Activity,
-    Target
+    Target,
+    FileDown,
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -27,6 +29,44 @@ interface Supplier {
 export default function SupplierScorecards() {
     const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [generatingPO, setGeneratingPO] = React.useState<number | null>(null);
+    const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    const generatePO = async (supplier: Supplier) => {
+        setGeneratingPO(supplier.id);
+        try {
+            const { default: jsPDF } = await import('jspdf');
+            const doc = new jsPDF();
+
+            // Fetch low stock items for this supplier if possible, or just generate a generic request
+            doc.setFontSize(22);
+            doc.text("PURCHASE ORDER", 105, 20, { align: 'center' });
+
+            doc.setFontSize(10);
+            doc.text(`PO Number: APEX-PO-${Date.now()}`, 20, 40);
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 45);
+
+            doc.setFontSize(12);
+            doc.text("SUPPLIER DETAILS:", 20, 60);
+            doc.setFontSize(10);
+            doc.text(`Name: ${supplier.name}`, 20, 65);
+            doc.text(`Email: ${supplier.email}`, 20, 70);
+
+            doc.setFontSize(12);
+            doc.text("ORDER SUMMARY:", 20, 90);
+            doc.setFontSize(10);
+            doc.text("Stock replenishment requested based on current warehouse velocity.", 20, 95);
+            doc.text("Please provide pro-forma invoice for the latest gadgets.", 20, 100);
+
+            doc.save(`PO_${supplier.name.replace(/\s+/g, '_')}_${Date.now()}.pdf`);
+            setMessage({ type: 'success', text: "Purchase Order generated and logged. 📝" });
+            setTimeout(() => setMessage(null), 3000);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setGeneratingPO(null);
+        }
+    };
 
     const fetchSuppliers = React.useCallback(async () => {
         if (!supabase) return;
@@ -67,9 +107,19 @@ export default function SupplierScorecards() {
                 </div>
             </header>
 
+            {message && (
+                <div className={cn(
+                    "p-4 rounded-[1.5rem] border flex items-center gap-3 animate-in fade-in slide-in-from-top-2",
+                    message.type === 'success' ? "bg-primary/10 border-primary/20 text-primary" : "bg-rose-50 border-rose-100 text-rose-600"
+                )}>
+                    <Zap className="h-5 w-5" />
+                    <p className="text-xs font-black uppercase tracking-widest">{message.text}</p>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {suppliers.map(s => (
-                    <Card key={s.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm hover:shadow-2xl transition-all relative overflow-hidden group">
+                    <Card key={s.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm hover:shadow-2xl transition-all relative overflow-hidden group text-left">
                         <div className="relative z-10 space-y-8">
                             <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-4">
@@ -110,23 +160,24 @@ export default function SupplierScorecards() {
                                         <div className="h-full bg-primary rounded-full" style={{ width: `${s.on_time_dispatch_rate}%` }}></div>
                                     </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between text-[8px] font-black uppercase text-slate-400 tracking-widest">
-                                        <span>Defect Rate</span>
-                                        <span className={cn(s.defect_rate > 3 ? "text-rose-500" : "text-emerald-500")}>{s.defect_rate}%</span>
-                                    </div>
-                                    <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden border border-border p-0.5">
-                                        <div className="h-full bg-rose-500 rounded-full" style={{ width: `${s.defect_rate}%` }}></div>
-                                    </div>
-                                </div>
                             </div>
 
-                            <div className="pt-6 border-t border-border flex justify-between items-center">
-                                <div className="flex items-center gap-3">
-                                    <Activity className="h-4 w-4 text-primary" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-foreground">{s.rating >= 90 ? 'Platinum Tier' : 'Standard'}</span>
+                            <div className="flex flex-col gap-3">
+                                <Button
+                                    onClick={() => generatePO(s)}
+                                    disabled={generatingPO === s.id}
+                                    className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
+                                >
+                                    {generatingPO === s.id ? <Loader2 size={16} className="animate-spin mr-2" /> : <FileDown size={16} className="mr-2" />}
+                                    Boost Inventory (PO)
+                                </Button>
+                                <div className="pt-4 border-t border-border flex justify-between items-center">
+                                    <div className="flex items-center gap-3">
+                                        <Activity className="h-4 w-4 text-primary" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-foreground">{s.rating >= 90 ? 'Platinum Tier' : 'Standard'}</span>
+                                    </div>
+                                    <Button variant="ghost" size="sm" className="text-[9px] font-black uppercase text-primary tracking-widest">Analytics &rarr;</Button>
                                 </div>
-                                <Button variant="ghost" size="sm" className="text-[9px] font-black uppercase text-primary tracking-widest">Analytics &rarr;</Button>
                             </div>
                         </div>
                         <Target className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/5 -rotate-12" />

@@ -1,48 +1,41 @@
-# Apex OS: The Master War Plan 🛡️🚀
+# Apex OS: Phase 4 — Operational Intelligence & Growth Automation 🧠🚀
 
-This plan transforms Apex from an e-commerce website into a proactive, high-trust operating system. We will implement the "Golden Transaction Flow" and ensure every part of the business has business memory and a state machine.
+This phase transitions the system from "Connected" to "Intelligent." We are building the brains of the operation—the tools that tell you *why* things are happening and how to fix them automatically.
 
-## 🤝 Supplier Login: How it Works (The "Identity Link")
+## 🧠 1. Ask Apex: AI Business Intelligence
+- [NEW] **Ask Apex Interface**: A floating AI agent on the dashboard where you can type "Why did profit fall?" or "Who is my best customer?".
+- **Data Bridge**: Implements specialized read-only query logic to analyze orders, ledger, and customer LTV.
 
-To decentralize stock management without losing control, we implement the following flow:
+## 🎯 2. Smart Audience Builder
+- [MODIFY] [Audience Manager](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/marketing/audiences/page.tsx):
+    - Add a "Rule Engine" UI.
+    - Create dynamic segments based on behavior:
+        - **At-Risk VIPs**: Spent > 50k but 0 orders in 30 days.
+        - **Cart Abandoners**: High-value cart left in the last 24 hours.
+        - **New Enthusiasts**: 1st order placed this week.
 
-1.  **Unified Entry**: Suppliers use the same login page as admins (`/admin/login`).
-2.  **Role Detection**: The system identifies them by their email. In the `staff` table, their `role` is set to `'supplier'` and they are linked to a specific `supplier_id`.
-3.  **Encrypted Identity**: When they log in, a secure session cookie is created that contains their `supplier_id`.
-4.  **Intelligent Routing**: The system's **Middleware** detects the "supplier" role and automatically locks them into the `/supplier` portal. They cannot see your revenue, audit logs, or other suppliers' data.
-5.  **Isolated Data**: Every page in the `/supplier` portal automatically filters results by that cookie's `supplier_id`. They only see *their* gadgets and *their* performance scores.
+## 📧 3. Unified Support Command
+- [NEW] **Universal Inbox**: A single screen that merges Support Tickets, WhatsApp Messages, and Reviews needing response.
+- **AI Suggestions**: One-click response generation based on the order status (e.g., "Your order is dispatched and 5 mins away").
+
+## 📦 4. Procurement 2.0 (Automated POs)
+- [MODIFY] [Supplier Scorecards](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/operations/suppliers/page.tsx):
+    - Add a "Boost Inventory" button.
+    - Automatically generates a **Purchase Order (PDF)** based on current "Low Stock" warehouse alerts.
+
+## 🌍 5. Localization & Swahili Sync
+- [MODIFY] [Campaign Builder](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/marketing/create/page.tsx):
+    - Add a "Translate to Swahili/Sheng" toggle for WhatsApp and Instagram content.
+    - Ensures your marketing speaks the local language perfectly.
 
 ---
-
-## Proposed Changes (Master Sync Phase 3)
-
-### 1. The Executive Cockpit (Sidebar & Dashboard) 🏠
-- [MODIFY] [Admin Layout](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/layout-client.tsx):
-    - Reorganize the sidebar into the "Executive" categories: **Commerce, Operations, Customers, Growth, Finance, Intelligence.**
-- [MODIFY] [Main Dashboard](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/page.tsx):
-    - Implement the "Needs Attention" section (live count of exceptions).
-    - Add the "AI Insights" panel for high-level brief.
-
-### 2. The Financial Fortress 💸
-- [MODIFY] [Finance Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/finance/page.tsx):
-    - Implement the **Contribution Profit** ledger view.
-    - Add a "Reconciliation Protocol" button that verifies gateway sums against orders.
-
-### 3. CRM & Customer 360 👥
-- [MODIFY] [Customer Directory](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/customers/page.tsx):
-    - Turn the list into a rich directory with Lifetime Value (LTV) and segmentation badges (VIP, At-Risk).
-- [NEW] **Customer Timeline**: A detailed view of a single customer's entire history with Apex.
-
-### 4. Integration Hub & Kill Switch 🔌
-- [MODIFY] [System Pulse Widget](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/SystemPulseWidget.tsx):
-    - Add the global **Operational Kill Switch** (System Lockdown) to pause order intake instantly.
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure all routes and shared context props are valid.
+- `npm run build` to ensure new dynamic routes for POs and Inbox are valid.
 
 ### Manual Verification
-1. **Supplier Lockdown**: Log in as a supplier and verify you are redirected to `/supplier` and cannot manually type `/admin/finance` to bypass security.
-2. **Profit Test**: Complete an order and verify the Ledger automatically calculates the correct net profit.
-3. **Emergency Test**: Activate the "Lockdown" switch and verify that checkout is temporarily paused for customers.
+1. **Rule Test**: Create a segment for "Spent > 10,000" and verify the reach number updates based on real orders.
+2. **PO Test**: Generate a PO for "Low Stock" items and verify it maps to the correct supplier.
+3. **Inbox Test**: Reply to a Review and verify the status updates to "Replied" in the universal feed.

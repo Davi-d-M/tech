@@ -35,6 +35,7 @@ export default function CreateCampaign() {
     const [step, setStep] = React.useState<Step>('context');
     const [loading, setLoading] = React.useState(false);
     const [isGenerating, setIsGenerating] = React.useState(false);
+    const [isLocalized, setIsLocalized] = React.useState(false);
     const [activePreview, setActivePreview] = React.useState<'instagram' | 'whatsapp' | 'email'>('instagram');
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -87,10 +88,23 @@ export default function CreateCampaign() {
         setIsGenerating(true);
         // Simulated AI Generation
         setTimeout(() => {
+            const content = {
+                en: {
+                    ig: `🚀 NEW ARRIVAL: ${selectedProduct.name} has landed! \n\nElevate your setup with our latest ${selectedProduct.category} essential. Engineered for high-fidelity performance. \n\nPrice: ${formatPrice(selectedProduct.price)} \nShop now at the link in bio! 🔗`,
+                    wa: `*Tactical Alert* 🚨\n\nYo bro! The new *${selectedProduct.name}* is officially live. \n\nLimited stock available for our elite members. \n\n🛒 *Price:* ${formatPrice(selectedProduct.price)}\n📍 Nairobi Fast Dispatch Active\n\nLink: tech-paxv.onrender.com/product/${selectedProduct.id}`
+                },
+                sw: {
+                    ig: `🚀 MZIGO MPYA: ${selectedProduct.name} imefika! \n\nUpgrade setup yako na hii ${selectedProduct.category} kali. Imetengenezwa kudumu na kuperform fiti. \n\nBei: ${formatPrice(selectedProduct.price)} \nNunua sasa kupitia link kwa bio! 🔗`,
+                    wa: `*Tactical Alert* 🚨\n\nMambo vipi bro! Ile *${selectedProduct.name}* mpya sasa iko live. \n\nMzigo ni mchache, chukua yako mapema. \n\n🛒 *Bei:* ${formatPrice(selectedProduct.price)}\n📍 Nairobi Fast Dispatch Iko Active\n\nLink: tech-paxv.onrender.com/product/${selectedProduct.id}`
+                }
+            };
+
+            const lang = isLocalized ? 'sw' : 'en';
+
             setChannels(prev => ({
                 ...prev,
-                instagram: { ...prev.instagram, caption: `🚀 NEW ARRIVAL: ${selectedProduct.name} has landed! \n\nElevate your setup with our latest ${selectedProduct.category} essential. Engineered for high-fidelity performance. \n\nPrice: ${formatPrice(selectedProduct.price)} \nShop now at the link in bio! 🔗`, generated: true },
-                whatsapp: { ...prev.whatsapp, body: `*Tactical Alert* 🚨\n\nYo bro! The new *${selectedProduct.name}* is officially live. \n\nLimited stock available for our elite members. \n\n🛒 *Price:* ${formatPrice(selectedProduct.price)}\n📍 Nairobi Fast Dispatch Active\n\nLink: tech-paxv.onrender.com/product/${selectedProduct.id}`, generated: true },
+                instagram: { ...prev.instagram, caption: content[lang].ig, generated: true },
+                whatsapp: { ...prev.whatsapp, body: content[lang].wa, generated: true },
                 email: { ...prev.email, subject: `Tactical Drop: ${selectedProduct.name} is Live 🚀`, body: `Hello Elite member,\n\nThe next evolution in tech has arrived. Discover the ${selectedProduct.name}.`, generated: true }
             }));
             setIsGenerating(false);
@@ -248,7 +262,22 @@ export default function CreateCampaign() {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-border flex justify-end">
+                            <div className="pt-6 border-t border-border flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setIsLocalized(!isLocalized)}
+                                        className={cn(
+                                            "w-12 h-6 rounded-full transition-all relative p-1 flex items-center",
+                                            isLocalized ? "bg-primary" : "bg-secondary"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "h-4 w-4 rounded-full bg-white shadow-sm transition-all",
+                                            isLocalized ? "translate-x-6" : "translate-x-0"
+                                        )}></div>
+                                    </button>
+                                    <span className="text-[10px] font-black uppercase text-muted-foreground">Swahili / Sheng Localization</span>
+                                </div>
                                 <Button
                                     onClick={generateContent}
                                     disabled={!campaign.name || !selectedProduct || isGenerating}

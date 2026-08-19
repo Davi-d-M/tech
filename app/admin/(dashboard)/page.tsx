@@ -38,6 +38,7 @@ import TodayCommandCenter from '@/components/admin/TodayCommandCenter';
 import ExceptionCenter from '@/components/admin/ExceptionCenter';
 import SystemPulseWidget from '@/components/admin/SystemPulseWidget';
 import ApexIntelligence from '@/components/admin/ApexIntelligence2';
+import AskApex from '@/components/admin/AskApex';
 
 interface OrderRecord {
   id: number;
@@ -288,6 +289,8 @@ export default function AdminDashboard() {
       <ApexIntelligence />
 
       <ExceptionCenter />
+
+      <AskApex />
 
       <div className="grid lg:grid-cols-12 gap-10">
 

@@ -1,22 +1,25 @@
-# Tasks - Apex OS Master Sync Phase 3 🏠💸
+# Tasks - Apex OS Phase 4 🧠🚀
 
-## Phase 1: The Executive Cockpit (UI/Sidebar)
-- [x] Reorganize Admin Sidebar into Executive Categories (Commerce, Operations, etc.) in `app/admin/(dashboard)/layout-client.tsx`.
-- [x] Implement "Needs Attention" (Anomalies) section in `app/admin/(dashboard)/page.tsx` (Integrated via Exception Center).
-- [x] Add "AI Insights" panel for high-level business brief (Integrated via Apex Intelligence 2).
+## Phase 1: Ask Apex AI Intelligence
+- [ ] Implement "Ask Apex" floating agent on `app/admin/(dashboard)/page.tsx`.
+- [ ] Add analytical query logic for "Best Customers", "Profit Trends", etc.
 
-## Phase 2: Financial Fortress (Ledger & Profit)
-- [x] Implement Contribution Profit Ledger view in `app/admin/(dashboard)/finance/page.tsx`.
-- [x] Add "Reconciliation Protocol" for gateway-ledger matching.
+## Phase 2: Smart Audience Rule Engine
+- [ ] Refactor `app/admin/(dashboard)/marketing/audiences/page.tsx` with Rule Builder.
+- [ ] Add dynamic reach calculation based on LTV and order status.
 
-## Phase 3: CRM & Intelligence
-- [x] Update Customer Directory with LTV and Segmentation badges in `app/admin/(dashboard)/customers/page.tsx`.
-- [x] Implement the "Customer Timeline" detailed view.
+## Phase 3: Universal Support Inbox
+- [ ] Create/Consolidate `app/admin/(dashboard)/support/inbox/page.tsx`.
+- [ ] Merge `support_tickets`, `reviews`, and `messages` into one prioritized feed.
 
-## Phase 4: Operational Safety
-- [x] Add the global **Operational Kill Switch** to the System Pulse widget.
-- [x] Verify middleware correctly gates role-based access for suppliers.
+## Phase 4: Automated Procurement (PO Generation)
+- [ ] Add "Boost Inventory" sequence to `app/admin/(dashboard)/operations/suppliers/page.tsx`.
+- [ ] Implement PDF Purchase Order generation for "Low Stock" items.
 
-## Phase 5: Verification
-- [x] Run `npm run build`.
-- [x] End-to-end test of the "Golden Flow" profit calculation.
+## Phase 5: Localization & Swahili Marketing
+- [ ] Add Swahili/Sheng toggle to `app/admin/(dashboard)/marketing/create/page.tsx`.
+- [ ] Implement AI-driven localized content mapping.
+
+## Phase 6: Verification
+- [ ] Run `npm run build`.
+- [ ] Verify PO generation maps to correct supplier data.
