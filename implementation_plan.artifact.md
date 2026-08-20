@@ -1,44 +1,44 @@
-# Apex OS: Phase 8 — Native Mobilization (The Titan Hub) 📱🛡️🚀
+# Apex OS: Phase 9 — The Global Apex (Autonomous Finance & AI Vision) 🌍💸📸
 
-This phase transforms the Android app from a simple WebView wrapper into a **Native Command Node**. We will bridge the web intelligence of Apex OS with native Android hardware capabilities to make the system truly "Elite."
+This "Elite" phase transitions Apex from a local machine into a global-ready autonomous powerhouse. we are automating the flow of money and the intelligence of product ingestion.
 
-## 🔐 1. Biometric Shield (Native Security)
-- **Objective**: Prevent unauthorized physical access to the Command Center.
-- **Implementation**: Add `androidx.biometric` to the Android app.
-- **User Flow**: On app launch, require Fingerprint or Face ID before the WebView loads the financial data.
+## 💸 1. Autonomous B2C Settlements (M-Pesa Automation)
+- **Objective**: Automate payouts to Riders and Suppliers without manual admin clicks.
+- **Implementation**: Create an "Autonomous Payout" worker.
+- **Logic**:
+    - **Riders**: When an order status hit "Delivered" -> Instantly trigger an M-Pesa B2C payout for their commission.
+    - **Suppliers**: On successful "Settlement Week" -> Auto-disburse verified earnings to their linked mobile number.
 
-## 🔔 2. Apex Mission Notifications (Cloud Sync)
-- **Objective**: Real-time alerts even when the app is closed.
-- **Implementation**: Integrate Firebase Cloud Messaging (FCM) hooks.
-- **Alerts**:
-    - **Extraction Alert**: "New Order #1042 ready for dispatch."
-    - **Security Breach**: "IP Address Blocked: Potential Velocity Attack."
-    - **Stock Out**: "Amaya AM-05 hit zero units."
+## 📸 2. AI Vision Lab: Rapid Ingestion
+- [MODIFY] [Product Manager](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/upload/page.tsx):
+    - Add an "AI Scan Photo" button.
+    - **Intelligence**: Uses AI Vision to analyze the uploaded product image.
+    - **Result**: Automatically fills in the Gadget Name, Brand, Category, and generates an elite SEO-optimized description from just the photo.
 
-## 📸 3. Hardware Scanner Node (Rapid Inventory)
-- **Objective**: Turn the smartphone camera into a high-speed warehouse scanner.
-- **Implementation**: Use Google ML Kit (Barcode Scanning) inside a native Compose view.
-- **Bridge**: Create a `JavaScriptInterface` so the scanned barcode is instantly typed into the Web Product Manager.
+## 🧠 3. Customer Sentiment Sentinel (Vibe Check)
+- [MODIFY] [Universal Inbox](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/support/page.tsx):
+    - Background AI analyzes the tone of every incoming message/review.
+    - **Action**: Negative/Angry sentiments are flagged with a "RED ALERT" and automatically prioritized at the top of the feed for immediate VIP Relay.
 
-## 📍 4. Titan Geo-Tracking (Rider Fidelity)
-- **Objective**: High-fidelity location updates for the Autonomous Dispatch engine.
-- **Implementation**: Add a "Rider Mode" background service using `FusedLocationProvider`.
-- **Sync**: Post GPS coordinates to Supabase every 60 seconds when a rider is on a mission.
+## 🌍 4. Multi-Currency Global Engine
+- [MODIFY] [Finance Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/finance/page.tsx):
+    - Add a **USD/KES Toggle**.
+    - Integrates a real-time Exchange Rate API (e.g., CurrencyAPI) to help track import costs (USD) vs. retail revenue (KES).
 
-## 🌑 5. Native Splash & Performance Hardening
+## 📵 5. Offline Survival Mode (Android Persistence)
 - [MODIFY] [MainActivity.kt](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app_android/src/main/java/com/example/theapp/MainActivity.kt):
-    - Implement a custom native splash screen with the TechPax logo.
-    - Add WebView optimization (Hardware acceleration, caching tweaks).
+    - Implement a **Room Database** or **DataStore** cache for the Android app.
+    - **Flow**: If a rider has a mission but loses internet, the "Complete Drop" action is saved locally and auto-pushed to Supabase the moment they hit a 4G/WiFi node.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `gradlew assembleDebug` to ensure Android build integrity.
-- Verify `JavaScriptInterface` signatures.
+- Run `npm run build` to verify AI Vision and Currency integration.
+- Verify Android `Room` database migrations.
 
 ### Manual Verification
-1. **Biometric Test**: Lock the phone and verify the app requests fingerprint on re-entry.
-2. **Scanner Test**: Scan a physical barcode and verify the text appears in the "SKU" field on the web form.
-3. **Notification Test**: Trigger a "Mock Order" and verify a native Android notification appears.
+1. **Vision Test**: Upload a photo of a generic charger and verify the AI correctly identifies it as a "Fast Charging Adapter."
+2. **Settlement Test**: Complete a mock delivery and verify a `payout_triggered` event is logged in the ledger.
+3. **Currency Test**: Toggle to USD and verify the profit margins update based on the current KES exchange rate.

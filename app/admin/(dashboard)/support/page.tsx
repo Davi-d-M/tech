@@ -40,6 +40,7 @@ interface UniversalItem {
     priority: string;
     status: string;
     created_at: string;
+    sentiment?: 'Positive' | 'Neutral' | 'Negative';
     metadata?: Record<string, unknown>;
 }
 
@@ -63,6 +64,13 @@ export default function SupportCaseManagement() {
                 supabase.from('staff').select('id, email')
             ]);
 
+            const analyzeSentiment = (text: string): 'Positive' | 'Neutral' | 'Negative' => {
+                const lower = text.toLowerCase();
+                if (lower.includes('delay') || lower.includes('bad') || lower.includes('broken') || lower.includes('angry')) return 'Negative';
+                if (lower.includes('great') || lower.includes('good') || lower.includes('awesome') || lower.includes('thanks')) return 'Positive';
+                return 'Neutral';
+            };
+
             const universal: UniversalItem[] = [
                 ...(ticketsRes.data || []).map(t => ({
                     id: `sup-${t.id}`,
@@ -74,6 +82,7 @@ export default function SupportCaseManagement() {
                     priority: t.priority,
                     status: t.status,
                     created_at: t.created_at,
+                    sentiment: analyzeSentiment(t.description),
                     metadata: { sla: t.sla_hours, assigned_to: t.assigned_to }
                 })),
                 ...(msgsRes.data || []).map(m => ({
@@ -85,7 +94,8 @@ export default function SupportCaseManagement() {
                     body: m.message,
                     priority: 'Medium',
                     status: m.status === 'New' ? 'Open' : m.status === 'Replied' ? 'Resolved' : 'InProgress',
-                    created_at: m.created_at
+                    created_at: m.created_at,
+                    sentiment: analyzeSentiment(m.message)
                 })),
                 ...(reviewsRes.data || []).map(r => ({
                     id: `rev-${r.id}`,
@@ -97,11 +107,21 @@ export default function SupportCaseManagement() {
                     priority: r.rating <= 2 ? 'High' : 'Low',
                     status: r.admin_response ? 'Resolved' : 'Open',
                     created_at: r.created_at,
+                    sentiment: (r.rating <= 2 ? 'Negative' : r.rating >= 4 ? 'Positive' : 'Neutral') as 'Positive' | 'Neutral' | 'Negative',
                     metadata: { rating: r.rating }
                 }))
             ];
 
-            setItems(universal.sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+            // Autonomous Prioritization: Move Negative sentiment to top if Open
+            const sorted = universal.sort((a,b) => {
+                if (a.status === 'Open' && b.status === 'Open') {
+                    if (a.sentiment === 'Negative' && b.sentiment !== 'Negative') return -1;
+                    if (b.sentiment === 'Negative' && a.sentiment !== 'Negative') return 1;
+                }
+                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            });
+
+            setItems(sorted);
             setStaff(staffRes.data || []);
         } catch (err) {
             console.error(err);
@@ -267,9 +287,12 @@ export default function SupportCaseManagement() {
                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.customer_email}</p>
                                         </div>
                                         <div className="ml-auto flex items-center gap-3">
+                                            {item.sentiment === 'Negative' && (
+                                                <span className="px-3 py-1 rounded-lg bg-rose-600 text-white text-[8px] font-black uppercase animate-pulse shadow-lg shadow-rose-500/20">Red Alert</span>
+                                            )}
                                             <span className={cn(
                                                 "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
-                                                item.priority === 'Critical' || item.priority === 'High' ? "bg-rose-50 text-rose-600 border border-rose-100 animate-pulse" :
+                                                item.priority === 'Critical' || item.priority === 'High' ? "bg-rose-50 text-rose-600 border border-rose-100" :
                                                 "bg-slate-100 text-slate-500"
                                             )}>
                                                 {item.priority} Priority

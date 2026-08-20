@@ -31,7 +31,19 @@ export default function AdminFinancePage() {
     const [loading, setLoading] = React.useState(true);
     const [ledger, setLedger] = React.useState<LedgerEntry[]>([]);
     const [isReconciling, setIsReconciling] = React.useState(false);
+    const [currency, setCurrency] = React.useState<'KES' | 'USD'>('KES');
+    const [exchangeRate, setExchangeRate] = React.useState(129.5); // Current KES/USD
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+    const convert = (amount: number) => {
+        if (currency === 'KES') return amount;
+        return amount / exchangeRate;
+    };
+
+    const formatVal = (amount: number) => {
+        if (currency === 'KES') return formatPrice(amount);
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    };
 
     const fetchLedger = React.useCallback(async () => {
         if (!supabase) return;
@@ -112,6 +124,20 @@ export default function AdminFinancePage() {
                     <p className="text-muted-foreground text-sm font-medium mt-1">Real-time contribution margin and transaction state control.</p>
                 </div>
                 <div className="flex gap-2">
+                    <div className="bg-white p-1 rounded-2xl border border-slate-100 shadow-sm flex mr-2">
+                        {(['KES', 'USD'] as const).map(c => (
+                            <button
+                                key={c}
+                                onClick={() => setCurrency(c)}
+                                className={cn(
+                                    "px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
+                                    currency === c ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-slate-400 hover:text-foreground"
+                                )}
+                            >
+                                {c}
+                            </button>
+                        ))}
+                    </div>
                     <Button
                         onClick={handleReconcile}
                         disabled={isReconciling || stats.unreconciled === 0}
@@ -153,9 +179,9 @@ export default function AdminFinancePage() {
                                 <item.icon className="h-6 w-6" />
                             </div>
                             <div>
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
                                 <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase">
-                                    {typeof item.val === 'string' ? item.val : formatPrice(item.val)}
+                                    {typeof item.val === 'string' ? item.val : formatVal(convert(item.val))}
                                 </h3>
                             </div>
                         </div>
@@ -195,7 +221,7 @@ export default function AdminFinancePage() {
                                             "px-10 py-8 font-black text-sm",
                                             entry.amount > 0 ? "text-emerald-600" : "text-rose-600"
                                         )}>
-                                            {entry.amount > 0 ? '+' : ''}{entry.amount.toLocaleString()}
+                                            {entry.amount > 0 ? '+' : ''}{formatVal(convert(entry.amount))}
                                         </td>
                                         <td className="px-10 py-8 text-right">
                                             {entry.is_reconciled ? (
@@ -220,7 +246,7 @@ export default function AdminFinancePage() {
                 <div className="lg:col-span-4 flex flex-col gap-8 h-full">
                     <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group flex-1 flex flex-col justify-between">
                         <div className="relative z-10 space-y-10">
-                            <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Profit Extraction</h3>
+                            <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Unit Economics ({currency})</h3>
                             <div className="space-y-6">
                                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
                                     <span>Contribution Margin</span>
@@ -229,9 +255,10 @@ export default function AdminFinancePage() {
                                 <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                                     <div className="h-full bg-primary" style={{ width: `${stats.margin}%` }}></div>
                                 </div>
-                                <p className="text-[10px] font-medium italic text-slate-500 leading-relaxed text-left">
-                                    &quot;Every mission is clinically measured for unit profitability. Variances are flagged at the source.&quot;
-                                </p>
+                                <div className="flex justify-between items-center text-xs font-black text-foreground">
+                                    <p>Avg Order Value</p>
+                                    <p>{formatVal(convert(stats.revenue / (ledger.filter(l => l.entry_type === 'REVENUE').length || 1)))}</p>
+                                </div>
                             </div>
                         </div>
                         <DollarSign className="absolute -bottom-10 -left-10 h-48 w-48 text-primary/5 rotate-12 -z-0" />

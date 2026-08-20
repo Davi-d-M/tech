@@ -39,6 +39,7 @@ import ExceptionCenter from '@/components/admin/ExceptionCenter';
 import SystemPulseWidget from '@/components/admin/SystemPulseWidget';
 import ApexIntelligence from '@/components/admin/ApexIntelligence2';
 import AskApex from '@/components/admin/AskApex';
+import SentimentSentinel from '@/components/admin/SentimentSentinel';
 import { runSecurityScan } from '@/lib/apex-os/security-shield';
 
 interface OrderRecord {
@@ -293,6 +294,8 @@ export default function AdminDashboard() {
       </div>
 
       <TodayCommandCenter />
+
+      <SentimentSentinel />
 
       <ApexIntelligence />
 

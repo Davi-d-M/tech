@@ -71,6 +71,13 @@ function RiderDashboardContent() {
         } else if (phoneParam) {
             setPhone(phoneParam);
         }
+
+        // Phase 9: Bridge Listener for Offline Sync
+        (window as any).onTitanSyncOrder = (orderId: string) => {
+            handleCompleteMission(parseInt(orderId));
+        };
+
+        return () => { delete (window as any).onTitanSyncOrder; };
     }, [phoneParam]);
 
     const verifyAndFetch = async (riderPhone: string, riderPin: string) => {
@@ -190,6 +197,18 @@ function RiderDashboardContent() {
 
     const handleCompleteMission = async (orderId: number) => {
         if (!supabase || !phone) return;
+
+        // Detection: Check if navigator is online
+        if (typeof window !== 'undefined' && !window.navigator.onLine) {
+            if ((window as any).TitanNode?.queueMissionCompletion) {
+                (window as any).TitanNode.queueMissionCompletion(orderId);
+                // Optimistic UI Update
+                setMissions(prev => prev.map(m => m.id === orderId ? { ...m, status: 'Delivered' } : m));
+                setActiveMission(null);
+                return;
+            }
+        }
+
         setLoading(true);
         try {
             // 1. Update Order Status

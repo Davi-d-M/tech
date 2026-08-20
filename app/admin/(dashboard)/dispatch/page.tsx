@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
@@ -132,21 +133,7 @@ export default function AdminDispatchPage() {
         return () => clearInterval(interval);
     }, []);
 
-    // Autonomous Mode Loop
-    useEffect(() => {
-        if (!autoDispatch) return;
-
-        const singularityLoop = setInterval(() => {
-            const pending = orders.filter(o => o.status === 'Pending');
-            if (pending.length > 0) {
-                runAutonomousSingularity();
-            }
-        }, 15000); // Check every 15s when armed
-
-        return () => clearInterval(singularityLoop);
-    }, [autoDispatch, orders, runAutonomousSingularity]);
-
-    const stats = useMemo(() => {
+    const stats = React.useMemo(() => {
         const total = riders.length;
         const active = riders.filter(r => r.status !== 'Offline').length;
         const delivering = riders.filter(r => r.status === 'Delivering').length;
@@ -206,7 +193,7 @@ export default function AdminDispatchPage() {
         }
     }, [orders]);
 
-    const handleVerifyRider = async (phone: string) => {
+    const handleVerifyRider = React.useCallback(async (phone: string) => {
         if (!supabase) return;
         const pin = Math.floor(1000 + Math.random() * 9000).toString(); // Generate random 4-digit PIN
         try {
@@ -221,12 +208,11 @@ export default function AdminDispatchPage() {
             if (error) throw error;
             setRiders(prev => prev.map(r => r.rider_phone === phone ? { ...r, verification_status: 'Verified', pin } : r));
             setMessage({ type: 'success', text: `Unit Authorized. Issued PIN: ${pin}. ✅` });
-            // In a production app, we would also trigger an SMS/Email to the rider here
-            setTimeout(() => setMessage(null), 10000); // Show for longer so admin can note PIN
+            setTimeout(() => setMessage(null), 10000);
         } catch {
             setMessage({ type: 'error', text: "Authorization Failed." });
         }
-    };
+    }, []);
 
     const runAutonomousSingularity = React.useCallback(async () => {
         const pending = orders.filter(o => o.status === 'Pending');
@@ -257,6 +243,20 @@ export default function AdminDispatchPage() {
             setTimeout(() => setMessage(null), 3000);
         }
     }, [orders, riders, handleAssignRider]);
+
+    // Autonomous Mode Loop
+    useEffect(() => {
+        if (!autoDispatch) return;
+
+        const singularityLoop = setInterval(() => {
+            const pending = orders.filter(o => o.status === 'Pending');
+            if (pending.length > 0) {
+                runAutonomousSingularity();
+            }
+        }, 15000); // Check every 15s when armed
+
+        return () => clearInterval(singularityLoop);
+    }, [autoDispatch, orders, runAutonomousSingularity]);
 
     return (
         <div className="p-8 space-y-8 bg-background min-h-screen text-left">

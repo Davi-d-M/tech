@@ -1,28 +1,26 @@
-# Tasks - Apex OS Phase 8: Native Mobilization 📱🛡️🚀
+# Tasks - Apex OS Phase 9: Global Apex 🌍💸📸
 
-## Phase 1: Foundation & Security
-- [ ] Add Biometric, Camera, and Location dependencies to `gradle` configuration.
-- [ ] Implement `BiometricShield` in `MainActivity.kt`.
-- [ ] Create `TitanBridge` JavaScript Interface for Web-to-Native communication.
+## Phase 1: Autonomous Payouts (M-Pesa B2C)
+- [ ] Implement `api/admin/payout-worker/route.ts` for automated rider/supplier disbursements.
+- [ ] Link "Delivered" status transition to the Payout Engine in `orders/page.tsx`.
 
-## Phase 2: Hardware Acceleration & UI
-- [ ] Optimize `WebView` settings in `MainActivity.kt` for performance.
-- [ ] Implement a Native Splash Screen using `androidx.core:core-splashscreen`.
-- [ ] Add hardware-accelerated rendering flags.
+## Phase 2: AI Vision Lab (Ingestion)
+- [ ] Add "AI Vision Scan" button to `app/admin/(dashboard)/upload/page.tsx`.
+- [ ] Implement image analysis logic to auto-populate Gadget Name, Category, and Specs.
 
-## Phase 3: Hardware Scanner Node (ML Kit)
-- [ ] Create `ScannerActivity.kt` using Google ML Kit Barcode Scanning.
-- [ ] Link Scanner result back to the WebView via the Bridge.
+## Phase 3: Sentiment Sentinel (Vibe Check)
+- [ ] Add tone analysis logic to the Universal Inbox in `app/admin/(dashboard)/support/page.tsx`.
+- [ ] Implement "Red Alert" prioritization for angry customer sentiments.
 
-## Phase 4: Titan Geo-Tracking (Location)
-- [ ] Implement `LocationService.kt` for background GPS updates.
-- [ ] Add logic to sync coordinates to Supabase "Rider Node" when active.
+## Phase 4: Multi-Currency Global Finance
+- [ ] Add USD/KES toggle to `app/admin/(dashboard)/finance/page.tsx`.
+- [ ] Implement real-time exchange rate mapping for profit analysis.
 
-## Phase 5: Mission Notifications (FCM)
-- [ ] Initialize Firebase hooks in the Android project.
-- [ ] Create `ApexMessagingService.kt` to handle incoming mission alerts.
+## Phase 5: Android Offline Survival
+- [ ] Implement local caching/queue for "Drop Completion" in `MainActivity.kt`.
+- [ ] Add background sync logic to push queued actions when online.
 
-## Phase 6: Verification
-- [ ] Run `gradlew assembleDebug`.
-- [ ] Verify Biometric lock triggers on cold start.
-- [ ] Test Barcode scan to SKU field mapping.
+## Phase 6: Final Verification
+- [ ] Run `npm run build`.
+- [ ] Verify M-Pesa payload generation.
+- [ ] Test AI Vision mock results.

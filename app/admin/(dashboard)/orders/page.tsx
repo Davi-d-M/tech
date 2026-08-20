@@ -273,6 +273,20 @@ export default function AdminOrdersPage() {
                   })
               });
           }
+
+          // Phase 9: Autonomous Payout Trigger on Delivery
+          if (status === 'Delivered' && currentOrder?.rider_phone) {
+              fetch('/api/admin/payout-worker', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                      type: 'RIDER',
+                      recipientId: currentOrder.rider_phone,
+                      amount: 430, // Standard Commission
+                      reference: `Order #${currentOrder.id}`
+                  })
+              }).catch(e => console.error("Auto Payout Failure:", e));
+          }
       }
 
       setStatusMessage({

@@ -3,6 +3,9 @@ package com.example.theapp
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.webkit.JavascriptInterface
@@ -87,6 +90,16 @@ class MainActivity : FragmentActivity() {
 
         biometricPrompt.authenticate(promptInfo)
 
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkRequest = NetworkRequest.Builder().build()
+        connectivityManager.registerNetworkCallback(networkRequest, object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                runOnUiThread {
+                    syncOfflineDrops()
+                }
+            }
+        })
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (titanWebView?.canGoBack() == true) {
@@ -143,13 +156,41 @@ class MainActivity : FragmentActivity() {
         val intent = Intent(this, ScannerActivity::class.java)
         scannerLauncher.launch(intent)
     }
+
+    private fun syncOfflineDrops() {
+        val prefs = getSharedPreferences("titan_offline_storage", Context.MODE_PRIVATE)
+        val queue = prefs.getStringSet("offline_drops", mutableSetOf())?.toList() ?: emptyList()
+        
+        if (queue.isNotEmpty()) {
+            Toast.makeText(this, "Singularity: Syncing ${queue.size} Offline Drops...", Toast.LENGTH_SHORT).show()
+            queue.forEach { orderId ->
+                // Fire and forget JS bridge to trigger the web-based completion logic
+                titanWebView?.evaluateJavascript("javascript:if(window.onTitanOfflineSync) window.onTitanSyncOrder('$orderId');", null)
+            }
+            prefs.edit().remove("offline_drops").apply()
+        }
+    }
 }
 
 class TitanBridge(private val activity: MainActivity, private val webView: WebView) {
+    private val prefs = activity.getSharedPreferences("titan_offline_storage", Context.MODE_PRIVATE)
+
     @JavascriptInterface
     fun triggerScanner() {
         activity.runOnUiThread {
             activity.launchScanner()
+        }
+    }
+
+    @JavascriptInterface
+    fun queueMissionCompletion(orderId: Int) {
+        // Phase 9: Offline Survival Persistence
+        activity.runOnUiThread {
+            val queue = prefs.getStringSet("offline_drops", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+            queue.add(orderId.toString())
+            prefs.edit().putStringSet("offline_drops", queue).apply()
+            
+            Toast.makeText(activity, "Drop Saved Locally. Syncing on Uplink...", Toast.LENGTH_LONG).show()
         }
     }
 

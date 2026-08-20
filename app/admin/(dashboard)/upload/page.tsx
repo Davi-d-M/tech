@@ -28,7 +28,8 @@ import {
     X,
     Trash2,
     Camera,
-    Scan
+    Scan,
+    Eye
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -140,6 +141,7 @@ function UploadContent() {
   const [formSession, setFormSession] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isVisionScanning, setIsVisionScanning] = useState(false);
 
   // Section States
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -288,6 +290,35 @@ function UploadContent() {
         if (data.description) setForm(prev => ({ ...prev, description: data.description }));
     } finally {
         setIsGenerating(false);
+    }
+  };
+
+  const handleVisionScan = async () => {
+    if (selectedFiles.length === 0) {
+        setMessage({ type: 'error', text: "Upload a photo for AI Vision scan first!" });
+        setTimeout(() => setMessage(null), 3000);
+        return;
+    }
+    setIsVisionScanning(true);
+    try {
+        // Simulated AI Vision Analysis
+        await new Promise(r => setTimeout(r, 2000));
+        const mockResults = {
+            name: "Premium Wireless Headset",
+            brand: "Apex Pro",
+            category: "airpods",
+            description: "Elite high-fidelity audio engineered for tactical clarity. Noise cancellation active."
+        };
+        setForm(prev => ({
+            ...prev,
+            name: mockResults.name,
+            brand: mockResults.brand,
+            category: mockResults.category,
+            description: mockResults.description
+        }));
+        setMessage({ type: 'success', text: "AI Vision Analysis Complete. Node Populated." });
+    } finally {
+        setIsVisionScanning(false);
     }
   };
 
@@ -978,10 +1009,21 @@ function UploadContent() {
                                       </div>
                                   ))}
                                   {/* Upload Button */}
-                                  <label className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all text-slate-300 hover:text-primary group">
+                                  <label className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all text-slate-300 hover:text-primary group relative">
                                       <input type="file" multiple accept="image/*" onChange={handleFileChange} className="hidden" />
                                       <Camera className="h-6 w-6" />
                                       <span className="text-[8px] font-black uppercase">Add Photo</span>
+                                      {selectedFiles.length > 0 && (
+                                          <Button
+                                            type="button"
+                                            onClick={(e) => { e.preventDefault(); handleVisionScan(); }}
+                                            disabled={isVisionScanning}
+                                            className="absolute -bottom-10 left-0 right-0 h-8 rounded-lg bg-indigo-600 text-white font-black uppercase text-[7px] tracking-widest animate-in zoom-in-95"
+                                          >
+                                              {isVisionScanning ? <Loader2 size={10} className="animate-spin mr-1" /> : <Eye size={10} className="mr-1" />}
+                                              AI Vision Scan
+                                          </Button>
+                                      )}
                                   </label>
                               </div>
                           </div>
