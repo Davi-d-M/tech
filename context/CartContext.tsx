@@ -6,9 +6,12 @@ export interface CartItem {
   id: number;
   name: string;
   price: number;
+  base_price: number;
   image: string;
   quantity: number;
   size?: string;
+  wholesale_price?: number;
+  wholesale_min_qty?: number;
 }
 
 interface CartContextProps {
@@ -55,14 +58,28 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
 
       if (existingItem) {
-        return prevCart.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + (item.quantity || 1) }
-            : cartItem
-        );
+        return prevCart.map((cartItem) => {
+          if (cartItem.id === item.id) {
+              const newQty = cartItem.quantity + (item.quantity || 1);
+              let effectivePrice = cartItem.base_price;
+
+              if (cartItem.wholesale_price && cartItem.wholesale_min_qty && newQty >= cartItem.wholesale_min_qty) {
+                  effectivePrice = cartItem.wholesale_price;
+              }
+
+              return { ...cartItem, quantity: newQty, price: effectivePrice };
+          }
+          return cartItem;
+        });
       }
 
-      return [...prevCart, { ...item, quantity: item.quantity || 1 }];
+      let initialPrice = item.base_price || item.price;
+      const qty = item.quantity || 1;
+      if (item.wholesale_price && item.wholesale_min_qty && qty >= item.wholesale_min_qty) {
+          initialPrice = item.wholesale_price;
+      }
+
+      return [...prevCart, { ...item, base_price: item.base_price || item.price, price: initialPrice, quantity: qty }];
     });
   };
 
@@ -92,9 +109,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const updateQuantity = (id: number, quantity: number) => {
     setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
-      )
+      prevCart.map((item) => {
+        if (item.id === id) {
+            const newQty = Math.max(1, quantity);
+            let effectivePrice = item.base_price;
+
+            if (item.wholesale_price && item.wholesale_min_qty && newQty >= item.wholesale_min_qty) {
+                effectivePrice = item.wholesale_price;
+            }
+
+            return { ...item, quantity: newQty, price: effectivePrice };
+        }
+        return item;
+      })
     );
   };
 

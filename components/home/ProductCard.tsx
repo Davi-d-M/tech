@@ -27,6 +27,8 @@ interface Product {
   is_new?: boolean;
   order_count?: number;
   min_loyalty_tier?: string; // e.g. 'Explorer', 'Silver', 'Gold', 'Diamond'
+  wholesale_price?: number;
+  wholesale_min_qty?: number;
 }
 
 declare global {
@@ -99,9 +101,12 @@ export default function ProductCard({ product }: { product: Product }) {
       id: product.id,
       name: product.name,
       price: product.price,
+      base_price: product.price,
       image: imageUrl,
       quantity: 1,
       size: selectedVariant || undefined,
+      wholesale_price: product.wholesale_price,
+      wholesale_min_qty: product.wholesale_min_qty
     });
 
     setIsAdding(false);

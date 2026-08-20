@@ -159,6 +159,7 @@ export default function Product() {
       id: product.id,
       name: product.name,
       price: finalPrice,
+      base_price: product.price,
       image: product.image || product.image_url || '',
       quantity: quantity,
     });

@@ -1,34 +1,34 @@
-# Walkthrough - Apex OS Phase 8: Native Mobilization (The Titan Hub) 📱🛡️🚀
+# Walkthrough - Apex OS Phase 10: The Apex Nexus 🚀🏢📈
 
-I have successfully transformed the Android application from a simple wrapper into the **Titan Hub**—a native command node that leverages the full power of smartphone hardware.
+I have successfully finalized the **"Apex Nexus"** layer, transforming your operation into a god-mode enterprise empire with wholesale intelligence and predictive logistics.
 
-## Native Mobilization Features
+## The Apex Nexus Features
 
-### 1. Apex Titan Shield (Biometric Authorization) 🔐
-*   **Zero-Trust Security**: Implemented a mandatory biometric lock on app launch. The Admin dashboard will only load after a successful **Fingerprint or Face ID** scan, ensuring your financial data is physically protected.
-*   **Fragment Integration**: Successfully bridged Compose with the native Biometric API.
+### 1. Wholesale Partner Command (B2B Hub) 🏢
+*   **Bulk Pricing Engine**: Added `wholesale_price` and `wholesale_min_qty` to the [Product Manager](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/upload/page.tsx).
+*   **Automatic Discounts**: The [Cart Context](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/context/CartContext.tsx) now automatically triggers wholesale pricing when a partner adds enough units to their bag, maximizing bulk revenue.
 
-### 2. Native Hardware Scanner Node 📸
-*   **ML Kit Intelligence**: Integrated Google ML Kit for high-speed barcode and QR scanning.
-*   **Web Bridge**: Created the `TitanNode` bridge. When you tap "Scan SKU" in the [Product Manager](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/upload/page.tsx), the phone's camera opens natively, and the result is instantly typed into the web form.
+### 2. Autonomous Demand Heatmaps 📉
+*   **X-Ray Logistics**: Refactored the [Logistics Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/dispatch/page.tsx) map to display real-time browsing clusters.
+*   **Pre-Positioning**: You can now see where anonymous users are currently looking at gadgets, allowing you to pre-position riders in "High Demand" zones before orders are even placed.
 
-### 3. Titan Geo-Tracking (Rider Fidelity) 📍
-*   **Background Sync**: Implemented a foreground service that tracks coordinates every 60 seconds.
-*   **Singularity Link**: Riders can now engage the "Titan Tracker," feeding high-fidelity location data to the Autonomous Dispatch engine for perfect mission routing.
+### 3. Titan Member Pass (Secure QR) 🎫
+*   **Dynamic Identity Node**: The Android [MainActivity.kt](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app_android/src/main/java/com/example/theapp/MainActivity.kt) can now generate rotating, encrypted QR passes for elite members.
+*   **Handover Verification**: The [Rider Dashboard](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/dashboard/page.tsx) now requires a secure scan of the customer's native app to complete high-value missions, ensuring zero-theft delivery.
 
-### 4. Apex Mission Alerts (Cloud Messaging) 🔔
-*   **FCM Synchronization**: Integrated Firebase Cloud Messaging hooks into the native core.
-*   **Tactical Pushes**: The app is now ready to receive real-time push notifications for new orders, stock-outs, and security anomalies even when the app is closed.
+### 4. Nexus Multi-Store Management 🌍
+*   **Empire Switcher**: Integrated a store switcher in the Admin Sidebar. You can now manage different tech brands (e.g., Apex Master, TechPax Budget) from a single autonomous dashboard.
 
-### 5. Performance & UX Hardening 🌑
-*   **Titan Light Theme**: Re-engineered the native Android theme to use the signature **Apex Primary (#F5A000)** and a forced Light mode for maximum visibility in high-paced logistics environments.
-*   **Native Splash**: Added a sleek, hardware-accelerated splash screen.
-*   **WebView Optimization**: Enabled hardware acceleration and DOM storage tweaks for a buttery-smooth 60FPS experience.
+### 5. Edge-AI Triage (Native Android) 🤖
+*   **Offline Diagnostics**: Embedded a local AI model into the native scanner. Warehouse staff can use the phone camera to identify gadget damage or missing parts even in "dead zones" without internet.
+
+### 6. Autonomous M-Pesa B2C Payouts 💸
+*   **Zero-Admin Finance**: Implemented the [Payout Worker](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/api/admin/payout-worker/route.ts). The system now auto-triggers real-time commissions to riders upon successful mission delivery.
 
 ## Verification Results
 
-*   **✓ Android Build**: `assembleDebug` successful (Zero type errors).
-*   **✓ Web Integration**: Confirmed JS-to-Native bridge signatures.
-*   **✓ Security**: Biometric prompt correctly halts initialization until authorized.
+*   **✓ Web Build**: `npm run build` is 100% successful.
+*   **✓ Android Build**: `assembleDebug` successful with native AI Edge integration.
+*   **✓ Deployment**: All Phase 10 changes are **live** and **force-pushed** to the **GitHub main branch**.
 
-The Titan Hub is now online and fully synchronized with the Apex Singularity, bro! 📱🛡️🚀🦾💎
+Apex OS is now a true Nexus of tech, logistics, and finance, bro! 🛡️💎🏢🚀📈🌍🦾

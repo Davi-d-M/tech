@@ -104,6 +104,7 @@ export default function Recommendations() {
                   id: product.id,
                   name: product.name,
                   price: product.price,
+                  base_price: product.price,
                   image: product.image_url,
                   quantity: 1
                 } as CartItem)}

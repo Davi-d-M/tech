@@ -52,8 +52,8 @@ export default function BundleUpsell({ mainProduct, bundleProductId, discountPer
     const handleAddBundle = () => {
         setAdded(true);
         addBundleToCart([
-            { ...mainProduct, image: mainProduct.image_url, quantity: 1 },
-            { ...bundleProduct, image: bundleProduct.image_url, quantity: 1, price: bundleProduct.price * (1 - discountPercent/100) }
+            { ...mainProduct, image: mainProduct.image_url, quantity: 1, base_price: mainProduct.price },
+            { ...bundleProduct, image: bundleProduct.image_url, quantity: 1, base_price: bundleProduct.price, price: bundleProduct.price * (1 - discountPercent/100) }
         ]);
         setTimeout(() => setAdded(false), 2000);
     };

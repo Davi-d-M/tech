@@ -34,18 +34,37 @@ import androidx.fragment.app.FragmentActivity
 import com.example.theapp.ui.theme.TheAppTheme
 import java.util.concurrent.Executor
 
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+
 class MainActivity : FragmentActivity() {
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
     private var titanWebView: WebView? = null
+    
+    private var memberPassBitmap by mutableStateOf<Bitmap?>(null)
 
     private val scannerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             val barcode = result.data?.getStringExtra("SCAN_RESULT")
+            val triage = result.data?.getStringExtra("TRIAGE_RESULT")
+
             barcode?.let {
                 titanWebView?.evaluateJavascript("javascript:if(window.onTitanScan) window.onTitanScan('$it');", null)
                 Toast.makeText(this, "SKU Captured: $it", Toast.LENGTH_SHORT).show()
+            }
+
+            triage?.let {
+                titanWebView?.evaluateJavascript("javascript:if(window.onTitanTriage) window.onTitanTriage('$it');", null)
+                Toast.makeText(this, "AI Triage: $it", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -118,10 +137,43 @@ class MainActivity : FragmentActivity() {
                 ) {
                     if (isAuthorized) {
                         TitanHubWebBridge("https://tech-paxv.onrender.com/admin", onWebViewCreated = { titanWebView = it })
-                        
+
                         // Handle Intent after WebView is ready or via URL change
                         LaunchedEffect(intent) {
                             handleIntent(intent)
+                        }
+
+                        // Phase 10: Titan Member Pass Overlay
+                        memberPassBitmap?.let { bitmap ->
+                            Dialog(onDismissRequest = { memberPassBitmap = null }) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(320.dp)
+                                        .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.extraLarge)
+                                        .padding(24.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(
+                                            "Titan Member Pass",
+                                            style = MaterialTheme.typography.headlineSmall,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.padding(bottom = 16.dp)
+                                        )
+                                        Image(
+                                            bitmap = bitmap.asImageBitmap(),
+                                            contentDescription = "Member QR",
+                                            modifier = Modifier.size(200.dp)
+                                        )
+                                        Text(
+                                            "Scan for Secure Handover",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            modifier = Modifier.padding(top = 16.dp)
+                                        )
+                                    }
+                                }
+                            }
                         }
                     } else if (isAuthenticating) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -152,9 +204,15 @@ class MainActivity : FragmentActivity() {
         handleIntent(intent)
     }
 
-    fun launchScanner() {
-        val intent = Intent(this, ScannerActivity::class.java)
+    fun launchScanner(mode: String = "BARCODE") {
+        val intent = Intent(this, ScannerActivity::class.java).apply {
+            putExtra("SCAN_MODE", mode)
+        }
         scannerLauncher.launch(intent)
+    }
+
+    fun setMemberPass(bitmap: Bitmap) {
+        memberPassBitmap = bitmap
     }
 
     private fun syncOfflineDrops() {
@@ -176,9 +234,22 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
     private val prefs = activity.getSharedPreferences("titan_offline_storage", Context.MODE_PRIVATE)
 
     @JavascriptInterface
-    fun triggerScanner() {
+    fun triggerScanner(mode: String = "BARCODE") {
         activity.runOnUiThread {
-            activity.launchScanner()
+            activity.launchScanner(mode)
+        }
+    }
+
+    @JavascriptInterface
+    fun generateMemberPass(token: String) {
+        // Phase 10: Dynamic QR Node
+        activity.runOnUiThread {
+            try {
+                val bitmap = QRCodeGenerator.generate("TITAN-PASS|$token")
+                activity.setMemberPass(bitmap)
+            } catch (e: Exception) {
+                Toast.makeText(activity, "Encryption Error", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

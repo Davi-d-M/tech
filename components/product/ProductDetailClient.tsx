@@ -32,6 +32,8 @@ interface Product {
   tech_specs?: Record<string, string>;
   bundle_product_id?: number;
   bundle_discount_percent?: number;
+  wholesale_price?: number;
+  wholesale_min_qty?: number;
 }
 
 export default function ProductDetailClient({ product, relatedProducts }: { product: Product, relatedProducts: Product[] }) {
@@ -102,9 +104,12 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
       id: product.id,
       name: product.name,
       price: product.price,
+      base_price: product.price,
       image: product.image_url || '/placeholder.jpg',
       quantity: quantity,
       size: selectedVariant,
+      wholesale_price: product.wholesale_price,
+      wholesale_min_qty: product.wholesale_min_qty
     });
 
     setTimeout(() => {

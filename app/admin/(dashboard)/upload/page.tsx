@@ -64,6 +64,9 @@ const initialForm = {
   is_dynamic_pricing: false,
   price_min: '',
   price_max: '',
+  wholesale_price: '',
+  wholesale_min_qty: '10',
+  wholesale_stock_reserve: '0',
   seo_title: '',
   seo_description: '',
   seo_keywords: '',
@@ -111,6 +114,9 @@ interface Product {
   status?: string;
   supplier_id?: number;
   min_loyalty_tier?: string;
+  wholesale_price?: number;
+  wholesale_min_qty?: number;
+  wholesale_stock_reserve?: number;
 }
 
 const WAREHOUSE_HUBS = ["Nairobi Central", "Mombasa Port", "Kisumu Base", "Eldoret Tech Hub"];
@@ -352,6 +358,9 @@ function UploadContent() {
       is_dynamic_pricing: (product as any).is_dynamic_pricing || false,
       price_min: String((product as any).price_min ?? ''),
       price_max: String((product as any).price_max ?? ''),
+      wholesale_price: String((product as any).wholesale_price ?? ''),
+      wholesale_min_qty: String((product as any).wholesale_min_qty ?? '10'),
+      wholesale_stock_reserve: String((product as any).wholesale_stock_reserve ?? '0'),
       seo_title: product.seo_title || '',
       seo_description: product.seo_description || '',
       seo_keywords: Array.isArray(product.seo_keywords) ? product.seo_keywords.join(', ') : '',
@@ -457,6 +466,9 @@ function UploadContent() {
           length_cm: Number(form.length_cm) || null,
           width_cm: Number(form.width_cm) || null,
           height_cm: Number(form.height_cm) || null,
+          wholesale_price: Number(form.wholesale_price) || null,
+          wholesale_min_qty: Number(form.wholesale_min_qty),
+          wholesale_stock_reserve: Number(form.wholesale_stock_reserve)
       };
 
       if (editingId) {
@@ -692,6 +704,10 @@ function UploadContent() {
                                   <label className="text-[9px] font-black uppercase text-slate-400">Inventory Cost</label>
                                   <Input name="cost_price" type="number" value={form.cost_price} onChange={handleInputChange} className="h-14 rounded-2xl border-slate-100 bg-slate-50 font-black text-lg" />
                               </div>
+                              <div className="space-y-2">
+                                  <label className="text-[9px] font-black uppercase text-indigo-500">Wholesale Price (B2B)</label>
+                                  <Input name="wholesale_price" type="number" value={form.wholesale_price} onChange={handleInputChange} className="h-14 rounded-2xl border-indigo-100 bg-indigo-50/30 font-black text-lg text-indigo-600" placeholder="e.g. 950" />
+                              </div>
                           </div>
 
                           <div className="pt-6 border-t border-slate-50 space-y-6">
@@ -819,7 +835,17 @@ function UploadContent() {
                                   </select>
                               </div>
                           </div>
-                          <div className="space-y-4 pt-4 border-t border-slate-50 text-left">
+                          <div className="grid sm:grid-cols-2 gap-6 text-left pt-6 border-t border-slate-50">
+                              <div className="space-y-2">
+                                  <label className="text-[9px] font-black uppercase text-indigo-500">Wholesale MOQ</label>
+                                  <Input name="wholesale_min_qty" type="number" value={form.wholesale_min_qty} onChange={handleInputChange} className="h-14 rounded-2xl border-indigo-100 bg-indigo-50/10 font-bold" />
+                              </div>
+                              <div className="space-y-2">
+                                  <label className="text-[9px] font-black uppercase text-indigo-500">B2B Stock Reserve</label>
+                                  <Input name="wholesale_stock_reserve" type="number" value={form.wholesale_stock_reserve} onChange={handleInputChange} className="h-14 rounded-2xl border-indigo-100 bg-indigo-50/10 font-bold" />
+                              </div>
+                          </div>
+                          <div className="space-y-4 pt-6 border-t border-slate-50 text-left">
                               <label className="text-[9px] font-black uppercase text-slate-400">Variant Attributes (Comma Separated)</label>
                               <Input name="sizes" value={form.sizes} onChange={handleInputChange} placeholder="White, Black, 128GB..." className="h-14 rounded-2xl border-slate-100 bg-slate-50" />
                               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
@@ -1014,15 +1040,24 @@ function UploadContent() {
                                       <Camera className="h-6 w-6" />
                                       <span className="text-[8px] font-black uppercase">Add Photo</span>
                                       {selectedFiles.length > 0 && (
-                                          <Button
-                                            type="button"
-                                            onClick={(e) => { e.preventDefault(); handleVisionScan(); }}
-                                            disabled={isVisionScanning}
-                                            className="absolute -bottom-10 left-0 right-0 h-8 rounded-lg bg-indigo-600 text-white font-black uppercase text-[7px] tracking-widest animate-in zoom-in-95"
-                                          >
-                                              {isVisionScanning ? <Loader2 size={10} className="animate-spin mr-1" /> : <Eye size={10} className="mr-1" />}
-                                              AI Vision Scan
-                                          </Button>
+                                          <div className="absolute -bottom-10 left-0 right-0 flex gap-1">
+                                              <Button
+                                                type="button"
+                                                onClick={(e) => { e.preventDefault(); handleVisionScan(); }}
+                                                disabled={isVisionScanning}
+                                                className="flex-1 h-8 rounded-lg bg-indigo-600 text-white font-black uppercase text-[7px] tracking-widest animate-in zoom-in-95"
+                                              >
+                                                  {isVisionScanning ? <Loader2 size={10} className="animate-spin mr-1" /> : <Eye size={10} className="mr-1" />}
+                                                  Cloud Vision
+                                              </Button>
+                                              <Button
+                                                type="button"
+                                                onClick={(e) => { e.preventDefault(); (window as any).TitanNode?.triggerScanner('TRIAGE'); }}
+                                                className="flex-1 h-8 rounded-lg bg-emerald-600 text-white font-black uppercase text-[7px] tracking-widest animate-in zoom-in-95"
+                                              >
+                                                  <Bot size={10} className="mr-1" /> Edge-AI Triage
+                                              </Button>
+                                          </div>
                                       )}
                                   </label>
                               </div>

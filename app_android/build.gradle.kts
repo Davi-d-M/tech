@@ -41,6 +41,8 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.webkit)
+    implementation(libs.zxing.core)
+    implementation(libs.image.labeling)
     implementation("com.google.firebase:firebase-messaging:24.1.0")
     
     implementation(platform(libs.androidx.compose.bom))

@@ -4,8 +4,9 @@ import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { BatteryMedium, ChevronRight } from 'lucide-react';
+import { BatteryMedium, ChevronRight, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Circle } from 'react-leaflet';
 
 interface Rider {
     id: number | string;
@@ -15,6 +16,12 @@ interface Rider {
     rider_name: string;
     battery_level: number;
     current_speed?: number;
+}
+
+interface DemandZone {
+    lat: number;
+    lng: number;
+    intensity: number;
 }
 
 // 🛡️ Fix for Leaflet default icon issues in Next.js
@@ -56,10 +63,11 @@ const createRiderIcon = (status: string) => {
 
 interface LiveDispatchMapProps {
     riders: Rider[];
+    demandZones?: DemandZone[];
     onSelectRider?: (rider: Rider) => void;
 }
 
-export default function LiveDispatchMap({ riders, onSelectRider }: LiveDispatchMapProps) {
+export default function LiveDispatchMap({ riders, demandZones = [], onSelectRider }: LiveDispatchMapProps) {
   useEffect(() => {
     fixLeafletIcons();
   }, []);
@@ -81,6 +89,22 @@ export default function LiveDispatchMap({ riders, onSelectRider }: LiveDispatchM
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
+
+        {/* 📉 Autonomous Demand Heatmap (Phase 10) */}
+        {demandZones.map((zone, idx) => (
+            <Circle
+                key={`demand-${idx}`}
+                center={[zone.lat, zone.lng]}
+                radius={200 + (zone.intensity * 100)}
+                pathOptions={{
+                    fillColor: '#5B5BFF', // Indigo demand color
+                    color: '#5B5BFF',
+                    weight: 1,
+                    opacity: 0.3,
+                    fillOpacity: 0.1 + (zone.intensity * 0.05)
+                }}
+            />
+        ))}
 
         {riders.map((rider) => (
           <Marker
@@ -165,6 +189,10 @@ export default function LiveDispatchMap({ riders, onSelectRider }: LiveDispatchM
 
       {/* 🧭 Legend Overlay */}
       <div className="absolute bottom-6 left-6 z-[1000] bg-white/90 backdrop-blur-md p-4 rounded-3xl border border-slate-100 shadow-xl flex gap-6 text-[9px] font-black uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-[#5B5BFF]">
+              <div className="h-2.5 w-2.5 rounded-full bg-[#5B5BFF]/50 border border-[#5B5BFF]"></div>
+              Demand Zone
+          </div>
           <div className="flex items-center gap-2 text-emerald-500">
               <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
               Available

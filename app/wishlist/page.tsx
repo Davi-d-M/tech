@@ -17,6 +17,7 @@ export default function WishlistPage() {
       id: item.id,
       name: item.name,
       price: item.price,
+      base_price: item.price,
       image: item.image || '/placeholder.jpg',
       quantity: 1
     });

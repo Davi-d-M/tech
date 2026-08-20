@@ -12,7 +12,8 @@ import {
     Navigation,
     Fingerprint,
     MessageCircle,
-    Zap
+    Zap,
+    Trophy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -391,14 +392,28 @@ function RiderDashboardContent() {
 
                         <div className="pt-8 border-t border-slate-50 space-y-6">
                             <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">
-                                <span>Slide to verify drop</span>
-                                <Truck className="h-4 w-4 animate-bounce" />
+                                <span>Verify Titan Member Pass</span>
+                                <Trophy className="h-4 w-4 text-primary" />
                             </div>
                             <Button
-                                onClick={() => handleCompleteMission(activeMission.id)}
-                                className="w-full h-24 rounded-[2.5rem] bg-emerald-500 hover:bg-emerald-600 text-white font-black uppercase text-sm tracking-[0.5em] shadow-[0_20px_40px_-10px_rgba(16,185,129,0.3)] active:scale-95 transition-all relative overflow-hidden group"
+                                onClick={() => {
+                                    if ((window as any).TitanNode?.triggerScanner) {
+                                        (window as any).TitanNode.triggerScanner();
+                                        // Override onTitanScan for handover verification
+                                        (window as any).onTitanScan = (code: string) => {
+                                            if (code.startsWith('TITAN-PASS')) {
+                                                handleCompleteMission(activeMission.id);
+                                            } else {
+                                                alert("Invalid Member Pass. Unauthorized Node Attempt.");
+                                            }
+                                        };
+                                    } else {
+                                        handleCompleteMission(activeMission.id); // Fallback
+                                    }
+                                }}
+                                className="w-full h-24 rounded-[2.5rem] bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase text-sm tracking-[0.5em] shadow-[0_20px_40px_-10px_rgba(91,91,255,0.3)] active:scale-95 transition-all relative overflow-hidden group"
                             >
-                                <span className="relative z-10">Complete Drop</span>
+                                <span className="relative z-10">Secure Handover</span>
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
                             </Button>
                         </div>

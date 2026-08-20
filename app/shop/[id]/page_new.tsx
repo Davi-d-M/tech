@@ -86,6 +86,7 @@ export default function DynamicProductDetailPage({ params }: { params: { id: str
       id: product.id,
       name: product.name,
       price: product.price,
+      base_price: product.price,
       image: product.image_url || '/placeholder.jpg',
       quantity: quantity,
     });

@@ -44,6 +44,7 @@ export default function RelatedProducts({ product }: RelatedProductsProps) {
           id: p.id,
           name: p.name,
           price: p.price,
+          base_price: p.price,
           image: p.image || p.image_url || '',
           quantity: 1,
           size: 'Standard'

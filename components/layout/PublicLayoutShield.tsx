@@ -64,7 +64,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
         }
     }, [searchParams]);
 
-    // 2. Live Visitor Heartbeat
+    // 2. Live Visitor Heartbeat & Demand Prediction
     useEffect(() => {
         if (!supabase || isAdmin) return;
 
@@ -78,6 +78,18 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
         const sendHeartbeat = async () => {
             if (!supabase || !isOperational) return;
+
+            // Optional: Request Geo-location for Demand Heatmap
+            let lat: number | null = null;
+            let lon: number | null = null;
+
+            if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+                // Background request - non blocking
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    lat = pos.coords.latitude;
+                    lon = pos.coords.longitude;
+                }, () => {}, { timeout: 5000 });
+            }
 
             // Non-blocking heartbeat
             if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
@@ -99,6 +111,8 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
                         current_page: pathname,
                         last_active_at: new Date().toISOString(),
                         cart_value: cartValue,
+                        latitude: lat,
+                        longitude: lon,
                         status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
                     });
                 });
@@ -122,6 +136,8 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
                         current_page: pathname,
                         last_active_at: new Date().toISOString(),
                         cart_value: cartValue,
+                        latitude: lat,
+                        longitude: lon,
                         status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
                     });
                 }, 1);

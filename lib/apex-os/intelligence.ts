@@ -143,3 +143,28 @@ export async function scanForExceptions(): Promise<ApexException[]> {
 
     return exceptions;
 }
+
+/**
+ * Phase 10: Demand Prediction Node
+ * Logs user geo-activity to the global heatmap.
+ */
+export async function trackBrowsingZone(payload: {
+    page: string,
+    lat?: number,
+    lon?: number,
+    session_id: string
+}) {
+    if (!supabase) return;
+    try {
+        await supabase.from('active_visitors').upsert({
+            session_id: payload.session_id,
+            current_page: payload.page,
+            latitude: payload.lat,
+            longitude: payload.lon,
+            last_active_at: new Date().toISOString(),
+            status: 'Browsing'
+        }, { onConflict: 'session_id' });
+    } catch (err) {
+        console.error("Heatmap Sync Failed:", err);
+    }
+}

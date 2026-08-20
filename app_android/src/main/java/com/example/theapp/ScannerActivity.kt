@@ -21,27 +21,103 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import java.util.concurrent.Executors
 
 class ScannerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val mode = intent.getStringExtra("SCAN_MODE") ?: "BARCODE"
+
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
-                    BarcodeScanner(onBarcodeDetected = { result ->
-                        val intent = Intent().apply {
-                            putExtra("SCAN_RESULT", result)
-                        }
-                        setResult(Activity.RESULT_OK, intent)
-                        finish()
-                    })
+                    if (mode == "TRIAGE") {
+                        EdgeAiTriage(onTriageDetected = { result ->
+                            val intent = Intent().apply {
+                                putExtra("TRIAGE_RESULT", result)
+                            }
+                            setResult(Activity.RESULT_OK, intent)
+                            finish()
+                        })
+                    } else {
+                        BarcodeScanner(onBarcodeDetected = { result ->
+                            val intent = Intent().apply {
+                                putExtra("SCAN_RESULT", result)
+                            }
+                            setResult(Activity.RESULT_OK, intent)
+                            finish()
+                        })
+                    }
                 }
             }
         }
+    }
+}
+
+@SuppressLint("UnsafeOptInUsageError")
+@Composable
+fun EdgeAiTriage(onTriageDetected: (String) -> Unit) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val cameraExecutor = Executors.newSingleThreadExecutor()
+    val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { ctx ->
+                val previewView = PreviewView(ctx)
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
+
+                cameraProviderFuture.addListener({
+                    val cameraProvider = cameraProviderFuture.get()
+                    val preview = Preview.Builder().build().also {
+                        it.surfaceProvider = previewView.surfaceProvider
+                    }
+
+                    val imageAnalyzer = ImageAnalysis.Builder()
+                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .build()
+                        .also {
+                            it.setAnalyzer(cameraExecutor) { imageProxy ->
+                                val mediaImage = imageProxy.image
+                                if (mediaImage != null) {
+                                    val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                                    labeler.process(image)
+                                        .addOnSuccessListener { labels ->
+                                            for (label in labels) {
+                                                if (label.confidence > 0.8) {
+                                                    onTriageDetected(label.text)
+                                                    break
+                                                }
+                                            }
+                                        }
+                                        .addOnCompleteListener { imageProxy.close() }
+                                }
+                            }
+                        }
+
+                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                    cameraProvider.unbindAll()
+                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalyzer)
+                }, ContextCompat.getMainExecutor(ctx))
+                previewView
+            }
+        )
+        Text(
+            text = "AI Triage Active: Point at Gadget",
+            color = Color.White,
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }
 

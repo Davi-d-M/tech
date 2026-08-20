@@ -1,44 +1,43 @@
-# Apex OS: Phase 9 — The Global Apex (Autonomous Finance & AI Vision) 🌍💸📸
+# Apex OS: Phase 10 — The Apex Nexus (Omni-Channel Wholesale & Demand Prediction) 🚀🏢📈
 
-This "Elite" phase transitions Apex from a local machine into a global-ready autonomous powerhouse. we are automating the flow of money and the intelligence of product ingestion.
+This "God-Mode" phase transitions Apex into a multi-entity empire. We are introducing wholesale logic, real-time demand prediction, and a secure hardware pass for elite customers.
 
-## 💸 1. Autonomous B2C Settlements (M-Pesa Automation)
-- **Objective**: Automate payouts to Riders and Suppliers without manual admin clicks.
-- **Implementation**: Create an "Autonomous Payout" worker.
-- **Logic**:
-    - **Riders**: When an order status hit "Delivered" -> Instantly trigger an M-Pesa B2C payout for their commission.
-    - **Suppliers**: On successful "Settlement Week" -> Auto-disburse verified earnings to their linked mobile number.
+## 🏢 1. Wholesale Partner Command (B2B Hub)
+- **Objective**: Scale from individual sales to bulk business distributions.
+- **Implementation**: Create a `Wholesale` role and portal.
+- **Features**:
+    - **Volume-Based Pricing**: Automatic discounts for 10+, 50+, or 100+ units.
+    - **MOQ Enforcement**: Minimum Order Quantities for specific tech payloads.
+    - **Inventory Buffers**: "Reserve" stock specifically for wholesale partners to prevent public sell-outs.
 
-## 📸 2. AI Vision Lab: Rapid Ingestion
-- [MODIFY] [Product Manager](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/upload/page.tsx):
-    - Add an "AI Scan Photo" button.
-    - **Intelligence**: Uses AI Vision to analyze the uploaded product image.
-    - **Result**: Automatically fills in the Gadget Name, Brand, Category, and generates an elite SEO-optimized description from just the photo.
+## 📉 2. Autonomous Demand Heatmaps (Pre-Positioning)
+- [MODIFY] [Logistics Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/dispatch/page.tsx):
+    - **Live Browsing Clusters**: Visualize where users are currently browsing gadgets on a map (anonymous aggregated data).
+    - **Intelligence**: AI suggests pre-positioning riders in high-traffic zones *before* orders are placed to achieve <15 min delivery.
 
-## 🧠 3. Customer Sentiment Sentinel (Vibe Check)
-- [MODIFY] [Universal Inbox](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/support/page.tsx):
-    - Background AI analyzes the tone of every incoming message/review.
-    - **Action**: Negative/Angry sentiments are flagged with a "RED ALERT" and automatically prioritized at the top of the feed for immediate VIP Relay.
+## 🎫 3. Titan Member Pass (Secure QR/NFC)
+- [MODIFY] [Android App](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app_android/src/main/java/com/example/theapp/MainActivity.kt):
+    - **Dynamic Identity Node**: Generates a rotating, encrypted QR code for "Elite" members.
+- **Mission Verification**: Riders scan the customer's native app QR to verify the "Titan Handover" for high-value tech (e.g., MacBooks, iPhones).
 
-## 🌍 4. Multi-Currency Global Engine
-- [MODIFY] [Finance Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/finance/page.tsx):
-    - Add a **USD/KES Toggle**.
-    - Integrates a real-time Exchange Rate API (e.g., CurrencyAPI) to help track import costs (USD) vs. retail revenue (KES).
+## 🌍 4. Nexus Multi-Store Management
+- **Objective**: Manage multiple tech brands (e.g., "Apex Premium" vs "TechPax Budget") from one Admin OS.
+- [MODIFY] **Settings**: Add a "Store Switcher" and domain mapping logic to isolate inventory and themes per brand.
 
-## 📵 5. Offline Survival Mode (Android Persistence)
-- [MODIFY] [MainActivity.kt](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app_android/src/main/java/com/example/theapp/MainActivity.kt):
-    - Implement a **Room Database** or **DataStore** cache for the Android app.
-    - **Flow**: If a rider has a mission but loses internet, the "Complete Drop" action is saved locally and auto-pushed to Supabase the moment they hit a 4G/WiFi node.
+## 🤖 5. Edge-AI Support (Native Android)
+- **Objective**: Zero-latency support for warehouse staff.
+- **Implementation**: Embed a local AI model (using Google AI Edge SDK) into the Android app.
+- **Flow**: Staff can use the camera to identify damaged gadgets or missing parts offline, and the AI provides instant triage steps.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to verify AI Vision and Currency integration.
-- Verify Android `Room` database migrations.
+- `npm run build` to verify multi-store routing logic.
+- Verify Android QR generation and rotation integrity.
 
 ### Manual Verification
-1. **Vision Test**: Upload a photo of a generic charger and verify the AI correctly identifies it as a "Fast Charging Adapter."
-2. **Settlement Test**: Complete a mock delivery and verify a `payout_triggered` event is logged in the ledger.
-3. **Currency Test**: Toggle to USD and verify the profit margins update based on the current KES exchange rate.
+1. **Wholesale Test**: Log in as a Wholesale partner and verify the price for 10 units drops by the configured percentage.
+2. **Heatmap Test**: Open multiple browser sessions in a specific zone and verify the Admin Map clusters update.
+3. **Handover Test**: Scan a "Titan Member Pass" using the Rider Scanner and verify the mission marks as "Securely Handed Over."

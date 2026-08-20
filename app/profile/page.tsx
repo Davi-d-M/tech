@@ -898,7 +898,7 @@ export default function ProfilePage() {
                                     </div>
                                     <p className="text-[10px] font-black text-foreground uppercase truncate mb-1">{item.name}</p>
                                     <p className="text-sm font-black text-primary mb-3">{formatPrice(item.price)}</p>
-                                    <Button onClick={(e) => { e.preventDefault(); addToCart({ ...item, quantity: 1 } as CartItem); router.push('/cart'); }} className="w-full h-10 rounded-xl bg-primary text-white font-black uppercase text-[8px] active:scale-95 shadow-lg shadow-primary/20">One-Tap Order</Button>
+                                    <Button onClick={(e) => { e.preventDefault(); addToCart({ ...item, quantity: 1, base_price: item.price } as CartItem); router.push('/cart'); }} className="w-full h-10 rounded-xl bg-primary text-white font-black uppercase text-[8px] active:scale-95 shadow-lg shadow-primary/20">One-Tap Order</Button>
                                 </Link>
                             ))}
                         </div>

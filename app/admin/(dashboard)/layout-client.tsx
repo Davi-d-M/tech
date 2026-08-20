@@ -198,15 +198,19 @@ export default function AdminLayoutClient({
           )}>
             <div className="h-full flex flex-col">
               {/* Sidebar Header */}
-              <div className={cn("p-8 border-b border-border flex items-center justify-between", isSidebarCollapsed && "p-6")}>
+                <div className={cn("p-8 border-b border-border flex items-center justify-between", isSidebarCollapsed && "p-6")}>
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
                       <Store className="h-6 w-6 text-white" />
                     </div>
                     {!isSidebarCollapsed && (
                         <div className="animate-in fade-in duration-500">
-                          <h2 className="font-black text-foreground leading-none uppercase tracking-tighter text-lg">Apexstores</h2>
-                          <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mt-1">Control Panel</p>
+                          <select className="font-black text-foreground leading-none uppercase tracking-tighter text-sm bg-transparent border-none outline-none appearance-none cursor-pointer">
+                              <option>Apex Master</option>
+                              <option>TechPax Budget</option>
+                              <option>Global Wholesale</option>
+                          </select>
+                          <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mt-1">Nexus Command</p>
                         </div>
                     )}
                 </div>

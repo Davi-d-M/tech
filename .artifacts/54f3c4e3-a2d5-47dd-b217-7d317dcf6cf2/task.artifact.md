@@ -1,26 +1,25 @@
-# Tasks - Apex OS Phase 9: Global Apex 🌍💸📸
+# Tasks - Apex OS Phase 10: The Apex Nexus 🚀🏢📈
 
-## Phase 1: Autonomous Payouts (M-Pesa B2C)
-- [ ] Implement `api/admin/payout-worker/route.ts` for automated rider/supplier disbursements.
-- [ ] Link "Delivered" status transition to the Payout Engine in `orders/page.tsx`.
+## Phase 1: Wholesale Partner Command (B2B Hub)
+- [ ] Add `wholesale_price`, `wholesale_min_qty`, and `wholesale_stock_reserve` to the [Product Manager](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/upload/page.tsx).
+- [ ] Update [Cart Logic](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/context/CartContext.tsx) to automatically apply wholesale pricing based on quantity.
 
-## Phase 2: AI Vision Lab (Ingestion)
-- [ ] Add "AI Vision Scan" button to `app/admin/(dashboard)/upload/page.tsx`.
-- [ ] Implement image analysis logic to auto-populate Gadget Name, Category, and Specs.
+## Phase 2: Autonomous Demand Heatmaps
+- [ ] Implement `trackBrowsingZone` in `lib/apex-os/intelligence.ts` to log anonymous user activity.
+- [ ] Refactor [Logistics Center](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/dispatch/page.tsx) to display browsing clusters on the live map.
 
-## Phase 3: Sentiment Sentinel (Vibe Check)
-- [ ] Add tone analysis logic to the Universal Inbox in `app/admin/(dashboard)/support/page.tsx`.
-- [ ] Implement "Red Alert" prioritization for angry customer sentiments.
+## Phase 3: Titan Member Pass (Secure QR)
+- [ ] Implement Dynamic QR generation in [Android MainActivity.kt](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app_android/src/main/java/com/example/theapp/MainActivity.kt).
+- [ ] Add "Scan Member Pass" step to the [Rider Mission flow](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/dashboard/page.tsx).
 
-## Phase 4: Multi-Currency Global Finance
-- [ ] Add USD/KES toggle to `app/admin/(dashboard)/finance/page.tsx`.
-- [ ] Implement real-time exchange rate mapping for profit analysis.
+## Phase 4: Nexus Multi-Store Switcher
+- [ ] Add `domain_alias` and `store_id` to [Global Settings](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/settings/page.tsx).
+- [ ] Implement an "Empire Switcher" in the Admin sidebar for multi-brand management.
 
-## Phase 5: Android Offline Survival
-- [ ] Implement local caching/queue for "Drop Completion" in `MainActivity.kt`.
-- [ ] Add background sync logic to push queued actions when online.
+## Phase 5: Edge-AI Support (Native Android)
+- [ ] Add `google-ai-edge` dependencies to `app_android`.
+- [ ] Implement an "Offline Ingestion" mode in the native scanner for hardware diagnostics.
 
-## Phase 6: Final Verification
-- [ ] Run `npm run build`.
-- [ ] Verify M-Pesa payload generation.
-- [ ] Test AI Vision mock results.
+## Phase 6: Verification
+- [ ] Run `npm run build` and `gradlew assembleDebug`.
+- [ ] Verify wholesale price triggers and geo-fenced demand clusters.
