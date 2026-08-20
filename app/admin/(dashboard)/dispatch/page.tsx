@@ -132,6 +132,20 @@ export default function AdminDispatchPage() {
         return () => clearInterval(interval);
     }, []);
 
+    // Autonomous Mode Loop
+    useEffect(() => {
+        if (!autoDispatch) return;
+
+        const singularityLoop = setInterval(() => {
+            const pending = orders.filter(o => o.status === 'Pending');
+            if (pending.length > 0) {
+                runAutonomousSingularity();
+            }
+        }, 15000); // Check every 15s when armed
+
+        return () => clearInterval(singularityLoop);
+    }, [autoDispatch, orders, runAutonomousSingularity]);
+
     const stats = useMemo(() => {
         const total = riders.length;
         const active = riders.filter(r => r.status !== 'Offline').length;
@@ -150,7 +164,7 @@ export default function AdminDispatchPage() {
         r.area_zone.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleAssignRider = async (orderId: number, rider: Rider) => {
+    const handleAssignRider = React.useCallback(async (orderId: number, rider: Rider) => {
         if (!supabase) return;
         setAssigning(orderId);
         try {
@@ -190,7 +204,7 @@ export default function AdminDispatchPage() {
         } finally {
             setAssigning(null);
         }
-    };
+    }, [orders]);
 
     const handleVerifyRider = async (phone: string) => {
         if (!supabase) return;
@@ -214,7 +228,7 @@ export default function AdminDispatchPage() {
         }
     };
 
-    const runAutonomousSingularity = async () => {
+    const runAutonomousSingularity = React.useCallback(async () => {
         const pending = orders.filter(o => o.status === 'Pending');
         if (pending.length === 0) return;
 
@@ -242,7 +256,7 @@ export default function AdminDispatchPage() {
             setLoading(false);
             setTimeout(() => setMessage(null), 3000);
         }
-    };
+    }, [orders, riders, handleAssignRider]);
 
     return (
         <div className="p-8 space-y-8 bg-background min-h-screen text-left">

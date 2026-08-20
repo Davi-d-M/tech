@@ -1,25 +1,28 @@
-# Tasks - Apex OS Phase 7: Ecosystem Dominance 🚀💎🌍
+# Tasks - Apex OS Phase 8: Native Mobilization 📱🛡️🚀
 
-## Phase 1: Hyper-Personalized Recommendations
-- [ ] Refactor `components/home/PersonalizedFeed.tsx` with Cross-Sell logic.
-- [ ] Implement "Frequently Bought Together" data mapping.
+## Phase 1: Foundation & Security
+- [ ] Add Biometric, Camera, and Location dependencies to `gradle` configuration.
+- [ ] Implement `BiometricShield` in `MainActivity.kt`.
+- [ ] Create `TitanBridge` JavaScript Interface for Web-to-Native communication.
 
-## Phase 2: Apex Club (Tier-Gated Products)
-- [ ] Implement `min_loyalty_tier` gating in Product display logic.
-- [ ] Add "Locked" UI overlay for exclusive gadgets in `components/home/ProductCard.tsx`.
+## Phase 2: Hardware Acceleration & UI
+- [ ] Optimize `WebView` settings in `MainActivity.kt` for performance.
+- [ ] Implement a Native Splash Screen using `androidx.core:core-splashscreen`.
+- [ ] Add hardware-accelerated rendering flags.
 
-## Phase 3: Regional Multi-Node Dispatch
-- [ ] Update `app/admin/(dashboard)/dispatch/page.tsx` with Warehouse Node Mapping.
-- [ ] Implement geo-fencing for order-to-hub routing.
+## Phase 3: Hardware Scanner Node (ML Kit)
+- [ ] Create `ScannerActivity.kt` using Google ML Kit Barcode Scanning.
+- [ ] Link Scanner result back to the WebView via the Bridge.
 
-## Phase 4: Voice-Activated Command Center
-- [ ] Add Web Speech API integration to `components/admin/AskApex.tsx`.
-- [ ] Map voice commands to analytical query triggers.
+## Phase 4: Titan Geo-Tracking (Location)
+- [ ] Implement `LocationService.kt` for background GPS updates.
+- [ ] Add logic to sync coordinates to Supabase "Rider Node" when active.
 
-## Phase 5: Autonomous Fraud & Bot Shield
-- [ ] Create `lib/apex-os/security-shield.ts` for velocity and anomaly detection.
-- [ ] Implement real-time fraud flagging in the Admin Dashboard.
+## Phase 5: Mission Notifications (FCM)
+- [ ] Initialize Firebase hooks in the Android project.
+- [ ] Create `ApexMessagingService.kt` to handle incoming mission alerts.
 
-## Phase 6: Final Verification
-- [ ] Run `npm run build`.
-- [ ] End-to-end test of tier-gated product visibility.
+## Phase 6: Verification
+- [ ] Run `gradlew assembleDebug`.
+- [ ] Verify Biometric lock triggers on cold start.
+- [ ] Test Barcode scan to SKU field mapping.

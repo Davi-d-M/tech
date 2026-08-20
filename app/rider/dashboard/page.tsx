@@ -56,6 +56,7 @@ function RiderDashboardContent() {
 
     // TechPax Pro States
     const [isOnline, setIsOnline] = useState(false);
+    const [isTracking, setIsTracking] = useState(false);
     const [wallet, setWallet] = useState({ balance: 0, total_earned: 0 });
     const [stats, setStats] = useState({ tier: 'Bronze', rating: 5.0, acceptance: 100, maintenance: 'Healthy' });
     const [activeMission, setActiveMission] = useState<Mission | null>(null);
@@ -154,6 +155,12 @@ function RiderDashboardContent() {
                 setIsOnline(!isOnline);
                 // Also update local session status
                 localStorage.setItem('apex_rider_status', newStatus);
+
+                // Native Bridge: Sync Tracking
+                if ((window as any).TitanNode?.toggleTracking) {
+                    (window as any).TitanNode.toggleTracking(!isOnline);
+                    setIsTracking(!isOnline);
+                }
             } else {
                 throw error;
             }
@@ -296,6 +303,7 @@ function RiderDashboardContent() {
                             <div className="flex items-center gap-2">
                                 <Star className="h-3 w-3 text-amber-500 fill-current" />
                                 <span className="text-xs font-black text-foreground">{stats.rating}</span>
+                                {isTracking && <div className="ml-2 px-2 py-0.5 rounded bg-indigo-50 text-indigo-500 text-[6px] font-black uppercase animate-pulse border border-indigo-100">GPS Node Linked</div>}
                             </div>
                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{stats.tier} Operator</p>
                         </div>

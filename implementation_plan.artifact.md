@@ -1,42 +1,44 @@
-# Apex OS: Phase 7 — The Apex Horizon (Ecosystem Dominance) 🚀💎🌍
+# Apex OS: Phase 8 — Native Mobilization (The Titan Hub) 📱🛡️🚀
 
-This phase scales Apex into a dominant market force. We are introducing hyper-personalization for users, multi-regional logistics, and advanced protection against bad actors.
+This phase transforms the Android app from a simple WebView wrapper into a **Native Command Node**. We will bridge the web intelligence of Apex OS with native Android hardware capabilities to make the system truly "Elite."
 
-## 🧠 1. Hyper-Personalized Recommendation Engine
-- [MODIFY] [Suggested Feed](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/home/PersonalizedFeed.tsx):
-    - **Cross-Sell Logic**: Evolve the "Recently Viewed" into a smart engine that says "Frequently bought with your gadgets".
-    - **Tier-Based Discovery**: Legend tier members see personalized bundles (e.g., "The Founder's Pack").
+## 🔐 1. Biometric Shield (Native Security)
+- **Objective**: Prevent unauthorized physical access to the Command Center.
+- **Implementation**: Add `androidx.biometric` to the Android app.
+- **User Flow**: On app launch, require Fingerprint or Face ID before the WebView loads the financial data.
 
-## 💎 2. Apex Club: Exclusivity Layer (Tier Gating)
-- [MODIFY] **Product Catalog**: Implement **Member-Only Gadgets**.
-    - Certain high-value tech (e.g., Ultra-Luxe Series) only becomes visible or purchasable once a user hits **Gold** or **Diamond** rank.
-    - Public users see a "Locked for Elite Members" overlay with a CTA to join the club.
+## 🔔 2. Apex Mission Notifications (Cloud Sync)
+- **Objective**: Real-time alerts even when the app is closed.
+- **Implementation**: Integrate Firebase Cloud Messaging (FCM) hooks.
+- **Alerts**:
+    - **Extraction Alert**: "New Order #1042 ready for dispatch."
+    - **Security Breach**: "IP Address Blocked: Potential Velocity Attack."
+    - **Stock Out**: "Amaya AM-05 hit zero units."
 
-## 🚚 3. Regional Multi-Node Dispatch (Nairobi & Beyond)
-- [MODIFY] [Logistics Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/dispatch/page.tsx):
-    - **Warehouse Node Mapping**: Orders are now geo-fenced to the nearest warehouse (Nairobi Central, Mombasa Port).
-    - **Inter-Hub Transfers**: Allow admins to move stock between hubs with a digital manifest.
+## 📸 3. Hardware Scanner Node (Rapid Inventory)
+- **Objective**: Turn the smartphone camera into a high-speed warehouse scanner.
+- **Implementation**: Use Google ML Kit (Barcode Scanning) inside a native Compose view.
+- **Bridge**: Create a `JavaScriptInterface` so the scanned barcode is instantly typed into the Web Product Manager.
 
-## 🎙️ 4. Voice-Activated Command Center (Admin Voice)
-- [MODIFY] [Ask Apex](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/AskApex.tsx):
-    - **Voice-to-Data Protocol**: Implement a microphone button.
-    - Admins can say: "Apex, what's my best selling charger?" or "Apex, dispatch order 1042".
-    - AI processes the voice command and navigates the UI or provides data instantly.
+## 📍 4. Titan Geo-Tracking (Rider Fidelity)
+- **Objective**: High-fidelity location updates for the Autonomous Dispatch engine.
+- **Implementation**: Add a "Rider Mode" background service using `FusedLocationProvider`.
+- **Sync**: Post GPS coordinates to Supabase every 60 seconds when a rider is on a mission.
 
-## 🛡️ 5. Autonomous Fraud & Bot Shield
-- [NEW] **Apex Shield (Admin)**: A background monitor that flags:
-    - **Velocity Attacks**: Multiple rapid checkouts from the same IP.
-    - **Anomalous Phone Patterns**: Flags suspicious mobile number structures or repeated failed payment attempts.
-    - **IP Geofencing**: Warns if a payment is made from a region far from the delivery pin.
+## 🌑 5. Native Splash & Performance Hardening
+- [MODIFY] [MainActivity.kt](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app_android/src/main/java/com/example/theapp/MainActivity.kt):
+    - Implement a custom native splash screen with the TechPax logo.
+    - Add WebView optimization (Hardware acceleration, caching tweaks).
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- `npm run build` to ensure new Voice and Node logic compiles correctly.
+- Run `gradlew assembleDebug` to ensure Android build integrity.
+- Verify `JavaScriptInterface` signatures.
 
 ### Manual Verification
-1. **Personalization Test**: Buy a charger and verify the homepage suggests the matching cable in the "Recommended" feed.
-2. **Exclusivity Test**: Create a "Diamond Only" product and verify it disappears for "Explorer" level users.
-3. **Voice Test**: Speak a command to the Ask Apex agent and verify it returns correct data from the Supabase ledger.
+1. **Biometric Test**: Lock the phone and verify the app requests fingerprint on re-entry.
+2. **Scanner Test**: Scan a physical barcode and verify the text appears in the "SKU" field on the web form.
+3. **Notification Test**: Trigger a "Mock Order" and verify a native Android notification appears.

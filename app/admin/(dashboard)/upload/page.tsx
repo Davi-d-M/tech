@@ -27,7 +27,8 @@ import {
     Bot,
     X,
     Trash2,
-    Camera
+    Camera,
+    Scan
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -195,7 +196,24 @@ function UploadContent() {
     if (supabase) {
       fetchProducts();
     }
+
+    // Bridge Listener: Handle Native SKU Scans
+    (window as any).onTitanScan = (sku: string) => {
+        setForm(prev => ({ ...prev, sku: sku }));
+        setMessage({ type: 'success', text: `Node Synced: ${sku}` });
+        setTimeout(() => setMessage(null), 3000);
+    };
+
+    return () => { delete (window as any).onTitanScan; };
   }, []);
+
+  const triggerTitanScanner = () => {
+    if ((window as any).TitanNode?.triggerScanner) {
+        (window as any).TitanNode.triggerScanner();
+    } else {
+        alert("Native Scanner Node not detected. Use the Titan Mobile App, bro.");
+    }
+  };
 
   const currentVariants = useMemo(() => {
     return (form?.sizes || '').split(',').map(s => s.trim()).filter(s => s);
@@ -543,7 +561,20 @@ function UploadContent() {
                                       <option value="Legend">Legend Rank</option>
                                   </select>
                               </div>
-                              <div className="space-y-2"><label className="text-[9px] font-black uppercase text-slate-400">SKU / ID</label><Input name="sku" value={form.sku} onChange={handleInputChange} className="h-14 rounded-2xl border-slate-100 bg-slate-50 font-mono text-xs" /></div>
+                              <div className="space-y-2">
+                                  <label className="text-[9px] font-black uppercase text-slate-400">SKU / ID</label>
+                                  <div className="flex gap-2">
+                                      <Input name="sku" value={form.sku} onChange={handleInputChange} className="h-14 rounded-2xl border-slate-100 bg-slate-50 font-mono text-xs flex-1" />
+                                      <Button
+                                          type="button"
+                                          onClick={triggerTitanScanner}
+                                          className="h-14 w-14 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                                          title="Native Scan Node"
+                                      >
+                                          <Scan className="h-6 w-6" />
+                                      </Button>
+                                  </div>
+                              </div>
                           </div>
                       </CardContent>
                   )}

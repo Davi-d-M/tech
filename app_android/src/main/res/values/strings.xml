@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Apex Admin</string>
+    <string name="shortcut_scan_title">Scan Gadget</string>
+    <string name="shortcut_scan_short_label">Scan SKU</string>
+    <string name="shortcut_order_title">New Order</string>
+    <string name="shortcut_order_short_label">Add Order</string>
 </resources>

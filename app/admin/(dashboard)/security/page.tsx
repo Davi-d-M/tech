@@ -26,25 +26,37 @@ interface LoginAttempt {
     metadata: Record<string, unknown>;
 }
 
+interface ThreatReport {
+    id: string;
+    type: string;
+    severity: string;
+    description: string;
+    status: string;
+    created_at: string;
+}
+
 export default function SecurityHub() {
     const [attempts, setAttempts] = React.useState<LoginAttempt[]>([]);
+    const [threats, setThreats] = React.useState<ThreatReport[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     const fetchSecurityData = React.useCallback(async () => {
         if (!supabase) return;
         setLoading(true);
         try {
-            const { data, error } = await supabase.from('login_attempts').select('*').order('attempt_time', { ascending: false }).limit(10);
-            if (error) throw error;
-            setAttempts(data || []);
+            const [loginRes, threatRes] = await Promise.all([
+                supabase.from('login_attempts').select('*').order('attempt_time', { ascending: false }).limit(10),
+                supabase.from('security_threats').select('*').order('created_at', { ascending: false }).limit(5)
+            ]);
+
+            setAttempts(loginRes.data || []);
+            setThreats(threatRes.data || []);
         } catch {
             console.error("Security Uplink Encrypted.");
         } finally {
             setLoading(false);
         }
     }, []);
-
-    if (loading) {} // Suppress unused var
 
     React.useEffect(() => {
         fetchSecurityData();
@@ -63,7 +75,7 @@ export default function SecurityHub() {
                 </div>
                 <div className="flex gap-2">
                     <Button onClick={fetchSecurityData} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white text-foreground font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all">
-                        <RefreshCcw className="h-4 w-4 mr-2" /> Sync Audit
+                        <RefreshCcw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} /> Sync Audit
                     </Button>
                 </div>
             </header>
@@ -74,7 +86,12 @@ export default function SecurityHub() {
                         <div>
                             <div className="flex justify-between items-center mb-8">
                                 <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary shadow-sm"><Lock size={24} /></div>
-                                <span className="px-4 py-1.5 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-full animate-pulse uppercase tracking-widest border border-emerald-100">Armed</span>
+                                <span className={cn(
+                                    "px-4 py-1.5 text-[10px] font-black rounded-full uppercase tracking-widest border animate-pulse",
+                                    threats.length > 0 ? "bg-rose-50 text-rose-600 border-rose-100" : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                                )}>
+                                    {threats.length > 0 ? 'Threat Detected' : 'Armed'}
+                                </span>
                             </div>
                             <div>
                                 <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Authorization Layer</p>
@@ -94,7 +111,7 @@ export default function SecurityHub() {
                         <Card key={item.label} className="p-8 rounded-[2.5rem] border border-slate-100 bg-white shadow-sm flex items-center gap-8 group hover:border-primary/20 transition-all h-full">
                             <div className={cn(
                                 "h-14 w-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0 shadow-sm",
-                                item.color === 'emerald' ? "bg-emerald-50 text-emerald-500" :
+                                item.color === 'emerald' ? "bg-emerald-50 text-emerald-600" :
                                 item.color === 'indigo' ? "bg-indigo-50 text-indigo-500" :
                                 "bg-primary/5 text-primary"
                             )}>
@@ -110,61 +127,98 @@ export default function SecurityHub() {
             </div>
 
             <div className="grid lg:grid-cols-12 gap-10">
-                <div className="lg:col-span-8 space-y-8">
-                    <div className="flex items-center justify-between px-4 shrink-0">
-                        <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Authentication Logs</h2>
-                        <Button variant="ghost" className="text-[10px] font-black text-primary uppercase underline tracking-widest">Export Full History</Button>
-                    </div>
+                <div className="lg:col-span-8 space-y-12">
+                    <section className="space-y-8">
+                        <div className="flex items-center justify-between px-4 shrink-0">
+                            <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Apex Shield: Intelligence</h2>
+                            <span className="text-[10px] font-black uppercase text-rose-500 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-100">{threats.length} Flagged Events</span>
+                        </div>
 
-                    <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
-                                    <th className="px-10 py-6">Event Identity</th>
-                                    <th className="px-10 py-6 text-center">Protocol Status</th>
-                                    <th className="px-10 py-6 text-center">Origin IP</th>
-                                    <th className="px-10 py-6 text-right">Timestamp</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {attempts.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={4} className="p-20 text-center text-slate-400 font-black uppercase tracking-widest italic opacity-40">No intrusion attempts recorded.</td>
-                                    </tr>
-                                ) : attempts.map(att => (
-                                    <tr key={att.id} className="hover:bg-primary/5 transition-all group">
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center gap-6 text-left">
-                                                <div className={cn(
-                                                    "h-12 w-12 rounded-xl flex items-center justify-center text-white font-black uppercase shadow-lg shadow-slate-100",
-                                                    att.success ? "bg-emerald-500" : "bg-rose-500"
-                                                )}>
-                                                    <Key size={20} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-black text-foreground uppercase tracking-tight">Login Attempt</p>
-                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Access Channel: Admin Hub</p>
-                                                </div>
+                        <div className="grid gap-4">
+                            {threats.length === 0 ? (
+                                <div className="p-16 text-center bg-white rounded-[3rem] border border-slate-100 opacity-40">
+                                    <ShieldCheck className="h-10 w-10 mx-auto mb-4 text-emerald-500" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest">No active threats detected by the Singularity.</p>
+                                </div>
+                            ) : threats.map(t => (
+                                <Card key={t.id} className="p-8 rounded-[3rem] border border-rose-100 bg-white shadow-sm flex items-center justify-between group hover:shadow-xl transition-all">
+                                    <div className="flex items-center gap-6 text-left">
+                                        <div className="h-14 w-14 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 shadow-inner">
+                                            <ShieldAlert className="h-7 w-7" />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <span className="text-[9px] font-black uppercase text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">{t.severity}</span>
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{t.type} &bull; {new Date(t.created_at).toLocaleTimeString()}</p>
                                             </div>
-                                        </td>
-                                        <td className="px-10 py-8 text-center">
-                                            <span className={cn(
-                                                "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border",
-                                                att.success ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"
-                                            )}>
-                                                {att.success ? 'Authorized' : 'Violation'}
-                                            </span>
-                                        </td>
-                                        <td className="px-10 py-8 text-center font-mono text-[10px] font-black text-slate-400 tracking-widest">{att.ip_address || '0.0.0.0'}</td>
-                                        <td className="px-10 py-8 text-right">
-                                            <p className="text-[11px] font-bold text-foreground uppercase leading-none">{new Date(att.attempt_time).toLocaleTimeString()}</p>
-                                            <p className="text-[9px] font-black text-slate-400 uppercase mt-2 tracking-widest">{new Date(att.attempt_time).toLocaleDateString()}</p>
-                                        </td>
+                                            <h3 className="font-black text-foreground uppercase text-lg tracking-tighter leading-none">{t.description}</h3>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button size="sm" className="h-10 px-4 rounded-xl bg-rose-600 text-white font-black uppercase text-[9px]">Block Origin</Button>
+                                        <Button size="sm" variant="outline" className="h-10 px-4 rounded-xl border-slate-100 text-slate-400 font-black uppercase text-[9px]">Ignore</Button>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className="space-y-8">
+                        <div className="flex items-center justify-between px-4 shrink-0">
+                            <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Authentication Logs</h2>
+                            <Button variant="ghost" className="text-[10px] font-black text-primary uppercase underline tracking-widest">Export Full History</Button>
+                        </div>
+
+                        <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
+                                        <th className="px-10 py-6">Event Identity</th>
+                                        <th className="px-10 py-6 text-center">Protocol Status</th>
+                                        <th className="px-10 py-6 text-center">Origin IP</th>
+                                        <th className="px-10 py-6 text-right">Timestamp</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                    {attempts.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={4} className="p-20 text-center text-slate-400 font-black uppercase tracking-widest italic opacity-40">No intrusion attempts recorded.</td>
+                                        </tr>
+                                    ) : attempts.map(att => (
+                                        <tr key={att.id} className="hover:bg-primary/5 transition-all group">
+                                            <td className="px-10 py-8">
+                                                <div className="flex items-center gap-6 text-left">
+                                                    <div className={cn(
+                                                        "h-12 w-12 rounded-xl flex items-center justify-center text-white font-black uppercase shadow-lg shadow-slate-100",
+                                                        att.success ? "bg-emerald-500" : "bg-rose-500"
+                                                    )}>
+                                                        <Key size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-black text-foreground uppercase tracking-tight">Login Attempt</p>
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Access Channel: Admin Hub</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-8 text-center">
+                                                <span className={cn(
+                                                    "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                                                    att.success ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"
+                                                )}>
+                                                    {att.success ? 'Authorized' : 'Violation'}
+                                                </span>
+                                            </td>
+                                            <td className="px-10 py-8 text-center font-mono text-[10px] font-black text-slate-400 tracking-widest">{att.ip_address || '0.0.0.0'}</td>
+                                            <td className="px-10 py-8 text-right">
+                                                <p className="text-[11px] font-bold text-foreground uppercase leading-none">{new Date(att.attempt_time).toLocaleTimeString()}</p>
+                                                <p className="text-[9px] font-black text-slate-400 uppercase mt-2 tracking-widest">{new Date(att.attempt_time).toLocaleDateString()}</p>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
                 </div>
 
                 <div className="lg:col-span-4 space-y-10">
