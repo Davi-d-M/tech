@@ -33,7 +33,6 @@ export default function AdminAnalyticsPage() {
     useAdmin();
     const [timeframe, setTimeframe] = React.useState<'7d' | '30d' | '90d' | 'YTD'>('30d');
     const [loading, setLoading] = React.useState(true);
-    const [products, setProducts] = React.useState<{ category: string | null }[]>([]);
     const [orders, setOrders] = React.useState<{ id: number; total_price: number; unit_cost?: number; created_at: string; status: string; customer_phone: string; referred_by_code?: string | null }[]>([]);
     const [affiliateSales, setAffiliateSales] = React.useState(0);
     const [isExploded, setIsExploded] = React.useState(false);
@@ -49,13 +48,13 @@ export default function AdminAnalyticsPage() {
                 ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
                 const dateLimit = ninetyDaysAgo.toISOString();
 
-                const [prodRes, ordRes] = await Promise.all([
+                const [, ordRes] = await Promise.all([
                     supabase.from('products').select('category'),
                     supabase.from('orders')
                         .select('id, total_price, unit_cost, created_at, status, customer_phone, referred_by_code')
                         .gte('created_at', dateLimit)
                 ]);
-                setProducts(prodRes.data || []);
+                // products var removed to fix lint warning
                 setOrders(ordRes.data || []);
 
                 const affRev = (ordRes.data || [])

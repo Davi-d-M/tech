@@ -19,10 +19,11 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { scanForExceptions, ApexException } from '@/lib/apex-os/intelligence';
+import { ThreatReport } from '@/lib/apex-os/security-shield';
 
 export default function ExceptionCenter() {
     const [exceptions, setExceptions] = React.useState<ApexException[]>([]);
-    const [threats, setThreats] = React.useState<any[]>([]);
+    const [threats, setThreats] = React.useState<ThreatReport[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     const runScan = React.useCallback(async () => {

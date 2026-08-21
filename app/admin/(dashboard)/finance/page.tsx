@@ -32,7 +32,7 @@ export default function AdminFinancePage() {
     const [ledger, setLedger] = React.useState<LedgerEntry[]>([]);
     const [isReconciling, setIsReconciling] = React.useState(false);
     const [currency, setCurrency] = React.useState<'KES' | 'USD'>('KES');
-    const [exchangeRate, setExchangeRate] = React.useState(129.5); // Current KES/USD
+    const exchangeRate = 129.5; // Current KES/USD
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const convert = (amount: number) => {

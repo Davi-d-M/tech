@@ -5,7 +5,7 @@ export interface ThreatReport {
     type: 'Velocity' | 'Phone_Anomaly' | 'Geofence_Violation' | 'Bot_Pattern';
     severity: 'Medium' | 'High' | 'Critical';
     description: string;
-    metadata: Record<string, any>;
+    metadata: Record<string, string | number | boolean | null>;
     status: 'Flagged' | 'Cleared' | 'Blocked';
     created_at: string;
 }

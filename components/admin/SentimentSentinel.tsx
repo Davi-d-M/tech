@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 export default function SentimentSentinel() {
-    const [hotIssues, setHotIssues] = React.useState<any[]>([]);
+    const [hotIssues, setHotIssues] = React.useState<{ id: number; type: string; body: string }[]>([]);
 
     React.useEffect(() => {
         async function checkSentiment() {
@@ -23,8 +23,8 @@ export default function SentimentSentinel() {
             const { data: reviews } = await supabase.from('reviews').select('*').is('admin_response', null).lte('rating', 2);
 
             const negative = [
-                ...(tickets || []).map(t => ({ id: t.id, type: 'Support', body: t.description })),
-                ...(reviews || []).map(r => ({ id: r.id, type: 'Review', body: r.comment }))
+                ...(tickets || []).map((t: { id: number; description: string }) => ({ id: t.id, type: 'Support', body: t.description })),
+                ...(reviews || []).map((r: { id: number; comment: string }) => ({ id: r.id, type: 'Review', body: r.comment }))
             ].filter(item => {
                 const lower = item.body.toLowerCase();
                 return lower.includes('bad') || lower.includes('delay') || lower.includes('angry') || lower.includes('worst');

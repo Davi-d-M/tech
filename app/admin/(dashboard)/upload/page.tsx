@@ -114,6 +114,9 @@ interface Product {
   status?: string;
   supplier_id?: number;
   min_loyalty_tier?: string;
+  is_dynamic_pricing?: boolean;
+  price_min?: number;
+  price_max?: number;
   wholesale_price?: number;
   wholesale_min_qty?: number;
   wholesale_stock_reserve?: number;
@@ -206,18 +209,18 @@ function UploadContent() {
     }
 
     // Bridge Listener: Handle Native SKU Scans
-    (window as any).onTitanScan = (sku: string) => {
+    (window as Window & { onTitanScan?: (sku: string) => void }).onTitanScan = (sku: string) => {
         setForm(prev => ({ ...prev, sku: sku }));
         setMessage({ type: 'success', text: `Node Synced: ${sku}` });
         setTimeout(() => setMessage(null), 3000);
     };
 
-    return () => { delete (window as any).onTitanScan; };
+    return () => { delete (window as Window & { onTitanScan?: (sku: string) => void }).onTitanScan; };
   }, []);
 
   const triggerTitanScanner = () => {
-    if ((window as any).TitanNode?.triggerScanner) {
-        (window as any).TitanNode.triggerScanner();
+    if ((window as Window & { TitanNode?: { triggerScanner: () => void } }).TitanNode?.triggerScanner) {
+        (window as Window & { TitanNode?: { triggerScanner: () => void } }).TitanNode?.triggerScanner();
     } else {
         alert("Native Scanner Node not detected. Use the Titan Mobile App, bro.");
     }
@@ -355,12 +358,12 @@ function UploadContent() {
       allow_backorders: product.allow_backorders || false,
       hide_product: product.hide_product || false,
       min_loyalty_tier: product.min_loyalty_tier || 'Explorer',
-      is_dynamic_pricing: (product as any).is_dynamic_pricing || false,
-      price_min: String((product as any).price_min ?? ''),
-      price_max: String((product as any).price_max ?? ''),
-      wholesale_price: String((product as any).wholesale_price ?? ''),
-      wholesale_min_qty: String((product as any).wholesale_min_qty ?? '10'),
-      wholesale_stock_reserve: String((product as any).wholesale_stock_reserve ?? '0'),
+      is_dynamic_pricing: product.is_dynamic_pricing || false,
+      price_min: String(product.price_min ?? ''),
+      price_max: String(product.price_max ?? ''),
+      wholesale_price: String(product.wholesale_price ?? ''),
+      wholesale_min_qty: String(product.wholesale_min_qty ?? '10'),
+      wholesale_stock_reserve: String(product.wholesale_stock_reserve ?? '0'),
       seo_title: product.seo_title || '',
       seo_description: product.seo_description || '',
       seo_keywords: Array.isArray(product.seo_keywords) ? product.seo_keywords.join(', ') : '',
@@ -1052,7 +1055,12 @@ function UploadContent() {
                                               </Button>
                                               <Button
                                                 type="button"
-                                                onClick={(e) => { e.preventDefault(); (window as any).TitanNode?.triggerScanner('TRIAGE'); }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    const win = window as unknown as { TitanNode?: { triggerScanner: (mode: string) => void } };
+                                                    win.TitanNode?.triggerScanner('TRIAGE');
+                                                }}
+                                                disabled={isVisionScanning}
                                                 className="flex-1 h-8 rounded-lg bg-emerald-600 text-white font-black uppercase text-[7px] tracking-widest animate-in zoom-in-95"
                                               >
                                                   <Bot size={10} className="mr-1" /> Edge-AI Triage

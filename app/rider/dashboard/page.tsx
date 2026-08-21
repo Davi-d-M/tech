@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     Truck,
@@ -62,26 +62,7 @@ function RiderDashboardContent() {
     const [stats, setStats] = useState({ tier: 'Bronze', rating: 5.0, acceptance: 100, maintenance: 'Healthy' });
     const [activeMission, setActiveMission] = useState<Mission | null>(null);
 
-    useEffect(() => {
-        const savedPhone = localStorage.getItem('apex_rider_phone');
-        const savedPin = localStorage.getItem('apex_rider_pin');
-        if (savedPhone && savedPin) {
-            setPhone(savedPhone);
-            setPin(savedPin);
-            verifyAndFetch(savedPhone, savedPin);
-        } else if (phoneParam) {
-            setPhone(phoneParam);
-        }
-
-        // Phase 9: Bridge Listener for Offline Sync
-        (window as any).onTitanSyncOrder = (orderId: string) => {
-            handleCompleteMission(parseInt(orderId));
-        };
-
-        return () => { delete (window as any).onTitanSyncOrder; };
-    }, [phoneParam]);
-
-    const verifyAndFetch = async (riderPhone: string, riderPin: string) => {
+    const verifyAndFetch = useCallback(async (riderPhone: string, riderPin: string) => {
         if (!supabase) return;
         setLoading(true);
         setAuthError(null);
@@ -131,78 +112,15 @@ function RiderDashboardContent() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const handleBioAuth = async () => {
-        try {
-            const cred = await authenticateBiometrics();
-            if (cred && phone && pin) {
-                verifyAndFetch(phone, pin);
-            }
-        } catch {
-            // Biometric auth failed or cancelled
-        }
-    };
-
-    const handleToggleOnline = async () => {
-        if (!supabase || !phone) return;
-        setLoading(true);
-        const newStatus = isOnline ? 'Offline' : 'Idle';
-
-        try {
-            const { error } = await supabase
-                .from('rider_status')
-                .update({
-                    status: newStatus,
-                    online_since: isOnline ? null : new Date().toISOString(),
-                    updated_at: new Date().toISOString() // Heartbeat update
-                })
-                .eq('rider_phone', phone);
-
-            if (!error) {
-                setIsOnline(!isOnline);
-                // Also update local session status
-                localStorage.setItem('apex_rider_status', newStatus);
-
-                // Native Bridge: Sync Tracking
-                if ((window as any).TitanNode?.toggleTracking) {
-                    (window as any).TitanNode.toggleTracking(!isOnline);
-                    setIsTracking(!isOnline);
-                }
-            } else {
-                throw error;
-            }
-        } catch (err) {
-            console.error("Status Sync Error:", err);
-            setAuthError("Failed to update status on grid.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // PULSE HEARTBEAT while online
-    useEffect(() => {
-        if (!isOnline || !phone || !supabase) return;
-
-        const pulse = setInterval(async () => {
-            if (supabase) {
-                await supabase
-                    .from('rider_status')
-                    .update({ updated_at: new Date().toISOString() })
-                    .eq('rider_phone', phone);
-            }
-        }, 5 * 60 * 1000); // Every 5 minutes
-
-        return () => clearInterval(pulse);
-    }, [isOnline, phone]);
-
-    const handleCompleteMission = async (orderId: number) => {
+    const handleCompleteMission = useCallback(async (orderId: number) => {
         if (!supabase || !phone) return;
 
         // Detection: Check if navigator is online
         if (typeof window !== 'undefined' && !window.navigator.onLine) {
-            if ((window as any).TitanNode?.queueMissionCompletion) {
-                (window as any).TitanNode.queueMissionCompletion(orderId);
+            if ((window as Window & { TitanNode?: { queueMissionCompletion: (id: number) => void } }).TitanNode?.queueMissionCompletion) {
+                (window as Window & { TitanNode?: { queueMissionCompletion: (id: number) => void } }).TitanNode?.queueMissionCompletion(orderId);
                 // Optimistic UI Update
                 setMissions(prev => prev.map(m => m.id === orderId ? { ...m, status: 'Delivered' } : m));
                 setActiveMission(null);
@@ -252,7 +170,91 @@ function RiderDashboardContent() {
         } finally {
             setLoading(false);
         }
+    }, [phone]);
+
+    useEffect(() => {
+        const savedPhone = localStorage.getItem('apex_rider_phone');
+        const savedPin = localStorage.getItem('apex_rider_pin');
+        if (savedPhone && savedPin) {
+            setPhone(savedPhone);
+            setPin(savedPin);
+            verifyAndFetch(savedPhone, savedPin);
+        } else if (phoneParam) {
+            setPhone(phoneParam);
+        }
+
+        // Phase 9: Bridge Listener for Offline Sync
+        const win = window as Window & { onTitanSyncOrder?: (orderId: string) => void };
+        win.onTitanSyncOrder = (orderId: string) => {
+            handleCompleteMission(parseInt(orderId));
+        };
+
+        return () => { delete win.onTitanSyncOrder; };
+    }, [phoneParam, handleCompleteMission, verifyAndFetch]);
+
+    const handleBioAuth = async () => {
+        try {
+            const cred = await authenticateBiometrics();
+            if (cred && phone && pin) {
+                verifyAndFetch(phone, pin);
+            }
+        } catch {
+            // Biometric auth failed or cancelled
+        }
     };
+
+    const handleToggleOnline = async () => {
+        if (!supabase || !phone) return;
+        setLoading(true);
+        const newStatus = isOnline ? 'Offline' : 'Idle';
+
+        try {
+            const { error } = await supabase
+                .from('rider_status')
+                .update({
+                    status: newStatus,
+                    online_since: isOnline ? null : new Date().toISOString(),
+                    updated_at: new Date().toISOString() // Heartbeat update
+                })
+                .eq('rider_phone', phone);
+
+            if (!error) {
+                setIsOnline(!isOnline);
+                // Also update local session status
+                localStorage.setItem('apex_rider_status', newStatus);
+
+                // Native Bridge: Sync Tracking
+                const win = window as Window & { TitanNode?: { toggleTracking: (active: boolean) => void } };
+                if (win.TitanNode?.toggleTracking) {
+                    win.TitanNode.toggleTracking(!isOnline);
+                    setIsTracking(!isOnline);
+                }
+            } else {
+                throw error;
+            }
+        } catch (err) {
+            console.error("Status Sync Error:", err);
+            setAuthError("Failed to update status on grid.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // PULSE HEARTBEAT while online
+    useEffect(() => {
+        if (!isOnline || !phone || !supabase) return;
+
+        const pulse = setInterval(async () => {
+            if (supabase) {
+                await supabase
+                    .from('rider_status')
+                    .update({ updated_at: new Date().toISOString() })
+                    .eq('rider_phone', phone);
+            }
+        }, 5 * 60 * 1000); // Every 5 minutes
+
+        return () => clearInterval(pulse);
+    }, [isOnline, phone]);
 
     const handleLogout = () => {
         localStorage.removeItem('apex_rider_phone');
@@ -397,10 +399,10 @@ function RiderDashboardContent() {
                             </div>
                             <Button
                                 onClick={() => {
-                                    if ((window as any).TitanNode?.triggerScanner) {
-                                        (window as any).TitanNode.triggerScanner();
+                                    if ((window as Window & { TitanNode?: { triggerScanner: () => void } }).TitanNode?.triggerScanner) {
+                                        (window as Window & { TitanNode?: { triggerScanner: () => void } }).TitanNode?.triggerScanner();
                                         // Override onTitanScan for handover verification
-                                        (window as any).onTitanScan = (code: string) => {
+                                        (window as Window & { onTitanScan?: (code: string) => void }).onTitanScan = (code: string) => {
                                             if (code.startsWith('TITAN-PASS')) {
                                                 handleCompleteMission(activeMission.id);
                                             } else {

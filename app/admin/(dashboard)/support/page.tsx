@@ -25,11 +25,6 @@ import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 import { logAuditAction } from '@/lib/auditService';
 
-interface StaffMember {
-    id: string;
-    email: string;
-}
-
 interface UniversalItem {
     id: string;
     type: 'Support' | 'Message' | 'Review';
@@ -47,21 +42,18 @@ interface UniversalItem {
 export default function SupportCaseManagement() {
     const { email: adminEmail } = useAdmin();
     const [items, setItems] = React.useState<UniversalItem[]>([]);
-    const [staff, setStaff] = React.useState<StaffMember[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [searchQuery, setSearchQuery] = React.useState('');
-    const [statusFilter, setStatusFilter] = React.useState('all');
     const [typeFilter, setTypeFilter] = React.useState<'all' | 'Support' | 'Message' | 'Review'>('all');
 
     const fetchUniversalData = React.useCallback(async () => {
         if (!supabase) return;
         setLoading(true);
         try {
-            const [ticketsRes, msgsRes, reviewsRes, staffRes] = await Promise.all([
+            const [ticketsRes, msgsRes, reviewsRes] = await Promise.all([
                 supabase.from('support_tickets').select('*').order('created_at', { ascending: false }),
                 supabase.from('messages').select('*').order('created_at', { ascending: false }),
-                supabase.from('reviews').select('*').order('created_at', { ascending: false }),
-                supabase.from('staff').select('id, email')
+                supabase.from('reviews').select('*').order('created_at', { ascending: false })
             ]);
 
             const analyzeSentiment = (text: string): 'Positive' | 'Neutral' | 'Negative' => {
@@ -122,7 +114,6 @@ export default function SupportCaseManagement() {
             });
 
             setItems(sorted);
-            setStaff(staffRes.data || []);
         } catch (err) {
             console.error(err);
         } finally {
@@ -172,9 +163,8 @@ export default function SupportCaseManagement() {
 
     const filteredItems = items.filter(t => {
         const matchesQuery = (t.customer_name + t.subject + t.body).toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
         const matchesType = typeFilter === 'all' || t.type === typeFilter;
-        return matchesQuery && matchesStatus && matchesType;
+        return matchesQuery && matchesType;
     });
 
     const getAISuggestion = (item: UniversalItem) => {
