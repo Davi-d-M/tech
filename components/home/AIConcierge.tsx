@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
+import { useSettings } from '@/lib/useSettings';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -27,6 +28,7 @@ interface Suggestion {
 }
 
 export default function AIConcierge() {
+    const { settings } = useSettings();
     const [isOpen, setIsOpen] = React.useState(false);
     const [query, setQuery] = React.useState('');
     const [messages, setMessages] = React.useState<{ role: 'user' | 'assistant', text: string, suggestions?: Suggestion[] }[]>([]);
@@ -38,6 +40,9 @@ export default function AIConcierge() {
     React.useEffect(() => {
         if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }, [messages]);
+
+    // Disable logic based on Admin settings
+    if (settings?.features?.ai_concierge_enabled === false) return null;
 
     const handleAsk = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,13 +57,20 @@ export default function AIConcierge() {
             // Simulated AI Shopping Intelligence
             await new Promise(r => setTimeout(r, 1500));
             const low = userMsg.toLowerCase();
+            const config = (settings as any)?.ai_config || { build_setup_limit: 5000, assistant_name: 'Apex AI' };
 
-            let reply = "I'm analyzing the catalog for your tactical setup, bro. Check these out:";
+            let reply = `I'm analyzing the catalog for your tactical setup, bro. As ${config.assistant_name}, I recommend these:`;
             let suggestions: Suggestion[] = [];
 
             if (low.includes('setup') || low.includes('office') || low.includes('gaming')) {
-                const { data: prods } = await supabase!.from('products').select('*').limit(3);
+                const limit = config.build_setup_limit || 5000;
+                const { data: prods } = await supabase!.from('products').select('*').lte('price', limit).limit(3);
                 suggestions = (prods || []).map(p => ({ id: p.id, name: p.name, price: p.price, image_url: p.image_url }));
+                if (suggestions.length === 0) {
+                    reply = `I couldn't find a complete setup under ${formatPrice(limit)}, bro. I've pulled our closest elite essentials instead:`;
+                    const { data: alt } = await supabase!.from('products').select('*').limit(2);
+                    suggestions = (alt || []).map(p => ({ id: p.id, name: p.name, price: p.price, image_url: p.image_url }));
+                }
             } else if (low.includes('cheap') || low.includes('budget') || low.includes('under')) {
                 const { data: prods } = await supabase!.from('products').select('*').order('price', { ascending: true }).limit(2);
                 suggestions = (prods || []).map(p => ({ id: p.id, name: p.name, price: p.price, image_url: p.image_url }));

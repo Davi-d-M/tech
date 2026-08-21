@@ -1174,9 +1174,9 @@ function UploadContent() {
                                           {/* eslint-disable-next-line @next/next/no-img-element */}
                                           <img src={p.image_url} className="max-h-full w-auto object-contain" alt="" />
                                       </div>
-                                      <div className="min-w-0">
-                                          <p className="text-[11px] font-black text-foreground uppercase truncate leading-none mb-1">{p.name}</p>
-                                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{p.stock} Units • {p.category}</p>
+                                      <div className="min-w-0 flex-1">
+                                          <p className="text-[11px] font-black text-foreground uppercase truncate leading-none mb-1.5">{p.name}</p>
+                                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap overflow-hidden text-ellipsis">{p.stock} Units • {p.category}</p>
                                       </div>
                                   </div>
                                   <div className="flex items-center gap-2">

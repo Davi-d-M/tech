@@ -18,6 +18,13 @@ export async function runSecurityScan() {
     if (!supabase) return;
 
     try {
+        // Phase 13: Feature Toggle Verification
+        const { data: featData } = await supabase.from('settings').select('value').eq('key', 'features').maybeSingle();
+        if (featData && (featData.value as any).fraud_shield_enabled === false) {
+            console.log("[SHIELD] Sentinel in Standby Mode. Toggle Disabled.");
+            return;
+        }
+
         const threats: Partial<ThreatReport>[] = [];
 
         // 1. VELOCITY SCAN: Rapid orders from same IP/Session

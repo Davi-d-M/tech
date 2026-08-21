@@ -650,11 +650,11 @@ export default function AdminOrdersPage() {
               <div className="p-12 text-center text-slate-400 font-medium italic flex-1">No matching orders found.</div>
             ) : (
               <div className="flex-1 overflow-hidden">
-                <div className="hidden lg:block overflow-x-auto">
-                    <table className="w-full text-left text-sm">
+                <div className="hidden lg:block overflow-x-auto no-scrollbar">
+                    <table className="w-full text-left text-sm border-separate border-spacing-y-2">
                     <thead>
-                        <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
-                        <th className="px-6 py-5 w-10">
+                        <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em] whitespace-nowrap border-none">
+                        <th className="px-6 py-5 w-12 text-center rounded-l-2xl">
                             <button onClick={() => {
                                 if (selectedOrders.length === filteredOrders.length) {
                                     setSelectedOrders([]);
@@ -665,15 +665,15 @@ export default function AdminOrdersPage() {
                                 {selectedOrders.length === filteredOrders.length && filteredOrders.length > 0 ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4 text-slate-200" />}
                             </button>
                         </th>
-                        <th className="px-8 py-5">Customer</th>
-                        <th className="px-8 py-5">Gadget</th>
-                        <th className="px-8 py-5">Admin</th>
-                        {canSeeMoney && <th className="px-8 py-5">Profit</th>}
-                        <th className="px-8 py-5">Pipeline</th>
-                        <th className="px-8 py-5 text-right">Actions</th>
+                        <th className="px-8 py-5 min-w-[180px]">Customer Identity</th>
+                        <th className="px-8 py-5 min-w-[220px]">Payload Details</th>
+                        <th className="px-8 py-5 w-32">Authorized By</th>
+                        {canSeeMoney && <th className="px-8 py-5 w-32">Profit Node</th>}
+                        <th className="px-8 py-5 w-48">Pipeline State</th>
+                        <th className="px-8 py-5 text-right rounded-r-2xl">Tactical Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
+                    <tbody className="divide-y-0">
                         {filteredOrders.map((order) => {
                             const totalCost = order.order_items?.reduce((sum, item) => sum + (item.unit_cost * item.quantity), 0) || 0;
                             const profit = Number(order.total_price) - Number(totalCost);
@@ -681,59 +681,45 @@ export default function AdminOrdersPage() {
 
                             return (
                             <tr key={order.id} className={cn(
-                                "hover:bg-primary/5 transition-all group text-left relative",
-                                isSelected && "bg-primary/5"
+                                "bg-white border border-slate-100 transition-all group text-left relative hover:shadow-lg hover:border-primary/20",
+                                isSelected && "bg-primary/5 border-primary/20"
                             )}>
-                                <td className="px-6 py-6">
+                                <td className="px-6 py-8 text-center rounded-l-[1.5rem]">
                                     <button onClick={() => toggleOrderSelection(order.id)}>
                                         {isSelected ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4 text-slate-200" />}
                                     </button>
                                 </td>
-                                <td className="px-8 py-6">
+                                <td className="px-8 py-8">
                                 <div className="flex flex-col text-left">
-                                    <span className="font-black text-foreground flex items-center gap-2 uppercase text-xs tracking-tight">
+                                    <span className="font-black text-foreground flex items-center gap-2 uppercase text-xs tracking-tight whitespace-nowrap">
                                     <User className="h-3 w-3 text-slate-300" /> {order.customer_name}
                                     </span>
-                                    <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest flex items-center gap-2 mt-1">
+                                    <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest flex items-center gap-2 mt-1.5 whitespace-nowrap">
                                     <Phone className="h-3 w-3" /> {order.customer_phone}
                                     </span>
                                 </div>
                                 </td>
-                                <td className="px-8 py-6">
-                                <div className="flex flex-col text-left min-w-[200px] gap-2">
+                                <td className="px-8 py-8">
+                                <div className="flex flex-col text-left gap-3">
                                     {order.order_items && order.order_items.length > 0 ? (
                                         order.order_items.map((item) => (
-                                            <div key={item.id} className="border-b border-slate-50 last:border-0 pb-2 mb-2 last:pb-0 last:mb-0">
-                                                <div className="flex justify-between items-start gap-2">
-                                                    <span className="font-black text-foreground uppercase text-[11px] block truncate flex-1">
+                                            <div key={item.id} className="pb-2 last:pb-0 border-b border-slate-50 last:border-none">
+                                                <div className="flex justify-between items-start gap-3">
+                                                    <span className="font-black text-foreground uppercase text-[11px] block truncate max-w-[150px]">
                                                         {productNameMap.get(item.product_id) || `Item #${item.product_id}`}
                                                     </span>
                                                     {order.warehouse_location && (
-                                                        <span className="text-[7px] font-black uppercase text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded shrink-0">
+                                                        <span className="text-[7px] font-black uppercase text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded shadow-sm">
                                                             {order.warehouse_location.split(' ')[0]}
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center justify-between gap-2 mt-1">
+                                                <div className="flex items-center justify-between gap-2 mt-1.5">
                                                     <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">
                                                         x{item.quantity} Units {item.size && `(${item.size})`}
                                                     </span>
-                                                    {order.status === 'Packed' && !item.serial_number && (
-                                                        <button
-                                                            onClick={() => {
-                                                                const imei = prompt(`ENTER IMEI/SERIAL FOR ${productNameMap.get(item.product_id)}:`);
-                                                                if (imei && supabase) {
-                                                                    supabase.from('order_items').update({ serial_number: imei }).eq('id', item.id)
-                                                                        .then(() => loadOrders());
-                                                                }
-                                                            }}
-                                                            className="text-[8px] font-black uppercase text-rose-500 animate-pulse"
-                                                        >
-                                                            Log IMEI
-                                                        </button>
-                                                    )}
                                                     {item.serial_number && (
-                                                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter">SN: {item.serial_number}</span>
+                                                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter bg-emerald-50 px-1.5 rounded">SN: {item.serial_number}</span>
                                                     )}
                                                 </div>
                                             </div>
@@ -743,25 +729,25 @@ export default function AdminOrdersPage() {
                                     )}
                                 </div>
                                 </td>
-                                <td className="px-8 py-6">
+                                <td className="px-8 py-8">
                                     <span className={cn(
-                                        "px-2 py-1 rounded text-[8px] font-black uppercase tracking-widest",
-                                        (order as OrderRecord & { captured_by?: string }).captured_by === 'system' ? "bg-slate-50 text-slate-400" : "bg-primary/10 text-primary border border-primary/10"
+                                        "px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border shadow-sm",
+                                        (order as any).captured_by === 'system' ? "bg-slate-50 text-slate-400 border-slate-100" : "bg-primary/5 text-primary border-primary/10"
                                     )}>
-                                        {(order as OrderRecord & { captured_by?: string }).captured_by?.split('@')[0] || 'System'}
+                                        {(order as any).captured_by?.split('@')[0] || 'System'}
                                     </span>
                                 </td>
                                 {canSeeMoney && (
-                                    <td className="px-8 py-6 font-black text-primary">
+                                    <td className="px-8 py-8 font-black text-primary text-sm whitespace-nowrap">
                                         {formatPrice(profit)}
                                     </td>
                                 )}
-                                <td className="px-8 py-6 text-left">
-                                <div className="flex flex-col gap-2">
+                                <td className="px-8 py-8 text-left">
+                                <div className="flex flex-col gap-2.5">
                                     <select
                                         className={cn(
-                                            "rounded-xl border-none px-4 py-2 text-[9px] font-black uppercase tracking-widest outline-none ring-0 transition-all cursor-pointer",
-                                            order.status === 'Cancelled' || order.status === 'Payment Failed' ? "bg-rose-50 text-rose-600" : "text-primary bg-primary/10 hover:bg-primary/20"
+                                            "rounded-xl border-none px-4 py-2 text-[9px] font-black uppercase tracking-widest outline-none ring-0 transition-all cursor-pointer shadow-sm",
+                                            order.status === 'Cancelled' || order.status === 'Payment Failed' ? "bg-rose-50 text-rose-600" : "text-primary bg-primary/5 hover:bg-primary/10"
                                         )}
                                         value={order.status}
                                         onChange={(e) => updateOrderStatus(order.id, e.target.value as MachineStatus)}
@@ -779,14 +765,14 @@ export default function AdminOrdersPage() {
                                                 setAssigningRiderId(order.id);
                                                 setRiderForm({ name: order.rider_name || '', phone: order.rider_phone || '' });
                                             }}
-                                            className="text-[8px] font-black uppercase text-primary hover:underline text-left pl-1"
+                                            className="text-[8px] font-black uppercase text-primary hover:underline text-left pl-1 whitespace-nowrap"
                                         >
                                             {order.rider_name ? `Rider: ${order.rider_name}` : 'Assign Rider'}
                                         </button>
                                     )}
                                 </div>
                                 </td>
-                                <td className="px-8 py-6 text-right">
+                                <td className="px-8 py-8 text-right rounded-r-[1.5rem]">
                                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Button
                                             variant="ghost"

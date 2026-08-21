@@ -1,78 +1,50 @@
-# Apex OS: The God-Tier Expansion (Phases 11-14) 🚀🌌💎🛡️♾️
+# Apex OS: Phase 13 — Full System Connection & Integrity Hardening 🦾💎⚡
 
-This roadmap transitions Apex from a global business machine into a **Self-Generating Financial Institution.**
+This phase is the "Polishing & Rigging" stage. We will eliminate every dead link, unimplemented button, and UI inconsistency to ensure the system is 100% mission-ready for a live business environment.
 
----
+## 🔗 1. Cross-Module Navigation Rigging
+- **Objective**: Ensure every sidebar, header, and dashboard button leads to a functioning node.
+- **Actions**:
+    - **Admin Sidebar**: Connect "Partners Node" and "Sourcing Bridge" to the new pages. (Done).
+    - **Main Dashboard**: Rig the "Launch Campaign", "New Product", and "New Rider" buttons to their respective upload/dispatch flows.
+    - **Support Hub**: Connect the "VIP Relay" button to the new `/support/vip-relay` screen.
 
-## Phase 11 — The Apex Multi-Verse (Ecosystem Scale)
-*Status: Planned*
+## 🛠️ 2. Functional Button Implementation
+- **Objective**: Turn "Mock" buttons into interactive triggers.
+- **Actions**:
+    - **AI Ad Agency**: Implement the "Authorize Pivot" button to actually update budget allocations in the database.
+    - **Sourcing Bridge**: Build the "Landing Calc" modal to calculate KRA/Duty costs in real-time.
+    - **Multi-Vendor Hub**: Implement the "Onboard Partner" form and detail view.
 
-### 🏢 1. Multi-Vendor Marketplace (The Partner Grid)
-- **Objective**: Allow trusted 3rd party vendors to plug into your logistics.
+## 🤖 3. Feature Toggle Synchronization
+- **Objective**: Ensure the [Features Settings](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/settings/page.tsx) actually control the storefront.
+- **Integration**:
+    - **AI Concierge**: Sync the `ai_concierge_enabled` flag with the visibility of the bot component.
+    - **Dynamic Pricing**: Link the `dynamic_pricing_enabled` flag to the background cron worker.
+    - **Fraud Shield**: Link the `fraud_shield_enabled` flag to the exception logging logic.
 
-### 🤖 2. Apex AI Concierge (LMM Sales Agent)
-- **Intelligence**: Users say "Build me a setup for 20k," and the AI adds the items to the bag instantly.
+## 📐 4. UI/UX "Titan" Standard Refinement
+- **Objective**: Zero overflow, zero broken text, zero "Black" UI elements.
+- **Fixes**:
+    - Apply `whitespace-nowrap` and `truncate` to all tabular data (Staff, Inventory, Vendors).
+    - Standardize all "Empty States" with custom TechPax illustrations/icons.
+    - Ensure all "Back" buttons use the `useRouter().back()` or fixed breadcrumb logic.
 
-### 🎨 3. Dynamic Tier-Theming (Apex Noir)
-- **Logic**: **Explorer** (Light) -> **Gold** (Titanium) -> **Legend** (**Apex Noir**: Deep Black & Gold UI).
-
----
-
-## Phase 12 — The Apex Sovereignty (Autonomous Dominance)
-*Status: Planned*
-
-### 📈 1. AI Ad Agency (Autonomous Marketing)
-- **Logic**: AI manages Meta & Google spend based on stock velocity and net margins.
-
-### 👓 2. AR Spatial Node (Try-Before-Buy)
-- **Objective**: Virtual gadget placement using the Android App camera.
-
-### ⛓️ 3. Immutability Protocol (Blockchain Warranty)
-- **Objective**: Unique NFT/Hash warranty certificates logged on a private ledger.
-
----
-
-## Phase 13 — The Apex Syndicate (Financial Intelligence) 💳💰
-*Status: God-Mode Entry*
-
-### 💳 1. Apex Credit: Buy Now, Pay Later (BNPL)
-- **Objective**: In-house lending for elite customers.
-- **Logic**: Use historical purchase data + loyalty rank to offer credit limits. AI handles risk scoring.
-
-### 🏦 2. Supplier Capital (Working Capital Loans)
-- **Objective**: Lend money to your best suppliers to buy more stock.
-- **Logic**: If a supplier has 95%+ fill rate and 4.8+ rating -> Apex offers automated inventory financing.
-
-### 🤝 3. Franchise OS (Apex Syndicate)
-- **Objective**: License your tech stack.
-- **Feature**: Allow others to start "Apex Mombasa" or "Apex Eldoret" using your software and brand while you take a % of every transaction.
-
----
-
-## Phase 14 — The Apex Infinity (The Final Loop) ♾️📡
-*Status: Total Market Control*
-
-### 🔄 1. Tech-for-Life (Device Subscriptions)
-- **Objective**: Switch from one-time sales to monthly recurring revenue (MRR).
-- **Plan**: Users pay KSh 2,000/mo for a "Charging & Audio" subscription. Every 12 months, they get the latest model swapped out automatically.
-
-### 📡 2. Neural Demand Anticipation (Pre-Shipping)
-- **Objective**: Ship items *before* they are ordered.
-- **Intelligence**: AI analyzes browsing clusters + historical pay-day patterns to move 50 units of specific chargers to local rider bags 2 hours before the "Nairobi Rush" starts.
-
-### 🛡️ 3. Sovereign Vault (Private Data Node)
-- **Objective**: Zero-dependency hosting.
-- **Infrastructure**: Transition from Supabase/Render to a private dedicated server cluster for 100% control over the business data and zero downtime.
+## 📵 5. Final Android Bridge Test
+- **Objective**: Verify the web-to-native connection is bidirectional and reliable.
+- **Tests**:
+    - Trigger a scan from the web and receive it in the SKU field.
+    - Trigger a "Member Pass" QR from the web and display it in the native overlay.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- `npm run build` for multi-store routing.
-- Load testing for high-concurrency "Flash Drops."
+- `npm run build` to verify every route is valid and type-safe.
+- Scripted click-test on the sidebar navigation groups.
 
 ### Manual Verification
-1. **Syndicate Test**: Log in as a "Franchisee" and verify you see a localized version of the brand.
-2. **Infinity Test**: Activate a subscription and verify the recurring billing cycle in the Ledger.
-3. **Credit Test**: Apply for BNPL as a "Diamond" user and verify the AI-calculated credit limit.
+1. **Settings Toggle**: Turn off AI Concierge in settings and verify it disappears from the homepage instantly.
+2. **End-to-End Payout**: Complete a mission and verify the Payout Worker logs the correct debit in the Finance Fortress.
+3. **Multi-Store Test**: Switch brands in the sidebar and verify the "Store Name" updates across the dashboard.

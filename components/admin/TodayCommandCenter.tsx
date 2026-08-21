@@ -117,7 +117,7 @@ export default function TodayCommandCenter() {
                             </div>
 
                             <div className="mt-6 flex items-center justify-between">
-                                <p className="text-[10px] font-black uppercase text-foreground/70 tracking-tight leading-tight max-w-[120px]">{item.label}</p>
+                                <p className="text-[10px] font-black uppercase text-foreground/70 tracking-tight leading-tight max-w-[140px] truncate whitespace-nowrap">{item.label}</p>
                                 <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                     <ChevronRight className="h-4 w-4 text-primary" />
                                 </div>

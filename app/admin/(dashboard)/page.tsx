@@ -40,6 +40,7 @@ import SystemPulseWidget from '@/components/admin/SystemPulseWidget';
 import ApexIntelligence from '@/components/admin/ApexIntelligence2';
 import AskApex from '@/components/admin/AskApex';
 import SentimentSentinel from '@/components/admin/SentimentSentinel';
+import ActiveAdmins from '@/components/admin/ActiveAdmins';
 import { runSecurityScan } from '@/lib/apex-os/security-shield';
 
 interface OrderRecord {
@@ -369,6 +370,8 @@ export default function AdminDashboard() {
           </div>
 
           <div className="lg:col-span-4 space-y-8">
+
+              <ActiveAdmins />
 
               <SystemPulseWidget />
 

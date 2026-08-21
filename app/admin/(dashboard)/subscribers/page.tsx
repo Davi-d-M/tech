@@ -130,7 +130,7 @@ export default function AdminSubscribersPage() {
           <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden">
               <table className="w-full text-left">
                   <thead>
-                      <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
+                      <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em] whitespace-nowrap">
                           <th className="px-8 py-6">Identity</th>
                           <th className="px-8 py-6">Joined Date</th>
                           <th className="px-8 py-6">Status</th>
@@ -142,12 +142,12 @@ export default function AdminSubscribersPage() {
                           <tr key={sub.id} className="hover:bg-slate-50/50 transition-colors group">
                               <td className="px-8 py-6">
                                   <div className="flex items-center gap-4">
-                                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black uppercase text-xs shadow-inner">
+                                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black uppercase text-xs shadow-inner shrink-0">
                                           {sub.email.substring(0, 2).toUpperCase()}
                                       </div>
-                                      <div>
-                                          <p className="font-black text-foreground uppercase text-xs tracking-tight">{sub.email}</p>
-                                          <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Verified Lead</p>
+                                      <div className="min-w-0">
+                                          <p className="font-black text-foreground uppercase text-xs tracking-tight truncate whitespace-nowrap">{sub.email}</p>
+                                          <p className="text-[8px] font-bold text-slate-400 uppercase mt-1 tracking-widest">Verified Lead</p>
                                       </div>
                                   </div>
                               </td>

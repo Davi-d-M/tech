@@ -9,9 +9,11 @@ import {
     Calculator,
     TrendingUp,
     RefreshCcw,
-    DollarSign
+    DollarSign,
+    X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
@@ -30,6 +32,18 @@ export default function GlobalSourcingBridge() {
     const { role } = useAdmin();
     const [shipments, setShipments] = React.useState<Shipment[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [isCalcOpen, setIsCalcOpen] = React.useState(false);
+
+    // Calc State
+    const [usdValue, setUsdValue] = React.useState('1000');
+    const [taxRate, setTaxRate] = React.useState('22.5');
+    const rate = 129.5;
+
+    const landingCost = React.useMemo(() => {
+        const base = Number(usdValue) * rate;
+        const tax = base * (Number(taxRate) / 100);
+        return base + tax;
+    }, [usdValue, taxRate]);
 
     const fetchShipments = React.useCallback(async () => {
         setLoading(true);
@@ -58,7 +72,7 @@ export default function GlobalSourcingBridge() {
                     <p className="text-muted-foreground text-sm font-medium mt-2">Track international imports and calculate multi-currency landing costs.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest hover:bg-slate-50">
+                    <Button onClick={() => setIsCalcOpen(true)} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all active:scale-95">
                         <Calculator className="h-4 w-4 mr-2" /> Landing Calc
                     </Button>
                     <Button onClick={fetchShipments} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest hover:bg-slate-50">
@@ -66,6 +80,35 @@ export default function GlobalSourcingBridge() {
                     </Button>
                 </div>
             </header>
+
+            {isCalcOpen && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/10 backdrop-blur-md p-4">
+                    <Card className="max-w-md w-full p-10 rounded-[3rem] bg-white border border-slate-100 shadow-2xl space-y-8 animate-in zoom-in-95 duration-500">
+                        <div className="flex justify-between items-center">
+                            <h3 className="text-xl font-black uppercase tracking-tighter">Landing Calculator</h3>
+                            <button onClick={() => setIsCalcOpen(false)} className="h-8 w-8 rounded-full hover:bg-slate-50 flex items-center justify-center transition-colors"><X size={18} /></button>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400">Shipment Value (USD)</label>
+                                <Input value={usdValue} onChange={e => setUsdValue(e.target.value)} type="number" className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-black text-xl" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400">Customs / Tax Rate (%)</label>
+                                <Input value={taxRate} onChange={e => setTaxRate(e.target.value)} type="number" className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-black text-xl" />
+                            </div>
+                            <div className="p-8 rounded-[2rem] bg-indigo-50 border border-indigo-100 space-y-4">
+                                <div className="flex justify-between text-[10px] font-black uppercase text-indigo-400 tracking-widest">
+                                    <span>Calculated Landing Cost</span>
+                                    <span>KES @ 129.5</span>
+                                </div>
+                                <p className="text-4xl font-black text-indigo-600">{formatPrice(landingCost)}</p>
+                            </div>
+                        </div>
+                        <Button onClick={() => setIsCalcOpen(false)} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-xs">Close Node</Button>
+                    </Card>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
                 {[

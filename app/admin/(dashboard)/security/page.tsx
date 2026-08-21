@@ -172,10 +172,10 @@ export default function SecurityHub() {
                         <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
+                                    <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em] whitespace-nowrap">
                                         <th className="px-10 py-6">Event Identity</th>
                                         <th className="px-10 py-6 text-center">Protocol Status</th>
-                                        <th className="px-10 py-6 text-center">Origin IP</th>
+                                        <th className="px-10 py-6 text-center">Origin Node</th>
                                         <th className="px-10 py-6 text-right">Timestamp</th>
                                     </tr>
                                 </thead>
@@ -195,8 +195,8 @@ export default function SecurityHub() {
                                                         <Key size={20} />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black text-foreground uppercase tracking-tight">Login Attempt</p>
-                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Access Channel: Admin Hub</p>
+                                                        <p className="text-sm font-black text-foreground uppercase tracking-tight whitespace-nowrap">Login Attempt</p>
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 whitespace-nowrap">Access Channel: Admin Hub</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -208,7 +208,7 @@ export default function SecurityHub() {
                                                     {att.success ? 'Authorized' : 'Violation'}
                                                 </span>
                                             </td>
-                                            <td className="px-10 py-8 text-center font-mono text-[10px] font-black text-slate-400 tracking-widest">{att.ip_address || '0.0.0.0'}</td>
+                                            <td className="px-10 py-8 text-center font-mono text-[10px] font-black text-slate-400 tracking-widest">{att.ip_address || 'Titan Node'}</td>
                                             <td className="px-10 py-8 text-right">
                                                 <p className="text-[11px] font-bold text-foreground uppercase leading-none">{new Date(att.attempt_time).toLocaleTimeString()}</p>
                                                 <p className="text-[9px] font-black text-slate-400 uppercase mt-2 tracking-widest">{new Date(att.attempt_time).toLocaleDateString()}</p>

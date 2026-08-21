@@ -8,6 +8,13 @@ export async function runAutonomousPricingSync() {
     if (!supabase) return;
 
     try {
+        // Phase 13: Feature Toggle Verification
+        const { data: featData } = await supabase.from('settings').select('value').eq('key', 'features').maybeSingle();
+        if (featData && (featData.value as any).dynamic_pricing_enabled === false) {
+            console.log("[SINGULARITY] Pricing Engine Idle. Toggle Disabled.");
+            return;
+        }
+
         const { data: products, error } = await supabase
             .from('products')
             .select('id, name, price, price_min, price_max, stock, is_dynamic_pricing')

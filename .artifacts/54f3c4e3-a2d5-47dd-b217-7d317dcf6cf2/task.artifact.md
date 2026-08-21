@@ -1,16 +1,25 @@
-# Tasks - Apex OS Final Evolution (Phases 11 & 12) 🚀🌌💎🛡️
+# Tasks - Apex OS Phase 13: Integrity Hardening 🦾💎⚡
 
-## Phase 11: The Apex Multi-Verse
-- [ ] Implement **Multi-Vendor Hub** at `app/admin/(dashboard)/operations/vendors/page.tsx`.
-- [ ] Create **AI Concierge** component at `components/home/AIConcierge.tsx`.
-- [ ] Implement **Dynamic Tier-Theming** (Titanium & Noir) in `app/globals.css` and a `ThemeSynchronizer`.
+## Phase 1: Dashboard & Navigation Rigging
+- [ ] Connect "Launch Campaign" button in `app/admin/(dashboard)/page.tsx` to `/admin/marketing/create`.
+- [ ] Connect "New Product", "New Rider", "Broadcast", "New Coupon" in `app/admin/(dashboard)/page.tsx` to respective routes.
+- [ ] Connect "VIP Relay" in `app/admin/(dashboard)/support/page.tsx` to `/admin/support/vip-relay`.
 
-## Phase 12: The Apex Sovereignty
-- [ ] Implement **AI Ad Agency** dashboard at `app/admin/(dashboard)/marketing/ai-agency/page.tsx`.
-- [ ] Add **AR Spatial Node** to Android `ScannerActivity.kt`.
-- [ ] Create **Blockchain Warranty Node** at `lib/apex-os/warranty-ledger.ts`.
-- [ ] Implement **Global Sourcing Bridge** at `app/admin/(dashboard)/operations/sourcing/page.tsx`.
+## Phase 2: Feature Toggle Synchronization
+- [ ] Link `dynamic_pricing_enabled` toggle in `settings/page.tsx` to `autonomous-pricing.ts` execution logic.
+- [ ] Link `fraud_shield_enabled` to `security-shield.ts` scan triggers.
+- [ ] Link `gamification_enabled` to profile points/streak visibility.
 
-## Final Polishing
+## Phase 3: Functional Node Implementation
+- [ ] Implement "Authorize Pivot" button logic in `app/admin/(dashboard)/marketing/ai-agency/page.tsx`.
+- [ ] Build "Landing Cost Calculator" modal in `app/admin/(dashboard)/operations/sourcing/page.tsx`.
+- [ ] Create "Onboard Partner" form in `app/admin/(dashboard)/operations/vendors/page.tsx`.
+
+## Phase 4: UI/UX "Titan" Standard Clean-up
+- [ ] Apply `truncate` and `whitespace-nowrap` to all dashboard and hub tables.
+- [ ] Standardize "Empty State" UI for all modules.
+- [ ] Verify forced Light Mode across all new components.
+
+## Phase 5: Final Integrity Verification
 - [ ] Run `npm run build` and `gradlew assembleDebug`.
-- [ ] Final "Empire" walkthrough.
+- [ ] Final "Mission Ready" walkthrough.

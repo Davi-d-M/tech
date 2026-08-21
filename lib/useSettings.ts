@@ -62,6 +62,12 @@ export interface StoreSettings {
         google_maps: string;
         footer_copy: string;
     };
+    features: {
+        ai_concierge_enabled: boolean;
+        dynamic_pricing_enabled: boolean;
+        gamification_enabled: boolean;
+        fraud_shield_enabled: boolean;
+    };
     promotions?: {
         flash_sale_text: string;
         discount_percent: number;
@@ -132,6 +138,12 @@ const DEFAULT_SETTINGS: StoreSettings = {
         hours: "Mon-Sat: 9am - 6pm",
         google_maps: "",
         footer_copy: "© 2026 Apexstores™"
+    },
+    features: {
+        ai_concierge_enabled: true,
+        dynamic_pricing_enabled: true,
+        gamification_enabled: true,
+        fraud_shield_enabled: true
     }
 };
 
@@ -167,6 +179,7 @@ export function useSettings() {
                         if (item.key === 'seo_config') newSettings.seo_config = { ...newSettings.seo_config, ...item.value };
                         if (item.key === 'social_links') newSettings.social_links = { ...newSettings.social_links, ...item.value };
                         if (item.key === 'store_info') newSettings.store_info = { ...newSettings.store_info, ...item.value };
+                        if (item.key === 'features') newSettings.features = { ...newSettings.features, ...item.value };
                         if (item.key === 'promotions') newSettings.promotions = { ...newSettings.promotions, ...item.value };
                     });
                     setSettings(newSettings);

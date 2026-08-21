@@ -247,19 +247,19 @@ export default function AdminAuditPage() {
                                               {(log?.staff_email?.substring(0, 2) || 'AD').toUpperCase()}
                                           </div>
                                           <div>
-                                              <span className="font-black text-foreground uppercase text-xs block">{log.staff_email || 'System'}</span>
-                                              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1 block">
-                                                  {log.ip_address || '0.0.0.0'} &bull; {log.device_info?.split(' ')[0] || 'Unknown'}
+                                              <span className="font-black text-foreground uppercase text-[11px] block whitespace-nowrap">{log.staff_email || 'System'}</span>
+                                              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 block whitespace-nowrap">
+                                                  {log.ip_address || '0.0.0.0'} &bull; {log.device_info || 'Unknown'}
                                               </span>
                                           </div>
                                       </div>
                                   </td>
                                   <td className="px-10 py-8">
-                                      <span className="text-[10px] font-black text-primary uppercase bg-primary/5 px-3 py-1.5 rounded-lg border border-primary/10">
+                                      <span className="text-[10px] font-black text-primary uppercase bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 whitespace-nowrap shadow-sm">
                                           {(log?.action || 'ACTIVITY').replace(/_/g, ' ')}
                                       </span>
                                   </td>
-                                  <td className="px-10 py-8">
+                                  <td className="px-10 py-8 min-w-[300px]">
                                       <div className="max-w-md">
                                           <DetailRenderer log={log} />
                                       </div>

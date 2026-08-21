@@ -31,7 +31,8 @@ import {
     Plus,
     DollarSign,
     Home as HomeIcon,
-    MapPin
+    MapPin,
+    Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,10 +50,11 @@ const DEFAULTS = {
     theme_config: { primary: "#F5A000", secondary: "#0F172A", accent: "#F5A000", custom_css: "" },
     seo_config: { title: "Apexstores | Elite Tech", description: "Premium tech store in Nairobi.", keywords: "AirPods, Chargers, iPhone", og_image: "" },
     social_links: { instagram: "", tiktok: "", facebook: "", x: "", youtube: "" },
-    store_info: { name: "APEXSTORES", hours: "9am - 6pm", google_maps: "", footer_copy: "© 2026 Apexstores™" }
+    store_info: { name: "APEXSTORES", hours: "9am - 6pm", google_maps: "", footer_copy: "© 2026 Apexstores™" },
+    ai_config: { build_setup_limit: 5000, assistant_name: "Apex AI", response_style: "Tactical" }
 };
 
-type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'advanced';
+type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced';
 
 export default function AdminSettingsPage() {
     const { email } = useAdmin();
@@ -71,6 +73,13 @@ export default function AdminSettingsPage() {
     const [seo, setSeo] = useState(DEFAULTS.seo_config);
     const [social, setSocial] = useState(DEFAULTS.social_links);
     const [store, setStore] = useState(DEFAULTS.store_info);
+    const [aiConfig, setAiConfig] = useState(DEFAULTS.ai_config);
+    const [features, setFeatures] = useState({
+        ai_concierge_enabled: true,
+        dynamic_pricing_enabled: true,
+        gamification_enabled: true,
+        fraud_shield_enabled: true
+    });
 
     const [activeTab, setActiveTab] = useState<TabId>('identity');
     const [isAdvancedEnabled, setIsAdvancedEnabled] = useState(false);
@@ -114,6 +123,8 @@ export default function AdminSettingsPage() {
                     if (item.key === 'seo_config') setSeo(item.value as typeof DEFAULTS.seo_config);
                     if (item.key === 'social_links') setSocial(item.value as typeof DEFAULTS.social_links);
                     if (item.key === 'store_info') setStore(item.value as typeof DEFAULTS.store_info);
+                    if (item.key === 'ai_config') setAiConfig(item.value as typeof DEFAULTS.ai_config);
+                    if (item.key === 'features') setFeatures(item.value as typeof features);
                 });
             }
         } catch (err) {
@@ -215,6 +226,8 @@ export default function AdminSettingsPage() {
                 { key: 'shipping', value: shipping },
                 { key: 'logistics', value: logistics },
                 { key: 'catalog', value: catalog },
+                { key: 'features', value: features },
+                { key: 'ai_config', value: aiConfig },
             ];
 
             const { error } = await supabase
@@ -270,6 +283,8 @@ export default function AdminSettingsPage() {
                                 handleSave('shipping', shipping, true);
                             }
                             else if (activeTab === 'catalog') handleSave('catalog', catalog, true);
+                            else if (activeTab === 'ai') handleSave('ai_config', aiConfig, true);
+                            else if (activeTab === 'features') handleSave('features', features, true);
                             else if (activeTab === 'advanced') handleSave('theme_config', theme, true);
                         }}
                         className="rounded-xl h-12 px-6 bg-primary text-white font-black uppercase text-[10px] tracking-widest hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/20"
@@ -302,6 +317,8 @@ export default function AdminSettingsPage() {
                     { id: 'seo', label: 'SEO & Social', icon: Globe },
                     { id: 'ops', label: 'Operations', icon: Truck },
                     { id: 'catalog', label: 'Catalog', icon: Smartphone },
+                    { id: 'ai', label: 'AI Node', icon: Bot },
+                    { id: 'features', label: 'Features', icon: Zap },
                     { id: 'advanced', label: 'Advanced', icon: Code },
                 ].map(tab => (
                     <button
@@ -770,6 +787,91 @@ export default function AdminSettingsPage() {
                                                 className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
                                             >
                                                 <Trash2 className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        </div>
+                    )}
+
+                    {/* AI NODE TAB */}
+                    {activeTab === 'ai' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 text-left">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Bot className="h-5 w-5 text-primary" /> LMM Configuration</h2>
+                                <div className="space-y-6">
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground">Setup Bundle Limit (KES)</label>
+                                            <Input
+                                                type="number"
+                                                value={aiConfig.build_setup_limit}
+                                                onChange={e => setAiConfig({...aiConfig, build_setup_limit: Number(e.target.value)})}
+                                                className="h-14 rounded-2xl bg-secondary border-border font-black text-lg text-foreground"
+                                            />
+                                            <p className="text-[8px] font-bold text-primary uppercase italic">&quot;Build me a setup for X&quot; cap.</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground">Assistant Identity</label>
+                                            <Input
+                                                value={aiConfig.assistant_name}
+                                                onChange={e => setAiConfig({...aiConfig, assistant_name: e.target.value})}
+                                                className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground">Response Style Profile</label>
+                                        <select
+                                            value={aiConfig.response_style}
+                                            onChange={e => setAiConfig({...aiConfig, response_style: e.target.value})}
+                                            className="w-full h-14 rounded-2xl bg-secondary border-border px-4 text-xs font-black uppercase outline-none"
+                                        >
+                                            <option value="Tactical">Tactical (Business-Ready)</option>
+                                            <option value="Elite">Elite (Premium/Formal)</option>
+                                            <option value="Friendly">Friendly (Casual)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <Button
+                                    onClick={() => handleSave('ai_config', aiConfig, true)}
+                                    className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20"
+                                >
+                                    Authorize AI Node
+                                </Button>
+                            </Card>
+                        </div>
+                    )}
+
+                    {/* FEATURES TAB */}
+                    {activeTab === 'features' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 text-left">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Zap className="h-5 w-5 text-primary" /> Autonomous Features</h2>
+                                <div className="grid sm:grid-cols-2 gap-8">
+                                    {[
+                                        { id: 'ai_concierge_enabled', label: 'AI Shopping Concierge', desc: 'Full-screen conversational agent for customers.' },
+                                        { id: 'dynamic_pricing_enabled', label: 'Dynamic Pricing Engine', desc: 'Auto-adjust prices based on stock velocity.' },
+                                        { id: 'gamification_enabled', label: 'Loyalty & Gamification', desc: 'Streaks, missions, and reward crates.' },
+                                        { id: 'fraud_shield_enabled', label: 'Apex Fraud Shield', desc: 'Anomaly detection and rapid IP blocking.' },
+                                    ].map(feat => (
+                                        <div key={feat.id} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-between group transition-all hover:border-primary/20">
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-black uppercase text-foreground">{feat.label}</p>
+                                                <p className="text-[10px] text-slate-400 font-medium italic">{feat.desc}</p>
+                                            </div>
+                                            <button
+                                                onClick={() => setFeatures({...features, [feat.id]: !(features as any)[feat.id]})}
+                                                className={cn(
+                                                    "w-12 h-6 rounded-full transition-all relative p-1 flex items-center shadow-inner",
+                                                    (features as any)[feat.id] ? "bg-emerald-500" : "bg-slate-200"
+                                                )}
+                                            >
+                                                <div className={cn(
+                                                    "h-4 w-4 rounded-full bg-white shadow-sm transition-all",
+                                                    (features as any)[feat.id] ? "translate-x-6" : "translate-x-0"
+                                                )} />
                                             </button>
                                         </div>
                                     ))}

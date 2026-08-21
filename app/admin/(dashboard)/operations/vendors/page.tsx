@@ -17,6 +17,7 @@ import {
     ShieldAlert
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
@@ -37,7 +38,11 @@ export default function MultiVendorHub() {
     const { email: adminEmail } = useAdmin();
     const [vendors, setVendors] = React.useState<Vendor[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [isOnboarding, setIsOnboarding] = React.useState(false);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+    // Form State
+    const [newVendor, setNewVendor] = React.useState({ name: '', email: '' });
 
     const fetchVendors = React.useCallback(async () => {
         if (!supabase) return;
@@ -81,11 +86,57 @@ export default function MultiVendorHub() {
                     <Button onClick={fetchVendors} variant="outline" className="rounded-xl h-12 px-6 border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all">
                         <RefreshCcw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} /> Sync Grid
                     </Button>
-                    <Button className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all">
+                    <Button onClick={() => setIsOnboarding(true)} className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all active:scale-95">
                         <Plus size={16} className="mr-2" /> Onboard Partner
                     </Button>
                 </div>
             </header>
+
+            {isOnboarding && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/10 backdrop-blur-md p-4">
+                    <Card className="max-w-md w-full p-10 rounded-[3rem] bg-white border border-slate-100 shadow-2xl space-y-8 animate-in zoom-in-95 duration-500">
+                        <h3 className="text-xl font-black uppercase tracking-tighter">Partner Onboarding</h3>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400">Business Name</label>
+                                <Input value={newVendor.name} onChange={e => setNewVendor({...newVendor, name: e.target.value})} placeholder="e.g. Apex Wholesalers" className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-bold" />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400">Contact Email</label>
+                                <Input value={newVendor.email} onChange={e => setNewVendor({...newVendor, email: e.target.value})} placeholder="partner@domain.com" className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-bold" />
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={async () => {
+                                    if (!newVendor.name || !newVendor.email) return;
+                                    setLoading(true);
+                                    await new Promise(r => setTimeout(r, 1500));
+                                    setVendors(prev => [...prev, {
+                                        id: `v${Date.now()}`,
+                                        name: newVendor.name,
+                                        email: newVendor.email,
+                                        status: 'Pending',
+                                        sales_total: 0,
+                                        items_count: 0,
+                                        commission_rate: 10,
+                                        joined_at: new Date().toISOString()
+                                    }]);
+                                    setIsOnboarding(false);
+                                    setNewVendor({ name: '', email: '' });
+                                    setLoading(false);
+                                    setMessage({ type: 'success', text: "Onboarding Payload Sent. Verification Pending." });
+                                    setTimeout(() => setMessage(null), 3000);
+                                }}
+                                className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] shadow-lg shadow-primary/20"
+                            >
+                                Initiate Protocol
+                            </Button>
+                            <Button onClick={() => setIsOnboarding(false)} variant="outline" className="flex-1 h-14 rounded-2xl border-slate-100 font-black uppercase text-[10px]">Cancel</Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
 
             {message && (
                 <div className={cn(

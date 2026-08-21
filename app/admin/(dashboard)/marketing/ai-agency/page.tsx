@@ -51,6 +51,23 @@ export default function AIAdAgency() {
         setLoading(false);
     }, []);
 
+    const handleAuthorizePivot = async () => {
+        setLoading(true);
+        try {
+            // Apex OS: Pivot budget nodes across campaigns
+            await new Promise(r => setTimeout(r, 2000));
+            setCampaigns(prev => prev.map(c => {
+                if (c.id === 'ad1') return { ...c, spend: c.spend + 5000, velocity: 'Accelerating' as const };
+                if (c.id === 'ad3') return { ...c, spend: Math.max(0, c.spend - 2000), status: 'Paused' as const };
+                return c;
+            }));
+            await logAuditAction(email || 'Admin', 'AI_AD_BUDGET_PIVOT', { amount: 5000, reason: 'High ROAS Re-allocation' });
+            alert("Pivot Protocol Engaged. Meta Budget Updated. 🚀");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     React.useEffect(() => {
         fetchCampaigns();
     }, [fetchCampaigns]);
@@ -167,7 +184,12 @@ export default function AIAdAgency() {
                             <p className="text-xs font-medium leading-relaxed opacity-70 italic">
                                 &quot;Detected high margin velocity on Audio items. I recommend shifting KSh 5,000 from stagnant Case ads to the Amaya AM-05 campaign to maximize ROI.&quot;
                             </p>
-                            <Button className="w-full h-14 rounded-2xl bg-white text-indigo-600 font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-slate-50 transition-all">
+                            <Button
+                                onClick={handleAuthorizePivot}
+                                disabled={loading}
+                                className="w-full h-14 rounded-2xl bg-white text-indigo-600 font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-slate-50 transition-all"
+                            >
+                                {loading ? <Loader2 className="animate-spin mr-2" /> : null}
                                 Authorize Pivot
                             </Button>
                         </div>

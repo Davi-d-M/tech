@@ -396,11 +396,11 @@ export default function AdminStaffPage() {
                       <div className="overflow-x-auto">
                           <table className="w-full text-left">
                               <thead>
-                                  <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
+                                  <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em] whitespace-nowrap">
                                       <th className="px-8 py-6">Identity</th>
                                       <th className="px-8 py-6">PIN</th>
-                                      <th className="px-8 py-6">Permissions</th>
-                                      <th className="px-8 py-6 text-right">Action</th>
+                                      <th className="px-8 py-6">Permissions Grid</th>
+                                      <th className="px-8 py-6 text-right">Actions</th>
                                   </tr>
                               </thead>
                               <tbody className="divide-y divide-border">
@@ -408,15 +408,15 @@ export default function AdminStaffPage() {
                                       <tr key={member.id} className="hover:bg-secondary/50 transition-colors group">
                                           <td className="px-8 py-8">
                                               <div className="flex items-center gap-4">
-                                                  <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-background font-black uppercase shadow-lg shadow-primary/10 text-[10px] transition-transform group-hover:scale-110">
+                                                  <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-background font-black uppercase shadow-lg shadow-primary/10 text-[10px] transition-transform group-hover:scale-110 shrink-0">
                                                       {(member.email || '??').substring(0, 2).toUpperCase()}
                                                   </div>
                                                   <div className="min-w-0">
-                                                      <span className="font-black text-foreground uppercase text-xs tracking-tight block truncate">{member.email || 'Unknown'}</span>
+                                                      <span className="font-black text-foreground uppercase text-xs tracking-tight block truncate whitespace-nowrap">{member.email || 'Unknown'}</span>
                                                       <select
                                                         value={member.role}
                                                         onChange={e => updateStaffRole(member.id, e.target.value as 'admin' | 'staff' | 'viewer')}
-                                                        className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1 block italic bg-transparent border-none outline-none cursor-pointer hover:text-primary transition-colors"
+                                                        className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 block italic bg-transparent border-none outline-none cursor-pointer hover:text-primary transition-colors whitespace-nowrap"
                                                       >
                                                         <option value="staff">Staff</option>
                                                         <option value="super_admin">Super Admin</option>

@@ -458,9 +458,9 @@ export default function AdminDispatchPage() {
                                                 <div className="h-14 w-14 rounded-2xl bg-secondary border border-border flex items-center justify-center text-foreground text-xl font-black shadow-sm group-hover:scale-105 transition-transform">
                                                     {rider.rider_name.substring(0, 2)}
                                                 </div>
-                                                <div>
-                                                    <h3 className="font-black text-foreground uppercase text-base tracking-tight">{rider.rider_name}</h3>
-                                                    <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">{rider.status}</p>
+                                                <div className="min-w-0 flex-1">
+                                                    <h3 className="font-black text-foreground uppercase text-base tracking-tight truncate">{rider.rider_name}</h3>
+                                                    <p className="text-[9px] font-black uppercase text-muted-foreground tracking-widest whitespace-nowrap">{rider.status}</p>
                                                 </div>
                                             </div>
                                             <div className="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border bg-primary/5 text-primary border-primary/10">
