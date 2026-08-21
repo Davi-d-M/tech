@@ -195,8 +195,8 @@ export default function SecurityHub() {
                                                         <Key size={20} />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black text-foreground uppercase tracking-tight whitespace-nowrap">Login Attempt</p>
-                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 whitespace-nowrap">Access Channel: Admin Hub</p>
+                                                        <p className="text-sm font-black text-foreground uppercase tracking-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">Login Attempt</p>
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">Access Channel: Admin Hub</p>
                                                     </div>
                                                 </div>
                                             </td>
