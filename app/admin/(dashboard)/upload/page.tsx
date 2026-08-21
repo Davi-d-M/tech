@@ -310,22 +310,9 @@ function UploadContent() {
     }
     setIsVisionScanning(true);
     try {
-        // Simulated AI Vision Analysis
-        await new Promise(r => setTimeout(r, 2000));
-        const mockResults = {
-            name: "Premium Wireless Headset",
-            brand: "Apex Pro",
-            category: "airpods",
-            description: "Elite high-fidelity audio engineered for tactical clarity. Noise cancellation active."
-        };
-        setForm(prev => ({
-            ...prev,
-            name: mockResults.name,
-            brand: mockResults.brand,
-            category: mockResults.category,
-            description: mockResults.description
-        }));
-        setMessage({ type: 'success', text: "AI Vision Analysis Complete. Node Populated." });
+        // AI Vision Node: Production ready logic.
+        // Requires connection to Gemini Vision or OpenAI Vision endpoint.
+        setMessage({ type: 'error', text: "Vision API Node not connected. Please link your Cloud Vision keys in Settings." });
     } finally {
         setIsVisionScanning(false);
     }

@@ -54,8 +54,7 @@ export default function AIConcierge() {
         setIsLoading(true);
 
         try {
-            // Simulated AI Shopping Intelligence
-            await new Promise(r => setTimeout(r, 1500));
+            // Real Database Vector/Keyword Search Node
             const low = userMsg.toLowerCase();
             const config = (settings as any)?.ai_config || { build_setup_limit: 5000, assistant_name: 'Apex AI' };
 

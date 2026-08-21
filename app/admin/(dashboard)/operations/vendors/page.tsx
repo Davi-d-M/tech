@@ -48,13 +48,13 @@ export default function MultiVendorHub() {
         if (!supabase) return;
         setLoading(true);
         try {
-            // Simulated Vendor Data for the Nexus Partner Grid
-            await new Promise(r => setTimeout(r, 1000));
-            setVendors([
-                { id: 'v1', name: 'TechPax Global', email: 'partners@techpax.com', status: 'Active', sales_total: 142000, items_count: 24, commission_rate: 10, joined_at: '2026-08-01' },
-                { id: 'v2', name: 'Nairobi Gadget Hub', email: 'sales@nairobigadgets.ke', status: 'Active', sales_total: 89000, items_count: 12, commission_rate: 10, joined_at: '2026-08-10' },
-                { id: 'v3', name: 'Elite Imports', email: 'imports@elite.com', status: 'Pending', sales_total: 0, items_count: 5, commission_rate: 12, joined_at: '2026-08-19' },
-            ]);
+            // Real Database Node Link
+            const { data, error } = await supabase
+                .from('marketplace_vendors')
+                .select('*')
+                .order('joined_at', { ascending: false });
+
+            if (!error) setVendors(data || []);
         } finally {
             setLoading(false);
         }

@@ -40,15 +40,18 @@ export default function AIAdAgency() {
     const [isAutonomous, setIsAutonomous] = React.useState(true);
 
     const fetchCampaigns = React.useCallback(async () => {
+        if (!supabase) return;
         setLoading(true);
-        // Simulated AI Ad Data from Meta/Google Bridge
-        await new Promise(r => setTimeout(r, 1500));
-        setCampaigns([
-            { id: 'ad1', product_name: 'Amaya AM-05 Speaker', spend: 4200, roas: 5.2, clicks: 840, conversions: 12, status: 'High_Efficiency', velocity: 'Accelerating' },
-            { id: 'ad2', product_name: '20W Fast Charger', spend: 1200, roas: 3.8, clicks: 450, conversions: 34, status: 'Optimizing', velocity: 'Stable' },
-            { id: 'ad3', product_name: 'iPhone 15 Case', spend: 800, roas: 1.2, clicks: 120, conversions: 1, status: 'Paused', velocity: 'Decelerating' },
-        ]);
-        setLoading(false);
+        try {
+            const { data, error } = await supabase
+                .from('ad_campaigns')
+                .select('*')
+                .order('roas', { ascending: false });
+
+            if (!error) setCampaigns(data || []);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
     const handleAuthorizePivot = async () => {

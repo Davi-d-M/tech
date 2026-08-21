@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import {
     Ship,
     Plane,
@@ -47,13 +48,17 @@ export default function GlobalSourcingBridge() {
 
     const fetchShipments = React.useCallback(async () => {
         setLoading(true);
-        // Simulated Sourcing Data (China/Dubai Nodes)
-        await new Promise(r => setTimeout(r, 1500));
-        setShipments([
-            { id: 'S104', origin: 'Shenzhen, CN', method: 'Air', status: 'Clearing', eta: '2026-08-23', value_usd: 1420, description: 'Batch 4: 20W Chargers' },
-            { id: 'S105', origin: 'Dubai, UAE', method: 'Sea', status: 'In Transit', eta: '2026-09-05', value_usd: 5400, description: 'Premium Audio Restock' },
-        ]);
-        setLoading(false);
+        if (!supabase) return;
+        try {
+            const { data, error } = await supabase
+                .from('shipments')
+                .select('*')
+                .order('eta', { ascending: true });
+
+            if (!error) setShipments(data || []);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
     React.useEffect(() => {
