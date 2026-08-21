@@ -16,6 +16,8 @@ const SupportBubble = dynamic(() => import('./SupportBubble'), { ssr: false });
 const ExitIntentPopup = dynamic(() => import('./ExitIntentPopup'), { ssr: false });
 const SignInTrigger = dynamic(() => import('./SignInTrigger'), { ssr: false });
 const CompareBar = dynamic(() => import('../product/CompareBar'), { ssr: false });
+const AIConcierge = dynamic(() => import('../home/AIConcierge'), { ssr: false });
+const ThemeSynchronizer = dynamic(() => import('./ThemeSynchronizer'), { ssr: false });
 
 export default function PublicLayoutShield({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
     return (
@@ -155,6 +157,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
     return (
         <>
+            <ThemeSynchronizer />
             <LiveTicker />
             <AbandonedCartBar />
             <Header initialSettings={settings} />
@@ -163,6 +166,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
             <ExitIntentPopup />
             <CompareBar />
             <SupportBubble />
+            <AIConcierge />
             <SignInTrigger />
         </>
     );

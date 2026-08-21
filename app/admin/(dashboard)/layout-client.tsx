@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Store,
+  Globe,
   Tag,
   Star,
   ShieldCheck,
@@ -118,6 +119,8 @@ export default function AdminLayoutClient({
     { group: 'OPERATIONS', items: [
       { name: 'Live Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
       { name: 'Tasks Board', href: '/admin/operations/tasks', icon: LayoutIcon, permission: 'can_manage_orders' },
+      { name: 'Partners Node', href: '/admin/operations/vendors', icon: Store, permission: 'can_manage_settings' },
+      { name: 'Sourcing Bridge', href: '/admin/operations/sourcing', icon: Globe, permission: 'can_manage_inventory' },
       { name: 'Suppliers', href: '/admin/operations/suppliers', icon: Zap, permission: 'can_manage_inventory' },
     ]},
     { group: 'CUSTOMERS', items: [
@@ -128,6 +131,7 @@ export default function AdminLayoutClient({
     ]},
     { group: 'GROWTH', items: [
       { name: 'Marketing Hub', href: '/admin/marketing', icon: TrendingUp, permission: 'can_manage_broadcast' },
+      { name: 'AI Ad Agency', href: '/admin/marketing/ai-agency', icon: Target, permission: 'can_manage_broadcast' },
       { name: 'Autopilot', href: '/admin/marketing/automation', icon: Rocket, permission: 'can_manage_broadcast' },
       { name: 'Affiliates', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
       { name: 'Promotions', href: '/admin/coupons', icon: Tag, permission: 'can_manage_broadcast' },
