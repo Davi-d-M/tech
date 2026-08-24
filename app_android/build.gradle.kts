@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation(libs.zxing.core)
     implementation(libs.image.labeling)
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.okhttp)
     implementation("com.google.firebase:firebase-messaging:24.1.0")
     
     implementation(platform(libs.androidx.compose.bom))

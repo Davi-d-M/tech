@@ -73,7 +73,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: 'owner' });
-    const sessionValue = await createSessionCookie('owner', ownerPermissions);
+    const sessionValue = await createSessionCookie('owner@apexstores.com', 'owner', ownerPermissions);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    const sessionValue = await createSessionCookie(staffData.role, permissions, staffData.supplier_id);
+    const sessionValue = await createSessionCookie(email.trim(), staffData.role, permissions, staffData.supplier_id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -187,7 +187,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    const sessionValue = await createSessionCookie(staffData.role, permissions, staffData.supplier_id);
+    const sessionValue = await createSessionCookie(email.trim().toLowerCase(), staffData.role, permissions, staffData.supplier_id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

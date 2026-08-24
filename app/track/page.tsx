@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, Package, Truck, CheckCircle, Clock, AlertCircle, MapPin, ShieldCheck, MessageSquare } from 'lucide-react';
+import { Search, Package, Truck, CheckCircle, Clock, AlertCircle, MapPin, ShieldCheck, MessageSquare, Star, Zap } from 'lucide-react';
 import { formatPrice, cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -156,7 +156,6 @@ function TrackingContent() {
       const message = `Hello Apexstores! I am tracking Order #${order.id} and it says it's Out for Delivery. What is the ETA?`;
       window.open(`https://wa.me/${settings.contact.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
   };
-
   return (
     <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8 text-left">
       <div className="max-w-4xl mx-auto">
@@ -303,7 +302,40 @@ function TrackingContent() {
 
                         {/* Digital Warranty Card */}
                         {order.status === 'Delivered' && (
-                            <div className="mt-12 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 text-foreground relative overflow-hidden shadow-xl animate-in zoom-in-95 duration-700">
+                            <div className="space-y-8 mt-12 animate-in zoom-in-95 duration-700">
+                                {/* ⭐️ RATE YOUR RIDER */}
+                                <Card className="p-8 rounded-[2.5rem] bg-amber-50 border-2 border-amber-100 shadow-xl relative overflow-hidden">
+                                    <div className="relative z-10 space-y-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-lg"><Star size={20} className="fill-current" /></div>
+                                            <h3 className="text-xl font-black uppercase tracking-tighter text-amber-900">Rate your Pilot</h3>
+                                        </div>
+                                        <p className="text-sm font-medium text-amber-800 italic leading-relaxed">
+                                            &quot;How was your delivery experience with {order.rider_name || 'our rider'}? Your feedback powers the fleet.&quot;
+                                        </p>
+                                        <div className="flex justify-center gap-4 py-4">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    onClick={async () => {
+                                                        if (!supabase) return;
+                                                        await supabase
+                                                            .from('orders')
+                                                            .update({ rider_rating: star })
+                                                            .eq('id', order.id);
+                                                        alert("Feedback Synchronized! Thank you, Commander.");
+                                                    }}
+                                                    className="h-12 w-12 rounded-xl bg-white border-2 border-amber-200 text-amber-400 hover:bg-amber-500 hover:text-white transition-all active:scale-95 shadow-sm flex items-center justify-center"
+                                                >
+                                                    <Star size={24} className="fill-current" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <Zap className="absolute -bottom-6 -right-6 h-24 w-24 text-amber-200/50 rotate-12" />
+                                </Card>
+
+                                <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 text-foreground relative overflow-hidden shadow-xl">
                                 <div className="relative z-10">
                                     <div className="flex items-center justify-between mb-8">
                                         <div className="flex items-center gap-3">
@@ -349,7 +381,8 @@ function TrackingContent() {
                                     </p>
                                 </div>
                             </div>
-                        )}
+                        </div>
+                    )}
                     </div>
                 </div>
 

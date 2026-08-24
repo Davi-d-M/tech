@@ -17,7 +17,8 @@ import {
   ShieldAlert,
   Navigation,
   CheckSquare,
-  Square
+  Square,
+  XCircle
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -101,6 +102,9 @@ export default function AdminOrdersPage() {
   const [isBulkUpdating, setIsBulkUpdating] = React.useState(false);
   const [assigningRiderId, setAssigningRiderId] = React.useState<number | null>(null);
   const [riderForm, setRiderForm] = React.useState({ name: '', phone: '' });
+
+  const [editingPriceId, setEditingPriceId] = React.useState<number | null>(null);
+  const [newPrice, setNewPrice] = React.useState<string>('');
 
   const canManageOrders = role === 'staff' || role === 'admin' || role === 'owner';
   const canSeeMoney = role === 'staff' || role === 'admin' || role === 'owner';
@@ -261,6 +265,16 @@ export default function AdminOrdersPage() {
 
       if (status === 'Dispatched' || status === 'Delivered') {
           const currentOrder = orders.find(o => o.id === orderId);
+
+          // Timestamp Logic
+          const tsPayload: any = {};
+          if (status === 'Dispatched') tsPayload.dispatched_at = new Date().toISOString();
+          if (status === 'Delivered') tsPayload.delivered_at = new Date().toISOString();
+
+          if (Object.keys(tsPayload).length > 0) {
+              await supabase.from('orders').update(tsPayload).eq('id', orderId);
+          }
+
           if (currentOrder?.customer_email) {
               fetch('/api/admin/notify-customer', {
                   method: 'POST',
@@ -303,6 +317,25 @@ export default function AdminOrdersPage() {
     } finally {
       setUpdatingId(null);
     }
+  };
+
+  const handleUpdatePrice = async (orderId: number) => {
+      if (!supabase || !newPrice) return;
+      const priceVal = Number(newPrice);
+      if (isNaN(priceVal)) return;
+
+      try {
+          const { error } = await supabase.from('orders').update({ total_price: priceVal }).eq('id', orderId);
+          if (error) throw error;
+
+          await logAuditAction(email, 'UPDATE_ORDER_PRICE', { id: orderId, newPrice: priceVal });
+          setOrders(prev => prev.map(o => o.id === orderId ? { ...o, total_price: priceVal } : o));
+          setEditingPriceId(null);
+          setNewPrice('');
+          setStatusMessage({ type: 'success', text: `Order #${orderId} price updated.` });
+      } catch (err: any) {
+          setStatusMessage({ type: 'error', text: err.message });
+      }
   };
 
   const handleDownloadReceipt = async (order: OrderRecord) => {
@@ -739,7 +772,27 @@ export default function AdminOrdersPage() {
                                 </td>
                                 {canSeeMoney && (
                                     <td className="px-8 py-8 font-black text-primary text-sm whitespace-nowrap">
-                                        {formatPrice(profit)}
+                                        {editingPriceId === order.id ? (
+                                            <div className="flex items-center gap-2">
+                                                <Input
+                                                    value={newPrice}
+                                                    onChange={e => setNewPrice(e.target.value)}
+                                                    className="w-24 h-10 rounded-lg text-xs font-black"
+                                                    placeholder="Ksh"
+                                                />
+                                                <Button onClick={() => handleUpdatePrice(order.id)} className="h-10 px-2 rounded-lg bg-emerald-500 text-white"><CheckSquare className="h-4 w-4" /></Button>
+                                                <Button onClick={() => setEditingPriceId(null)} variant="ghost" className="h-10 px-2 rounded-lg text-rose-500"><XCircle className="h-4 w-4" /></Button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                {formatPrice(profit)}
+                                                {order.status === 'Quote Pending' && (
+                                                    <button onClick={() => { setEditingPriceId(order.id); setNewPrice(order.total_price.toString()); }} className="text-slate-300 hover:text-primary transition-colors">
+                                                        <Plus className="h-3 w-3" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
                                     </td>
                                 )}
                                 <td className="px-8 py-8 text-left">
@@ -769,6 +822,15 @@ export default function AdminOrdersPage() {
                                         >
                                             {order.rider_name ? `Rider: ${order.rider_name}` : 'Assign Rider'}
                                         </button>
+                                    )}
+
+                                    {order.status === 'Quote Pending' && (
+                                        <Button
+                                            onClick={() => updateOrderStatus(order.id, 'Payment Pending')}
+                                            className="h-8 px-3 rounded-lg bg-emerald-500 text-white font-black uppercase text-[8px] tracking-widest hover:bg-emerald-600 transition-all active:scale-95"
+                                        >
+                                            Send Approved Quote
+                                        </Button>
                                     )}
                                 </div>
                                 </td>

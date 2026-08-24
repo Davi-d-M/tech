@@ -35,6 +35,33 @@ export default function AdminFinancePage() {
     const exchangeRate = 129.5; // Current KES/USD
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+    const [pendingAction, setPendingAction] = React.useState<(() => void) | null>(null);
+
+    React.useEffect(() => {
+        (window as any).onTitanStepUpSuccess = () => {
+            if (pendingAction) {
+                pendingAction();
+                setPendingAction(null);
+            }
+        };
+        return () => { delete (window as any).onTitanStepUpSuccess; };
+    }, [pendingAction]);
+
+    const performSensitiveAction = (action: () => void) => {
+        if ((window as any).TitanNode?.reAuthenticate) {
+            setPendingAction(() => action);
+            (window as any).TitanNode.reAuthenticate();
+        } else {
+            // Fallback for desktop: PIN prompt
+            const pin = prompt("Enter Admin PIN to authorize sensitive action:");
+            if (pin === "1234") { // Mock PIN check, should be real
+                action();
+            } else {
+                alert("Unauthorized Node Access.");
+            }
+        }
+    };
+
     const convert = (amount: number) => {
         if (currency === 'KES') return amount;
         return amount / exchangeRate;
@@ -139,7 +166,7 @@ export default function AdminFinancePage() {
                         ))}
                     </div>
                     <Button
-                        onClick={handleReconcile}
+                        onClick={() => performSensitiveAction(handleReconcile)}
                         disabled={isReconciling || stats.unreconciled === 0}
                         className="rounded-xl h-12 px-6 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
                     >

@@ -13,7 +13,8 @@ import {
     Fingerprint,
     MessageCircle,
     Zap,
-    Trophy
+    Trophy,
+    BatteryMedium
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,7 +60,7 @@ function RiderDashboardContent() {
     const [isOnline, setIsOnline] = useState(false);
     const [isTracking, setIsTracking] = useState(false);
     const [wallet, setWallet] = useState({ balance: 0, total_earned: 0 });
-    const [stats, setStats] = useState({ tier: 'Bronze', rating: 5.0, acceptance: 100, maintenance: 'Healthy' });
+    const [stats, setStats] = useState({ tier: 'Bronze', rating: 5.0, acceptance: 100, maintenance: 'Healthy', battery: 100 });
     const [activeMission, setActiveMission] = useState<Mission | null>(null);
 
     const verifyAndFetch = useCallback(async (riderPhone: string, riderPin: string) => {
@@ -92,7 +93,8 @@ function RiderDashboardContent() {
                 tier: rider.current_tier || 'Bronze',
                 rating: rider.rating || 5.0,
                 acceptance: rider.acceptance_rate || 100,
-                maintenance: 'Healthy'
+                maintenance: 'Healthy',
+                battery: rider.battery_level || 100
             });
 
             const { data: orders } = await supabase.from('orders').select('*').eq('rider_phone', riderPhone.trim()).order('created_at', { ascending: false });
@@ -130,10 +132,14 @@ function RiderDashboardContent() {
 
         setLoading(true);
         try {
-            // 1. Update Order Status
+            // 1. Update Order Status & Delivered Timestamp
             const { error: orderError } = await supabase
                 .from('orders')
-                .update({ status: 'Delivered', updated_at: new Date().toISOString() })
+                .update({
+                    status: 'Delivered',
+                    delivered_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                })
                 .eq('id', orderId);
 
             if (orderError) throw orderError;
@@ -184,12 +190,29 @@ function RiderDashboardContent() {
         }
 
         // Phase 9: Bridge Listener for Offline Sync
-        const win = window as Window & { onTitanSyncOrder?: (orderId: string) => void };
+        const win = window as Window & {
+            onTitanSyncOrder?: (orderId: string) => void,
+            onTitanNodePulse?: (battery: number) => void
+        };
+
         win.onTitanSyncOrder = (orderId: string) => {
             handleCompleteMission(parseInt(orderId));
         };
 
-        return () => { delete win.onTitanSyncOrder; };
+        win.onTitanNodePulse = async (battery: number) => {
+            if (!supabase || !phone) return;
+            await supabase.from('rider_status').update({
+                battery_level: battery,
+                last_battery_sync: new Date().toISOString()
+            }).eq('rider_phone', phone);
+
+            setStats(prev => ({ ...prev, battery })); // Assuming I add battery to local stats state
+        };
+
+        return () => {
+            delete win.onTitanSyncOrder;
+            delete win.onTitanNodePulse;
+        };
     }, [phoneParam, handleCompleteMission, verifyAndFetch]);
 
     const handleBioAuth = async () => {
@@ -325,6 +348,10 @@ function RiderDashboardContent() {
                             <div className="flex items-center gap-2">
                                 <Star className="h-3 w-3 text-amber-500 fill-current" />
                                 <span className="text-xs font-black text-foreground">{stats.rating}</span>
+                                <div className="ml-2 flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[8px] font-black uppercase border border-emerald-100">
+                                    <BatteryMedium size={10} className="fill-current" />
+                                    {stats.battery}%
+                                </div>
                                 {isTracking && <div className="ml-2 px-2 py-0.5 rounded bg-indigo-50 text-indigo-500 text-[6px] font-black uppercase animate-pulse border border-indigo-100">GPS Node Linked</div>}
                             </div>
                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{stats.tier} Operator</p>

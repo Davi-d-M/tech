@@ -1,10 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import { Bell, X, ShieldAlert, Package, Truck, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Bell, X, ShieldAlert, Package, Truck, ChevronRight, CheckCircle2, RefreshCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { scanForExceptions } from '@/lib/apex-os/intelligence';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Notification {
     id: string;
@@ -13,22 +15,99 @@ interface Notification {
     meta: string;
     time: string;
     url: string;
-    isRead: boolean;
+    is_read: boolean;
 }
 
 export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (open: boolean) => void }) {
-    const [notifications, setNotifications] = React.useState<Notification[]>([
-        { id: '1', type: 'critical', label: 'Payment Discrepancy', meta: 'KES 800 mismatch in Paystack sync', time: '2m ago', url: '/admin/finance', isRead: false },
-        { id: '2', type: 'warning', label: 'Critical Stock Alert', meta: 'SIM Card Tray — 3 units remaining', time: '11m ago', url: '/admin/upload', isRead: false },
-        { id: '3', type: 'info', label: 'Rider Delayed', meta: 'Rider John K. hasn\'t moved for 15m', time: '23m ago', url: '/admin/dispatch', isRead: true },
-        { id: '4', type: 'success', label: 'Campaign Completed', meta: 'Flash Sale broadcast reached 1,240 users', time: '1h ago', url: '/admin/broadcast', isRead: true },
-    ]);
+    const [notifications, setNotifications] = React.useState<Notification[]>([]);
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    const markAllRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    const fetchSignals = async () => {
+        if (!supabase) return;
+        setIsLoading(true);
+        try {
+            const { data } = await supabase
+                .from('system_signals')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(20);
+
+            if (data) {
+                setNotifications(data.map(d => ({
+                    id: d.id,
+                    type: d.type as any,
+                    label: d.label,
+                    meta: d.meta,
+                    time: new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    url: d.url,
+                    is_read: d.is_read
+                })));
+            }
+        } catch (err) {
+            console.error("Signal Retrieval Failure:", err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const unreadCount = notifications.filter(n => !n.isRead).length;
+    React.useEffect(() => {
+        if (isOpen) fetchSignals();
+    }, [isOpen]);
+
+    const markAllRead = async () => {
+        if (!supabase || notifications.length === 0) return;
+        const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+        if (unreadIds.length === 0) return;
+
+        try {
+            const { error } = await supabase
+                .from('system_signals')
+                .update({ is_read: true })
+                .in('id', unreadIds);
+
+            if (!error) {
+                setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+            }
+        } catch (err) {
+            console.error("Signal Sync Error:", err);
+        }
+    };
+
+    const runSystemScan = async () => {
+        if (!supabase) return;
+        setIsLoading(true);
+        try {
+            const exceptions = await scanForExceptions();
+            if (exceptions.length > 0) {
+                const signals = exceptions.map(ex => ({
+                    type: ex.severity.toLowerCase(),
+                    label: ex.title,
+                    meta: ex.description,
+                    url: ex.order_id ? `/admin/orders` : '/admin'
+                }));
+
+                await supabase.from('system_signals').insert(signals);
+                await fetchSignals();
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const clearHistory = async () => {
+        if (!supabase) return;
+        if (!confirm("Are you sure you want to purge all signal history?")) return;
+
+        setIsLoading(true);
+        try {
+            await supabase.from('system_signals').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            setNotifications([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const unreadCount = notifications.filter(n => !n.is_read).length;
 
     if (!isOpen) return null;
 
@@ -56,7 +135,12 @@ export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: bool
                 </header>
 
                 <div className="flex-1 overflow-y-auto p-6 space-y-3 no-scrollbar">
-                    {notifications.length === 0 ? (
+                    {isLoading ? (
+                        <div className="py-20 text-center opacity-30 animate-pulse">
+                            <RefreshCcw className="h-10 w-10 mx-auto mb-4 animate-spin" />
+                            <p className="text-[10px] font-black uppercase tracking-widest">Scanning Grid...</p>
+                        </div>
+                    ) : notifications.length === 0 ? (
                         <div className="py-20 text-center opacity-30">
                             <CheckCircle2 className="h-10 w-10 mx-auto mb-4" />
                             <p className="text-[10px] font-black uppercase tracking-widest">Sky clear, Commander.</p>
@@ -66,7 +150,7 @@ export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: bool
                             <Link key={n.id} href={n.url} onClick={() => setIsOpen(false)}>
                                 <div className={cn(
                                     "p-6 rounded-[2rem] border transition-all flex gap-4 group relative",
-                                    n.isRead ? "bg-slate-50/50 border-border opacity-60" : "bg-white border-primary/20 shadow-xl"
+                                    n.is_read ? "bg-slate-50/50 border-border opacity-60" : "bg-white border-primary/20 shadow-xl"
                                 )}>
                                     <div className={cn(
                                         "h-10 w-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
@@ -91,7 +175,7 @@ export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: bool
                                             <ChevronRight className="h-3 w-3 text-primary" />
                                         </div>
                                     </div>
-                                    {!n.isRead && (
+                                    {!n.is_read && (
                                         <div className="absolute top-4 right-4 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                                     )}
                                 </div>
@@ -100,8 +184,20 @@ export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: bool
                     )}
                 </div>
 
-                <div className="p-8 border-t border-border bg-slate-50/50">
-                    <Button variant="outline" className="w-full h-12 rounded-xl border-border font-black uppercase text-[10px] tracking-widest hover:bg-white">
+                <div className="p-8 border-t border-border bg-slate-50/50 space-y-3">
+                    <Button
+                        onClick={runSystemScan}
+                        disabled={isLoading}
+                        className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+                    >
+                        Scan Operational Grid
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={clearHistory}
+                        disabled={isLoading}
+                        className="w-full h-12 rounded-xl border-border font-black uppercase text-[10px] tracking-widest hover:bg-white"
+                    >
                         Clear All History
                     </Button>
                 </div>

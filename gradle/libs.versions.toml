@@ -20,10 +20,14 @@ camera = "1.4.1"
 coreSplashscreen = "1.2.0-alpha02"
 zxing = "3.5.3"
 imageLabeling = "17.0.9"
+securityCrypto = "1.1.0-alpha06"
 webkit = "1.12.1"
+okhttp = "4.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 image-labeling = { group = "com.google.mlkit", name = "image-labeling", version.ref = "imageLabeling" }
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }

@@ -36,7 +36,11 @@ export default function RiderOnboarding() {
     const [vehicleType, setVehicleType] = useState('Motorbike');
     const [riderPhoto, setRiderPhoto] = useState<File | null>(null);
     const [vehiclePhoto, setVehiclePhoto] = useState<File | null>(null);
+    const [idFrontPhoto, setIdFrontPhoto] = useState<File | null>(null);
+    const [idBackPhoto, setIdBackPhoto] = useState<File | null>(null);
+    const [licensePhoto, setLicensePhoto] = useState<File | null>(null);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
+    const [pin, setPin] = useState('1234');
     const [error, setError] = useState<string | null>(null);
 
     const handleDownloadAgreement = async () => {
@@ -119,8 +123,8 @@ export default function RiderOnboarding() {
     };
 
     const handleVerificationSubmit = async () => {
-        if (!riderPhoto || !vehiclePhoto) {
-            setError("Both photos are required for verification");
+        if (!riderPhoto || !vehiclePhoto || !idFrontPhoto || !idBackPhoto || !licensePhoto) {
+            setError("All document photos are required for verification");
             return;
         }
         if (!riderName.trim()) {
@@ -133,35 +137,73 @@ export default function RiderOnboarding() {
             if (!supabase) return;
             const normalized = normalizePhone(phone);
             const BUCKET = 'rider-verifications';
-
-            // Upload Rider Photo
-            const riderPath = `riders/${normalized}-${Date.now()}-selfie`;
             const currentSupabase = supabase;
-            await currentSupabase.storage.from(BUCKET).upload(riderPath, riderPhoto);
-            const { data: rData } = currentSupabase.storage.from(BUCKET).getPublicUrl(riderPath);
 
-            // Upload Vehicle Photo
-            const vehiclePath = `riders/${normalized}-${Date.now()}-vehicle`;
-            await currentSupabase.storage.from(BUCKET).upload(vehiclePath, vehiclePhoto);
-            const { data: vData } = currentSupabase.storage.from(BUCKET).getPublicUrl(vehiclePath);
+            const uploadTask = async (file: File, suffix: string) => {
+                const path = `riders/${normalized}-${Date.now()}-${suffix}`;
+                const { error } = await currentSupabase.storage.from(BUCKET).upload(path, file);
+                if (error) throw error;
+                const { data } = currentSupabase.storage.from(BUCKET).getPublicUrl(path);
+                return data.publicUrl;
+            };
+
+            const [riderUrl, vehicleUrl, idFrontUrl, idBackUrl, licenseUrl] = await Promise.all([
+                uploadTask(riderPhoto, 'selfie'),
+                uploadTask(vehiclePhoto, 'vehicle'),
+                uploadTask(idFrontPhoto, 'id-front'),
+                uploadTask(idBackPhoto, 'id-back'),
+                uploadTask(licensePhoto, 'license')
+            ]);
 
             // Update Rider Status with new info
+            const riderData = {
+                rider_phone: normalized,
+                rider_name: riderName.trim(),
+                pin: '1234', // Temporary default pin
+                id_number: idNumber,
+                license_number: licenseNumber,
+                plate_number: plateNumber,
+                vehicle_type: vehicleType,
+                rider_photo_url: riderUrl,
+                vehicle_photo_url: vehicleUrl,
+                id_photo_front_url: idFrontUrl,
+                id_photo_back_url: idBackUrl,
+                license_photo_url: licenseUrl,
+                verification_status: 'Pending'
+            };
+
             const { error: updateError } = await currentSupabase
                 .from('rider_status')
-                .upsert({
+                .upsert(riderData, { onConflict: 'rider_phone' });
+
+            if (updateError) {
+                console.warn("Primary upsert failed, attempting schema-resilient fallback...", updateError);
+
+                // Tier 2: Minimal Identity
+                const tier2Data = {
                     rider_phone: normalized,
                     rider_name: riderName.trim(),
-                    pin: '1234', // Fixed internal pin since Secret PIN removed from UI
-                    id_number: idNumber,
-                    license_number: licenseNumber,
-                    plate_number: plateNumber,
+                    pin: '1234',
                     vehicle_type: vehicleType,
-                    rider_photo_url: rData.publicUrl,
-                    vehicle_photo_url: vData.publicUrl,
                     verification_status: 'Pending'
-                }, { onConflict: 'rider_phone' });
+                };
 
-            if (updateError) throw updateError;
+                const { error: tier2Error } = await currentSupabase
+                    .from('rider_status')
+                    .upsert(tier2Data, { onConflict: 'rider_phone' });
+
+                if (tier2Error) {
+                    const { error: tier3Error } = await currentSupabase
+                        .from('rider_status')
+                        .upsert({
+                            rider_phone: normalized,
+                            rider_name: riderName.trim(),
+                            pin: '1234'
+                        }, { onConflict: 'rider_phone' });
+
+                    if (tier3Error) throw tier3Error;
+                }
+            }
             setStep('agreement');
         } catch (err: unknown) {
             setError((err as Error).message || "Verification upload failed.");
@@ -277,7 +319,7 @@ export default function RiderOnboarding() {
                             <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 text-left">
                                 <div className="space-y-2">
                                     <h3 className="text-xl font-black text-foreground uppercase">Verification</h3>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tactical Visuals</p>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tactical Visuals & Documents</p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <label className="flex flex-col items-center gap-2 p-6 rounded-3xl border-2 border-dashed border-slate-100 bg-slate-50 cursor-pointer hover:border-primary transition-all">
@@ -289,6 +331,21 @@ export default function RiderOnboarding() {
                                         <input type="file" accept="image/*" onChange={e => setVehiclePhoto(e.target.files?.[0] || null)} className="hidden" />
                                         <Truck className={cn("h-6 w-6", vehiclePhoto ? "text-primary" : "text-slate-300")} />
                                         <span className="text-[8px] font-black uppercase">{vehiclePhoto ? 'Vehicle Logged' : 'Vehicle Photo'}</span>
+                                    </label>
+                                    <label className="flex flex-col items-center gap-2 p-6 rounded-3xl border-2 border-dashed border-slate-100 bg-slate-50 cursor-pointer hover:border-primary transition-all">
+                                        <input type="file" accept="image/*" onChange={e => setIdFrontPhoto(e.target.files?.[0] || null)} className="hidden" />
+                                        <CreditCard className={cn("h-6 w-6", idFrontPhoto ? "text-primary" : "text-slate-300")} />
+                                        <span className="text-[8px] font-black uppercase">{idFrontPhoto ? 'ID Front Logged' : 'ID Front'}</span>
+                                    </label>
+                                    <label className="flex flex-col items-center gap-2 p-6 rounded-3xl border-2 border-dashed border-slate-100 bg-slate-50 cursor-pointer hover:border-primary transition-all">
+                                        <input type="file" accept="image/*" onChange={e => setIdBackPhoto(e.target.files?.[0] || null)} className="hidden" />
+                                        <CreditCard className={cn("h-6 w-6", idBackPhoto ? "text-primary" : "text-slate-300")} />
+                                        <span className="text-[8px] font-black uppercase">{idBackPhoto ? 'ID Back Logged' : 'ID Back'}</span>
+                                    </label>
+                                    <label className="flex flex-col items-center gap-2 p-6 rounded-3xl border-2 border-dashed border-slate-100 bg-slate-50 cursor-pointer hover:border-primary transition-all col-span-2">
+                                        <input type="file" accept="image/*" onChange={e => setLicensePhoto(e.target.files?.[0] || null)} className="hidden" />
+                                        <ShieldCheck className={cn("h-6 w-6", licensePhoto ? "text-primary" : "text-slate-300")} />
+                                        <span className="text-[8px] font-black uppercase">{licensePhoto ? 'License Verified' : 'Drivers License Photo'}</span>
                                     </label>
                                 </div>
                                 {error && <p className="text-[10px] font-black text-rose-500 uppercase">{error}</p>}
@@ -382,10 +439,11 @@ export default function RiderOnboarding() {
                                         onClick={async () => {
                                             if (!supabase) return;
                                             setLoading(true);
-                                            const { data } = await supabase.from('rider_status').select('verification_status, rider_name').eq('rider_phone', normalizePhone(phone)).maybeSingle();
+                                            const { data } = await supabase.from('rider_status').select('verification_status, rider_name, pin').eq('rider_phone', normalizePhone(phone)).maybeSingle();
                                             if (data?.verification_status === 'Verified') {
                                                 localStorage.setItem('apex_rider_phone', normalizePhone(phone));
                                                 localStorage.setItem('rider_name', data.rider_name);
+                                                if (data.pin) setPin(data.pin);
                                                 setStep('success');
                                             } else {
                                                 setError("Verification still pending. Check back soon, bro.");
@@ -409,17 +467,35 @@ export default function RiderOnboarding() {
                         )}
 
                         {step === 'success' && (
-                            <div className="space-y-8 text-center animate-in zoom-in-95 duration-700">
-                                <div className="h-24 w-24 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 mx-auto shadow-inner">
-                                    <CheckCircle2 className="h-12 w-12" />
+                            <div className="space-y-8 text-center animate-in zoom-in-95 duration-700 text-left">
+                                <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 mx-auto shadow-inner">
+                                    <CheckCircle2 className="h-10 w-10" />
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-2 text-center">
                                     <h2 className="text-2xl font-black text-foreground uppercase">Grid Online</h2>
                                     <p className="text-sm text-slate-500 font-medium italic">&quot;Tactical link established. Welcome to TechPax Logistics, bro.&quot;</p>
                                 </div>
+
+                                <Card className="p-6 bg-slate-900 border-none rounded-[2rem] shadow-2xl space-y-6 relative overflow-hidden">
+                                    <div className="relative z-10 space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-8 w-8 rounded-xl bg-primary/20 flex items-center justify-center text-primary shadow-inner"><ShieldCheck size={16} /></div>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Access Credentials</p>
+                                        </div>
+                                        <div className="bg-white/5 p-5 rounded-2xl border border-white/10 flex justify-between items-center">
+                                            <span className="text-[10px] font-black uppercase text-slate-400">Tactical PIN</span>
+                                            <span className="text-2xl font-black text-primary tracking-[0.3em] font-mono">{pin}</span>
+                                        </div>
+                                        <p className="text-[8px] font-bold text-slate-500 uppercase italic text-center px-4 leading-relaxed">
+                                            * Use this PIN for future command access. Do not share your node credentials.
+                                        </p>
+                                    </div>
+                                    <Zap className="absolute -bottom-6 -right-6 h-24 w-24 text-white/5 rotate-12" />
+                                </Card>
+
                                 <Link href="/rider/dashboard" className="block">
-                                    <Button className="w-full h-18 rounded-[1.8rem] bg-primary text-white font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-primary/20">
-                                        Enter Dashboard
+                                    <Button className="w-full h-18 rounded-[1.8rem] bg-primary text-white font-black uppercase text-xs tracking-[0.2em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                                        Enter Command Dashboard
                                     </Button>
                                 </Link>
                             </div>

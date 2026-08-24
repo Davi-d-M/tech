@@ -1,49 +1,53 @@
-# Apex OS: Phase 14 — Mock Data Scrape & Production Hardening Production 🚀🛡️💎
+# Apex OS: Security Fortification & Dynamic Bridge Protocol 🛡️💎🔒
 
-This phase focuses on the complete removal of all hardcoded "fake" data used during the development of Phases 1-13. We are transitioning the "God-Mode" modules to real database logic, ensuring that what you see on your dashboard is 100% real business intel.
+This phase addresses the critical "Hacker Fractures" and fixes the Rider Onboarding database error. We are making the hardware bridge domain dynamic and hardening the system against unauthorized access.
 
 ## User Review Required
 
-> [!WARNING]
-> Since the tables for **Vendors**, **Ad Campaigns**, and **Shipments** do not exist in your current Supabase schema, these pages will appear **Empty** after this cleanup until you onboard real partners or import data.
+> [!IMPORTANT]
+> **Dynamic Bridge Domain**: I am moving the "Trusted Origin" for the Android app to the Admin Settings. You must ensure the domain matches your live URL, or the scanner and GPS will stop working for safety.
 
 ## Proposed Changes
 
-### 🛡️ 1. Mock Data Removal (Database Transition)
+### 1. Database Schema Repair (Rider Onboarding) 🗄️
+- **Objective**: Fix the missing `id_number` column error.
+- **Action**: Provide SQL to add missing identity columns to `rider_status`:
+    - `id_number` (Text)
+    - `license_number` (Text)
+    - `plate_number` (Text)
+    - `biometric_key` (Text)
 
-#### [MODIFY] [Multi-Vendor Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/operations/vendors/page.tsx)
-- Remove hardcoded `setVendors` array.
-- Attempt to fetch from a `marketplace_vendors` table (will return empty if missing).
+### 2. Dynamic Titan Bridge origin (Admin Settings) ⚙️
+- **Objective**: Allow the owner to change the trusted Android domain without rebuilding the app.
+- [MODIFY] [Admin Settings](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/settings/page.tsx):
+    - Add **"Bridge Protocol"** section under the **Advanced** tab.
+    - Fields: `Trusted Bridge Domain` (e.g., `tech-paxv.onrender.com`).
+- [MODIFY] [Android App](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app_android/src/main/java/com/example/theapp/MainActivity.kt):
+    - On initialization, fetch the `bridge_config` from Supabase.
+    - Store it in `EncryptedSharedPreferences`.
+    - Use this dynamic value in `isTrustedOrigin()`.
 
-#### [MODIFY] [AI Ad Agency](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/marketing/ai-agency/page.tsx)
-- Remove hardcoded `setCampaigns` array.
-- Attempt to fetch from an `ad_campaigns` table.
+### 3. Server-Side Role Enforcement (Security Shield) 🚪
+- **Objective**: Prevent non-admins from hitting administrative API nodes.
+- [MODIFY] [Admin Middleware](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/middleware.ts):
+    - Harden role checks to ensure only `owner` or `admin` roles can access `/api/admin/*` paths.
+- [MODIFY] [Payout API](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/api/admin/payout-worker/route.ts):
+    - Add a final server-side check against the `staff` table to verify the requester's role before processing any money.
 
-#### [MODIFY] [Global Sourcing Bridge](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/operations/sourcing/page.tsx)
-- Remove hardcoded `setShipments` array.
-- Attempt to fetch from a `shipments` table.
-
-#### [MODIFY] [Product Manager](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/upload/page.tsx)
-- Remove `mockResults` from the AI Vision Scan function.
-- Change the logic to "Feature Pending: Connect Vision API Node" or return empty results.
-
-#### [MODIFY] [AI Concierge](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/home/AIConcierge.tsx)
-- Remove simulated "Shopping Intelligence" delays and hardcoded text responses where possible.
-- Ensure the "Bundle" suggestions always pull live IDs from the `products` table.
-
-### 👥 2. Real-Time Admin Pulse Refinement
-
-#### [MODIFY] [Active Admins](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/ActiveAdmins.tsx)
-- Ensure the "Action" label is derived strictly from the `audit_logs` table without any fallback "mock" actions.
+### 4. Hardware Persistence Encryption (Android) 💾
+- **Objective**: Encrypt `offline_drops` to prevent local tampering.
+- [MODIFY] [MainActivity.kt](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app_android/src/main/java/com/example/theapp/MainActivity.kt):
+    - Full migration from `SharedPreferences` to `EncryptedSharedPreferences`.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- `npm run build` to verify all components still compile without the hardcoded imports/arrays.
+- `npm run build` to verify settings and middleware integration.
+- Android build check for `security-crypto` library dependencies.
 
 ### Manual Verification
-1. **Vendor Page**: Open the page and verify it shows the "Empty Grid" state instead of fake companies.
-2. **Ad Agency**: Verify the "Neural Placements" list is empty but the "Sync Meta Link" button is ready for future integration.
-3. **AI Concierge**: Ask for a bundle and verify it queries the DB instead of returning a simulated response.
+1. **Onboarding Test**: Attempt to submit the Rider form and verify no "id_number" error appears.
+2. **Domain Switch**: Change the "Bridge Domain" in settings to a fake one and verify the Android scanner refuses to open.
+3. **API Lockdown**: Attempt to trigger a payout from a regular customer account and verify a `403 Forbidden` error.

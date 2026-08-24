@@ -36,6 +36,7 @@ export interface StoreSettings {
     };
     logistics: {
         dispatch_zones: string[];
+        warehouses: { id: string; name: string; city: string }[];
     };
     theme_config: {
         primary: string;
@@ -67,6 +68,7 @@ export interface StoreSettings {
         dynamic_pricing_enabled: boolean;
         gamification_enabled: boolean;
         fraud_shield_enabled: boolean;
+        quote_mode_enabled: boolean;
     };
     promotions?: {
         flash_sale_text: string;
@@ -83,8 +85,8 @@ const DEFAULT_SETTINGS: StoreSettings = {
         address: "Nairobi, Kenya"
     },
     branding: {
-        owner_name: "David Maganga",
-        portfolio_url: "https://davi-d-m.github.io/my_portfolio/",
+        owner_name: "Apex Admin",
+        portfolio_url: "",
         hero_title: "Future Sound. Total Power.",
         hero_subtitle: "Experience authentic tech engineered for excellence."
     },
@@ -112,7 +114,13 @@ const DEFAULT_SETTINGS: StoreSettings = {
         upcountry: 500
     },
     logistics: {
-        dispatch_zones: ["CBD", "Westlands", "Kilimani", "Lavington", "Kileleshwa", "Karen", "Langata", "South C", "South B", "Embakasi", "Roysambu", "Kasarani", "Kahawa", "Githurai", "Zimmerman", "Utawala", "Syokimau", "Kitengela", "Rongai", "Ngong", "Kikuyu", "Thika Road", "Mombasa Road"]
+        dispatch_zones: ["CBD", "Westlands", "Kilimani", "Lavington", "Kileleshwa", "Karen", "Langata", "South C", "South B", "Embakasi", "Roysambu", "Kasarani", "Kahawa", "Githurai", "Zimmerman", "Utawala", "Syokimau", "Kitengela", "Rongai", "Ngong", "Kikuyu", "Thika Road", "Mombasa Road"],
+        warehouses: [
+            { id: 'all', name: 'Global Network', city: 'All' },
+            { id: 'nairobi', name: 'Nairobi Central Hub', city: 'Nairobi' },
+            { id: 'mombasa', name: 'Mombasa Port Node', city: 'Mombasa' },
+            { id: 'kisumu', name: 'Kisumu Tech Base', city: 'Kisumu' }
+        ]
     },
     theme_config: {
         primary: "#F5A000",
@@ -143,7 +151,8 @@ const DEFAULT_SETTINGS: StoreSettings = {
         ai_concierge_enabled: true,
         dynamic_pricing_enabled: true,
         gamification_enabled: true,
-        fraud_shield_enabled: true
+        fraud_shield_enabled: true,
+        quote_mode_enabled: false
     }
 };
 

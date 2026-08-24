@@ -83,8 +83,8 @@ export async function scanForExceptions(): Promise<ApexException[]> {
             code: 'INV_EMPTY',
             type: 'INVENTORY',
             severity: 'Critical',
-            title: 'Stock Exhaustion',
-            description: `Product ${p.name} is nearly empty (${p.stock} left). Sales velocity suggests stockout today.`,
+            title: 'Inventory Depletion',
+            description: `Asset ${p.name} is below critical threshold (${p.stock} units). Immediate restocking required.`,
             time: 'Immediate'
         });
     });

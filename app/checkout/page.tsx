@@ -248,6 +248,9 @@ function CheckoutContent() {
         });
         return;
     }
+
+    const isQuoteMode = settings.features.quote_mode_enabled;
+
     if (!supabase) {
       setCheckoutStatus({
         type: "error",
@@ -296,7 +299,21 @@ function CheckoutContent() {
           }
       }
 
-      const checkoutRequestId = `APEX-ref-${Date.now()}`;
+      const checkoutRequestId = isQuoteMode ? `QUOTE-${Date.now()}` : `APEX-ref-${Date.now()}`;
+
+      if (isQuoteMode) {
+          // QUOTE FLOW: Save as Quote Pending, skip payment
+          const orderId = await saveOrder(checkoutRequestId, dbProducts);
+          if (orderId) {
+              await supabase?.from('orders').update({ status: 'Quote Pending' }).eq('id', orderId);
+              setCheckoutStatus({
+                  type: "success",
+                  message: "Tactical Quote Requested! Our team will review your order and send the final price shortly."
+              });
+              clearCart();
+          }
+          return;
+      }
 
       if (paymentMethod === "M-Pesa") {
         // 1. Save order as Pending first (Persistence)
@@ -924,7 +941,7 @@ function CheckoutContent() {
                         <Loader2 className="h-5 w-5 animate-spin" />
                         Finalizing...
                     </div>
-                ) : paymentMethod === 'COD' ? "Confirm COD Order" : "Initiate Payment"}
+                ) : settings.features.quote_mode_enabled ? "Request Tactical Quote" : (paymentMethod === 'COD' ? "Confirm COD Order" : "Initiate Payment")}
               </Button>
 
               {checkoutStatus.type === 'processing' && (

@@ -18,6 +18,11 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/admin/login', request.url));
       }
 
+      // 1.5 SHIELD: Lockdown Admin APIs to Owners/Admins Only
+      if (pathname.startsWith('/api/admin') && sessionData.role !== 'owner' && sessionData.role !== 'admin') {
+          return NextResponse.json({ error: "Access Denied: Admin Clearance Required" }, { status: 403 });
+      }
+
       // 2. Role-Based Routing
       // Prevent Suppliers from entering Admin
       if (isAdminPath && sessionData.role === 'supplier') {

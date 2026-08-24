@@ -26,9 +26,9 @@ export default function TodayCommandCenter() {
             if (!supabase) return;
             try {
                 const [ordersRes, ridersRes, productsRes, messagesRes] = await Promise.all([
-                    supabase.from('orders').select('id', { count: 'exact' }).eq('status', 'Pending'),
+                    supabase.from('orders').select('id', { count: 'exact' }).in('status', ['Created', 'Payment Pending', 'Quote Pending']),
                     supabase.from('rider_status').select('id', { count: 'exact' }).eq('status', 'Offline'),
-                    supabase.from('products').select('id', { count: 'exact' }).lte('stock', 5),
+                    supabase.from('products').select('id', { count: 'exact' }).lte('stock', 2),
                     supabase.from('messages').select('id', { count: 'exact' }).eq('status', 'New')
                 ]);
 

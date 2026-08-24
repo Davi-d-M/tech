@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Sparkles, ArrowRight, TrendingUp, AlertTriangle, Package, Loader2 } from 'lucide-react';
+import { Sparkles, ArrowRight, TrendingUp, AlertTriangle, Package, Loader2, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function ApexIntelligence() {
@@ -101,26 +102,39 @@ export default function ApexIntelligence() {
                     </div>
 
                     <div className="space-y-4">
-                        <p className="text-lg font-black text-foreground uppercase leading-none">Good morning, Admin.</p>
+                        <p className="text-lg font-black text-foreground uppercase leading-none">Operational Briefing.</p>
                         <div className="space-y-3">
+                            {intel.revenueGrowth > 0 ? (
+                                <div className="flex items-start gap-3">
+                                    <TrendingUp className="h-4 w-4 text-emerald-500 mt-0.5" />
+                                    <p className="text-sm font-medium text-slate-600 leading-relaxed italic">
+                                        Revenue yield is up. Tactical volume suggests <span className="text-emerald-600 font-black">{intel.revenueGrowth}%</span> performance uplift. Top asset: <span className="text-foreground font-black">{intel.topProduct}</span>.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="flex items-start gap-3">
+                                    <Activity className="h-4 w-4 text-slate-400 mt-0.5" />
+                                    <p className="text-sm font-medium text-slate-600 leading-relaxed italic">
+                                        Operational baseline established. System monitoring <span className="text-foreground font-black">{intel.topProduct}</span> velocity.
+                                    </p>
+                                </div>
+                            )}
                             <div className="flex items-start gap-3">
-                                <TrendingUp className="h-4 w-4 text-emerald-500 mt-0.5" />
+                                <AlertTriangle className={cn("h-4 w-4 mt-0.5", intel.riskCount > 0 ? "text-amber-500" : "text-emerald-500")} />
                                 <p className="text-sm font-medium text-slate-600 leading-relaxed italic">
-                                    Revenue yield is established. Tactical volume suggests <span className="text-emerald-600 font-black">{intel.revenueGrowth}%</span> performance uplift. Top asset: <span className="text-foreground font-black">{intel.topProduct}</span>.
+                                    {intel.riskCount > 0
+                                        ? `Inventory risk detected in ${intel.riskCount} sectors. Fulfillment velocity remains steady.`
+                                        : "All inventory sectors report stable stock levels. No immediate risk detected."}
                                 </p>
                             </div>
-                            <div className="flex items-start gap-3">
-                                <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5" />
-                                <p className="text-sm font-medium text-slate-600 leading-relaxed italic">
-                                    Inventory risk detected in <span className="text-amber-600 font-black">{intel.riskCount} sectors</span>. Fulfillment velocity remains steady.
-                                </p>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Package className="h-4 w-4 text-primary mt-0.5" />
-                                <p className="text-sm font-medium text-slate-600 leading-relaxed italic">
-                                    Intelligence recommends restocking <span className="text-primary font-black uppercase">{intel.restockRec}</span> to maintain operational dominance.
-                                </p>
-                            </div>
+                            {intel.restockRec !== 'N/A' && (
+                                <div className="flex items-start gap-3">
+                                    <Package className="h-4 w-4 text-primary mt-0.5" />
+                                    <p className="text-sm font-medium text-slate-600 leading-relaxed italic">
+                                        Intelligence recommends restocking <span className="text-primary font-black uppercase">{intel.restockRec}</span> to maintain operational dominance.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

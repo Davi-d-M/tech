@@ -74,7 +74,7 @@ interface Rider {
     can_view_earnings: boolean;
 }
 
-const WAREHOUSES = [
+const DEFAULT_WAREHOUSES = [
     { id: 'all', name: 'Global Network', city: 'All' },
     { id: 'nairobi', name: 'Nairobi Central Hub', city: 'Nairobi' },
     { id: 'mombasa', name: 'Mombasa Port Node', city: 'Mombasa' },
@@ -285,7 +285,7 @@ export default function AdminDispatchPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <div className="bg-white p-1 rounded-2xl border border-slate-100 shadow-sm flex overflow-x-auto no-scrollbar max-w-sm sm:max-w-none mr-2">
-                        {WAREHOUSES.map(w => (
+                        {(settings.logistics.warehouses || DEFAULT_WAREHOUSES).map(w => (
                             <button
                                 key={w.id}
                                 onClick={() => setSelectedWarehouse(w.id)}

@@ -1,24 +1,22 @@
-# Tasks - Apex OS Master Sync Phase 2 🛡️⚙️
+# Task - Security Fortification & Dynamic Bridge Protocol 🛡️💎🔒
 
-## Phase 1: The Golden Flow (Multi-Item Refactor)
-- [x] Create Master Migration `20260817_order_refactor_header.sql`.
-- [x] Refactor `app/checkout/page.tsx` for 1:N Order Header-Items structure.
-- [x] Update `app/admin/(dashboard)/orders/page.tsx` to display Master Orders.
-- [x] Add IMEI logging per order item in Admin UI.
-- [x] Implement dynamic cost/profit automation in SQL.
+## Phase 1: Database Repair
+- [x] Implement `rider_status` schema fix in `scratch/fix_rider_table.sql`.
 
-## Phase 2: CRM & Support OS
-- [x] Add CRM Segment badges to Customer Dashboard.
-- [x] Implement dynamic LTV calculation and segmentation in Admin UI.
-- [x] Refactor `profiles` triggers to auto-update LTV on order completion.
-- [x] Create `Support Case Command` hub with priority/SLA tracking.
-- [x] Build `Warranty Hub` for reverse logistics and diagnostics.
+## Phase 2: Dynamic Bridge Protocol
+- [x] Admin UI: Verify "Bridge Protocol" in Settings.
+- [x] Android: Verify dynamic bridge fetching and storage in `MainActivity.kt`.
+- [x] Android: Verify `isTrustedOrigin()` check against dynamic domain.
 
-## Phase 3: Supplier & Intelligence
-- [x] Create Supplier Scorecard dashboard with algorithmic ranking.
-- [x] Build `Rules Engine` (lib/apex-os/rules-engine.ts) for business gating.
-- [x] Implement `Operational Kill Switch` in System Pulse widget.
+## Phase 3: Security Shield (Server-Side)
+- [x] Middleware: Verify hardened role checks for `/api/admin/*`.
+- [x] Payout API: Implement final server-side check against `staff` table.
 
-## Phase 4: Verification
+## Phase 4: Hardware Encryption
+- [x] Android: Audit all `SharedPreferences` and migrate to `EncryptedSharedPreferences`.
+
+## Phase 5: Verification
 - [ ] Run `npm run build`.
-- [ ] Perform a full "Golden Transaction" test mission.
+- [ ] Verify Rider onboarding flow.
+- [ ] Test domain switch security.
+- [ ] Test Payout API lockdown.

@@ -51,7 +51,8 @@ const DEFAULTS = {
     seo_config: { title: "Apexstores | Elite Tech", description: "Premium tech store in Nairobi.", keywords: "AirPods, Chargers, iPhone", og_image: "" },
     social_links: { instagram: "", tiktok: "", facebook: "", x: "", youtube: "" },
     store_info: { name: "APEXSTORES", hours: "9am - 6pm", google_maps: "", footer_copy: "© 2026 Apexstores™" },
-    ai_config: { build_setup_limit: 5000, assistant_name: "Apex AI", response_style: "Tactical" }
+    ai_config: { build_setup_limit: 5000, assistant_name: "Apex AI", response_style: "Tactical" },
+    bridge_config: { trusted_domain: "tech-wb1o.onrender.com", production_url: "https://tech-wb1o.onrender.com" }
 };
 
 type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced';
@@ -74,6 +75,7 @@ export default function AdminSettingsPage() {
     const [social, setSocial] = useState(DEFAULTS.social_links);
     const [store, setStore] = useState(DEFAULTS.store_info);
     const [aiConfig, setAiConfig] = useState(DEFAULTS.ai_config);
+    const [bridgeConfig, setBridgeConfig] = useState(DEFAULTS.bridge_config);
     const [features, setFeatures] = useState({
         ai_concierge_enabled: true,
         dynamic_pricing_enabled: true,
@@ -124,6 +126,7 @@ export default function AdminSettingsPage() {
                     if (item.key === 'social_links') setSocial(item.value as typeof DEFAULTS.social_links);
                     if (item.key === 'store_info') setStore(item.value as typeof DEFAULTS.store_info);
                     if (item.key === 'ai_config') setAiConfig(item.value as typeof DEFAULTS.ai_config);
+                    if (item.key === 'bridge_config') setBridgeConfig(item.value as typeof DEFAULTS.bridge_config);
                     if (item.key === 'features') setFeatures(item.value as typeof features);
                 });
             }
@@ -228,6 +231,7 @@ export default function AdminSettingsPage() {
                 { key: 'catalog', value: catalog },
                 { key: 'features', value: features },
                 { key: 'ai_config', value: aiConfig },
+                { key: 'bridge_config', value: bridgeConfig },
             ];
 
             const { error } = await supabase
@@ -285,7 +289,10 @@ export default function AdminSettingsPage() {
                             else if (activeTab === 'catalog') handleSave('catalog', catalog, true);
                             else if (activeTab === 'ai') handleSave('ai_config', aiConfig, true);
                             else if (activeTab === 'features') handleSave('features', features, true);
-                            else if (activeTab === 'advanced') handleSave('theme_config', theme, true);
+                            else if (activeTab === 'advanced') {
+                                handleSave('theme_config', theme, true);
+                                handleSave('bridge_config', bridgeConfig, true);
+                            }
                         }}
                         className="rounded-xl h-12 px-6 bg-primary text-white font-black uppercase text-[10px] tracking-widest hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/20"
                     >
@@ -883,6 +890,41 @@ export default function AdminSettingsPage() {
                     {/* ADVANCED TAB */}
                     {activeTab === 'advanced' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 relative overflow-hidden text-left">
+                                <div className="relative z-10 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Globe className="h-6 w-6" /></div>
+                                        <div>
+                                            <h2 className="text-xl font-black text-foreground uppercase">Bridge Protocol</h2>
+                                            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mt-1">Verified Android Origin Node</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Trusted Bridge Domain</label>
+                                        <Input
+                                            value={bridgeConfig.trusted_domain}
+                                            onChange={e => setBridgeConfig({ ...bridgeConfig, trusted_domain: e.target.value.replace(/^https?:\/\//, '').split('/')[0] })}
+                                            placeholder="tech-wb1o.onrender.com"
+                                            className="h-14 rounded-2xl bg-secondary border-border font-black text-lg text-primary"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Production App URL</label>
+                                        <Input
+                                            value={bridgeConfig.production_url}
+                                            onChange={e => setBridgeConfig({ ...bridgeConfig, production_url: e.target.value })}
+                                            placeholder="https://tech-wb1o.onrender.com"
+                                            className="h-14 rounded-2xl bg-secondary border-border font-black text-lg text-primary"
+                                        />
+                                    </div>
+                                    <p className="text-[8px] font-bold text-rose-500 uppercase italic leading-relaxed">
+                                        * SECURITY CRITICAL: The Android app will ONLY execute native commands if the current URL matches this domain.
+                                    </p>
+                                </div>
+                            </Card>
+
                             <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 relative overflow-hidden text-left">
                                 <div className="relative z-10 flex items-center justify-between">
                                     <div className="flex items-center gap-4">

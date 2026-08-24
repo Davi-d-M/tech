@@ -1,5 +1,6 @@
 export type OrderStatus =
     | 'Created'
+    | 'Quote Pending'
     | 'Payment Pending'
     | 'Paid'
     | 'Stock Reserved'
@@ -21,7 +22,8 @@ export type OrderStatus =
  * Defines valid transitions for orders.
  */
 const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
-    'Created': ['Payment Pending', 'Cancelled'],
+    'Created': ['Quote Pending', 'Payment Pending', 'Cancelled'],
+    'Quote Pending': ['Payment Pending', 'Cancelled'],
     'Payment Pending': ['Paid', 'Payment Failed', 'Cancelled'],
     'Paid': ['Stock Reserved', 'Cancelled', 'Refunded'],
     'Stock Reserved': ['Supplier Confirmed', 'Processing', 'Cancelled', 'Refunded'],
