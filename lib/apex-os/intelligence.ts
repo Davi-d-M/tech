@@ -20,13 +20,14 @@ export interface ApexException {
 export async function scanForExceptions(): Promise<ApexException[]> {
     if (!supabase) return [];
 
-    const now = new Date();
+    // Force EAT (Nairobi) Timezone for scans
+    const nairobiTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Africa/Nairobi"}));
     const exceptions: ApexException[] = [];
 
     // --- 1. LOGISTICS LATENCY ---
 
     // 🔴 1. Logistics Latency (Orders stuck in Paid status > 2 hours without dispatch)
-    const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString();
+    const twoHoursAgo = new Date(nairobiTime.getTime() - 2 * 60 * 60 * 1000).toISOString();
     const { data: stuckOrders } = await supabase
         .from('orders')
         .select('id, customer_name, created_at, status')
@@ -52,7 +53,7 @@ export async function scanForExceptions(): Promise<ApexException[]> {
     }
 
     // Scans for Dispatched riders who haven't updated location for 45 mins
-    const fortyFiveMinsAgo = new Date(now.getTime() - 45 * 60 * 1000).toISOString();
+    const fortyFiveMinsAgo = new Date(nairobiTime.getTime() - 45 * 60 * 1000).toISOString();
     const { data: stalledRiders } = await supabase
         .from('rider_status')
         .select('rider_name, updated_at')
@@ -95,7 +96,7 @@ export async function scanForExceptions(): Promise<ApexException[]> {
         .select('reference, amount, created_at')
         .eq('event_type', 'charge.success')
         .is('order_id', null)
-        .gte('created_at', new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString());
+        .gte('created_at', new Date(nairobiTime.getTime() - 24 * 60 * 60 * 1000).toISOString());
 
     if (phantomPayments) {
         phantomPayments.forEach(p => {
@@ -118,7 +119,7 @@ export async function scanForExceptions(): Promise<ApexException[]> {
         .from('orders')
         .select('customer_phone')
         .eq('status', 'Payment Failed')
-        .gte('created_at', new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString());
+        .gte('created_at', new Date(nairobiTime.getTime() - 24 * 60 * 60 * 1000).toISOString());
 
     if (repeatFailures) {
         const counts = repeatFailures.reduce((acc: Record<string, number>, curr) => {

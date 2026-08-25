@@ -25,7 +25,6 @@ export async function POST(request: Request) {
 
         // 2. Capture Verified Server-Side IP
         const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
-                   (request as any).ip ||
                    'unknown-internal';
 
         // 3. Persist to Audit Grid

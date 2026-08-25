@@ -333,8 +333,8 @@ export default function AdminOrdersPage() {
           setEditingPriceId(null);
           setNewPrice('');
           setStatusMessage({ type: 'success', text: `Order #${orderId} price updated.` });
-      } catch (err: any) {
-          setStatusMessage({ type: 'error', text: err.message });
+      } catch (err: unknown) {
+          setStatusMessage({ type: 'error', text: (err as Error).message });
       }
   };
 
@@ -765,9 +765,9 @@ export default function AdminOrdersPage() {
                                 <td className="px-8 py-8">
                                     <span className={cn(
                                         "px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border shadow-sm",
-                                        (order as any).captured_by === 'system' ? "bg-slate-50 text-slate-400 border-slate-100" : "bg-primary/5 text-primary border-primary/10"
+                                        order.captured_by === 'system' ? "bg-slate-50 text-slate-400 border-slate-100" : "bg-primary/5 text-primary border-primary/10"
                                     )}>
-                                        {(order as any).captured_by?.split('@')[0] || 'System'}
+                                        {order.captured_by?.split('@')[0] || 'System'}
                                     </span>
                                 </td>
                                 {canSeeMoney && (

@@ -13,8 +13,8 @@ export async function POST(request: Request) {
 
         if (!GEMINI_API_KEY) {
             return NextResponse.json({
-                response: "Yo bro! I'm currently offline while the team upgrades my hardware. I'll be back soon with more elite tech advice! 🔥"
-            }, { status: 200 }); // Return 200 with a graceful message instead of 500
+                response: "Yo bro! I'm currently in 'Tactical Silence' mode because my Neural Key (Gemini API) isn't linked. Tell the commander to add GOOGLE_GEMINI_API_KEY to the environment variables so I can help you find fire tech! 🔥"
+            }, { status: 200 });
         }
 
         // 1. Fetch current inventory context for the AI

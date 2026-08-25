@@ -213,7 +213,7 @@ function RiderDashboardContent() {
             delete win.onTitanSyncOrder;
             delete win.onTitanNodePulse;
         };
-    }, [phoneParam, handleCompleteMission, verifyAndFetch]);
+    }, [phone, handleCompleteMission, verifyAndFetch]);
 
     const handleBioAuth = async () => {
         try {

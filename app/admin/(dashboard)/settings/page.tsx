@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAdmin } from '@/context/AdminContext';
 import { logAuditAction } from '@/lib/auditService';
@@ -50,6 +50,7 @@ const DEFAULTS = {
     theme_config: { primary: "#F5A000", secondary: "#0F172A", accent: "#F5A000", custom_css: "" },
     seo_config: { title: "Apexstores | Elite Tech", description: "Premium tech store in Nairobi.", keywords: "AirPods, Chargers, iPhone", og_image: "" },
     social_links: { instagram: "", tiktok: "", facebook: "", x: "", youtube: "" },
+    social_apis: { meta_pixel_id: "", whatsapp_token: "", whatsapp_phone_id: "", instagram_access_token: "" },
     store_info: { name: "APEXSTORES", hours: "9am - 6pm", google_maps: "", footer_copy: "© 2026 Apexstores™" },
     ai_config: { build_setup_limit: 5000, assistant_name: "Apex AI", response_style: "Tactical" },
     bridge_config: { trusted_domain: "tech-wb1o.onrender.com", production_url: "https://tech-wb1o.onrender.com" }
@@ -98,7 +99,7 @@ export default function AdminSettingsPage() {
     const faviconInputRef = useRef<HTMLInputElement>(null);
     const heroInputRef = useRef<HTMLInputElement>(null);
 
-    const fetchSettings = async () => {
+    const fetchSettings = useCallback(async () => {
         if (!supabase) return;
         setLoading(true);
         try {
@@ -135,11 +136,11 @@ export default function AdminSettingsPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchSettings();
-    }, []);
+    }, [fetchSettings]);
 
     const uploadAsset = async (file: File, folder: string) => {
         if (!supabase) throw new Error("Database not connected");
@@ -669,6 +670,34 @@ export default function AdminSettingsPage() {
                                         </div>
                                     ))}
                                 </div>
+                            </Card>
+
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Zap className="h-5 w-5 text-primary" /> Social API Node</h2>
+                                <div className="grid sm:grid-cols-2 gap-6 text-left">
+                                    <div className="space-y-2 text-left">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground">Meta Pixel ID</label>
+                                        <Input
+                                            value={(social as any).meta_pixel_id || ''}
+                                            onChange={e => setSocial({...social, meta_pixel_id: e.target.value} as any)}
+                                            className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
+                                            placeholder="1234567890"
+                                        />
+                                    </div>
+                                    <div className="space-y-2 text-left">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground">WhatsApp API Token</label>
+                                        <Input
+                                            type="password"
+                                            value={(social as any).whatsapp_token || ''}
+                                            onChange={e => setSocial({...social, whatsapp_token: e.target.value} as any)}
+                                            className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
+                                            placeholder="EAAB..."
+                                        />
+                                    </div>
+                                </div>
+                                <p className="text-[8px] font-medium text-slate-400 italic">
+                                    * Connect your Meta Business Suite to track ad performance and automate WhatsApp notifications.
+                                </p>
                             </Card>
                         </div>
                     )}

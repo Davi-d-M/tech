@@ -38,19 +38,21 @@ export default function AdminFinancePage() {
     const [pendingAction, setPendingAction] = React.useState<(() => void) | null>(null);
 
     React.useEffect(() => {
-        (window as any).onTitanStepUpSuccess = () => {
+        const win = window as Window & { onTitanStepUpSuccess?: () => void };
+        win.onTitanStepUpSuccess = () => {
             if (pendingAction) {
                 pendingAction();
                 setPendingAction(null);
             }
         };
-        return () => { delete (window as any).onTitanStepUpSuccess; };
+        return () => { delete win.onTitanStepUpSuccess; };
     }, [pendingAction]);
 
     const performSensitiveAction = (action: () => void) => {
-        if ((window as any).TitanNode?.reAuthenticate) {
+        const win = window as Window & { TitanNode?: { reAuthenticate: () => void } };
+        if (win.TitanNode?.reAuthenticate) {
             setPendingAction(() => action);
-            (window as any).TitanNode.reAuthenticate();
+            win.TitanNode.reAuthenticate();
         } else {
             // Fallback for desktop: PIN prompt
             const pin = prompt("Enter Admin PIN to authorize sensitive action:");

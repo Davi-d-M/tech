@@ -30,7 +30,6 @@ interface Shipment {
 }
 
 export default function GlobalSourcingBridge() {
-    const { role } = useAdmin();
     const [shipments, setShipments] = React.useState<Shipment[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [isCalcOpen, setIsCalcOpen] = React.useState(false);

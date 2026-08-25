@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAdmin } from '@/context/AdminContext';
 import { logAuditAction } from '@/lib/auditService';
+import Image from 'next/image';
 
 interface Rider {
     id: number;
@@ -126,12 +127,10 @@ export default function AdminRidersPage() {
             setRiders(prev => prev.map(r => r.rider_phone === phone ? { ...r, verification_status: status } : r));
             setMessage({ type: 'success', text: `Unit ${phone} marked as ${status}.` });
             setTimeout(() => setMessage(null), 3000);
-        } catch (err) {
+        } catch {
             setMessage({ type: 'error', text: 'Verification update failed.' });
         }
     };
-
-
 
     const filteredRiders = React.useMemo(() => {
         const query = searchQuery.toLowerCase();
@@ -282,7 +281,7 @@ export default function AdminRidersPage() {
                                                 <p className="text-[7px] font-black text-slate-400 uppercase ml-2">Face Profile</p>
                                                 <div className="h-24 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden relative shadow-inner">
                                                     {rider.rider_photo_url ? (
-                                                        <img src={rider.rider_photo_url} alt="" className="w-full h-full object-cover" />
+                                                        <Image src={rider.rider_photo_url} alt="" fill className="object-cover" />
                                                     ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><User size={16} /></div>}
                                                 </div>
                                             </div>
@@ -293,7 +292,7 @@ export default function AdminRidersPage() {
                                                         <p className="text-[7px] font-black text-slate-400 uppercase ml-2">ID Front</p>
                                                         <div className="h-24 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden relative shadow-inner">
                                                             {rider.id_photo_front_url ? (
-                                                                <img src={rider.id_photo_front_url} alt="" className="w-full h-full object-cover" />
+                                                                <Image src={rider.id_photo_front_url} alt="" fill className="object-cover" />
                                                             ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><CreditCard size={16} /></div>}
                                                         </div>
                                                     </div>
@@ -301,7 +300,7 @@ export default function AdminRidersPage() {
                                                         <p className="text-[7px] font-black text-slate-400 uppercase ml-2">License Doc</p>
                                                         <div className="h-24 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden relative shadow-inner">
                                                             {rider.license_photo_url ? (
-                                                                <img src={rider.license_photo_url} alt="" className="w-full h-full object-cover" />
+                                                                <Image src={rider.license_photo_url} alt="" fill className="object-cover" />
                                                             ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><Truck size={16} /></div>}
                                                         </div>
                                                     </div>
@@ -365,7 +364,7 @@ export default function AdminRidersPage() {
                             <div className="flex items-center gap-6">
                                 <div className="h-20 w-20 rounded-[2rem] bg-secondary border border-border flex items-center justify-center text-foreground text-2xl font-black relative overflow-hidden shadow-xl">
                                     {viewingDetails.rider_photo_url ? (
-                                        <img src={viewingDetails.rider_photo_url} alt="" className="w-full h-full object-cover" />
+                                        <Image src={viewingDetails.rider_photo_url} alt="" fill className="object-cover" />
                                     ) : viewingDetails.rider_name.substring(0, 2).toUpperCase()}
                                     <div className={cn(
                                         "absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-card",
@@ -434,7 +433,7 @@ export default function AdminRidersPage() {
                                         <p className="text-[7px] font-black text-slate-400 uppercase ml-2">Vehicle Photo</p>
                                         <div className="h-32 rounded-3xl bg-slate-100 border border-slate-200 overflow-hidden relative shadow-inner">
                                             {viewingDetails.vehicle_photo_url ? (
-                                                <img src={viewingDetails.vehicle_photo_url} alt="" className="w-full h-full object-cover hover:scale-110 transition-transform cursor-zoom-in" />
+                                                <Image src={viewingDetails.vehicle_photo_url} alt="" fill className="object-cover hover:scale-110 transition-transform cursor-zoom-in" />
                                             ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><Truck size={20} /></div>}
                                         </div>
                                     </div>
@@ -445,7 +444,7 @@ export default function AdminRidersPage() {
                                                 <p className="text-[7px] font-black text-slate-400 uppercase ml-2">ID Front</p>
                                                 <div className="h-32 rounded-3xl bg-slate-100 border border-slate-200 overflow-hidden relative shadow-inner">
                                                     {viewingDetails.id_photo_front_url ? (
-                                                        <img src={viewingDetails.id_photo_front_url} alt="" className="w-full h-full object-cover hover:scale-110 transition-transform cursor-zoom-in" />
+                                                        <Image src={viewingDetails.id_photo_front_url} alt="" fill className="object-cover hover:scale-110 transition-transform cursor-zoom-in" />
                                                     ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><User size={20} /></div>}
                                                 </div>
                                             </div>
@@ -453,7 +452,7 @@ export default function AdminRidersPage() {
                                                 <p className="text-[7px] font-black text-slate-400 uppercase ml-2">ID Back</p>
                                                 <div className="h-32 rounded-3xl bg-slate-100 border border-slate-200 overflow-hidden relative shadow-inner">
                                                     {viewingDetails.id_photo_back_url ? (
-                                                        <img src={viewingDetails.id_photo_back_url} alt="" className="w-full h-full object-cover hover:scale-110 transition-transform cursor-zoom-in" />
+                                                        <Image src={viewingDetails.id_photo_back_url} alt="" fill className="object-cover hover:scale-110 transition-transform cursor-zoom-in" />
                                                     ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><User size={20} /></div>}
                                                 </div>
                                             </div>
@@ -461,7 +460,7 @@ export default function AdminRidersPage() {
                                                 <p className="text-[7px] font-black text-slate-400 uppercase ml-2">Drivers License</p>
                                                 <div className="h-40 rounded-3xl bg-slate-100 border border-slate-200 overflow-hidden relative shadow-inner">
                                                     {viewingDetails.license_photo_url ? (
-                                                        <img src={viewingDetails.license_photo_url} alt="" className="w-full h-full object-cover hover:scale-110 transition-transform cursor-zoom-in" />
+                                                        <Image src={viewingDetails.license_photo_url} alt="" fill className="object-cover hover:scale-110 transition-transform cursor-zoom-in" />
                                                     ) : <div className="w-full h-full flex items-center justify-center text-slate-300"><CreditCard size={24} /></div>}
                                                 </div>
                                             </div>

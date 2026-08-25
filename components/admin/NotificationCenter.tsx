@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { scanForExceptions } from '@/lib/apex-os/intelligence';
 import { supabase } from '@/lib/supabaseClient';
+import { runSingularityAutomation } from '@/lib/apex-os/automation';
 
 interface Notification {
     id: string;
@@ -77,6 +78,7 @@ export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: bool
         if (!supabase) return;
         setIsLoading(true);
         try {
+            // 1. Run Intelligence Exceptions
             const exceptions = await scanForExceptions();
             if (exceptions.length > 0) {
                 const signals = exceptions.map(ex => ({
@@ -89,6 +91,10 @@ export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: bool
                 await supabase.from('system_signals').insert(signals);
                 await fetchSignals();
             }
+
+            // 2. Run Operational Automation (Singularity)
+            await runSingularityAutomation();
+
         } finally {
             setIsLoading(false);
         }
