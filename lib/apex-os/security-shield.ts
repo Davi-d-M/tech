@@ -20,7 +20,7 @@ export async function runSecurityScan() {
     try {
         // Phase 13: Feature Toggle Verification
         const { data: featData } = await supabase.from('settings').select('value').eq('key', 'features').maybeSingle();
-        if (featData && (featData.value as any).fraud_shield_enabled === false) {
+        if (featData && (featData.value as { fraud_shield_enabled: boolean }).fraud_shield_enabled === false) {
             console.log("[SHIELD] Sentinel in Standby Mode. Toggle Disabled.");
             return;
         }

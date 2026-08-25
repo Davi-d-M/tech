@@ -267,7 +267,7 @@ export default function AdminOrdersPage() {
           const currentOrder = orders.find(o => o.id === orderId);
 
           // Timestamp Logic
-          const tsPayload: any = {};
+          const tsPayload: Partial<OrderRecord> & { dispatched_at?: string; delivered_at?: string } = {};
           if (status === 'Dispatched') tsPayload.dispatched_at = new Date().toISOString();
           if (status === 'Delivered') tsPayload.delivered_at = new Date().toISOString();
 

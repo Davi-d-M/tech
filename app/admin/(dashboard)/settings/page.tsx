@@ -56,6 +56,20 @@ const DEFAULTS = {
     bridge_config: { trusted_domain: "tech-wb1o.onrender.com", production_url: "https://tech-wb1o.onrender.com" }
 };
 
+interface FeatureToggles {
+    ai_concierge_enabled: boolean;
+    dynamic_pricing_enabled: boolean;
+    gamification_enabled: boolean;
+    fraud_shield_enabled: boolean;
+}
+
+interface SocialApis {
+    meta_pixel_id: string;
+    whatsapp_token: string;
+    whatsapp_phone_id: string;
+    instagram_access_token: string;
+}
+
 type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced';
 
 export default function AdminSettingsPage() {
@@ -77,7 +91,8 @@ export default function AdminSettingsPage() {
     const [store, setStore] = useState(DEFAULTS.store_info);
     const [aiConfig, setAiConfig] = useState(DEFAULTS.ai_config);
     const [bridgeConfig, setBridgeConfig] = useState(DEFAULTS.bridge_config);
-    const [features, setFeatures] = useState({
+    const [socialApis, setSocialApis] = useState<SocialApis>(DEFAULTS.social_apis);
+    const [features, setFeatures] = useState<FeatureToggles>({
         ai_concierge_enabled: true,
         dynamic_pricing_enabled: true,
         gamification_enabled: true,
@@ -128,7 +143,8 @@ export default function AdminSettingsPage() {
                     if (item.key === 'store_info') setStore(item.value as typeof DEFAULTS.store_info);
                     if (item.key === 'ai_config') setAiConfig(item.value as typeof DEFAULTS.ai_config);
                     if (item.key === 'bridge_config') setBridgeConfig(item.value as typeof DEFAULTS.bridge_config);
-                    if (item.key === 'features') setFeatures(item.value as typeof features);
+                    if (item.key === 'social_apis') setSocialApis(item.value as SocialApis);
+                    if (item.key === 'features') setFeatures(item.value as FeatureToggles);
                 });
             }
         } catch (err) {
@@ -233,6 +249,7 @@ export default function AdminSettingsPage() {
                 { key: 'features', value: features },
                 { key: 'ai_config', value: aiConfig },
                 { key: 'bridge_config', value: bridgeConfig },
+                { key: 'social_apis', value: socialApis },
             ];
 
             const { error } = await supabase
@@ -282,7 +299,10 @@ export default function AdminSettingsPage() {
                             else if (activeTab === 'homepage') handleSave('homepage', homepage, true);
                             else if (activeTab === 'promotions') handleSave('promotions', promotions, true);
                             else if (activeTab === 'theme') handleSave('theme_config', theme, true);
-                            else if (activeTab === 'seo') handleSave('seo_config', seo, true);
+                            else if (activeTab === 'seo') {
+                                handleSave('seo_config', seo, true);
+                                handleSave('social_apis', socialApis, true);
+                            }
                             else if (activeTab === 'ops') {
                                 handleSave('contact', contact, true);
                                 handleSave('shipping', shipping, true);
@@ -678,8 +698,8 @@ export default function AdminSettingsPage() {
                                     <div className="space-y-2 text-left">
                                         <label className="text-[10px] font-black uppercase text-muted-foreground">Meta Pixel ID</label>
                                         <Input
-                                            value={(social as any).meta_pixel_id || ''}
-                                            onChange={e => setSocial({...social, meta_pixel_id: e.target.value} as any)}
+                                            value={socialApis.meta_pixel_id || ''}
+                                            onChange={e => setSocialApis({...socialApis, meta_pixel_id: e.target.value})}
                                             className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
                                             placeholder="1234567890"
                                         />
@@ -688,8 +708,8 @@ export default function AdminSettingsPage() {
                                         <label className="text-[10px] font-black uppercase text-muted-foreground">WhatsApp API Token</label>
                                         <Input
                                             type="password"
-                                            value={(social as any).whatsapp_token || ''}
-                                            onChange={e => setSocial({...social, whatsapp_token: e.target.value} as any)}
+                                            value={socialApis.whatsapp_token || ''}
+                                            onChange={e => setSocialApis({...socialApis, whatsapp_token: e.target.value})}
                                             className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
                                             placeholder="EAAB..."
                                         />
@@ -898,15 +918,15 @@ export default function AdminSettingsPage() {
                                                 <p className="text-[10px] text-slate-400 font-medium italic">{feat.desc}</p>
                                             </div>
                                             <button
-                                                onClick={() => setFeatures({...features, [feat.id]: !(features as any)[feat.id]})}
+                                                onClick={() => setFeatures({...features, [feat.id]: !features[feat.id as keyof FeatureToggles]})}
                                                 className={cn(
                                                     "w-12 h-6 rounded-full transition-all relative p-1 flex items-center shadow-inner",
-                                                    (features as any)[feat.id] ? "bg-emerald-500" : "bg-slate-200"
+                                                    features[feat.id as keyof FeatureToggles] ? "bg-emerald-500" : "bg-slate-200"
                                                 )}
                                             >
                                                 <div className={cn(
                                                     "h-4 w-4 rounded-full bg-white shadow-sm transition-all",
-                                                    (features as any)[feat.id] ? "translate-x-6" : "translate-x-0"
+                                                    features[feat.id as keyof FeatureToggles] ? "translate-x-6" : "translate-x-0"
                                                 )} />
                                             </button>
                                         </div>
@@ -1128,7 +1148,10 @@ export default function AdminSettingsPage() {
                                 else if (activeTab === 'homepage') handleSave('homepage', homepage, true);
                                 else if (activeTab === 'promotions') handleSave('promotions', promotions, true);
                                 else if (activeTab === 'theme') handleSave('theme_config', theme, true);
-                                else if (activeTab === 'seo') handleSave('seo_config', seo, true);
+                                else if (activeTab === 'seo') {
+                                    handleSave('seo_config', seo, true);
+                                    handleSave('social_apis', socialApis, true);
+                                }
                                 else if (activeTab === 'ops') {
                                     handleSave('contact', contact, true);
                                     handleSave('shipping', shipping, true);

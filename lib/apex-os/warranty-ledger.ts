@@ -12,8 +12,8 @@ export interface WarrantyCertificate {
     imei_serial: string;
     issued_at: string;
     expiry_at: string;
-    hash: string;
-    is_valid: boolean;
+    certificate_hash: string;
+    is_active: boolean;
 }
 
 const APEX_IMMUTABILITY_SECRET = process.env.APEX_IMMUTABILITY_SECRET || 'titan-ledger-v1';
@@ -48,7 +48,7 @@ export async function issueDigitalWarranty(orderId: number, sku: string, serial:
     return data;
 }
 
-export function verifyWarrantyIntegrity(certificate: any): boolean {
+export function verifyWarrantyIntegrity(certificate: WarrantyCertificate): boolean {
     const rawPayload = `${certificate.order_id}|${certificate.sku}|${certificate.imei_serial}|${certificate.issued_at}`;
     const calculatedHash = generateWarrantyHash(rawPayload);
     return calculatedHash === certificate.certificate_hash;

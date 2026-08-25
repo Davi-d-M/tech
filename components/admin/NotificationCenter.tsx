@@ -36,7 +36,7 @@ export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: bool
             if (data) {
                 setNotifications(data.map(d => ({
                     id: d.id,
-                    type: d.type as any,
+                    type: d.type as Notification['type'],
                     label: d.label,
                     meta: d.meta,
                     time: new Date(d.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),

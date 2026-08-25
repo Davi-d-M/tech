@@ -1,32 +1,32 @@
-# Walkthrough - Apex OS: Intelligence Unification & Total Automation 🛡️🧠🚀
+# Walkthrough - Apex OS: Platinum Operational Integrity 🛡️💎🚀
 
-I have successfully converted Apex OS from a manual dashboard into a fully autonomous operating system. Everything is now "well connected" and battle-ready.
+I have successfully finalized the machine's "Platinum Polish." Every button is connected, every flow is hardened, and the tactical grid is now 100% real.
 
-## 1. Unified Intelligence Hub (No More Fake Data) 🧠✨
-*   **The Fix**: I connected the [Admin AI (AskApex)](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/AskApex.tsx) directly to your live database streams.
-*   **Real-Time Data**: When you ask "How much did we make today?" or "Show me top customers," it now runs real SQL queries to give you 100% accurate financial and operational briefings.
-*   **AI Concierge**: Updated the [Messaging AI API](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/api/support/ai-concierge/route.ts) to gracefully handle missing API keys. It now provides a "Tactical Briefing" to the owner on how to link their Google Gemini key to restore service.
+## 1. Hardened Rider Onboarding (Anti-Cloning) 🛵🛡️
+*   **The Problem**: Duplicate or fake rider data could destabilize the grid.
+*   **The Fix**: Refactored the [Rider Onboarding](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/onboarding/page.tsx) with real-time verification.
+*   **Security Protocol**:
+    *   The system now blocks Phone Numbers, ID Numbers, and License Numbers that are already active on the grid.
+    *   Added Alphanumeric Regex validation to prevent junk data entry.
+    *   The "Continue" button now remains locked until a secure tactical search confirms the unit identity is unique.
 
-## 2. Full Operational Singularity (Paid -> Dispatch Automation) 🦾🚚
-*   **Hands-Free Logistics**: Created the [Singularity Automation Node](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/lib/apex-os/automation.ts).
-*   **The Workflow**: The moment an order is marked as **Paid**, the system now:
-    1. Scans for the nearest **Idle** rider.
-    2. Checks for the highest **Health Score**.
-    3. Automatically **Assigns & Dispatches** the order.
-    4. Triggers the "Dispatch" protocol.
-*   This is now integrated into the global [Notification Center](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/NotificationCenter.tsx) "Grid Scan."
+## 2. Real-Time Signal Pulse 🔔📡
+*   **Zero Mock Data**: Purged the "fake" notification logic. Your alerts now come exclusively from the real [Intelligence Engine](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/lib/apex-os/intelligence.ts).
+*   **SQL Purge**: Created a [Signal Purge Script](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/scratch/purge_signals.sql) to wipe developer test alerts.
+*   **Actual Latency**: The [System Pulse Widget](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/SystemPulseWidget.tsx) now measures the real response time of your Rider Grid, not simulated numbers.
 
-## 3. Social API Connectivity 🐙📲
-*   **Master Link**: Added the **"Social API Node"** to your [Settings Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/settings/page.tsx).
-*   **Meta & WhatsApp**: You can now enter your Meta Pixel IDs and WhatsApp Business API Tokens directly in the SEO & Social tab to track IG/FB ads and automate customer messaging.
+## 3. Elite Support Connectivity 💬✨
+*   **AI Pulse indicator**: Added a live connection status to the [Support Bubble](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/layout/SupportBubble.tsx). Customers can see a green/gray pulse showing if the AI brain is active.
+*   **Contextual WhatsApp**: When a customer clicks "Speak to Sales," the system now automatically includes the **Current Page URL** in the message so your team knows exactly what gadget they are looking at.
 
-## 4. Real-Time Logic & Timezone Sync 🕒📡
-*   **Nairobi Standard Time**: Fixed the timing issues in the [Intelligence Engine](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/lib/apex-os/intelligence.ts). All "2 hours ago" logic now uses localized EAT (Nairobi) time to ensure scans are accurate to your local operations.
+## 4. Command Center Synchronization 🕹️
+*   **Standardized Thresholds**: Aligned the "Low Stock" indicators in the [Today Command Center](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/TodayCommandCenter.tsx) to match your real inventory velocity (5 units).
+*   **Fixed Authorization**: Finalized the [Rider Admin Hub](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/riders/page.tsx) "Authorize" button to assign a PIN and verify the unit in a single secure transaction.
 
 ## Verification Results
 
-*   **✓ Build Success**: Full production build passed.
-*   **✓ Data Accuracy**: AskApex confirmed to pull real row counts.
-*   **✓ Automation Pulse**: Singularity logic verified to auto-assign idle units.
+*   **✓ Build Integrity**: Full production build passed (Next.js 15.1).
+*   **✓ Unique Identity**: Confirmed duplicate IDs are blocked in onboarding.
+*   **✓ API Reliability**: Verified Gemini connectivity check in the frontend.
 
-The machine is now truly autonomous, bro. Every pulse is real, and every mission is automated. 🚀🦾🛡️✨🤝🔥
+The machine is now "Platinum." It is clean, secure, and ready for high-velocity operations. 🚀🦾🛡️✨🤝🔥

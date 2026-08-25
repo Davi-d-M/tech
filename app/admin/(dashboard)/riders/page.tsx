@@ -116,7 +116,7 @@ export default function AdminRidersPage() {
     const updateRiderStatus = async (phone: string, status: 'Verified' | 'Rejected', customPin?: string) => {
         if (!supabase) return;
         try {
-            const updatePayload: any = { verification_status: status };
+            const updatePayload: { verification_status: 'Verified' | 'Rejected'; pin?: string } = { verification_status: status };
             if (customPin) updatePayload.pin = customPin;
 
             const { error } = await supabase

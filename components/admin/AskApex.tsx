@@ -30,8 +30,8 @@ export default function AskApex() {
     const scrollRef = React.useRef<HTMLDivElement>(null);
 
     const startVoiceCommand = () => {
-        const win = window as any;
-        const SpeechRecognition = win.webkitSpeechRecognition || win.SpeechRecognition;
+        // @ts-expect-error - WebkitSpeechRecognition is a browser global
+        const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
         if (!SpeechRecognition) {
             alert("Voice Protocol not supported in this browser.");
             return;
@@ -41,8 +41,8 @@ export default function AskApex() {
         recognition.lang = 'en-US';
         recognition.onstart = () => setIsListening(true);
         recognition.onend = () => setIsListening(false);
-        recognition.onresult = (event: any) => {
-            const transcript = event.results[0][0].transcript;
+        recognition.onresult = (event: unknown) => {
+            const transcript = (event as { results: { [key: number]: { [key: number]: { transcript: string } } } }).results[0][0].transcript;
             setQuery(transcript);
             // Auto-submit after voice
             setTimeout(() => {

@@ -42,7 +42,7 @@ export default function AIConcierge() {
     }, [messages]);
 
     // Disable logic based on Admin settings
-    if (settings?.features?.ai_concierge_enabled === false) return null;
+    if ((settings as unknown as { features: { ai_concierge_enabled: boolean } })?.features?.ai_concierge_enabled === false) return null;
 
     const handleAsk = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,7 +56,7 @@ export default function AIConcierge() {
         try {
             // Real Database Vector/Keyword Search Node
             const low = userMsg.toLowerCase();
-            const config = (settings as any)?.ai_config || { build_setup_limit: 5000, assistant_name: 'Apex AI' };
+            const config = (settings as unknown as { ai_config: { build_setup_limit: number, assistant_name: string } })?.ai_config || { build_setup_limit: 5000, assistant_name: 'Apex AI' };
 
             let reply = `I'm analyzing the catalog for your tactical setup, bro. As ${config.assistant_name}, I recommend these:`;
             let suggestions: Suggestion[] = [];

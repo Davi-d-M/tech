@@ -22,6 +22,7 @@ export default function SupportBubble() {
 
     // Connection Pulse
     const [isAiOnline, setIsAiOnline] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     // AI Chat State
     const [aiInput, setAiInput] = useState('');
@@ -35,6 +36,10 @@ export default function SupportBubble() {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
     useEffect(() => {
+        // 👮 Check for Admin Session
+        const hasAdminSession = document.cookie.includes('admin_session');
+        setIsAdmin(hasAdminSession);
+
         async function checkUser() {
             if (!supabase) return;
             const { data: { session } } = await supabase.auth.getSession();
@@ -176,10 +181,12 @@ export default function SupportBubble() {
                                     <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm relative">
                                             <Zap className="h-4 w-4" />
-                                            <div className={cn(
-                                                "absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full border border-white",
-                                                isAiOnline ? "bg-emerald-500" : "bg-slate-300"
-                                            )} />
+                                            {isAdmin && (
+                                                <div className={cn(
+                                                    "absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full border border-white",
+                                                    isAiOnline ? "bg-emerald-500" : "bg-slate-300"
+                                                )} />
+                                            )}
                                         </div>
                                         <span className="text-[10px] font-black uppercase text-foreground">Apex AI Finder</span>
                                     </div>

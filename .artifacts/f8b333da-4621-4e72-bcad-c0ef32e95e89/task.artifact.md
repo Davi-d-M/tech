@@ -1,19 +1,18 @@
-# Task - Apex OS: Platinum Operational Integrity 🛡️💎🚀
+# Task - Apex OS: Platinum Scrub & Privacy Hardening 🛡️🐛🚀
 
-## Phase 1: Hardened Rider Onboarding 🛵🛡️
-- [ ] Implement existence checks for ID/License in `rider/onboarding/page.tsx`.
-- [ ] Add regex validation for alphanumeric credentials.
-- [ ] enforce photo requirements for the final step.
+## Phase 1: Support Hub Privacy 💬🛡️
+- [ ] Implement Admin-only check for AI Pulse in `SupportBubble.tsx`.
 
-## Phase 2: Tactical Grid Purge & Pulse 🔔📡
-- [ ] Wipe `system_signals` table (SQL).
-- [ ] Remove residual mock logic in `NotificationCenter.tsx`.
-- [ ] Link actual Rider API latency in `SystemPulseWidget.tsx`.
+## Phase 2: TypeScript Warning Purge 🧹
+- [ ] [Sourcing] Remove unused `useAdmin` in `operations/sourcing/page.tsx`.
+- [ ] [Orders] Fix `any` types in `orders/page.tsx`.
+- [ ] [Riders] Fix `any` types and define interfaces in `riders/page.tsx`.
+- [ ] [Settings] Fix `any` types and define interfaces in `settings/page.tsx`.
+- [ ] [Audit API] Correctly type error handling in `audit/route.ts`.
+- [ ] [Rider Dashboard] Fix `useEffect` dependency in `rider/dashboard/page.tsx`.
+- [ ] [Intelligence] Fix `any` types in `autonomous-pricing.ts`, `security-shield.ts`, and `warranty-ledger.ts`.
+- [ ] [UI Components] Fix `any` types in `AskApex.tsx`, `NotificationCenter.tsx`, and `AIConcierge.tsx`.
 
-## Phase 3: Elite Support & Messaging 💬✨
-- [ ] Add AI "Live Link" status to `SupportBubble.tsx`.
-- [ ] Enhance WhatsApp Sales contextual metadata.
-
-## Phase 4: Command Center Standardization 🕹️
-- [ ] Align stock thresholds in `TodayCommandCenter.tsx`.
-- [ ] Final build and `git push`.
+## Phase 3: Final Verification 🐙
+- [ ] Run `npm run build` and verify 0 warnings.
+- [ ] Perform final `git push` to `tech master`.
