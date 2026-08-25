@@ -1,17 +1,19 @@
-# Task - Apex OS: Intelligence Unification & Total Automation 🛡️🧠🚀
+# Task - Apex OS: Platinum Operational Integrity 🛡️💎🚀
 
-## Phase 1: Unified Intelligence Hub 🧠✨
-- [ ] Connect `AskApex.tsx` to real-time database stats.
-- [ ] Refactor `ai-concierge` API to handle missing keys gracefully with guidance.
+## Phase 1: Hardened Rider Onboarding 🛵🛡️
+- [ ] Implement existence checks for ID/License in `rider/onboarding/page.tsx`.
+- [ ] Add regex validation for alphanumeric credentials.
+- [ ] enforce photo requirements for the final step.
 
-## Phase 2: Social & Marketing Connectivity 🐙📲
-- [ ] Add "Social API Node" to `app/admin/(dashboard)/settings/page.tsx`.
-- [ ] Implement Meta Pixel and WhatsApp Business API storage.
+## Phase 2: Tactical Grid Purge & Pulse 🔔📡
+- [ ] Wipe `system_signals` table (SQL).
+- [ ] Remove residual mock logic in `NotificationCenter.tsx`.
+- [ ] Link actual Rider API latency in `SystemPulseWidget.tsx`.
 
-## Phase 3: Full Operational Singularity (Automation) 🦾🚚
-- [ ] Create `lib/apex-os/automation.ts` for autonomous dispatch.
-- [ ] Link `automation.ts` to the order flow in `orders/page.tsx`.
+## Phase 3: Elite Support & Messaging 💬✨
+- [ ] Add AI "Live Link" status to `SupportBubble.tsx`.
+- [ ] Enhance WhatsApp Sales contextual metadata.
 
-## Phase 4: Real-Time Logic Sync 🕒📡
-- [ ] Fix timezone localization in `lib/apex-os/intelligence.ts`.
-- [ ] Verify build and perform final `git push`.
+## Phase 4: Command Center Standardization 🕹️
+- [ ] Align stock thresholds in `TodayCommandCenter.tsx`.
+- [ ] Final build and `git push`.

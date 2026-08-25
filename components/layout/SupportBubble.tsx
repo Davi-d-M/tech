@@ -20,6 +20,9 @@ export default function SupportBubble() {
     const [trackResult, setTrackResult] = useState<{ id: string; status: string } | null>(null);
     const [isSearching, setIsSearching] = useState(false);
 
+    // Connection Pulse
+    const [isAiOnline, setIsAiOnline] = useState(false);
+
     // AI Chat State
     const [aiInput, setAiInput] = useState('');
     const [aiChat, setAiChat] = useState<{ role: 'ai' | 'user', text: string }[]>([]);
@@ -42,6 +45,23 @@ export default function SupportBubble() {
         }
         checkUser();
 
+        // 🧠 AI Pulse Check
+        async function checkAiPulse() {
+            try {
+                const res = await fetch('/api/support/ai-concierge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'ping' }),
+                });
+                const data = await res.json();
+                // If it doesn't contain the "Tactical Silence" message, it's real
+                setIsAiOnline(data.response && !data.response.includes('Tactical Silence'));
+            } catch {
+                setIsAiOnline(false);
+            }
+        }
+        checkAiPulse();
+
         // Persistent dismissal check
         const dismissed = localStorage.getItem('support_label_dismissed') === 'true';
         if (dismissed) return;
@@ -56,7 +76,8 @@ export default function SupportBubble() {
     };
 
     const handleChat = () => {
-        const message = "Hello Apexstores! I have a question about your gadgets.";
+        const url = typeof window !== 'undefined' ? window.location.href : '';
+        const message = `Hello Apexstores! I have a question about this page: ${url}`;
         window.open(`https://wa.me/${settings.contact.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
     };
 
@@ -153,7 +174,13 @@ export default function SupportBubble() {
                             <>
                                 <button onClick={() => setMode('ai')} className="w-full p-4 rounded-2xl bg-primary/5 hover:bg-primary/10 border border-primary/10 transition-all text-left flex items-center justify-between group">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm"><Zap className="h-4 w-4" /></div>
+                                        <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm relative">
+                                            <Zap className="h-4 w-4" />
+                                            <div className={cn(
+                                                "absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full border border-white",
+                                                isAiOnline ? "bg-emerald-500" : "bg-slate-300"
+                                            )} />
+                                        </div>
                                         <span className="text-[10px] font-black uppercase text-foreground">Apex AI Finder</span>
                                     </div>
                                     <ChevronRight className="h-4 w-4 text-primary/30" />

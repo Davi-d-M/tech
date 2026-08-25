@@ -1,43 +1,53 @@
-# Implementation Plan - Apex OS: Ultimate Schema & Cache Repair 🛡️⚙️🚀
+# Implementation Plan - Apex OS: Total Operational Integrity 🛡️💎🚀
 
-This plan fixes the persistent "column not found" errors in the Rider Onboarding flow and the "can_view_sensitive_rider_data" error in the Supabase SQL editor. We will force a schema synchronization and implement an ultra-resilient fallback in the app.
+This plan finalizes the "Grid Pulse" by purging all remaining mock data, hardening the rider onboarding protocol, and ensuring 100% connectivity for messaging and notifications.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Supabase SQL**: You MUST run the updated `fix_rider_table.sql` in full. I have separated the column additions from the policies to ensure no dependency errors (like the one in your screenshot).
+> **Rider ID Hardening**: Onboarding will now block IDs and License numbers already present in the database to prevent "Unit Cloning."
 
 > [!WARNING]
-> **Schema Cache**: If the error persists after running the SQL, you may need to go to **Supabase Dashboard -> Settings -> API** and click "Reload PostgREST" (if available) or wait 2-3 minutes for the cache to pulse.
+> **Signal Purge**: I will wipe the `system_signals` table once to clear any developer-generated mock alerts, starting you with a fresh, 100% real tactical grid.
 
 ## Proposed Changes
 
-### 1. Granular Schema Repair (SQL) 🗄️
-- **Objective**: Ensure all columns exist before any policies or triggers refer to them.
-- [MODIFY] [fix_rider_table.sql](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/scratch/fix_rider_table.sql):
-    - Move all `ALTER TABLE ... ADD COLUMN` statements to the very top.
-    - Ensure `can_view_sensitive_rider_data` and `can_view_audit_logs` are added to `staff`.
-    - Ensure `verification_status` and `id_number` are added to `rider_status`.
-    - Add a "Reset Kill Switch" command to disable the Tactical Pause.
+### 1. Hardened Rider Onboarding 🛵🛡️
+- **Objective**: Ensure high-fidelity unit data collection.
+- [MODIFY] [Rider Onboarding](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/onboarding/page.tsx):
+    - Implement real-time existence checks for ID Number and License Number.
+    - Add character validation (Regex) to ensure only valid alphanumeric codes are entered.
+    - Ensure photos are required before the "Review Agreement" button activates.
 
-### 2. Ultra-Resilient Onboarding (Frontend) 🛵
-- **Objective**: Prevent the app from crashing even if Supabase is still refreshing its cache.
-- [MODIFY] [onboarding/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/rider/onboarding/page.tsx):
-    - Enhance the `upsert` logic with a tiered fallback system.
-    - **Tier 1**: Try full payload (Photos, ID, License, etc.).
-    - **Tier 2**: Try minimal payload (Name, Phone, PIN, Status).
-    - **Tier 3**: Try absolute minimum (Name, Phone, PIN) to at least establish the record.
+### 2. Purged Notifications & Real Pulse 🔔📡
+- **Objective**: Remove "Fake" alerts and link hardware status.
+- [MODIFY] [Notification Center](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/NotificationCenter.tsx):
+    - Remove the "Mock Signal" generator logic if any remains.
+    - Ensure it only pulls from the real `system_signals` table populated by the intelligence scanner.
+- [MODIFY] [System Pulse Widget](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/SystemPulseWidget.tsx):
+    - Connect the "Logistics" latency metric to the actual response time of the Rider API node.
 
-### 3. Tactical Pause Deactivation 🔓
-- [MODIFY] [fix_rider_table.sql](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/scratch/fix_rider_table.sql):
-    - Force the `system_lockdown` setting to `active: false`.
+### 3. Messaging & Support Flow 💬✨
+- **Objective**: Ensure 100% reliability of customer tickets.
+- [MODIFY] [Support Bubble](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/layout/SupportBubble.tsx):
+    - Add a "Live Status" indicator to the chat showing if the AI Node is currently connected to Gemini.
+    - Verify that "Speak to Sales" correctly passes the current URL/Product context to WhatsApp.
+
+### 4. Admin Command Center Audit 🕹️
+- [MODIFY] [Today Command Center](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/components/admin/TodayCommandCenter.tsx):
+    - Ensure the "Low Stock" indicator matches the `inventory_threshold` set in settings, not just a hardcoded `2`.
+
+---
 
 ## Verification Plan
 
 ### Automated Tests
-- `npm run build` to verify no regressions in the onboarding logic.
+- `npm run build` to verify code integrity.
+- SQL check to ensure the `rider_status` table has unique constraints on `id_number` and `license_number`.
 
 ### Manual Verification
-1. **SQL Check**: Run the script in Supabase and verify "0 rows returned" (Success) instead of the 42703 error.
-2. **Onboarding Test**: Attempt to submit the Rider form. Even if the cache is old, it should now "gracefully degrade" and at least let the rider finish the step.
-3. **Admin Check**: Verify the "Tactical Pause" banner disappears from the checkout.
+1. **Rider Test**: Try to onboard a rider with a duplicate ID number. It should throw a "Tactical Collision" error.
+2. **Notification Scan**: Click "Scan Operational Grid" and verify only real issues (like stuck orders) appear.
+3. **Messaging**: Send a support message and verify it appears instantly in the [Admin Messages](file:///C:/Users/hp/AndroidStudioProjects/moneymaker/app/admin/(dashboard)/messages/page.tsx) tab.
+
+Bro, this is the "Platinum Polish" phase. Ready to finalize the grid? 🦾🔥🛡️✨🤝⚡️

@@ -78,17 +78,28 @@ export default function RiderOnboarding() {
     const handleIdentify = async () => {
         const normalized = normalizePhone(phone);
         if (normalized.length < 9) {
-            setError("Valid phone number required");
+            setError("Valid mobile number required (e.g. 07XXXXXXXX)");
             return;
         }
         setLoading(true);
         setError(null);
 
-        // [USER REQUEST] REMOVED OTP STEP - Direct Proceed to Identity
-        setTimeout(() => {
+        try {
+            if (!supabase) throw new Error("Offline");
+            // CHECK IF PHONE ALREADY ON GRID
+            const { data } = await supabase.from('rider_status').select('rider_phone').eq('rider_phone', normalized).maybeSingle();
+            if (data) {
+                setError("Unit already active on the grid. Access denied.");
+                setLoading(false);
+                return;
+            }
+
             setStep('identity');
             setLoading(false);
-        }, 800);
+        } catch {
+            setStep('identity');
+            setLoading(false);
+        }
     };
 
     const handleBiometricEnroll = async () => {
@@ -285,8 +296,46 @@ export default function RiderOnboarding() {
                                         <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                                     </div>
                                 </div>
-                                <Button onClick={() => setStep('vehicle')} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
-                                    Continue to Vehicle
+                                <Button
+                                    onClick={async () => {
+                                        if (!riderName.trim() || idNumber.length < 6 || licenseNumber.length < 6) {
+                                            setError("Name and valid ID/License credentials required.");
+                                            return;
+                                        }
+                                        if (!/^[a-zA-Z0-9]+$/.test(idNumber) || !/^[a-zA-Z0-9]+$/.test(licenseNumber)) {
+                                            setError("Invalid characters in ID or License Number.");
+                                            return;
+                                        }
+
+                                        setLoading(true);
+                                        setError(null);
+                                        try {
+                                            if (!supabase) throw new Error("Offline");
+
+                                            // Check for duplicate ID or License
+                                            const { data: existingRider } = await supabase
+                                                .from('rider_status')
+                                                .select('rider_phone')
+                                                .or(`id_number.eq.${idNumber},license_number.eq.${licenseNumber}`)
+                                                .maybeSingle();
+
+                                            if (existingRider) {
+                                                setError("Tactical Collision: ID or License number already registered.");
+                                                setLoading(false);
+                                                return;
+                                            }
+
+                                            setStep('vehicle');
+                                        } catch {
+                                            setStep('vehicle'); // Fallback
+                                        } finally {
+                                            setLoading(false);
+                                        }
+                                    }}
+                                    disabled={loading}
+                                    className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all"
+                                >
+                                    {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Continue to Vehicle"}
                                 </Button>
                             </div>
                         )}

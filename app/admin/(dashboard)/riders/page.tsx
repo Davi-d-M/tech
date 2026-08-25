@@ -113,18 +113,21 @@ export default function AdminRidersPage() {
         }
     };
 
-    const updateRiderStatus = async (phone: string, status: 'Verified' | 'Rejected') => {
+    const updateRiderStatus = async (phone: string, status: 'Verified' | 'Rejected', customPin?: string) => {
         if (!supabase) return;
         try {
+            const updatePayload: any = { verification_status: status };
+            if (customPin) updatePayload.pin = customPin;
+
             const { error } = await supabase
                 .from('rider_status')
-                .update({ verification_status: status })
+                .update(updatePayload)
                 .eq('rider_phone', phone);
 
             if (error) throw error;
 
-            await logAuditAction(email, 'UPDATE_RIDER_VERIFICATION', { phone, status });
-            setRiders(prev => prev.map(r => r.rider_phone === phone ? { ...r, verification_status: status } : r));
+            await logAuditAction(email, 'UPDATE_RIDER_VERIFICATION', { phone, status, pin_assigned: !!customPin });
+            setRiders(prev => prev.map(r => r.rider_phone === phone ? { ...r, verification_status: status, pin: customPin || r.pin } : r));
             setMessage({ type: 'success', text: `Unit ${phone} marked as ${status}.` });
             setTimeout(() => setMessage(null), 3000);
         } catch {
@@ -322,11 +325,8 @@ export default function AdminRidersPage() {
                                             <Button
                                                 onClick={() => {
                                                     const pin = Math.floor(1000 + Math.random() * 9000).toString();
-                                                    updateRiderStatus(rider.rider_phone, 'Verified');
-                                                    // Also update PIN in DB
-                                                    supabase?.from('rider_status').update({ pin }).eq('rider_phone', rider.rider_phone).then(() => {
-                                                        alert(`Unit Authorized! Assigned PIN: ${pin}`);
-                                                    });
+                                                    updateRiderStatus(rider.rider_phone, 'Verified', pin);
+                                                    alert(`Unit Authorized! Assigned PIN: ${pin}`);
                                                 }}
                                                 className="h-10 px-6 rounded-xl bg-primary text-white font-black uppercase text-[8px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
                                             >

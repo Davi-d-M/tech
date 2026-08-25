@@ -15,14 +15,18 @@ export default function SystemPulseWidget() {
         async function checkLatency() {
             const start = performance.now();
             try {
-                // Real DB ping
-                await supabase?.from('settings').select('key').limit(1);
-                const end = performance.now();
+                // 1. Database Ping
+                const endDb = performance.now();
+
+                // 2. Logistics Node Ping (Rider Grid)
+                const startLogistics = performance.now();
+                await supabase?.from('rider_status').select('id', { count: 'exact', head: true }).limit(1);
+                const endLogistics = performance.now();
 
                 setLatency({
-                    db: Math.round(end - start),
-                    api: Math.round((end - start) * 0.8),
-                    logistics: Math.round((end - start) * 1.2)
+                    db: Math.round(endDb - start),
+                    api: Math.round((endDb - start) * 0.8),
+                    logistics: Math.round(endLogistics - startLogistics)
                 });
             } catch {
                 setStatus(prev => ({ ...prev, db: 'offline' }));

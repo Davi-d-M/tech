@@ -28,7 +28,7 @@ export default function TodayCommandCenter() {
                 const [ordersRes, ridersRes, productsRes, messagesRes] = await Promise.all([
                     supabase.from('orders').select('id', { count: 'exact' }).in('status', ['Created', 'Payment Pending', 'Quote Pending']),
                     supabase.from('rider_status').select('id', { count: 'exact' }).eq('status', 'Offline'),
-                    supabase.from('products').select('id', { count: 'exact' }).lte('stock', 2),
+                    supabase.from('products').select('id', { count: 'exact' }).lte('stock', 5),
                     supabase.from('messages').select('id', { count: 'exact' }).eq('status', 'New')
                 ]);
 
@@ -68,10 +68,10 @@ export default function TodayCommandCenter() {
         {
             label: 'Products Low Stock',
             val: stats.low_stock,
-            href: '/admin/upload',
+            href: '/admin/orders', // Redirect to orders for restock priority or upload
             icon: Package,
             color: 'primary',
-            status: stats.low_stock > 5 ? 'REORDER' : 'SAFE'
+            status: stats.low_stock > 0 ? 'RESTOCK' : 'SAFE'
         },
         {
             label: 'Support Tickets',
