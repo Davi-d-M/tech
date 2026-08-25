@@ -1,32 +1,14 @@
 import { supabase } from './supabaseClient';
 
 /**
- * Logs a staff action for accountability with enterprise metadata
+ * Apex OS Audit Interface
+ * Transmits actions to the secure server-side logger.
  */
 export async function logAuditAction(email: string, action: string, details: Record<string, unknown>) {
-  if (!supabase || !email) return;
+  if (!email) return;
 
   try {
-    // Attempt to get IP from multiple sources
-    let ip = 'server-internal';
-
-    if (typeof window !== 'undefined') {
-        try {
-            // Try ipify first
-            const res = await fetch('https://api.ipify.org?format=json', { timeout: 2000 } as any);
-            if (res.ok) {
-                const data = await res.json();
-                ip = data.ip;
-            } else {
-                // Try second source if ipify fails
-                const res2 = await fetch('https://ifconfig.me/all.json');
-                const data2 = await res2.json();
-                ip = data2.ip_addr;
-            }
-        } catch { ip = 'client-unreachable'; }
-    }
-
-    // Parse User Agent for elite display
+    // 1. Detect Device Info (Frontend Only)
     let deviceInfo = 'Titan Node';
     if (typeof navigator !== 'undefined') {
         const ua = navigator.userAgent;
@@ -38,17 +20,33 @@ export async function logAuditAction(email: string, action: string, details: Rec
         else deviceInfo = ua.substring(0, 30);
     }
 
-    await supabase
-      .from('audit_logs')
-      .insert([{
-        staff_email: email,
-        action,
-        details,
-        ip_address: ip,
-        device_info: deviceInfo,
-        created_at: new Date().toISOString()
-      }]);
+    // 2. Transmit to Secure API Node
+    // This ensures the IP is captured server-side and the action is authenticated.
+    const res = await fetch('/api/admin/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email,
+            action,
+            details,
+            deviceInfo
+        })
+    });
+
+    if (!res.ok) {
+        console.warn("Audit Transmission Restricted. Falling back to local log...");
+        // Minimal fallback for local dev if API is unreachable
+        if (supabase) {
+             await supabase.from('audit_logs').insert([{
+                staff_email: email,
+                action,
+                details,
+                device_info: deviceInfo + ' (Fallback)',
+                ip_address: 'client-direct'
+             }]);
+        }
+    }
   } catch (err) {
-    console.error("Audit Log Error:", err);
+    console.error("Audit Service Link Unstable:", err);
   }
 }
