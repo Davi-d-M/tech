@@ -1,21 +1,20 @@
-# Task - Apex OS: Phase 15 "Total Autonomy" 🦾💎🚀
+# Task - Apex OS Phase 16: Omni-Intelligence 🦾👁️📡
 
-## Phase 1: Rider Merit & Performance Node ⭐️🛵
-- [x] Create `lib/apex-os/merit.ts` to automate rider rating recalculation.
-- [x] Link merit updates to order completion flow.
+## Phase 1: The "Sentry Eye" (Vision AI Auditor) 👁️📦
+- [ ] Enhance `ScannerActivity.kt` for shelf-scan multi-label detection.
+- [ ] Add "AI Audit" interface to `app/admin/(dashboard)/upload/page.tsx`.
 
-## Phase 2: Autonomous Procurement Scanner 📦📡
-- [x] Add `SUPPLIER_DISCREPANCY` scanner to `lib/apex-os/intelligence.ts`.
-- [x] Implement "Draft PO" signal generation.
+## Phase 2: Agentic Procurement (Self-Healing Loop) 📡🔄
+- [ ] Implement `runAgenticProcurementSync` in `lib/apex-os/automation.ts`.
+- [ ] Link high-ROAS products to autonomous restock nudges.
 
-## Phase 3: Abandoned Cart "Tactical Nudge" 🎯💸
-- [x] Update `lib/apex-os/automation.ts` to scan `active_visitors` for abandoned carts.
-- [x] Integrate "Leakage Alerts" into the Notification Center.
+## Phase 3: Sentiment Pulse (Brand Temperature) 🌡️🧠
+- [ ] Add `SENTIMENT_ANOMALY` scanner to `lib/apex-os/intelligence.ts`.
+- [ ] Create "Brand Temperature" display on the main dashboard.
 
-## Phase 4: Global Heatmap Deepening 🗺️🔥
-- [x] Implement demand heatmap layer in `app/admin/(dashboard)/dispatch/page.tsx`.
-- [x] Ensure warehouse stocking recommendations are visible.
+## Phase 4: Interactive WhatsApp Support Flow 💬🎭
+- [ ] Add "WhatsApp Flow Templates" configuration in `settings/page.tsx`.
 
-## Phase 5: Verification & Sync 🐙
+## Phase 5: Verification & Global Sync 🐙
 - [ ] Run `npm run build`.
 - [ ] Perform final `git push` to `tech master`.

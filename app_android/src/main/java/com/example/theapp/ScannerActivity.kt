@@ -47,6 +47,14 @@ class ScannerActivity : ComponentActivity() {
                             setResult(Activity.RESULT_OK, intent)
                             finish()
                         })
+                    } else if (mode == "SHELF") {
+                        ShelfScanner(onLabelsDetected = { labels ->
+                            val intent = Intent().apply {
+                                putExtra("SHELF_LABELS", labels.toTypedArray())
+                            }
+                            setResult(Activity.RESULT_OK, intent)
+                            finish()
+                        })
                     } else {
                         BarcodeScanner(onBarcodeDetected = { result ->
                             val intent = Intent().apply {
@@ -114,6 +122,63 @@ fun EdgeAiTriage(onTriageDetected: (String) -> Unit) {
         )
         Text(
             text = "AI Triage Active: Point at Gadget",
+            color = Color.White,
+            modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp),
+            style = MaterialTheme.typography.titleMedium
+        )
+    }
+}
+
+@SuppressLint("UnsafeOptInUsageError")
+@Composable
+fun ShelfScanner(onLabelsDetected: (List<String>) -> Unit) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val cameraExecutor = Executors.newSingleThreadExecutor()
+    val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { ctx ->
+                val previewView = PreviewView(ctx)
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
+
+                cameraProviderFuture.addListener({
+                    val cameraProvider = cameraProviderFuture.get()
+                    val preview = Preview.Builder().build().also {
+                        it.surfaceProvider = previewView.surfaceProvider
+                    }
+
+                    val imageAnalyzer = ImageAnalysis.Builder()
+                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .build()
+                        .also {
+                            it.setAnalyzer(cameraExecutor) { imageProxy ->
+                                val mediaImage = imageProxy.image
+                                if (mediaImage != null) {
+                                    val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                                    labeler.process(image)
+                                        .addOnSuccessListener { labels ->
+                                            val highConfidence = labels.filter { it.confidence > 0.7 }.map { it.text }
+                                            if (highConfidence.isNotEmpty()) {
+                                                onLabelsDetected(highConfidence)
+                                            }
+                                        }
+                                        .addOnCompleteListener { imageProxy.close() }
+                                }
+                            }
+                        }
+
+                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                    cameraProvider.unbindAll()
+                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalyzer)
+                }, ContextCompat.getMainExecutor(ctx))
+                previewView
+            }
+        )
+        Text(
+            text = "Shelf Audit Active: Scan for Gadgets",
             color = Color.White,
             modifier = Modifier.align(Alignment.TopCenter).padding(top = 20.dp),
             style = MaterialTheme.typography.titleMedium

@@ -10,27 +10,30 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export default function SentimentSentinel() {
     const [hotIssues, setHotIssues] = React.useState<{ id: number; type: string; body: string }[]>([]);
+    const [temperature, setTemperature] = React.useState(98.6); // Base body temp
 
     React.useEffect(() => {
         async function checkSentiment() {
             if (!supabase) return;
             // Scan for Negative sentiment in Open items
-            const { data: tickets } = await supabase.from('support_tickets').select('*').eq('status', 'Open');
+            const { data: messages } = await supabase.from('messages').select('*').order('created_at', { ascending: false }).limit(20);
             const { data: reviews } = await supabase.from('reviews').select('*').is('admin_response', null).lte('rating', 2);
 
             const negative = [
-                ...(tickets || []).map((t: { id: number; description: string }) => ({ id: t.id, type: 'Support', body: t.description })),
+                ...(messages || []).map((t: { id: number; message: string }) => ({ id: t.id, type: 'Support', body: t.message })),
                 ...(reviews || []).map((r: { id: number; comment: string }) => ({ id: r.id, type: 'Review', body: r.comment }))
             ].filter(item => {
                 const lower = item.body.toLowerCase();
-                return lower.includes('bad') || lower.includes('delay') || lower.includes('angry') || lower.includes('worst');
+                return lower.includes('bad') || lower.includes('delay') || lower.includes('angry') || lower.includes('worst') || lower.includes('broken');
             });
 
             setHotIssues(negative.slice(0, 2));
+            setTemperature(98.6 + (negative.length * 2.5));
         }
         checkSentiment();
         const interval = setInterval(checkSentiment, 60000);
@@ -48,6 +51,7 @@ export default function SentimentSentinel() {
                     </div>
                     <div>
                         <h3 className="text-xl font-black uppercase tracking-tighter leading-none">Sentinel: Vibe Check</h3>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60 mt-1">Brand Temperature: <span className={cn(temperature > 100 ? "text-white" : "text-white/60")}>{temperature.toFixed(1)}°F</span></p>
                         <p className="text-[10px] font-medium opacity-70 italic mt-2">&quot;Negative customer sentiment detected in the extraction grid.&quot;</p>
                     </div>
                 </div>

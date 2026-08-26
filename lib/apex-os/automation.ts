@@ -107,3 +107,48 @@ export async function runRevenueRecoverySync() {
         console.error("Leakage Sync Failure:", err);
     }
 }
+
+/**
+ * Apex OS: Agentic Procurement (Self-Healing Loop)
+ * Autonomously identifies replenishment targets based on ROI and Stock.
+ */
+export async function runAgenticProcurementSync() {
+    if (!supabase) return;
+
+    try {
+        // 1. Fetch products with high-ROI potential and low stock
+        // Note: For this to work, ad_campaigns should be linked to products
+        const { data: ads } = await supabase.from('ad_campaigns').select('product_name, roas').gt('roas', 3.0);
+
+        if (!ads || ads.length === 0) return;
+
+        const { data: products } = await supabase.from('products').select('id, name, stock').lte('stock', 3);
+
+        if (!products || products.length === 0) return;
+
+        for (const product of products) {
+            const highPerformingAd = ads.find(a => a.product_name.toLowerCase().includes(product.name.toLowerCase()));
+
+            if (highPerformingAd) {
+                // Check if a signal already exists for this procurement
+                const { data: existing } = await supabase
+                    .from('system_signals')
+                    .select('id')
+                    .eq('label', `Agentic PO: ${product.name}`)
+                    .maybeSingle();
+
+                if (!existing) {
+                    await supabase.from('system_signals').insert([{
+                        type: 'warning',
+                        label: `Agentic PO: ${product.name}`,
+                        meta: `High-ROI item (${highPerformingAd.roas}x ROAS) is depleting. Automated WhatsApp PO draft ready for supplier.`,
+                        url: '/admin/operations/suppliers'
+                    }]);
+                }
+            }
+        }
+
+    } catch (err) {
+        console.error("Agentic Procurement Failure:", err);
+    }
+}

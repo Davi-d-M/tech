@@ -276,7 +276,7 @@ function TrackingContent() {
                             <div className="mt-8 pt-8 border-t border-slate-50 flex justify-center">
                                 <Button
                                     onClick={() => {
-                                        const win = window as any;
+                                        const win = window as unknown as { TitanNode?: { generateMemberPass: (id: string) => void } };
                                         if (win.TitanNode?.generateMemberPass) {
                                             win.TitanNode.generateMemberPass(order.id.toString());
                                         } else {

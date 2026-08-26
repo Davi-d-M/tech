@@ -169,7 +169,33 @@ export async function scanForExceptions(): Promise<ApexException[]> {
         });
     }
 
-    // --- 6. VELOCITY PREDICTION (Days to Depletion) ---
+    // --- 6. SENTIMENT PULSE (Customer Temperature) ---
+    const { data: recentMsgs } = await supabase
+        .from('messages')
+        .select('message')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+    if (recentMsgs && recentMsgs.length > 0) {
+        const negativeKeywords = ['broken', 'fail', 'bad', 'disappointed', 'stole', 'fake', 'late'];
+        const frustrationCount = recentMsgs.filter(m =>
+            negativeKeywords.some(kw => m.message.toLowerCase().includes(kw))
+        ).length;
+
+        if (frustrationCount >= 3) {
+            exceptions.push({
+                id: 'sentiment-critical',
+                code: 'SENT_CRITICAL',
+                type: 'RISK',
+                severity: 'Critical',
+                title: 'Negative Sentiment Spike',
+                description: `Detected 3+ negative signals in recent support messages. Brand temperature rising.`,
+                time: 'Immediate'
+            });
+        }
+    }
+
+    // --- 7. VELOCITY PREDICTION (Days to Depletion) ---
     const velocityData = await calculateInventoryVelocity();
     velocityData.filter(v => v.health_status === 'Critical').forEach(v => {
         exceptions.push({

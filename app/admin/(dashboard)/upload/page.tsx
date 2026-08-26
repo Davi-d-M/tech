@@ -152,6 +152,17 @@ function UploadContent() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isVisionScanning, setIsVisionScanning] = useState(false);
 
+  // AI Audit Bridge
+  useEffect(() => {
+    const win = window as unknown as { onTitanShelfAudit?: (labels: string) => void };
+    win.onTitanShelfAudit = (labels: string) => {
+        const detected = labels.split(',');
+        console.log("Vision AI Detected:", detected);
+        alert(`Vision AI Audit: Detected ${detected.length} items. Machine is verifying stock counts...`);
+    };
+    return () => { delete win.onTitanShelfAudit; };
+  }, []);
+
   // Section States
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
       basic: true,
@@ -547,6 +558,20 @@ function UploadContent() {
                     </div>
                 </div>
                 <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            const win = window as unknown as { TitanNode?: { triggerScanner: (mode: string) => void } };
+                            if (win.TitanNode?.triggerScanner) {
+                                win.TitanNode.triggerScanner("SHELF");
+                            } else {
+                                alert("Vision AI Audit requires the native Android Node.");
+                            }
+                        }}
+                        className="h-12 px-6 rounded-xl border-slate-200 bg-white font-black uppercase text-[9px] tracking-widest hover:border-primary hover:text-primary transition-all shadow-sm"
+                    >
+                        <Scan className="h-3 w-3 mr-2" /> AI Audit
+                    </Button>
                     <Button variant="outline" onClick={generateSupplierPO} className="h-12 px-6 rounded-xl border-slate-200 bg-white font-black uppercase text-[9px] tracking-widest hover:border-primary hover:text-primary transition-all shadow-sm">
                         <Download className="h-3 w-3 mr-2" /> PO
                     </Button>

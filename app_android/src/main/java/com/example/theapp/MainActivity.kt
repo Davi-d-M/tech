@@ -76,6 +76,13 @@ class MainActivity : FragmentActivity() {
                 titanWebView?.evaluateJavascript("javascript:if(window.onTitanTriage) window.onTitanTriage('$it');", null)
                 Toast.makeText(this, "AI Triage: $it", Toast.LENGTH_LONG).show()
             }
+
+            val shelfLabels = result.data?.getStringArrayExtra("SHELF_LABELS")
+            shelfLabels?.let { labels ->
+                val labelsJson = labels.joinToString(",")
+                titanWebView?.evaluateJavascript("javascript:if(window.onTitanShelfAudit) window.onTitanShelfAudit('$labelsJson');", null)
+                Toast.makeText(this, "Shelf Data Synced", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

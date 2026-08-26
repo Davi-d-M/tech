@@ -32,7 +32,8 @@ import {
     DollarSign,
     Home as HomeIcon,
     MapPin,
-    Bot
+    Bot,
+    MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,6 +69,8 @@ interface SocialApis {
     whatsapp_token: string;
     whatsapp_phone_id: string;
     instagram_access_token: string;
+    whatsapp_flow_order_id?: string;
+    whatsapp_flow_support_id?: string;
 }
 
 type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced';
@@ -718,6 +721,33 @@ export default function AdminSettingsPage() {
                                 <p className="text-[8px] font-medium text-slate-400 italic">
                                     * Connect your Meta Business Suite to track ad performance and automate WhatsApp notifications.
                                 </p>
+                            </Card>
+
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><MessageCircle className="h-5 w-5 text-primary" /> WhatsApp Flow Node</h2>
+                                <div className="space-y-6">
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2 text-left">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground">Order Status Flow ID</label>
+                                            <Input
+                                                value={socialApis.whatsapp_flow_order_id || ''}
+                                                onChange={e => setSocialApis({...socialApis, whatsapp_flow_order_id: e.target.value})}
+                                                className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
+                                                placeholder="flow_123..."
+                                            />
+                                        </div>
+                                        <div className="space-y-2 text-left">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground">Support Triage Flow ID</label>
+                                            <Input
+                                                value={socialApis.whatsapp_flow_support_id || ''}
+                                                onChange={e => setSocialApis({...socialApis, whatsapp_flow_support_id: e.target.value})}
+                                                className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
+                                                placeholder="flow_456..."
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="text-[8px] font-bold text-primary uppercase italic px-1">* PRO TIP: Use WhatsApp Flows to create interactive multi-step forms directly in chat.</p>
+                                </div>
                             </Card>
                         </div>
                     )}
