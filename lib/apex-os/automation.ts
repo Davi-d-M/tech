@@ -66,3 +66,44 @@ export async function runSingularityAutomation() {
         console.error("Singularity Automation Failure:", err);
     }
 }
+
+/**
+ * Apex OS: Revenue Leakage Detection
+ * Scans for abandoned high-value carts and alerts the admin.
+ */
+export async function runRevenueRecoverySync() {
+    if (!supabase) return;
+
+    try {
+        const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+
+        // 1. Identify idle high-value visitors
+        const { data: leaks } = await supabase
+            .from('active_visitors')
+            .select('*')
+            .gt('cart_value', 4999) // High value target
+            .lt('last_active_at', thirtyMinsAgo);
+
+        if (!leaks || leaks.length === 0) return;
+
+        for (const visitor of leaks) {
+            // Check if we already flagged this session
+            const { data: existing } = await supabase
+                .from('system_signals')
+                .select('id')
+                .eq('meta', `Session ${visitor.session_id} remains idle.`)
+                .maybeSingle();
+
+            if (!existing) {
+                await supabase.from('system_signals').insert([{
+                    type: 'critical',
+                    label: 'Revenue Leakage Detected',
+                    meta: `Session ${visitor.session_id} remains idle. Value: KES ${visitor.cart_value}. Engage Nudge Protocol.`,
+                    url: '/admin/marketing/abandoned'
+                }]);
+            }
+        }
+    } catch (err) {
+        console.error("Leakage Sync Failure:", err);
+    }
+}

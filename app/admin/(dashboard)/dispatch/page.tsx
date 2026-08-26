@@ -523,6 +523,28 @@ export default function AdminDispatchPage() {
                             )}
                         </div>
                     </Card>
+
+                    <Card className="p-8 rounded-[3.5rem] border border-primary/20 bg-primary/[0.02] shadow-xl space-y-8 mt-8">
+                        <div className="flex items-center gap-3">
+                            <Activity className="h-6 w-6 text-primary" />
+                            <h3 className="text-xl font-black uppercase tracking-tighter text-foreground">Warehouse Intel</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <p className="text-[10px] text-muted-foreground font-medium italic">
+                                &quot;Analyzing heat-map density... Nairobi North shows 40% higher browsing activity. I recommend diverting 20% of Mombasa stocks to Nairobi Central to optimize extraction speed.&quot;
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="p-4 bg-white rounded-2xl border border-border">
+                                    <p className="text-[8px] font-black text-slate-400 uppercase">Top Demand</p>
+                                    <p className="text-xs font-black text-foreground">Nairobi West</p>
+                                </div>
+                                <div className="p-4 bg-white rounded-2xl border border-border">
+                                    <p className="text-[8px] font-black text-slate-400 uppercase">Stock Health</p>
+                                    <p className="text-xs font-black text-emerald-500">92% Balanced</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
                 </div>
             </div>
 

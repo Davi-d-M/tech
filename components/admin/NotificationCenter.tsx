@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { scanForExceptions } from '@/lib/apex-os/intelligence';
 import { supabase } from '@/lib/supabaseClient';
-import { runSingularityAutomation } from '@/lib/apex-os/automation';
+import { runSingularityAutomation, runRevenueRecoverySync } from '@/lib/apex-os/automation';
 
 interface Notification {
     id: string;
@@ -94,6 +94,9 @@ export default function NotificationCenter({ isOpen, setIsOpen }: { isOpen: bool
 
             // 2. Run Operational Automation (Singularity)
             await runSingularityAutomation();
+
+            // 3. Run Revenue Recovery Sync
+            await runRevenueRecoverySync();
 
         } finally {
             setIsLoading(false);

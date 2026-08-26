@@ -142,6 +142,32 @@ export async function scanForExceptions(): Promise<ApexException[]> {
         });
     }
 
+    // --- 5. PROCUREMENT DISCREPANCY (Low Stock + No Inbound) ---
+    const { data: lowAssets } = await supabase
+        .from('products')
+        .select('id, name, stock')
+        .lte('stock', 5);
+
+    if (lowAssets && lowAssets.length > 0) {
+        const { data: inbound } = await supabase.from('shipments').select('description').in('status', ['In Transit', 'Clearing']);
+        const inboundNames = (inbound || []).map(i => i.description.toLowerCase());
+
+        lowAssets.forEach(p => {
+            const hasInbound = inboundNames.some(desc => desc.includes(p.name.toLowerCase()));
+            if (!hasInbound) {
+                exceptions.push({
+                    id: `procure-${p.id}`,
+                    code: 'PROC_ALERT',
+                    type: 'SUPPLIER',
+                    severity: 'Warning',
+                    title: 'Procurement Required',
+                    description: `Asset ${p.name} is low (${p.stock}) with no inbound shipments. Recommended: Generate PO.`,
+                    time: 'Mission Critical'
+                });
+            }
+        });
+    }
+
     return exceptions;
 }
 

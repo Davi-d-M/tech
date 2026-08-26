@@ -323,6 +323,16 @@ function TrackingContent() {
                                                             .from('orders')
                                                             .update({ rider_rating: star })
                                                             .eq('id', order.id);
+
+                                                        // Sync Rider Merit Node
+                                                        if (order.rider_phone) {
+                                                            fetch('/api/rider/merit', {
+                                                                method: 'POST',
+                                                                headers: { 'Content-Type': 'application/json' },
+                                                                body: JSON.stringify({ riderPhone: order.rider_phone })
+                                                            }).catch(() => {});
+                                                        }
+
                                                         alert("Feedback Synchronized! Thank you, Commander.");
                                                     }}
                                                     className="h-12 w-12 rounded-xl bg-white border-2 border-amber-200 text-amber-400 hover:bg-amber-500 hover:text-white transition-all active:scale-95 shadow-sm flex items-center justify-center"

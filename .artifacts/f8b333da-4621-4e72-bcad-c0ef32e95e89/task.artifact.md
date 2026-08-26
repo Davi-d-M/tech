@@ -1,18 +1,21 @@
-# Task - Apex OS: Platinum Scrub & Privacy Hardening 🛡️🐛🚀
+# Task - Apex OS: Phase 15 "Total Autonomy" 🦾💎🚀
 
-## Phase 1: Support Hub Privacy 💬🛡️
-- [ ] Implement Admin-only check for AI Pulse in `SupportBubble.tsx`.
+## Phase 1: Rider Merit & Performance Node ⭐️🛵
+- [x] Create `lib/apex-os/merit.ts` to automate rider rating recalculation.
+- [x] Link merit updates to order completion flow.
 
-## Phase 2: TypeScript Warning Purge 🧹
-- [ ] [Sourcing] Remove unused `useAdmin` in `operations/sourcing/page.tsx`.
-- [ ] [Orders] Fix `any` types in `orders/page.tsx`.
-- [ ] [Riders] Fix `any` types and define interfaces in `riders/page.tsx`.
-- [ ] [Settings] Fix `any` types and define interfaces in `settings/page.tsx`.
-- [ ] [Audit API] Correctly type error handling in `audit/route.ts`.
-- [ ] [Rider Dashboard] Fix `useEffect` dependency in `rider/dashboard/page.tsx`.
-- [ ] [Intelligence] Fix `any` types in `autonomous-pricing.ts`, `security-shield.ts`, and `warranty-ledger.ts`.
-- [ ] [UI Components] Fix `any` types in `AskApex.tsx`, `NotificationCenter.tsx`, and `AIConcierge.tsx`.
+## Phase 2: Autonomous Procurement Scanner 📦📡
+- [x] Add `SUPPLIER_DISCREPANCY` scanner to `lib/apex-os/intelligence.ts`.
+- [x] Implement "Draft PO" signal generation.
 
-## Phase 3: Final Verification 🐙
-- [ ] Run `npm run build` and verify 0 warnings.
+## Phase 3: Abandoned Cart "Tactical Nudge" 🎯💸
+- [x] Update `lib/apex-os/automation.ts` to scan `active_visitors` for abandoned carts.
+- [x] Integrate "Leakage Alerts" into the Notification Center.
+
+## Phase 4: Global Heatmap Deepening 🗺️🔥
+- [x] Implement demand heatmap layer in `app/admin/(dashboard)/dispatch/page.tsx`.
+- [x] Ensure warehouse stocking recommendations are visible.
+
+## Phase 5: Verification & Sync 🐙
+- [ ] Run `npm run build`.
 - [ ] Perform final `git push` to `tech master`.
