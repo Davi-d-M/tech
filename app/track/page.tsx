@@ -271,6 +271,26 @@ function TrackingContent() {
                             </div>
                         </div>
 
+                        {/* Titan Pass Secure Handover (Android Only) */}
+                        {order.status === 'Dispatched' && (
+                            <div className="mt-8 pt-8 border-t border-slate-50 flex justify-center">
+                                <Button
+                                    onClick={() => {
+                                        const win = window as any;
+                                        if (win.TitanNode?.generateMemberPass) {
+                                            win.TitanNode.generateMemberPass(order.id.toString());
+                                        } else {
+                                            alert("Titan Pass requires the native Android Node. Access denied.");
+                                        }
+                                    }}
+                                    className="h-14 px-10 rounded-2xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-[0.3em] shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+                                >
+                                    <Zap size={16} className="text-primary animate-pulse" />
+                                    Show Titan Pass
+                                </Button>
+                            </div>
+                        )}
+
                         {/* Contextual Action: WhatsApp Dispatch */}
                         {order.status === 'Dispatched' && (
                             <div className="mt-12 p-8 bg-indigo-50 rounded-3xl border border-indigo-100 flex flex-col md:flex-row items-center justify-between gap-6 animate-pulse">

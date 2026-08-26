@@ -18,6 +18,7 @@ const SignInTrigger = dynamic(() => import('./SignInTrigger'), { ssr: false });
 const CompareBar = dynamic(() => import('../product/CompareBar'), { ssr: false });
 const AIConcierge = dynamic(() => import('../home/AIConcierge'), { ssr: false });
 const ThemeSynchronizer = dynamic(() => import('./ThemeSynchronizer'), { ssr: false });
+const TierThemeNode = dynamic(() => import('./TierThemeNode'), { ssr: false });
 
 export default function PublicLayoutShield({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
     return (
@@ -158,6 +159,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
     return (
         <>
             <ThemeSynchronizer />
+            <TierThemeNode />
             <LiveTicker />
             <AbandonedCartBar />
             <Header initialSettings={settings} />

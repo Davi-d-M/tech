@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
+import { calculateInventoryVelocity } from "./velocity";
 
 export type ExceptionType = 'FINANCE' | 'LOGISTICS' | 'INVENTORY' | 'RISK' | 'SUPPLIER';
 
@@ -167,6 +168,20 @@ export async function scanForExceptions(): Promise<ApexException[]> {
             }
         });
     }
+
+    // --- 6. VELOCITY PREDICTION (Days to Depletion) ---
+    const velocityData = await calculateInventoryVelocity();
+    velocityData.filter(v => v.health_status === 'Critical').forEach(v => {
+        exceptions.push({
+            id: `velocity-${v.product_id}`,
+            code: 'VEL_DEPLETE',
+            type: 'INVENTORY',
+            severity: 'Critical',
+            title: 'Predictive Stock-Out',
+            description: `Asset ${v.name} will deplete in ${v.days_to_depletion} days at current velocity. Supply chain gap imminent.`,
+            time: 'Predictive'
+        });
+    });
 
     return exceptions;
 }
