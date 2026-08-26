@@ -30,7 +30,7 @@ export default function AskApex() {
     const scrollRef = React.useRef<HTMLDivElement>(null);
 
     const startVoiceCommand = () => {
-        // @ts-expect-error - WebkitSpeechRecognition is a browser global
+        // @ts-expect-error - SpeechRecognition global check
         const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
         if (!SpeechRecognition) {
             alert("Voice Protocol not supported in this browser.");
