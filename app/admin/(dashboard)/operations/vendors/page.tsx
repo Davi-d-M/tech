@@ -109,11 +109,10 @@ export default function MultiVendorHub() {
                         <div className="flex gap-2">
                             <Button
                                 onClick={async () => {
-                                    if (!newVendor.name || !newVendor.email) return;
+                                    if (!newVendor.name || !newVendor.email || !supabase) return;
                                     setLoading(true);
-                                    await new Promise(r => setTimeout(r, 1500));
-                                    setVendors(prev => [...prev, {
-                                        id: `v${Date.now()}`,
+
+                                    const { error } = await supabase.from('marketplace_vendors').insert([{
                                         name: newVendor.name,
                                         email: newVendor.email,
                                         status: 'Pending',
@@ -122,10 +121,16 @@ export default function MultiVendorHub() {
                                         commission_rate: 10,
                                         joined_at: new Date().toISOString()
                                     }]);
-                                    setIsOnboarding(false);
-                                    setNewVendor({ name: '', email: '' });
+
+                                    if (error) {
+                                        setMessage({ type: 'error', text: error.message });
+                                    } else {
+                                        setIsOnboarding(false);
+                                        setNewVendor({ name: '', email: '' });
+                                        fetchVendors();
+                                        setMessage({ type: 'success', text: "Onboarding Payload Sent. Verification Pending." });
+                                    }
                                     setLoading(false);
-                                    setMessage({ type: 'success', text: "Onboarding Payload Sent. Verification Pending." });
                                     setTimeout(() => setMessage(null), 3000);
                                 }}
                                 className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] shadow-lg shadow-primary/20"

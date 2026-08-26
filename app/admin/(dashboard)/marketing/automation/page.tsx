@@ -58,11 +58,7 @@ export default function MarketingAutopilot() {
         setLoading(true);
         try {
             const { data } = await supabase.from('marketing_automations').select('*').order('created_at', { ascending: false });
-            setRules(data || [
-                { id: '1', name: 'Welcome Protocol', trigger: 'On Signup', action: 'Send 10% Coupon', channel: 'Email', is_active: true, runs_count: 842, last_run_at: new Date().toISOString() },
-                { id: '2', name: 'Retention Loop', trigger: '30 Days Inactive', action: 'Send Re-engagement Deal', channel: 'WhatsApp', is_active: true, runs_count: 124, last_run_at: new Date().toISOString() },
-                { id: '3', name: 'Review Booster', trigger: '3 Days Post-Delivery', action: 'Request Review', channel: 'System', is_active: false, runs_count: 0, last_run_at: null }
-            ]);
+            setRules(data || []);
         } catch (err) {
             console.error(err);
         } finally {

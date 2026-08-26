@@ -4,7 +4,7 @@ const GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY;
 
 export async function POST(request: Request) {
     try {
-        const { name, category } = await request.json();
+        const { name, category, prompt } = await request.json();
 
         if (!name) {
             return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -13,18 +13,20 @@ export async function POST(request: Request) {
         // 1. If Gemini API Key exists, use it for high-quality AI copy
         if (GEMINI_API_KEY) {
             try {
+                const textPrompt = prompt || `Write a professional, persuasive, and high-converting marketing description for a tech product.
+                                Product Name: ${name}
+                                Category: ${category}
+                                Target Market: Kenya
+                                Style: Premium, concise, benefit-focused.
+                                Max 60 words.`;
+
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
                             parts: [{
-                                text: `Write a professional, persuasive, and high-converting marketing description for a tech product.
-                                Product Name: ${name}
-                                Category: ${category}
-                                Target Market: Kenya
-                                Style: Premium, concise, benefit-focused.
-                                Max 60 words.`
+                                text: textPrompt
                             }]
                         }]
                     })

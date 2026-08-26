@@ -1,20 +1,21 @@
-# Task - Apex OS Phase 16: Omni-Intelligence 🦾👁️📡
+# Task - Apex OS: Total Mock Data Purge 🛡️🧹🚀
 
-## Phase 1: The "Sentry Eye" (Vision AI Auditor) 👁️📦
-- [ ] Enhance `ScannerActivity.kt` for shelf-scan multi-label detection.
-- [ ] Add "AI Audit" interface to `app/admin/(dashboard)/upload/page.tsx`.
+## Phase 1: Real Marketing AI 🧠🎨
+- [ ] Refactor `app/admin/(dashboard)/marketing/create/page.tsx` to use Gemini API.
+- [ ] Connect content generation to `/api/admin/generate-description`.
 
-## Phase 2: Agentic Procurement (Self-Healing Loop) 📡🔄
-- [ ] Implement `runAgenticProcurementSync` in `lib/apex-os/automation.ts`.
-- [ ] Link high-ROAS products to autonomous restock nudges.
+## Phase 2: Live Financials 💸⚖️
+- [ ] Remove `setTimeout` from `app/admin/(dashboard)/finance/page.tsx`.
+- [ ] Dynamic FX rate implementation.
 
-## Phase 3: Sentiment Pulse (Brand Temperature) 🌡️🧠
-- [ ] Add `SENTIMENT_ANOMALY` scanner to `lib/apex-os/intelligence.ts`.
-- [ ] Create "Brand Temperature" display on the main dashboard.
+## Phase 3: Pure Journey Builder 🤖🛣️
+- [ ] Remove hardcoded rules in `app/admin/(dashboard)/marketing/automation/page.tsx`.
+- [ ] Implement empty state logic.
 
-## Phase 4: Interactive WhatsApp Support Flow 💬🎭
-- [ ] Add "WhatsApp Flow Templates" configuration in `settings/page.tsx`.
+## Phase 4: Data-Aware POs 📝📦
+- [ ] Refactor `app/admin/(dashboard)/operations/suppliers/page.tsx` to query real low-stock products.
+- [ ] Update PDF generation with real data.
 
-## Phase 5: Verification & Global Sync 🐙
+## Phase 5: Verification & Sync 🐙
 - [ ] Run `npm run build`.
-- [ ] Perform final `git push` to `tech master`.
+- [ ] Final `git push` to `tech master`.

@@ -35,10 +35,18 @@ export default function SupplierScorecards() {
     const generatePO = async (supplier: Supplier) => {
         setGeneratingPO(supplier.id);
         try {
+            if (!supabase) return;
+
+            // 1. Fetch real low-stock items for this supplier
+            const { data: products } = await supabase
+                .from('products')
+                .select('name, stock, cost_price, low_stock_alert')
+                .eq('supplier_id', supplier.id)
+                .lte('stock', 5); // Threshold
+
             const { default: jsPDF } = await import('jspdf');
             const doc = new jsPDF();
 
-            // Fetch low stock items for this supplier if possible, or just generate a generic request
             doc.setFontSize(22);
             doc.text("PURCHASE ORDER", 105, 20, { align: 'center' });
 
@@ -54,12 +62,21 @@ export default function SupplierScorecards() {
 
             doc.setFontSize(12);
             doc.text("ORDER SUMMARY:", 20, 90);
-            doc.setFontSize(10);
-            doc.text("Stock replenishment requested based on current warehouse velocity.", 20, 95);
-            doc.text("Please provide pro-forma invoice for the latest gadgets.", 20, 100);
+
+            if (products && products.length > 0) {
+                let y = 100;
+                products.forEach((p, i) => {
+                    doc.setFontSize(10);
+                    doc.text(`${i + 1}. ${p.name} - Requesting replenishment (Current: ${p.stock})`, 20, y);
+                    y += 7;
+                });
+            } else {
+                doc.setFontSize(10);
+                doc.text("No specific low-stock items flagged. General replenishment request.", 20, 100);
+            }
 
             doc.save(`PO_${supplier.name.replace(/\s+/g, '_')}_${Date.now()}.pdf`);
-            setMessage({ type: 'success', text: "Purchase Order generated and logged. 📝" });
+            setMessage({ type: 'success', text: "Data-driven PO generated and logged. 📝" });
             setTimeout(() => setMessage(null), 3000);
         } catch (err) {
             console.error(err);

@@ -101,9 +101,7 @@ export default function AdminFinancePage() {
         setMessage(null);
         try {
             // Apex OS: Automatic Reconciliation Logic
-            // In real app, this would hit gateway APIs
-            await new Promise(r => setTimeout(r, 2000));
-
+            // This now executes instantly against the database
             const { error } = await supabase!
                 .from('financial_ledger')
                 .update({ is_reconciled: true, reconciliation_ref: `RECON-${Date.now()}` })

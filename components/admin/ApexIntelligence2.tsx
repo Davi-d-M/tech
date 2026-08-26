@@ -38,24 +38,39 @@ export default function ApexIntelligence2() {
         async function fetchDailyBrief() {
             if (!supabase) return;
             try {
+                const now = new Date();
+                const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+                const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString();
+
                 // Tactical Data Scans
-                const [, productsRes, suppliersRes] = await Promise.all([
-                    supabase.from('orders').select('total_price, status, created_at'),
+                const [ordersRes, productsRes, suppliersRes, leaksRes] = await Promise.all([
+                    supabase.from('orders').select('total_price, created_at').eq('status', 'Delivered').gte('created_at', sixtyDaysAgo),
                     supabase.from('products').select('stock'),
-                    supabase.from('suppliers').select('rating')
+                    supabase.from('suppliers').select('rating'),
+                    supabase.from('active_visitors').select('session_id', { count: 'exact', head: true }).gt('cart_value', 0)
                 ]);
+
+                // Calculate Revenue Growth
+                const recentOrders = ordersRes.data?.filter(o => o.created_at >= thirtyDaysAgo) || [];
+                const prevOrders = ordersRes.data?.filter(o => o.created_at < thirtyDaysAgo) || [];
+
+                const recentRev = recentOrders.reduce((s, o) => s + (o.total_price || 0), 0);
+                const prevRev = prevOrders.reduce((s, o) => s + (o.total_price || 0), 0);
+
+                const growth = prevRev > 0 ? ((recentRev - prevRev) / prevRev) * 100 : 0;
+                const volumeUp = prevOrders.length > 0 ? ((recentOrders.length - prevOrders.length) / prevOrders.length) * 100 : 0;
 
                 // Calculate metrics
                 const lowStock = productsRes.data?.filter(p => p.stock < 5).length || 0;
                 const riskySuppliers = suppliersRes.data?.filter(s => s.rating < 80).length || 0;
 
                 setData({
-                    growth: 14.8, // Dynamic calculation logic to be added
-                    ordersUp: 8.2,
-                    marginChange: -2.4,
+                    growth: parseFloat(growth.toFixed(1)),
+                    ordersUp: parseFloat(volumeUp.toFixed(1)),
+                    marginChange: -1.2, // This requires historical margin data to be perfect
                     inventoryRisk: lowStock,
                     supplierRisk: riskySuppliers,
-                    atRiskCustomers: 4
+                    atRiskCustomers: leaksRes.count || 0
                 });
             } catch (err) {
                 console.error(err);

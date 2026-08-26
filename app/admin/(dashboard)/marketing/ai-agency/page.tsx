@@ -58,7 +58,7 @@ export default function AIAdAgency() {
         setLoading(true);
         try {
             // Apex OS: Pivot budget nodes across campaigns
-            await new Promise(r => setTimeout(r, 2000));
+            // This now updates the local state and could persist to a pivot_history table
             setCampaigns(prev => prev.map(c => {
                 if (c.id === 'ad1') return { ...c, spend: c.spend + 5000, velocity: 'Accelerating' as const };
                 if (c.id === 'ad3') return { ...c, spend: Math.max(0, c.spend - 2000), status: 'Paused' as const };

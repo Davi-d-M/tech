@@ -52,10 +52,13 @@ export default function AudiencesPage() {
         if (!supabase) return;
         setIsCalculating(true);
         try {
-            // Simulated rule-based calculation on the server/DB
-            await new Promise(r => setTimeout(r, 1500));
-            const baseReach = Math.floor(Math.random() * 500) + 50;
-            setNewSegment(prev => ({ ...prev, reach: baseReach }));
+            // Apex OS: Rule-based reach calculation against actual database
+            const { count } = await supabase
+                .from('profiles')
+                .select('*', { count: 'exact', head: true })
+                .gte('loyalty_points', Number(newSegment.spend_min) / 10); // Points-based approximation
+
+            setNewSegment(prev => ({ ...prev, reach: count || 0 }));
         } finally {
             setIsCalculating(false);
         }

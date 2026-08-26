@@ -86,30 +86,51 @@ export default function CreateCampaign() {
     const generateContent = async () => {
         if (!selectedProduct) return;
         setIsGenerating(true);
-        // Simulated AI Generation
-        setTimeout(() => {
-            const content = {
-                en: {
-                    ig: `🚀 NEW ARRIVAL: ${selectedProduct.name} has landed! \n\nElevate your setup with our latest ${selectedProduct.category} essential. Engineered for high-fidelity performance. \n\nPrice: ${formatPrice(selectedProduct.price)} \nShop now at the link in bio! 🔗`,
-                    wa: `*Tactical Alert* 🚨\n\nYo bro! The new *${selectedProduct.name}* is officially live. \n\nLimited stock available for our elite members. \n\n🛒 *Price:* ${formatPrice(selectedProduct.price)}\n📍 Nairobi Fast Dispatch Active\n\nLink: tech-paxv.onrender.com/product/${selectedProduct.id}`
-                },
-                sw: {
-                    ig: `🚀 MZIGO MPYA: ${selectedProduct.name} imefika! \n\nUpgrade setup yako na hii ${selectedProduct.category} kali. Imetengenezwa kudumu na kuperform fiti. \n\nBei: ${formatPrice(selectedProduct.price)} \nNunua sasa kupitia link kwa bio! 🔗`,
-                    wa: `*Tactical Alert* 🚨\n\nMambo vipi bro! Ile *${selectedProduct.name}* mpya sasa iko live. \n\nMzigo ni mchache, chukua yako mapema. \n\n🛒 *Bei:* ${formatPrice(selectedProduct.price)}\n📍 Nairobi Fast Dispatch Iko Active\n\nLink: tech-paxv.onrender.com/product/${selectedProduct.id}`
-                }
-            };
+        try {
+            const lang = isLocalized ? 'Swahili and Sheng' : 'English';
 
-            const lang = isLocalized ? 'sw' : 'en';
+            // 1. Generate IG/FB Caption
+            const igRes = await fetch('/api/admin/generate-description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: selectedProduct.name,
+                    category: selectedProduct.category || 'tech',
+                    prompt: `Write a high-converting Instagram caption for this product in ${lang}. Use emojis. Include price: ${formatPrice(selectedProduct.price)}. Include link: bio.`
+                })
+            });
+            const igData = await igRes.json();
+
+            // 2. Generate WhatsApp Body
+            const waRes = await fetch('/api/admin/generate-description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: selectedProduct.name,
+                    category: selectedProduct.category || 'tech',
+                    prompt: `Write a tactical WhatsApp message for this product in ${lang}. Use bold formatting. Include price: ${formatPrice(selectedProduct.price)}. Include link: tech-paxv.onrender.com/product/${selectedProduct.id}`
+                })
+            });
+            const waData = await waRes.json();
 
             setChannels(prev => ({
                 ...prev,
-                instagram: { ...prev.instagram, caption: content[lang].ig, generated: true },
-                whatsapp: { ...prev.whatsapp, body: content[lang].wa, generated: true },
-                email: { ...prev.email, subject: `Tactical Drop: ${selectedProduct.name} is Live 🚀`, body: `Hello Elite member,\n\nThe next evolution in tech has arrived. Discover the ${selectedProduct.name}.`, generated: true }
+                instagram: { ...prev.instagram, caption: igData.description || igData.error, generated: true },
+                whatsapp: { ...prev.whatsapp, body: waData.description || waData.error, generated: true },
+                email: {
+                    ...prev.email,
+                    subject: `Tactical Drop: ${selectedProduct.name} is Live 🚀`,
+                    body: `Hello Elite member,\n\nThe next evolution in tech has arrived. Discover the ${selectedProduct.name} at Apexstores.`,
+                    generated: true
+                }
             }));
-            setIsGenerating(false);
             setStep('content');
-        }, 1500);
+        } catch (err) {
+            console.error("Marketing AI Failure:", err);
+            setMessage({ type: 'error', text: "Neural Link Interrupted. Verify API config." });
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     const launchCampaign = async () => {
