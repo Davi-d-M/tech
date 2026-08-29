@@ -1,0 +1,5 @@
+Contact: mailto:support@apexstores.com
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://tech-paxv.onrender.com/.well-known/security.txt
+Policy: https://tech-paxv.onrender.com/privacy

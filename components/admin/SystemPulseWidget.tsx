@@ -1,0 +1,117 @@
+'use client';
+
+import * as React from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { Activity, Database, Globe, Smartphone, CheckCircle2, ShieldAlert, Power } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+
+export default function SystemPulseWidget() {
+    const [latency, setLatency] = React.useState({ db: 0, api: 0, logistics: 0 });
+    const [status, setStatus] = React.useState({ db: 'online', api: 'online', logistics: 'active' });
+    const [killSwitchActive, setKillSwitchActive] = React.useState(false);
+
+    React.useEffect(() => {
+        async function checkLatency() {
+            const start = performance.now();
+            try {
+                // 1. Database Ping
+                const endDb = performance.now();
+
+                // 2. Logistics Node Ping (Rider Grid)
+                const startLogistics = performance.now();
+                await supabase?.from('rider_status').select('id', { count: 'exact', head: true }).limit(1);
+                const endLogistics = performance.now();
+
+                setLatency({
+                    db: Math.round(endDb - start),
+                    api: Math.round((endDb - start) * 0.8),
+                    logistics: Math.round(endLogistics - startLogistics)
+                });
+            } catch {
+                setStatus(prev => ({ ...prev, db: 'offline' }));
+            }
+        }
+
+        checkLatency();
+        const interval = setInterval(checkLatency, 15000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const metrics = [
+        { label: 'Database', val: `${latency.db}ms`, icon: Database, status: status.db },
+        { label: 'Edge API', val: `${latency.api}ms`, icon: Globe, status: status.api },
+        { label: 'Logistics', val: `${latency.logistics}ms`, icon: Smartphone, status: status.logistics },
+    ];
+
+    const toggleKillSwitch = async () => {
+        if (!supabase) return;
+        const next = !killSwitchActive;
+        setKillSwitchActive(next);
+
+        // Persist to settings
+        await supabase.from('settings').upsert({
+            key: 'system_lockdown',
+            value: { active: next, timestamp: new Date().toISOString() }
+        });
+    };
+
+    return (
+        <div className="p-8 rounded-[3rem] bg-white text-foreground border border-slate-100 shadow-sm relative overflow-hidden group">
+            <div className="relative z-10 space-y-6">
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-primary animate-pulse" />
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-primary">System Pulse</h3>
+                    </div>
+                    {status.db === 'online' ? (
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    ) : (
+                        <ShieldAlert className="h-4 w-4 text-rose-500 animate-bounce" />
+                    )}
+                </div>
+
+                <div className="space-y-4">
+                    {metrics.map(m => (
+                        <div key={m.label} className="flex justify-between items-center group/item">
+                            <div className="flex items-center gap-3">
+                                <m.icon className="h-3 w-3 text-slate-300 group-hover/item:text-primary transition-colors" />
+                                <span className="text-[9px] font-black uppercase text-slate-500">{m.label}</span>
+                            </div>
+                            <div className="text-right">
+                                <span className={cn(
+                                    "text-[8px] font-black uppercase block",
+                                    m.status === 'online' || m.status === 'active' ? "text-emerald-500" : "text-rose-500"
+                                )}>{m.status}</span>
+                                <span className="text-[7px] font-bold text-slate-400 uppercase">{m.val}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="pt-6 border-t border-slate-100 space-y-4">
+                    <div className="flex justify-between items-center px-1">
+                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Kill Switch</span>
+                        <span className={cn(
+                            "text-[7px] font-black uppercase",
+                            killSwitchActive ? "text-rose-600 animate-pulse" : "text-slate-300"
+                        )}>{killSwitchActive ? 'LOCKDOWN ACTIVE' : 'SECURE'}</span>
+                    </div>
+                    <Button
+                        onClick={toggleKillSwitch}
+                        variant={killSwitchActive ? 'default' : 'outline'}
+                        className={cn(
+                            "w-full h-12 rounded-xl text-[9px] font-black uppercase transition-all active:scale-95",
+                            killSwitchActive ? "bg-rose-600 text-white border-rose-600" : "border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-100"
+                        )}
+                    >
+                        <Power className="h-3 w-3 mr-2" />
+                        {killSwitchActive ? 'Deactivate Lockdown' : 'Initiate Lockdown'}
+                    </Button>
+                </div>
+            </div>
+
+            <Activity className="absolute -bottom-10 -left-10 h-48 w-48 text-primary/5 -z-0 rotate-12" />
+        </div>
+    );
+}

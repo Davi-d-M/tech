@@ -1,0 +1,16 @@
+- `[x]` 1. Final check and cleanup of `app/globals.css`
+- `[x]` 2. Refactor `app/admin/layout-client.tsx` to remove theme state, logic, and Moon/Sun toggles
+- `[x]` 3. Purge `dark:` classes from:
+    - `[x]` `app/admin/page.tsx`
+    - `[x]` `app/admin/dispatch/page.tsx`
+    - `[x]` `app/admin/staff/page.tsx`
+    - `[x]` `app/admin/settings/page.tsx`
+    - `[x]` `app/admin/affiliates/page.tsx`
+    - `[x]` `components/admin/LiveActivitySidebar.tsx`
+    - `[x]` `components/admin/GlobalCommandPalette.tsx`
+- `[x]` 4. Final visual audit and walkthrough
+- `[x]` 5. Fix critical TypeScript error in Affiliates page
+- `[x]` 6. Resolve ESLint warnings (unused vars, Image components, any types)
+- `[x]` 7. Verify build and push to GitHub
+- `[x]` 8. Fix fatal toggleDarkMode build error in Admin Layout
+- `[x]` 9. Resolve remaining ESLint warnings in ExitIntentPopup and EarningsCenter

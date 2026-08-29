@@ -1,0 +1,37 @@
+{
+  "name": "Apexstores Tech",
+  "short_name": "Apexstores",
+  "description": "Premium Electronics & Mobile Accessories Kenya",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff6b00",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Admin Dashboard",
+      "short_name": "Admin",
+      "description": "View sales and orders",
+      "url": "/admin",
+      "icons": [{ "src": "/images/NoImage.jpg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Add Product",
+      "short_name": "Stock",
+      "description": "Upload new gadgets",
+      "url": "/admin/upload",
+      "icons": [{ "src": "/images/NoImage.jpg", "sizes": "192x192" }]
+    }
+  ]
+}
