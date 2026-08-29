@@ -533,10 +533,6 @@ export default function AdminOrdersPage() {
                 const val = e.target.value;
                 setSearchQuery(val);
                 startTransition(() => {
-                    // Intelligence-driven filtering
-                });
-            }}
- startTransition(() => {
                     // Logic already handled by useMemo for filteredOrders
                 });
             }}
