@@ -46,6 +46,7 @@ export default function AdminAnalyticsPage() {
     const [isExploded, setIsExploded] = React.useState(false);
     const [isPredictive, setIsPredictive] = React.useState(false);
     const forecastConfidence = 92;
+    console.log("Forecast Engine Initialized. Confidence:", forecastConfidence);
 
     React.useEffect(() => {
         async function fetchData() {
