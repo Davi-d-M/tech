@@ -9,6 +9,7 @@ export default function SignalTracker() {
     const dwellTimes = useRef<Map<string, number>>(new Map());
 
     useEffect(() => {
+        const currentDwellTimes = dwellTimes.current;
         // Track page view
         signalService.track({ event_type: 'VIEW', target: pathname });
 
@@ -21,10 +22,10 @@ export default function SignalTracker() {
 
                 if (entry.isIntersecting) {
                     // User started looking at section
-                    dwellTimes.current.set(sectionId, Date.now());
+                    currentDwellTimes.set(sectionId, Date.now());
                 } else {
                     // User scrolled away
-                    const startTime = dwellTimes.current.get(sectionId);
+                    const startTime = currentDwellTimes.get(sectionId);
                     if (startTime) {
                         const duration = Date.now() - startTime;
                         if (duration > 1000) { // Only track if dwell > 1s
@@ -34,15 +35,13 @@ export default function SignalTracker() {
                                 metadata: { duration_ms: duration }
                             });
                         }
-                        dwellTimes.current.delete(sectionId);
+                        currentDwellTimes.delete(sectionId);
                     }
                 }
             });
         }, { threshold: 0.5 }); // 50% of section must be visible
 
         sections.forEach(section => observer.observe(section));
-
-        const currentDwellTimes = dwellTimes.current;
 
         return () => {
             observer.disconnect();
@@ -57,6 +56,7 @@ export default function SignalTracker() {
                     });
                 }
             });
+            currentDwellTimes.clear();
         };
     }, [pathname]);
 

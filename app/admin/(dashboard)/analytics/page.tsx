@@ -33,6 +33,20 @@ const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.Cartesian
 const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
 const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
 
+interface UserSignal {
+    id: number;
+    event_type: string;
+    target: string;
+    metadata: {
+        duration_ms?: number;
+        name?: string;
+        price?: number;
+        variant?: string;
+        [key: string]: unknown;
+    };
+    created_at: string;
+}
+
 type TabId = 'performance' | 'sentiment';
 
 export default function AdminAnalyticsPage() {
@@ -41,12 +55,15 @@ export default function AdminAnalyticsPage() {
     const [timeframe, setTimeframe] = React.useState<'7d' | '30d' | '90d' | 'YTD'>('30d');
     const [loading, setLoading] = React.useState(true);
     const [orders, setOrders] = React.useState<{ id: number; total_price: number; unit_cost?: number; created_at: string; status: string; customer_phone: string; referred_by_code?: string | null }[]>([]);
-    const [signals, setSignals] = React.useState<{ id: number; event_type: string; target: string; metadata: Record<string, unknown>; created_at: string }[]>([]);
+    const [signals, setSignals] = React.useState<UserSignal[]>([]);
     const [affiliateSales, setAffiliateSales] = React.useState(0);
     const [isExploded, setIsExploded] = React.useState(false);
     const [isPredictive, setIsPredictive] = React.useState(false);
-    const forecastConfidence = 92;
-    console.log("Forecast Engine Initialized. Confidence:", forecastConfidence);
+
+    React.useEffect(() => {
+        const forecastConfidence = 92;
+        console.log("Forecast Engine Initialized. Confidence:", forecastConfidence);
+    }, []);
 
     React.useEffect(() => {
         async function fetchData() {

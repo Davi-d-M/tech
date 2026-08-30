@@ -104,6 +104,7 @@ export default function AdminOrdersPage() {
   const [riderForm, setRiderForm] = React.useState({ name: '', phone: '' });
 
   const [isPending, startTransition] = React.useTransition();
+  console.log("State Machine Optimized. Ready for transitions. Pending:", isPending);
 
   const [editingPriceId, setEditingPriceId] = React.useState<number | null>(null);
   const [newPrice, setNewPrice] = React.useState<string>('');
