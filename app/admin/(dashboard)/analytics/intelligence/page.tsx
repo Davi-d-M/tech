@@ -95,7 +95,38 @@ export default function IntelligenceHub() {
 
     React.useEffect(() => {
         fetchIntelligence();
-        const interval = setInterval(fetchIntelligence, 10000); // Pulse every 10s
+        const interval = setInterval(fetchIntelligence, 30000); // Slower background refresh
+
+        // 🛰️ Realtime Signal Intelligence
+        if (supabase) {
+            const channel = supabase
+                .channel('war_room_sigs')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_signals' }, (payload) => {
+                    // Update recent signals immediately without full re-fetch
+                    setData(prev => {
+                        if (!prev) return null;
+                        const newSignal = {
+                            created_at: payload.new.created_at as string,
+                            event_type: payload.new.event_type as string,
+                            target: payload.new.target as string,
+                            url: payload.new.url as string,
+                            metadata: payload.new.metadata as Record<string, unknown>
+                        };
+                        return {
+                            ...prev,
+                            onlineVisitors: prev.onlineVisitors + (payload.new.event_type === 'VIEW' ? 1 : 0),
+                            recentSignals: [newSignal, ...prev.recentSignals.slice(0, 9)]
+                        };
+                    });
+                })
+                .subscribe();
+
+            return () => {
+                if (supabase) supabase.removeChannel(channel);
+                clearInterval(interval);
+            };
+        }
+
         return () => clearInterval(interval);
     }, [fetchIntelligence]);
 

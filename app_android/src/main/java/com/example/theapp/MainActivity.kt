@@ -35,7 +35,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKey
 import com.example.theapp.ui.theme.TheAppTheme
 import java.util.concurrent.Executor
 
@@ -130,11 +130,13 @@ class MainActivity : FragmentActivity() {
             val config = SupabaseNode.fetchBridgeConfig()
             if (config != null) {
                 val (domain, url) = config
-                val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+                val masterKey = MasterKey.Builder(this@MainActivity)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
                 val securePrefs = EncryptedSharedPreferences.create(
-                    "titan_secure_storage",
-                    masterKeyAlias,
                     this@MainActivity,
+                    "titan_secure_storage",
+                    masterKey,
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                 )
@@ -272,11 +274,13 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun syncOfflineDrops() {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+        val masterKey = MasterKey.Builder(this)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
         val prefs = EncryptedSharedPreferences.create(
-            "titan_secure_storage",
-            masterKeyAlias,
             this,
+            "titan_secure_storage",
+            masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
@@ -306,11 +310,13 @@ class MainActivity : FragmentActivity() {
 }
 
 class TitanBridge(private val activity: MainActivity, private val webView: WebView) {
-    private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+    private val masterKey = MasterKey.Builder(activity)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
     private val prefs = EncryptedSharedPreferences.create(
-        "titan_secure_storage",
-        masterKeyAlias,
         activity,
+        "titan_secure_storage",
+        masterKey,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
@@ -405,7 +411,10 @@ fun TitanHubWebBridge(url: String, onWebViewCreated: (WebView) -> Unit) {
                     setSupportMultipleWindows(true)
                 }
 
-                if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+                if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+                    WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, false)
+                } else if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+                    @Suppress("DEPRECATION")
                     WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_OFF)
                 }
 

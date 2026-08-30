@@ -16,6 +16,7 @@ export default function SystemPulseWidget() {
         tiktok: 'offline'
     });
     const [killSwitchActive, setKillSwitchActive] = React.useState(false);
+    const [radarPulse, setRadarPulse] = React.useState(false);
 
     const checkSystem = React.useCallback(async () => {
         const start = performance.now();
@@ -31,19 +32,21 @@ export default function SystemPulseWidget() {
 
             // 3. API Key Audit (Live Status)
             const { data: settings } = await supabase!.from('settings').select('key, value');
+            const { data: socialHub } = await supabase!.from('social_integrations').select('platform, is_connected');
 
-            const socialApis = (settings?.find(s => s.key === 'social_apis')?.value || {}) as Record<string, string>;
-            const socialLinks = (settings?.find(s => s.key === 'social_links')?.value || {}) as Record<string, string>;
-            const lockdown = (settings?.find(s => s.key === 'system_lockdown')?.value || {}) as Record<string, boolean>;
+            const findVal = (k: string) => settings?.find(s => s.key === k)?.value as Record<string, unknown> || {};
+            const socialApis = findVal('social_apis');
+            const socialLinks = findVal('social_links');
+            const lockdown = findVal('system_lockdown');
 
             setApiStatus({
-                whatsapp: (socialApis.whatsapp_token && socialApis.whatsapp_phone_id) ? 'active' : 'offline',
-                instagram: (socialApis.instagram_access_token) ? 'active' : 'offline',
-                facebook: (socialApis.meta_pixel_id) ? 'active' : 'offline',
-                tiktok: (socialLinks.tiktok) ? 'active' : 'offline'
+                whatsapp: (socialApis.whatsapp_token && socialApis.whatsapp_phone_id) || socialHub?.find(i => i.platform === 'whatsapp')?.is_connected ? 'active' : 'offline',
+                instagram: socialApis.instagram_access_token || socialHub?.find(i => i.platform === 'instagram')?.is_connected ? 'active' : 'offline',
+                facebook: socialApis.meta_pixel_id || socialHub?.find(i => i.platform === 'facebook')?.is_connected ? 'active' : 'offline',
+                tiktok: socialLinks.tiktok || socialHub?.find(i => i.platform === 'tiktok')?.is_connected ? 'active' : 'offline'
             });
 
-            setKillSwitchActive(lockdown.active || false);
+            setKillSwitchActive(Boolean(lockdown.active) || false);
 
             setLatency({
                 db: Math.round(endDb - start),
@@ -60,6 +63,23 @@ export default function SystemPulseWidget() {
     React.useEffect(() => {
         checkSystem();
         const interval = setInterval(checkSystem, 15000);
+
+        // 🛰️ Realtime Radar Intelligence
+        if (supabase) {
+            const channel = supabase
+                .channel('signal_pulse')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_signals' }, () => {
+                    setRadarPulse(true);
+                    setTimeout(() => setRadarPulse(false), 2000);
+                })
+                .subscribe();
+
+            return () => {
+                if (supabase) supabase.removeChannel(channel);
+                clearInterval(interval);
+            };
+        }
+
         return () => clearInterval(interval);
     }, [checkSystem]);
 
@@ -93,11 +113,14 @@ export default function SystemPulseWidget() {
             <div className="relative z-10 space-y-6">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-primary animate-pulse" />
+                        <Activity className={cn("h-4 w-4 text-primary transition-all duration-300", radarPulse ? "scale-150 text-rose-500" : "animate-pulse")} />
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-primary">System Pulse</h3>
                     </div>
                     {status.db === 'online' ? (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        <div className="flex items-center gap-2">
+                            {radarPulse && <span className="text-[8px] font-black text-rose-500 animate-in fade-in">SIGNAL DETECTED</span>}
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        </div>
                     ) : (
                         <ShieldAlert className="h-4 w-4 text-rose-500 animate-bounce" />
                     )}

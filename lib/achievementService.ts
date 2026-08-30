@@ -29,6 +29,13 @@ export async function unlockAchievement(userId: string, key: string) {
 
         if (error) throw error;
 
+        // 🏆 Intelligence Node: Emit Global Notification Event
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('apex-achievement-unlocked', {
+                detail: { key, userId }
+            }));
+        }
+
         console.log(`Achievement Unlocked: ${key} for ${userId} 🏅`);
         return true;
     } catch (err) {

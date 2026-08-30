@@ -33,7 +33,8 @@ import {
     Home as HomeIcon,
     MapPin,
     Bot,
-    MessageCircle
+    Share2 as Facebook,
+    Music
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,7 +74,7 @@ interface SocialApis {
     whatsapp_flow_support_id?: string;
 }
 
-type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced';
+type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced' | 'integrations';
 
 export default function AdminSettingsPage() {
     const { email } = useAdmin();
@@ -179,7 +180,6 @@ export default function AdminSettingsPage() {
         let finalValue = value;
 
         try {
-            // Handle File Uploads for Branding
             if (key === 'branding') {
                 const updatedBrandingLocal = { ...(value as Record<string, unknown>) };
                 if (logoFile) updatedBrandingLocal.logo_url = await uploadAsset(logoFile, 'branding');
@@ -190,7 +190,6 @@ export default function AdminSettingsPage() {
                 setFaviconFile(null);
             }
 
-            // Handle File Uploads for Homepage
             if (key === 'homepage') {
                 const updatedHomepageLocal = { ...(value as Record<string, unknown>) };
                 if (heroFile) updatedHomepageLocal.hero_image_url = await uploadAsset(heroFile, 'homepage');
@@ -313,6 +312,7 @@ export default function AdminSettingsPage() {
                             else if (activeTab === 'catalog') handleSave('catalog', catalog, true);
                             else if (activeTab === 'ai') handleSave('ai_config', aiConfig, true);
                             else if (activeTab === 'features') handleSave('features', features, true);
+                            else if (activeTab === 'integrations') handleSave('social_apis', socialApis, true);
                             else if (activeTab === 'advanced') {
                                 handleSave('theme_config', theme, true);
                                 handleSave('bridge_config', bridgeConfig, true);
@@ -338,7 +338,6 @@ export default function AdminSettingsPage() {
                 </div>
             )}
 
-            {/* CMS Tab Navigation */}
             <div className="flex gap-2 p-1 bg-card rounded-2xl border border-border shadow-sm overflow-x-auto no-scrollbar max-w-5xl">
                 {[
                     { id: 'identity', label: 'Identity', icon: Info },
@@ -350,6 +349,7 @@ export default function AdminSettingsPage() {
                     { id: 'catalog', label: 'Catalog', icon: Smartphone },
                     { id: 'ai', label: 'AI Node', icon: Bot },
                     { id: 'features', label: 'Features', icon: Zap },
+                    { id: 'integrations', label: 'Integrations', icon: Share2 },
                     { id: 'advanced', label: 'Advanced', icon: Code },
                 ].map(tab => (
                     <button
@@ -369,7 +369,6 @@ export default function AdminSettingsPage() {
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-10">
                 <div className="lg:col-span-8 space-y-6 lg:space-y-8">
 
-                    {/* IDENTITY TAB */}
                     {activeTab === 'identity' && (
                         <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-2xl lg:rounded-[3rem] border border-slate-100 p-6 lg:p-10 bg-white shadow-sm space-y-6 lg:space-y-8 text-left">
@@ -455,10 +454,6 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
-                    {/* CMS ACTION BAR */}
-                    {/* (Moved to bottom fixed position, adjusting its content) */}
-
-                    {/* HOMEPAGE TAB */}
                     {activeTab === 'homepage' && (
                         <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-2xl lg:rounded-[3rem] border border-border p-6 lg:p-10 bg-card shadow-sm space-y-6 lg:space-y-8">
@@ -552,7 +547,6 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
-                    {/* PROMOTIONS TAB */}
                     {activeTab === 'promotions' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 text-left">
@@ -627,7 +621,6 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
-                    {/* THEME TAB */}
                     {activeTab === 'theme' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 text-left">
@@ -658,7 +651,6 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
-                    {/* SEO & SOCIAL TAB */}
                     {activeTab === 'seo' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
@@ -697,105 +689,9 @@ export default function AdminSettingsPage() {
                                     ))}
                                 </div>
                             </Card>
-
-                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
-                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Zap className="h-5 w-5 text-primary" /> Social API Node</h2>
-                                <div className="grid sm:grid-cols-2 gap-6 text-left">
-                                    <div className="space-y-2 text-left">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground">Meta Pixel ID</label>
-                                        <Input
-                                            value={socialApis.meta_pixel_id || ''}
-                                            onChange={e => setSocialApis({...socialApis, meta_pixel_id: e.target.value})}
-                                            className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
-                                            placeholder="1234567890"
-                                        />
-                                    </div>
-                                    <div className="space-y-2 text-left">
-                                        <label className="text-[10px] font-black uppercase text-muted-foreground">WhatsApp API Token</label>
-                                        <Input
-                                            type="password"
-                                            value={socialApis.whatsapp_token || ''}
-                                            onChange={e => setSocialApis({...socialApis, whatsapp_token: e.target.value})}
-                                            className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
-                                            placeholder="EAAB..."
-                                        />
-                                    </div>
-                                </div>
-                                <p className="text-[8px] font-medium text-slate-400 italic">
-                                    * Connect your Meta Business Suite to track ad performance and automate WhatsApp notifications.
-                                </p>
-                            </Card>
-
-                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
-                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><MessageCircle className="h-5 w-5 text-primary" /> WhatsApp Flow Node</h2>
-                                <div className="space-y-6">
-                                    <div className="grid sm:grid-cols-2 gap-6">
-                                        <div className="space-y-2 text-left">
-                                            <label className="text-[10px] font-black uppercase text-muted-foreground">Order Status Flow ID</label>
-                                            <Input
-                                                value={socialApis.whatsapp_flow_order_id || ''}
-                                                onChange={e => setSocialApis({...socialApis, whatsapp_flow_order_id: e.target.value})}
-                                                className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
-                                                placeholder="flow_123..."
-                                            />
-                                        </div>
-                                        <div className="space-y-2 text-left">
-                                            <label className="text-[10px] font-black uppercase text-muted-foreground">Support Triage Flow ID</label>
-                                            <Input
-                                                value={socialApis.whatsapp_flow_support_id || ''}
-                                                onChange={e => setSocialApis({...socialApis, whatsapp_flow_support_id: e.target.value})}
-                                                className="h-12 rounded-xl bg-secondary border-border text-[10px] font-bold text-foreground"
-                                                placeholder="flow_456..."
-                                            />
-                                        </div>
-                                    </div>
-                                    <p className="text-[8px] font-bold text-primary uppercase italic px-1">* PRO TIP: Use WhatsApp Flows to create interactive multi-step forms directly in chat.</p>
-                                </div>
-                            </Card>
                         </div>
                     )}
 
-                    {/* CATALOG TAB */}
-                    {activeTab === 'catalog' && (
-                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
-                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
-                                <div className="flex justify-between items-center text-left">
-                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Smartphone className="h-5 w-5 text-primary" /> Category Manager</h2>
-                                    <Button onClick={() => setCatalog({ ...catalog, categories: [...catalog.categories, { id: '', label: '' }] })} variant="outline" className="h-10 rounded-xl text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-2" /> New Category</Button>
-                                </div>
-                                <div className="space-y-4 text-left">
-                                    {catalog.categories.map((cat, idx) => (
-                                        <div key={idx} className="flex gap-4 items-end p-6 bg-secondary rounded-3xl border border-border relative group/cat">
-                                            <div className="flex-1 space-y-2 text-left">
-                                                <label className="text-[8px] font-black uppercase text-muted-foreground ml-1">Label (Visible to customers)</label>
-                                                <Input value={cat.label} onChange={e => {
-                                                    const newCats = [...catalog.categories];
-                                                    newCats[idx].label = e.target.value;
-                                                    setCatalog({ ...catalog, categories: newCats });
-                                                }} className="h-12 rounded-xl bg-card border-none font-bold text-foreground" placeholder="e.g. Elite Audio" />
-                                            </div>
-                                            <div className="flex-1 space-y-2 text-left">
-                                                <label className="text-[8px] font-black uppercase text-muted-foreground ml-1">Slug/ID (Database tag)</label>
-                                                <Input value={cat.id} onChange={e => {
-                                                    const newCats = [...catalog.categories];
-                                                    newCats[idx].id = e.target.value.toLowerCase().replace(/\s+/g, '-');
-                                                    setCatalog({ ...catalog, categories: newCats });
-                                                }} className="h-12 rounded-xl bg-card border-none font-mono text-xs text-foreground" placeholder="e.g. airpods" />
-                                            </div>
-                                            <button
-                                                onClick={() => setCatalog({ ...catalog, categories: catalog.categories.filter((_, i) => i !== idx) })}
-                                                className="h-12 w-12 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-rose-500 transition-colors opacity-0 group-hover/cat:opacity-100"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </Card>
-                        </div>
-                    )}
-
-                    {/* OPERATIONS TAB */}
                     {activeTab === 'ops' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
@@ -884,7 +780,45 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
-                    {/* AI NODE TAB */}
+                    {activeTab === 'catalog' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-8 text-left">
+                                <div className="flex justify-between items-center text-left">
+                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Smartphone className="h-5 w-5 text-primary" /> Category Manager</h2>
+                                    <Button onClick={() => setCatalog({ ...catalog, categories: [...catalog.categories, { id: '', label: '' }] })} variant="outline" className="h-10 rounded-xl text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-2" /> New Category</Button>
+                                </div>
+                                <div className="space-y-4 text-left">
+                                    {catalog.categories.map((cat, idx) => (
+                                        <div key={idx} className="flex gap-4 items-end p-6 bg-secondary rounded-3xl border border-border relative group/cat">
+                                            <div className="flex-1 space-y-2 text-left">
+                                                <label className="text-[8px] font-black uppercase text-muted-foreground ml-1">Label (Visible to customers)</label>
+                                                <Input value={cat.label} onChange={e => {
+                                                    const newCats = [...catalog.categories];
+                                                    newCats[idx].label = e.target.value;
+                                                    setCatalog({ ...catalog, categories: newCats });
+                                                }} className="h-12 rounded-xl bg-card border-none font-bold text-foreground" placeholder="e.g. Elite Audio" />
+                                            </div>
+                                            <div className="flex-1 space-y-2 text-left">
+                                                <label className="text-[8px] font-black uppercase text-muted-foreground ml-1">Slug/ID (Database tag)</label>
+                                                <Input value={cat.id} onChange={e => {
+                                                    const newCats = [...catalog.categories];
+                                                    newCats[idx].id = e.target.value.toLowerCase().replace(/\s+/g, '-');
+                                                    setCatalog({ ...catalog, categories: newCats });
+                                                }} className="h-12 rounded-xl bg-card border-none font-mono text-xs text-foreground" placeholder="e.g. airpods" />
+                                            </div>
+                                            <button
+                                                onClick={() => setCatalog({ ...catalog, categories: catalog.categories.filter((_, i) => i !== idx) })}
+                                                className="h-12 w-12 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-rose-500 transition-colors opacity-0 group-hover/cat:opacity-100"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        </div>
+                    )}
+
                     {activeTab === 'ai' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 text-left">
@@ -933,7 +867,6 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
-                    {/* FEATURES TAB */}
                     {activeTab === 'features' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 text-left">
@@ -969,7 +902,49 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
-                    {/* ADVANCED TAB */}
+                    {activeTab === 'integrations' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 text-left">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Share2 className="h-5 w-5 text-primary" /> Connected Ecosystem</h2>
+                                <div className="space-y-8">
+                                    <div className="grid sm:grid-cols-2 gap-8">
+                                        <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <Facebook className="h-5 w-5 text-blue-600" />
+                                                <p className="text-xs font-black uppercase text-foreground">Meta Business Suite</p>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] font-black uppercase text-slate-400 ml-1">Meta App ID</label>
+                                                <Input value={socialApis.meta_pixel_id} onChange={e => setSocialApis({...socialApis, meta_pixel_id: e.target.value})} className="h-10 rounded-xl bg-white border-slate-200 text-[10px]" placeholder="App ID..." />
+                                            </div>
+                                        </div>
+
+                                        <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <Music className="h-5 w-5 text-slate-900" />
+                                                <p className="text-xs font-black uppercase text-foreground">TikTok Developer Node</p>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[9px] font-black uppercase text-slate-400 ml-1">Client Key</label>
+                                                <Input className="h-10 rounded-xl bg-white border-slate-200 text-[10px]" placeholder="Client Key..." />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-8 rounded-[2.5rem] bg-indigo-50 border border-indigo-100 flex items-start gap-4">
+                                        <Bot className="h-6 w-6 text-indigo-500 shrink-0 mt-0.5" />
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-black uppercase text-indigo-700">OAuth Protocol</p>
+                                            <p className="text-[10px] text-indigo-600 font-medium leading-relaxed italic">
+                                                &quot;For most users, connecting via the Social Hub is recommended. This settings panel is for advanced developers to input custom Application IDs and Secrets.&quot;
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    )}
+
                     {activeTab === 'advanced' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 relative overflow-hidden text-left">
@@ -1083,7 +1058,6 @@ export default function AdminSettingsPage() {
                 {/* SIDEBAR: LIVE PREVIEW & STATUS */}
                 <div className="lg:col-span-4 space-y-10 text-left">
 
-                    {/* STORE PULSE WIDGET */}
                     <Card className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-8 relative overflow-hidden group text-left">
                         <div className="relative z-10 space-y-8 text-left">
                             <div className="flex items-center justify-between text-left">
@@ -1115,13 +1089,11 @@ export default function AdminSettingsPage() {
                         </div>
                     </Card>
 
-                    {/* LIVE PREVIEW COMPONENT */}
                     <div className="space-y-4 text-left">
                         <h3 className="text-[10px] font-black uppercase text-muted-foreground tracking-[0.4em] ml-4 flex items-center gap-2 text-left">
                             <Eye className="h-3 w-3" /> Real-time Simulation
                         </h3>
                         <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden group text-left">
-                            {/* Mini Header */}
                             <div className="bg-card p-6 border-b border-border flex justify-between items-center text-left">
                                 <div className="flex items-center gap-2 text-left">
                                     <div className="h-6 w-6 rounded-lg bg-primary/10 flex items-center justify-center text-primary shadow-sm overflow-hidden">
@@ -1139,7 +1111,6 @@ export default function AdminSettingsPage() {
                                     <div className="h-1.5 w-1.5 rounded-full bg-border" />
                                 </div>
                             </div>
-                            {/* Mini Hero */}
                             <div className="p-10 text-center space-y-6 relative overflow-hidden bg-secondary min-h-[350px] flex flex-col justify-center text-left">
                                 {heroPreview && (
                                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -1162,7 +1133,6 @@ export default function AdminSettingsPage() {
                 </div>
             </div>
 
-            {/* STICKY CMS ACTION BAR (Frosted Platinum) */}
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-8 duration-1000 w-full max-w-4xl px-4 text-left">
                 <div className="bg-background/80 backdrop-blur-xl p-4 rounded-[2.5rem] shadow-2xl flex items-center gap-3 border border-border text-left">
                     <Button
@@ -1190,6 +1160,9 @@ export default function AdminSettingsPage() {
                                     handleSave('shipping', shipping, true);
                                 }
                                 else if (activeTab === 'catalog') handleSave('catalog', catalog, true);
+                                else if (activeTab === 'ai') handleSave('ai_config', aiConfig, true);
+                                else if (activeTab === 'features') handleSave('features', features, true);
+                                else if (activeTab === 'integrations') handleSave('social_apis', socialApis, true);
                                 else if (activeTab === 'advanced') handleSave('theme_config', theme, true);
                             }}
                             className="h-12 px-6 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card font-black uppercase text-[9px]"

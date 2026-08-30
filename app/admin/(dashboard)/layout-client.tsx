@@ -33,6 +33,7 @@ import {
   Bell,
   Activity,
   Plus,
+  Share2,
   Layout as LayoutIcon,
   Lock,
   PanelLeftClose,
@@ -131,6 +132,7 @@ export default function AdminLayoutClient({
       { name: 'Loyalty Logic', href: '/admin/gamification', icon: Trophy, permission: 'can_manage_settings' },
     ]},
     { group: 'GROWTH', items: [
+      { name: 'Social Hub', href: '/admin/marketing/social-hub', icon: Share2, permission: 'can_manage_broadcast' },
       { name: 'Marketing Hub', href: '/admin/marketing', icon: TrendingUp, permission: 'can_manage_broadcast' },
       { name: 'AI Ad Agency', href: '/admin/marketing/ai-agency', icon: Target, permission: 'can_manage_broadcast' },
       { name: 'Autopilot', href: '/admin/marketing/automation', icon: Rocket, permission: 'can_manage_broadcast' },

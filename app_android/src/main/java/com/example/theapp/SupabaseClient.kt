@@ -23,18 +23,18 @@ object SupabaseNode {
             .build()
 
         return try {
-            val response: Response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                val responseBody = response.body
-                val bodyString = responseBody?.string()
-                val jsonArray = org.json.JSONArray(bodyString)
-                if (jsonArray.length() > 0) {
-                    val value = jsonArray.getJSONObject(0).getJSONObject("value")
-                    val domain = value.getString("trusted_domain")
-                    val url = value.getString("production_url")
-                    Pair(domain, url)
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val bodyString = response.body?.string()
+                    val jsonArray = org.json.JSONArray(bodyString)
+                    if (jsonArray.length() > 0) {
+                        val value = jsonArray.getJSONObject(0).getJSONObject("value")
+                        val domain = value.getString("trusted_domain")
+                        val url = value.getString("production_url")
+                        Pair(domain, url)
+                    } else null
                 } else null
-            } else null
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null

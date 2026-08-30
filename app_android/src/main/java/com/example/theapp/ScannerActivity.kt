@@ -22,6 +22,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -75,8 +77,15 @@ class ScannerActivity : ComponentActivity() {
 fun EdgeAiTriage(onTriageDetected: (String) -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraExecutor = Executors.newSingleThreadExecutor()
-    val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+    val labeler = remember { ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraExecutor.shutdown()
+            labeler.close()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -114,8 +123,12 @@ fun EdgeAiTriage(onTriageDetected: (String) -> Unit) {
                         }
 
                     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalyzer)
+                    try {
+                        cameraProvider.unbindAll()
+                        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalyzer)
+                    } catch (exc: Exception) {
+                        exc.printStackTrace()
+                    }
                 }, ContextCompat.getMainExecutor(ctx))
                 previewView
             }
@@ -134,8 +147,15 @@ fun EdgeAiTriage(onTriageDetected: (String) -> Unit) {
 fun ShelfScanner(onLabelsDetected: (List<String>) -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraExecutor = Executors.newSingleThreadExecutor()
-    val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+    val labeler = remember { ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraExecutor.shutdown()
+            labeler.close()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -171,8 +191,12 @@ fun ShelfScanner(onLabelsDetected: (List<String>) -> Unit) {
                         }
 
                     val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalyzer)
+                    try {
+                        cameraProvider.unbindAll()
+                        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageAnalyzer)
+                    } catch (exc: Exception) {
+                        exc.printStackTrace()
+                    }
                 }, ContextCompat.getMainExecutor(ctx))
                 previewView
             }
@@ -191,7 +215,15 @@ fun ShelfScanner(onLabelsDetected: (List<String>) -> Unit) {
 fun BarcodeScanner(onBarcodeDetected: (String) -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraExecutor = Executors.newSingleThreadExecutor()
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+    val scanner = remember { BarcodeScanning.getClient() }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraExecutor.shutdown()
+            scanner.close()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -214,8 +246,7 @@ fun BarcodeScanner(onBarcodeDetected: (String) -> Unit) {
                                 val mediaImage = imageProxy.image
                                 if (mediaImage != null) {
                                     val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                                    val scanner = BarcodeScanning.getClient()
-
+                                    
                                     scanner.process(image)
                                         .addOnSuccessListener { barcodes ->
                                             for (barcode in barcodes) {
@@ -242,7 +273,7 @@ fun BarcodeScanner(onBarcodeDetected: (String) -> Unit) {
                             imageAnalyzer
                         )
                     } catch (exc: Exception) {
-                        // Handle error
+                        exc.printStackTrace()
                     }
                 }, ContextCompat.getMainExecutor(ctx))
                 previewView
