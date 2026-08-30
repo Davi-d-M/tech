@@ -217,9 +217,38 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
-  const handleGlobalSearch = (term?: string) => {
+  const handleGlobalSearch = async (term?: string) => {
       const finalTerm = term || searchQuery;
       if (!finalTerm.trim()) return;
+
+      // 🧠 Signal Intelligence: Log Search
+      const { signalService } = await import('@/lib/signalService');
+
+      let resultsCount = 0;
+      if (supabase) {
+          const { count } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .ilike('name', `%${finalTerm}%`);
+          resultsCount = count || 0;
+      }
+
+      signalService.track({
+          event_type: 'SEARCH',
+          target: finalTerm,
+          metadata: { results_count: resultsCount }
+      });
+
+      // Log to dedicated Search Intelligence table if zero results
+      if (resultsCount === 0 && supabase) {
+          const sid = sessionStorage.getItem('apex_signal_session');
+          await supabase.from('search_intelligence').insert([{
+              session_id: sid,
+              query: finalTerm,
+              results_count: 0,
+              is_success: false
+          }]);
+      }
 
       // Dispatch custom event to filter the ProductList component
       const event = new CustomEvent('apex-search', { detail: { query: finalTerm } });
@@ -282,6 +311,7 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
                 <Link
                   key={href}
                   href={href}
+                  data-track-click={`NAV_LINK_${label.toUpperCase()}`}
                   className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
                     pathname === href
                       ? "bg-primary/10 text-primary shadow-sm"

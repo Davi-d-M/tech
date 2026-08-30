@@ -13,6 +13,25 @@ export default function SignalTracker() {
         // Track page view
         signalService.track({ event_type: 'VIEW', target: pathname });
 
+        // 🖱️ Global Click Listener (Tactical Interaction)
+        const handleGlobalClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            const trackable = target.closest('[data-track-click]');
+            if (trackable) {
+                const elementId = trackable.getAttribute('data-track-click') || trackable.id || 'anonymous_btn';
+                signalService.track({
+                    event_type: 'CLICK',
+                    target: elementId,
+                    metadata: {
+                        text: trackable.textContent?.trim().substring(0, 20),
+                        tag: trackable.tagName
+                    }
+                });
+            }
+        };
+
+        window.addEventListener('click', handleGlobalClick);
+
         // Setup observer for sections
         const sections = document.querySelectorAll('[data-signal-section]');
 
@@ -45,6 +64,7 @@ export default function SignalTracker() {
 
         return () => {
             observer.disconnect();
+            window.removeEventListener('click', handleGlobalClick);
             // Flush any remaining dwell times
             currentDwellTimes.forEach((startTime, sectionId) => {
                 const duration = Date.now() - startTime;

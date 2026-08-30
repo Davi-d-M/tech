@@ -233,6 +233,7 @@ export default function ProductCard({ product }: { product: Product }) {
           <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
             <Button
               size="sm"
+              data-track-click="QUICK_LOOK_MODAL"
               className="bg-white text-foreground hover:bg-slate-50 font-black uppercase text-[10px] tracking-widest px-6 py-5 rounded-2xl shadow-2xl border-none scale-90 group-hover:scale-100 transition-transform duration-300"
               onClick={(e) => {
                 e.preventDefault();
@@ -295,6 +296,7 @@ export default function ProductCard({ product }: { product: Product }) {
         ) : (
             <div className="flex flex-col gap-2">
                 <Button
+                  data-track-click="ADD_TO_BAG_CARD"
                   className={cn(
                     'w-full h-10 sm:h-14 transition-all duration-300 rounded-xl sm:rounded-2xl font-black uppercase text-[8px] sm:text-[10px] tracking-widest shadow-lg active:scale-95',
                     isLocked ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100 shadow-none' :

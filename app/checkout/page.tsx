@@ -754,17 +754,29 @@ function CheckoutContent() {
                 <h2 className="text-xl font-black uppercase tracking-tighter">Payment Mode</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <button onClick={() => setPaymentMethod("M-Pesa")} className={`p-6 rounded-3xl border-2 text-left transition-all ${paymentMethod === 'M-Pesa' ? 'border-primary bg-white shadow-xl' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}>
+                  <button
+                    onClick={() => setPaymentMethod("M-Pesa")}
+                    data-track-click="PAYMENT_METHOD_MPESA"
+                    className={`p-6 rounded-3xl border-2 text-left transition-all ${paymentMethod === 'M-Pesa' ? 'border-primary bg-white shadow-xl' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}
+                  >
                     <p className="font-black uppercase tracking-tight text-foreground text-lg leading-none">M-Pesa</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase mt-2">Mobile Money</p>
                   </button>
 
-                  <button onClick={() => setPaymentMethod("Card")} className={`p-6 rounded-3xl border-2 text-left transition-all ${paymentMethod === 'Card' ? 'border-primary bg-white shadow-xl' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}>
+                  <button
+                    onClick={() => setPaymentMethod("Card")}
+                    data-track-click="PAYMENT_METHOD_CARD"
+                    className={`p-6 rounded-3xl border-2 text-left transition-all ${paymentMethod === 'Card' ? 'border-primary bg-white shadow-xl' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}
+                  >
                     <p className="font-black uppercase tracking-tight text-foreground text-lg leading-none">Card</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase mt-2">Visa/Mastercard</p>
                   </button>
 
-                  <button onClick={() => setPaymentMethod("COD")} className={`p-6 rounded-3xl border-2 text-left transition-all ${paymentMethod === 'COD' ? 'border-primary bg-white shadow-xl' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}>
+                  <button
+                    onClick={() => setPaymentMethod("COD")}
+                    data-track-click="PAYMENT_METHOD_COD"
+                    className={`p-6 rounded-3xl border-2 text-left transition-all ${paymentMethod === 'COD' ? 'border-primary bg-white shadow-xl' : 'border-slate-50 bg-slate-50/50 opacity-60 hover:opacity-100'}`}
+                  >
                     <p className="font-black uppercase tracking-tight text-foreground text-lg leading-none">C.O.D</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase mt-2">Pay on Delivery</p>
                   </button>
@@ -946,6 +958,7 @@ function CheckoutContent() {
 
               <Button
                 size="lg"
+                data-track-click="FINALIZE_CHECKOUT"
                 className="w-full h-20 bg-primary text-white hover:bg-primary/90 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-[11px] mt-4 shadow-2xl disabled:bg-slate-200 transition-all active:scale-95"
                 onClick={handlePlaceOrder}
                 disabled={isPlacingOrder || checkoutStatus.type === 'success'}
