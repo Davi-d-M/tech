@@ -54,32 +54,47 @@ export default function AIConcierge() {
         setIsLoading(true);
 
         try {
-            // Real Database Vector/Keyword Search Node
-            const low = userMsg.toLowerCase();
-            const config = (settings as unknown as { ai_config: { build_setup_limit: number, assistant_name: string } })?.ai_config || { build_setup_limit: 5000, assistant_name: 'Apex AI' };
+            const res = await fetch('/api/support/ai-concierge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMsg })
+            });
 
-            let reply = `I'm analyzing the catalog for your tactical setup, bro. As ${config.assistant_name}, I recommend these:`;
-            let suggestions: Suggestion[] = [];
+            const data = await res.json();
+            let aiText = data.response || "System link unstable, bro. Re-initiating connection...";
 
-            if (low.includes('setup') || low.includes('office') || low.includes('gaming')) {
-                const limit = config.build_setup_limit || 5000;
-                const { data: prods } = await supabase!.from('products').select('*').lte('price', limit).limit(3);
-                suggestions = (prods || []).map(p => ({ id: p.id, name: p.name, price: p.price, image_url: p.image_url }));
-                if (suggestions.length === 0) {
-                    reply = `I couldn't find a complete setup under ${formatPrice(limit)}, bro. I've pulled our closest elite essentials instead:`;
-                    const { data: alt } = await supabase!.from('products').select('*').limit(2);
-                    suggestions = (alt || []).map(p => ({ id: p.id, name: p.name, price: p.price, image_url: p.image_url }));
+            // Intelligence Node: Detect Product IDs in response [PROD-123]
+            const productMatches = aiText.match(/\[PROD-(\d+)\]/g);
+            let suggestedProducts: Suggestion[] = [];
+
+            if (productMatches && supabase) {
+                const ids = productMatches.map((m: string) => m.match(/\d+/)![0]);
+                const { data: prods } = await supabase
+                    .from('products')
+                    .select('id, name, price, image_url')
+                    .in('id', ids);
+
+                if (prods) {
+                    suggestedProducts = prods.map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        price: p.price,
+                        image_url: p.image_url
+                    }));
                 }
-            } else if (low.includes('cheap') || low.includes('budget') || low.includes('under')) {
-                const { data: prods } = await supabase!.from('products').select('*').order('price', { ascending: true }).limit(2);
-                suggestions = (prods || []).map(p => ({ id: p.id, name: p.name, price: p.price, image_url: p.image_url }));
-            } else {
-                reply = "I recommend these elite essentials to upgrade your mobile experience, bro. 🛡️";
-                const { data: prods } = await supabase!.from('products').select('*').limit(2);
-                suggestions = (prods || []).map(p => ({ id: p.id, name: p.name, price: p.price, image_url: p.image_url }));
+
+                // Clean up the text - remove the technical IDs for a cleaner UI
+                aiText = aiText.replace(/\[PROD-\d+\]/g, '').trim();
             }
 
-            setMessages(prev => [...prev, { role: 'assistant', text: reply, suggestions }]);
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                text: aiText,
+                suggestions: suggestedProducts.length > 0 ? suggestedProducts : undefined
+            }]);
+        } catch (err) {
+            console.error("AI Link Failure:", err);
+            setMessages(prev => [...prev, { role: 'assistant', text: "Signal interference detected. Try again in 30s, bro." }]);
         } finally {
             setIsLoading(false);
         }

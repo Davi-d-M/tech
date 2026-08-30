@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { formatPrice, cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
+import { useSettings } from '@/lib/useSettings';
 
 interface AbandonedCart {
     id: string;
@@ -34,6 +35,7 @@ interface AbandonedCart {
 
 export default function AbandonedCartEngine() {
     useAdmin();
+    const { settings } = useSettings();
     const [carts, setCarts] = React.useState<AbandonedCart[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -43,22 +45,22 @@ export default function AbandonedCartEngine() {
         if (!supabase) return;
         setLoading(true);
         try {
+            // Priority: Fetch from actual Abandoned Carts table (with phone numbers)
             const { data, error } = await supabase
-                .from('active_visitors')
+                .from('abandoned_carts')
                 .select('*')
-                .gt('cart_value', 0)
-                .order('last_active_at', { ascending: false });
+                .order('updated_at', { ascending: false });
 
             if (error) throw error;
 
             const enriched = (data || []).map(v => ({
                 id: v.session_id,
                 customer_name: v.customer_name || 'Anonymous Guest',
-                customer_phone: '---',
-                cart_value: v.cart_value,
-                last_active_at: v.last_active_at,
-                items_count: 1,
-                recovery_status: 'Pending'
+                customer_phone: v.customer_phone || '',
+                cart_value: v.total_price || 0,
+                last_active_at: v.updated_at,
+                items_count: Array.isArray(v.cart_items) ? v.cart_items.length : 1,
+                recovery_status: v.recovery_status || 'Pending'
             } as AbandonedCart));
 
             setCarts(enriched);
@@ -73,10 +75,15 @@ export default function AbandonedCartEngine() {
         fetchCarts();
     }, [fetchCarts]);
 
-    const nudgeCustomer = (id: string, channel: 'WhatsApp' | 'Email') => {
-        setMessage({ type: 'success', text: `Tactical nudge dispatched via ${channel} for unit ${id.slice(0, 8)}. ⚡` });
+    const nudgeCustomer = (cart: AbandonedCart, channel: 'WhatsApp' | 'Email') => {
+        if (channel === 'WhatsApp') {
+            const message = `Hello ${cart.customer_name}! This is ${settings?.branding?.owner_name || 'Admin'} from Apexstores. I noticed you left some elite tech in your bag! 🚀\n\nUse code "RECOVER5" for 5% OFF to complete your mission. \n\nCheck your bag here: ${window.location.origin}/cart`;
+            window.open(`https://wa.me/${cart.customer_phone.replace(/\+/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        setMessage({ type: 'success', text: `Tactical nudge dispatched via ${channel} for ${cart.customer_name}. ⚡` });
         setTimeout(() => setMessage(null), 5000);
-        setCarts(prev => prev.map(c => c.id === id ? { ...c, recovery_status: 'Nudged' } : c));
+        setCarts(prev => prev.map(c => c.id === cart.id ? { ...c, recovery_status: 'Nudged' } : c));
     };
 
     const totalPotential = carts.reduce((sum, c) => sum + c.cart_value, 0);
@@ -189,7 +196,7 @@ export default function AbandonedCartEngine() {
                                     <td className="px-10 py-8 text-right">
                                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button
-                                                onClick={() => nudgeCustomer(cart.id, 'WhatsApp')}
+                                                onClick={() => nudgeCustomer(cart, 'WhatsApp')}
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-10 w-10 rounded-xl hover:text-emerald-500 hover:bg-white transition-all shadow-sm"
@@ -197,7 +204,7 @@ export default function AbandonedCartEngine() {
                                                 <MessageCircle className="h-4 w-4" />
                                             </Button>
                                             <Button
-                                                onClick={() => nudgeCustomer(cart.id, 'Email')}
+                                                onClick={() => nudgeCustomer(cart, 'Email')}
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-10 w-10 rounded-xl hover:text-indigo-500 hover:bg-white transition-all shadow-sm"
