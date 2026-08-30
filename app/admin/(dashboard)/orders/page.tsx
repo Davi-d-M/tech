@@ -15,7 +15,6 @@ import {
   Link2,
   Search,
   ShieldAlert,
-  Navigation,
   CheckSquare,
   Square,
   XCircle
@@ -366,13 +365,6 @@ export default function AdminOrdersPage() {
       setStatusMessage({ type: 'success', text: 'Tracking link copied to clipboard!' });
   };
 
-  const copyRiderLink = (orderId: number) => {
-      const baseUrl = window.location.origin;
-      const link = `${baseUrl}/dispatch/${orderId}`;
-      navigator.clipboard.writeText(link);
-      setStatusMessage({ type: 'success', text: 'Rider dispatch link copied!' });
-  };
-
   const handleExportCSV = () => {
     const headers = ['Order ID', 'Date', 'Customer', 'Phone', 'Total', 'Status', 'Payment Method'];
     const rows = orders.map(o => [
@@ -719,7 +711,6 @@ export default function AdminOrdersPage() {
                         </th>
                         <th className="px-8 py-5 min-w-[180px]">Customer Identity</th>
                         <th className="px-8 py-5 min-w-[220px]">Payload Details</th>
-                        <th className="px-8 py-5 w-32">Method</th>
                         <th className="px-8 py-5 w-32">Authorized By</th>
                         {canSeeMoney && <th className="px-8 py-5 w-32">Profit Node</th>}
                         <th className="px-8 py-5 w-48">Pipeline State</th>
@@ -743,23 +734,6 @@ export default function AdminOrdersPage() {
                                     </button>
                                 </td>
                                 <td className="px-8 py-8">
-                                    <div className="flex flex-col gap-1.5">
-                                        <span className={cn(
-                                            "px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border w-fit shadow-sm",
-                                            order.payment_method === 'M-Pesa' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                                            order.payment_method === 'Card' || order.payment_method === 'Paystack' ? "bg-blue-50 text-blue-600 border-blue-100" :
-                                            "bg-amber-50 text-amber-600 border-amber-100"
-                                        )}>
-                                            {order.payment_method}
-                                        </span>
-                                        {order.note?.includes('Paystack Ref') && (
-                                            <span className="text-[7px] text-slate-400 font-bold uppercase truncate max-w-[80px]">
-                                                {order.note.split('Ref: ')[1]?.split(' ')[0]}
-                                            </span>
-                                        )}
-                                    </div>
-                                </td>
-                                <td className="px-8 py-8">
                                 <div className="flex flex-col text-left">
                                     <span className="font-black text-foreground flex items-center gap-2 uppercase text-xs tracking-tight whitespace-nowrap">
                                     <User className="h-3 w-3 text-slate-300" /> {order.customer_name}
@@ -767,10 +741,7 @@ export default function AdminOrdersPage() {
                                     <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest flex items-center gap-2 mt-1.5 whitespace-nowrap">
                                     <Phone className="h-3 w-3" /> {order.customer_phone}
                                     </span>
-                                </div>
-                                </td>
-                                <td className="px-8 py-8">
-                                    <div className="flex flex-col gap-1.5">
+                                    <div className="flex flex-col gap-1.5 mt-2">
                                         <span className={cn(
                                             "px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border w-fit shadow-sm",
                                             order.payment_method === 'M-Pesa' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
@@ -779,12 +750,8 @@ export default function AdminOrdersPage() {
                                         )}>
                                             {order.payment_method}
                                         </span>
-                                        {order.note?.includes('Paystack Ref') && (
-                                            <span className="text-[7px] text-slate-400 font-bold uppercase truncate max-w-[80px]">
-                                                {order.note.split('Ref: ')[1]?.split(' ')[0]}
-                                            </span>
-                                        )}
                                     </div>
+                                </div>
                                 </td>
                                 <td className="px-8 py-8">
                                 <div className="flex flex-col text-left gap-3">
@@ -805,9 +772,6 @@ export default function AdminOrdersPage() {
                                                     <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest">
                                                         x{item.quantity} Units {item.size && `(${item.size})`}
                                                     </span>
-                                                    {item.serial_number && (
-                                                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter bg-emerald-50 px-1.5 rounded">SN: {item.serial_number}</span>
-                                                    )}
                                                 </div>
                                             </div>
                                         ))
@@ -815,23 +779,6 @@ export default function AdminOrdersPage() {
                                         <span className="text-[10px] text-slate-400 italic">No Items Logged</span>
                                     )}
                                 </div>
-                                </td>
-                                <td className="px-8 py-8">
-                                    <div className="flex flex-col gap-1.5">
-                                        <span className={cn(
-                                            "px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border w-fit shadow-sm",
-                                            order.payment_method === 'M-Pesa' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                                            order.payment_method === 'Card' || order.payment_method === 'Paystack' ? "bg-blue-50 text-blue-600 border-blue-100" :
-                                            "bg-amber-50 text-amber-600 border-amber-100"
-                                        )}>
-                                            {order.payment_method}
-                                        </span>
-                                        {order.note?.includes('Paystack Ref') && (
-                                            <span className="text-[7px] text-slate-400 font-bold uppercase truncate max-w-[80px]">
-                                                {order.note.split('Ref: ')[1]?.split(' ')[0]}
-                                            </span>
-                                        )}
-                                    </div>
                                 </td>
                                 <td className="px-8 py-8">
                                     <span className={cn(
@@ -906,11 +853,11 @@ export default function AdminOrdersPage() {
                                 </div>
                                 </td>
                                 <td className="px-8 py-8 text-right rounded-r-[1.5rem]">
-                                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex justify-end gap-2 transition-opacity">
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 rounded-xl hover:bg-white hover:shadow-xl text-slate-400 hover:text-primary transition-all active:scale-95"
+                                            className="h-9 w-9 rounded-xl bg-slate-50 hover:bg-white hover:shadow-xl text-slate-400 hover:text-primary transition-all active:scale-95 border border-slate-100"
                                             onClick={() => handleDownloadReceipt(order)}
                                             title="Download PDF Receipt"
                                         >
@@ -919,7 +866,7 @@ export default function AdminOrdersPage() {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 rounded-xl hover:bg-primary/5 hover:shadow-xl text-slate-400 hover:text-primary transition-all active:scale-95"
+                                            className="h-9 w-9 rounded-xl bg-slate-50 hover:bg-primary/5 hover:shadow-xl text-slate-400 hover:text-primary transition-all active:scale-95 border border-slate-100"
                                             onClick={() => handleShareOnWhatsApp(order)}
                                             title="Share Receipt on WhatsApp"
                                         >
@@ -928,20 +875,11 @@ export default function AdminOrdersPage() {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 rounded-xl hover:bg-primary/5 hover:shadow-xl text-slate-400 hover:text-primary transition-all active:scale-95"
+                                            className="h-9 w-9 rounded-xl bg-slate-50 hover:bg-primary/5 hover:shadow-xl text-slate-400 hover:text-primary transition-all active:scale-95 border border-slate-100"
                                             onClick={() => copyTrackingLink(order.id)}
                                             title="Copy Tracking Link"
                                         >
                                             <Link2 className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-9 w-9 rounded-xl hover:bg-primary/5 hover:shadow-xl text-slate-400 hover:text-primary transition-all active:scale-95"
-                                            onClick={() => copyRiderLink(order.id)}
-                                            title="Copy Rider Dispatch Link"
-                                        >
-                                            <Navigation className="h-4 w-4" />
                                         </Button>
                                     </div>
                                 </td>

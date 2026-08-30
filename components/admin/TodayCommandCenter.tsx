@@ -68,7 +68,7 @@ export default function TodayCommandCenter() {
         {
             label: 'Products Low Stock',
             val: stats.low_stock,
-            href: '/admin/orders', // Redirect to orders for restock priority or upload
+            href: '/admin/upload', // Fixed: Leading to Inventory Hub instead of Orders
             icon: Package,
             color: 'primary',
             status: stats.low_stock > 0 ? 'RESTOCK' : 'SAFE'

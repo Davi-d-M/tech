@@ -17,6 +17,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
+import Link from 'next/link';
 
 interface IntelligenceData {
     onlineVisitors: number;
@@ -25,7 +26,7 @@ interface IntelligenceData {
     topSearches: { query: string; count: number; success: boolean }[];
     funnel: { step: string; count: number; dropoff: string }[];
     sectionDwell: { name: string; avgTime: number }[];
-    recentSignals: { created_at: string; event_type: string; target: string; url: string }[];
+    recentSignals: { created_at: string; event_type: string; target: string; url: string; metadata?: any }[];
 }
 
 export default function IntelligenceHub() {
@@ -209,7 +210,9 @@ export default function IntelligenceHub() {
                                     {sig.target || sig.url || 'Internal Operation'}
                                 </p>
                             </div>
-                            <button className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline flex items-center gap-2">Trace Journey <MousePointer2 size={12} /></button>
+                            <Link href={`/admin/customers/${sig.metadata?.phone || '0700000000'}/journey`}>
+                                <button className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline flex items-center gap-2">Trace Journey <MousePointer2 size={12} /></button>
+                            </Link>
                         </div>
                     ))}
                 </div>
