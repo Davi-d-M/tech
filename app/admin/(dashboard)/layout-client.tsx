@@ -143,6 +143,7 @@ export default function AdminLayoutClient({
       { name: 'Document Vault', href: '/admin/vault', icon: Lock, permission: 'can_view_revenue' },
     ]},
     { group: 'INTELLIGENCE', items: [
+      { name: 'Intelligence Hub', href: '/admin/analytics/intelligence', icon: Zap, permission: 'can_view_revenue' },
       { name: 'Deep Analytics', href: '/admin/analytics', icon: Activity, permission: 'can_view_revenue' },
       { name: 'AI Command Log', href: '/admin/messages?filter=ai', icon: Bot, permission: 'can_manage_customer_care' },
     ]},

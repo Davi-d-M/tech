@@ -110,6 +110,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
                     await supabase.from('active_visitors').upsert({
                         session_id: sessionId,
+                        visitor_id: localStorage.getItem('apex_visitor_id'), // Link to Intelligence identity
                         customer_name: session?.user?.email?.split('@')[0] || null,
                         current_page: pathname,
                         last_active_at: new Date().toISOString(),
@@ -135,6 +136,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
                     await supabase.from('active_visitors').upsert({
                         session_id: sessionId,
+                        visitor_id: localStorage.getItem('apex_visitor_id'), // Link to Intelligence identity
                         customer_name: session?.user?.email?.split('@')[0] || null,
                         current_page: pathname,
                         last_active_at: new Date().toISOString(),

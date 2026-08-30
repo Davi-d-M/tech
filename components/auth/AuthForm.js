@@ -87,6 +87,19 @@ export default function AuthForm({ initialMode = 'signin' }) {
 
       if (error) throw error
 
+      // 🧠 Signal Intelligence: Record Identity Bridge
+      try {
+          const { signalService } = await import('@/lib/signalService');
+          const { data: { user: newUser } } = await supabase.auth.getUser();
+          if (newUser) {
+              signalService.track({
+                  event_type: 'IDENTITY_BRIDGE',
+                  target: newUser.id,
+                  metadata: { method: 'email_password' }
+              });
+          }
+      } catch (e) { console.warn("Signal bridge failed", e); }
+
       setMessage('Logged in successfully!')
       router.push('/')
       return

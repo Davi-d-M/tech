@@ -40,6 +40,9 @@ interface Tutorial {
     excerpt: string;
 }
 
+// Phase 14: Dynamic SEO Meta
+export const revalidate = 60;
+
 export default function Product() {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
