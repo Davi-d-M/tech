@@ -921,7 +921,7 @@ export default function AdminSettingsPage() {
 
                                         <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
                                             <div className="flex items-center gap-3">
-                                                <Music className="h-5 w-5 text-slate-900" />
+                                                <Music className="h-5 w-5 text-foreground" />
                                                 <p className="text-xs font-black uppercase text-foreground">TikTok Developer Node</p>
                                             </div>
                                             <div className="space-y-2">

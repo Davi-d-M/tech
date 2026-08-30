@@ -588,7 +588,7 @@ export default function AdminAnalyticsPage() {
 
                         {/* Summary Stats */}
                         <div className="lg:col-span-4 space-y-8">
-                            <Card className="p-8 rounded-[2.5rem] bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden">
+                            <Card className="p-8 rounded-[2.5rem] bg-primary text-white border-none shadow-2xl relative overflow-hidden">
                                 <div className="relative z-10 space-y-6">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Signals Logged</p>
                                     <h3 className="text-5xl font-black tracking-tighter">{signals.length.toLocaleString()}</h3>

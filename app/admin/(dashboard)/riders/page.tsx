@@ -532,17 +532,17 @@ export default function AdminRidersPage() {
             )}
 
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-full max-w-lg px-6">
-                <div className="bg-slate-900 text-white p-6 rounded-[2.5rem] shadow-2xl flex items-center justify-between border border-white/10">
+                <div className="bg-white text-foreground p-6 rounded-[2.5rem] shadow-2xl flex items-center justify-between border border-slate-100">
                     <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-2xl bg-primary/20 flex items-center justify-center text-primary shadow-inner">
                             <ShieldAlert className="h-5 w-5" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Privileged Access</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Privileged Access</p>
                             <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Verification logging enabled.</p>
                         </div>
                     </div>
-                    <Button variant="ghost" className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-white" onClick={loadRiders}>Sync Data</Button>
+                    <Button variant="ghost" className="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-primary" onClick={loadRiders}>Sync Data</Button>
                 </div>
             </div>
         </div>

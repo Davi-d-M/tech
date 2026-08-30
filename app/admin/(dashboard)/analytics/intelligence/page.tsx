@@ -148,7 +148,7 @@ export default function IntelligenceHub() {
 
             {/* LIVE HUD */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card className="p-8 rounded-[3rem] bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden">
+                <Card className="p-8 rounded-[3rem] bg-primary text-white border-none shadow-2xl relative overflow-hidden">
                     <div className="relative z-10">
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Live Visitors</p>
                         <h3 className="text-5xl font-black tracking-tighter">{data?.onlineVisitors}</h3>
@@ -184,7 +184,7 @@ export default function IntelligenceHub() {
                         {data?.funnel.map((step, idx) => (
                             <div key={step.step} className="group relative">
                                 <div
-                                    className={cn("h-16 rounded-2xl flex items-center justify-between px-8 transition-all group-hover:scale-[1.02]", idx === 0 ? 'bg-slate-900 text-white' : 'bg-slate-50 text-foreground border border-slate-100')}
+                                    className={cn("h-16 rounded-2xl flex items-center justify-between px-8 transition-all group-hover:scale-[1.02]", idx === 0 ? 'bg-primary text-white' : 'bg-slate-50 text-foreground border border-slate-100')}
                                     style={{ width: `${100 - (idx * 15)}%`, marginLeft: `${idx * 2}%` }}
                                 >
                                     <div className="flex items-center gap-4">

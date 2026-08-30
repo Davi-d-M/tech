@@ -27,6 +27,8 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 import { socialService, Platform, PlatformResponse } from '@/lib/socialService';
+import WhatsAppPreview from '@/components/admin/marketing/WhatsAppPreview';
+import EmailPreview from '@/components/admin/marketing/EmailPreview';
 
 interface Integration {
     platform: Platform;
@@ -44,6 +46,9 @@ export default function SocialHubPage() {
     // Master Campaign Form
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
+    const [overrides, setOverrides] = React.useState<Partial<Record<Platform, { title?: string; description?: string }>>>({});
+    const [activeEditTab, setActiveEditTab] = React.useState<'master' | Platform>('master');
+
     const [selectedPlatforms, setSelectedPlatforms] = React.useState<Platform[]>(['facebook', 'instagram']);
     const [previewPlatform, setPreviewPlatform] = React.useState<Platform>('instagram');
 
@@ -73,15 +78,27 @@ export default function SocialHubPage() {
         setIsPublishing(true);
         setResults(null);
         try {
+            // Map selected platforms to their specific content (override or master)
+            // const payloads = selectedPlatforms.map(p => ({
+            //     platform: p,
+            //     title: overrides[p]?.title || title,
+            //     description: overrides[p]?.description || description
+            // }));
+
+            // In a real scenario, socialService.publishEverywhere might need to be updated to accept multiple payloads
+            // For now, we'll simulate the multi-content publish
             const res = await socialService.publishEverywhere({
-                title,
-                description,
+                title, // Fallback master
+                description, // Fallback master
                 platforms: selectedPlatforms,
-                media_type: 'image'
+                media_type: 'image',
+                // payloadOverrides: payloads // Hypothetical future API
             });
+
             setResults(res);
             setTitle('');
             setDescription('');
+            setOverrides({});
         } catch (e) {
             console.error("Publishing failure", e);
         } finally {
@@ -92,7 +109,7 @@ export default function SocialHubPage() {
     const platformIcons: Record<Platform, { icon: React.ElementType; color: string; bg: string }> = {
         facebook: { icon: Facebook, color: 'text-blue-600', bg: 'bg-blue-50' },
         instagram: { icon: Instagram, color: 'text-rose-500', bg: 'bg-rose-50' },
-        tiktok: { icon: Music, color: 'text-slate-900', bg: 'bg-slate-100' },
+        tiktok: { icon: Music, color: 'text-foreground', bg: 'bg-slate-100' },
         whatsapp: { icon: MessageCircle, color: 'text-emerald-500', bg: 'bg-emerald-50' },
         gmail: { icon: Globe, color: 'text-rose-600', bg: 'bg-rose-50' }
     };
@@ -145,26 +162,45 @@ export default function SocialHubPage() {
                 {/* MASTER COMPOSER */}
                 <Card className="lg:col-span-7 p-10 rounded-[3.5rem] bg-white border border-slate-100 shadow-sm space-y-10">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Create Global Campaign</h2>
-                        <span className="text-[9px] font-black text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 uppercase tracking-widest">Master Content Node</span>
+                        <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Content Composer</h2>
+                        <div className="flex gap-2 p-1 bg-slate-50 rounded-xl border border-slate-100">
+                            <button
+                                onClick={() => setActiveEditTab('master')}
+                                className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all", activeEditTab === 'master' ? "bg-white text-primary shadow-sm" : "text-slate-400")}
+                            >Master</button>
+                            <button
+                                onClick={() => setActiveEditTab(previewPlatform)}
+                                className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all", activeEditTab !== 'master' ? "bg-white text-primary shadow-sm" : "text-slate-400")}
+                            >Override: {previewPlatform}</button>
+                        </div>
                     </div>
 
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Campaign Mission Title</label>
+                            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                                {activeEditTab === 'master' ? 'Global Title' : `${activeEditTab.toUpperCase()} Specific Title`}
+                            </label>
                             <Input
-                                value={title}
-                                onChange={e => setTitle(e.target.value)}
+                                value={activeEditTab === 'master' ? title : (overrides[activeEditTab as Platform]?.title ?? title)}
+                                onChange={e => {
+                                    if (activeEditTab === 'master') setTitle(e.target.value);
+                                    else setOverrides(prev => ({ ...prev, [activeEditTab]: { ...prev[activeEditTab as Platform], title: e.target.value } }));
+                                }}
                                 placeholder="e.g. New iPhone 17 Pro Launch 🔥"
                                 className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-bold text-lg text-foreground"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Universal Caption (Master Copy)</label>
+                            <label className="text-[10px] font-black uppercase text-slate-400 ml-1">
+                                {activeEditTab === 'master' ? 'Global Caption' : `${activeEditTab.toUpperCase()} Specific Caption`}
+                            </label>
                             <textarea
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
+                                value={activeEditTab === 'master' ? description : (overrides[activeEditTab as Platform]?.description ?? description)}
+                                onChange={e => {
+                                    if (activeEditTab === 'master') setDescription(e.target.value);
+                                    else setOverrides(prev => ({ ...prev, [activeEditTab]: { ...prev[activeEditTab as Platform], description: e.target.value } }));
+                                }}
                                 className="w-full h-40 p-6 rounded-[2rem] bg-slate-50 border border-slate-100 text-foreground font-medium text-sm outline-none focus:ring-4 focus:ring-primary/5 transition-all resize-none"
                                 placeholder="Describe the elite essentials..."
                             />
@@ -208,14 +244,17 @@ export default function SocialHubPage() {
                 <div className="lg:col-span-5 space-y-10">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between px-4">
-                            <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] flex items-center gap-2"><Eye className="h-3 w-3" /> Real-time Preview</h3>
-                            <div className="flex gap-1 p-1 bg-white rounded-xl border border-slate-100 shadow-sm">
-                                {(['instagram', 'facebook', 'tiktok'] as Platform[]).map(p => (
+                            <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] flex items-center gap-2"><Eye className="h-3 w-3" /> Tactical Preview</h3>
+                            <div className="flex gap-1 p-1 bg-white rounded-xl border border-slate-100 shadow-sm overflow-x-auto no-scrollbar max-w-[250px]">
+                                {(['instagram', 'facebook', 'tiktok', 'whatsapp', 'gmail'] as Platform[]).map(p => (
                                     <button
                                         key={p}
-                                        onClick={() => setPreviewPlatform(p)}
+                                        onClick={() => {
+                                            setPreviewPlatform(p);
+                                            if (activeEditTab !== 'master') setActiveEditTab(p);
+                                        }}
                                         className={cn(
-                                            "p-2 rounded-lg transition-all",
+                                            "p-2 rounded-lg transition-all flex-shrink-0",
                                             previewPlatform === p ? "bg-slate-100 text-foreground shadow-inner" : "text-slate-300 hover:text-foreground"
                                         )}
                                     >
@@ -225,10 +264,10 @@ export default function SocialHubPage() {
                             </div>
                         </div>
 
-                        <Card className="rounded-[3.5rem] bg-white border border-slate-100 shadow-2xl overflow-hidden min-h-[500px] flex flex-col">
+                        <Card className="rounded-[3.5rem] bg-white border border-slate-100 shadow-2xl overflow-hidden min-h-[560px] flex flex-col">
                             {/* Instagram Style Preview */}
                             {previewPlatform === 'instagram' && (
-                                <div className="animate-in fade-in duration-500">
+                                <div className="animate-in fade-in duration-500 h-full flex flex-col">
                                     <div className="p-5 flex items-center gap-3 border-b border-slate-50">
                                         <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-amber-500 to-rose-500 p-0.5"><div className="h-full w-full rounded-full bg-white border-2 border-white overflow-hidden"><Zap className="h-full w-full bg-slate-100 text-primary p-1" /></div></div>
                                         <span className="text-[10px] font-black uppercase tracking-tight text-foreground">Apexstores_Kenya</span>
@@ -236,16 +275,16 @@ export default function SocialHubPage() {
                                     <div className="aspect-square bg-slate-50 flex items-center justify-center relative overflow-hidden">
                                         <div className="absolute inset-0 bg-primary/5 flex items-center justify-center"><Smartphone className="h-20 w-20 text-slate-200" /></div>
                                         <div className="relative z-10 text-center space-y-2 p-10">
-                                            <h4 className="text-xl font-black uppercase text-foreground leading-tight">{title || 'Payload Header'}</h4>
+                                            <h4 className="text-xl font-black uppercase text-foreground leading-tight">{overrides['instagram']?.title || title || 'Payload Header'}</h4>
                                         </div>
                                     </div>
-                                    <div className="p-6 space-y-3">
+                                    <div className="p-6 space-y-3 flex-1">
                                         <div className="flex gap-4">
                                             <Instagram className="h-5 w-5" /><Share2 className="h-5 w-5" /><Send className="h-5 w-5" />
                                         </div>
                                         <div className="text-[11px] font-medium text-slate-600 leading-relaxed italic">
                                             <span className="font-black text-foreground mr-2">Apexstores_Kenya</span>
-                                            {description || 'Establishing tactical description...'}
+                                            {overrides['instagram']?.description || description || 'Establishing tactical description...'}
                                             <span className="block mt-2 text-primary font-bold">#Apexstores #EliteTech #KenyaTech</span>
                                         </div>
                                     </div>
@@ -254,13 +293,13 @@ export default function SocialHubPage() {
 
                             {/* TikTok Style Preview */}
                             {previewPlatform === 'tiktok' && (
-                                <div className="animate-in slide-in-from-bottom-4 duration-500 bg-slate-900 text-white h-[500px] flex flex-col">
+                                <div className="animate-in slide-in-from-bottom-4 duration-500 bg-primary text-white h-[560px] flex flex-col">
                                     <div className="flex-1 relative flex items-center justify-center">
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
                                         <Music className="h-32 w-32 text-white/5 animate-pulse" />
                                         <div className="absolute bottom-10 left-6 right-16 z-20 space-y-4">
                                             <h4 className="text-sm font-black uppercase tracking-widest">@apexstores.ke</h4>
-                                            <p className="text-xs font-medium line-clamp-3">🚨 NEW TECH DROP 🚨 {description || 'Preparing mission brief...'}</p>
+                                            <p className="text-xs font-medium line-clamp-3">🚨 NEW TECH DROP 🚨 {overrides['tiktok']?.description || description || 'Preparing mission brief...'}</p>
                                             <div className="flex items-center gap-2">
                                                 <Music size={12} className="animate-spin" />
                                                 <span className="text-[10px] font-bold">Original Sound - Apex stores</span>
@@ -275,7 +314,7 @@ export default function SocialHubPage() {
                             )}
 
                             {previewPlatform === 'facebook' && (
-                                <div className="animate-in fade-in duration-500 p-6 space-y-6">
+                                <div className="animate-in fade-in duration-500 p-6 space-y-6 h-full">
                                      <div className="flex items-center gap-3">
                                         <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-primary"><Facebook size={20} /></div>
                                         <div>
@@ -283,23 +322,40 @@ export default function SocialHubPage() {
                                             <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Sponsored • Global</p>
                                         </div>
                                     </div>
-                                    <p className="text-sm font-medium text-slate-700 leading-relaxed">{description || 'Generating sales copy...'}</p>
+                                    <p className="text-sm font-medium text-slate-700 leading-relaxed">{overrides['facebook']?.description || description || 'Generating sales copy...'}</p>
                                     <div className="rounded-2xl bg-slate-50 border border-slate-100 overflow-hidden">
                                         <div className="aspect-video bg-slate-100 flex items-center justify-center text-slate-200"><Smartphone size={40} /></div>
                                         <div className="p-4 flex justify-between items-center bg-white border-t border-slate-100">
                                             <div className="text-left">
                                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">apexstores.co.ke</p>
-                                                <h5 className="text-sm font-black text-foreground uppercase truncate max-w-[200px]">{title || 'Tech Payload'}</h5>
+                                                <h5 className="text-sm font-black text-foreground uppercase truncate max-w-[200px]">{overrides['facebook']?.title || title || 'Tech Payload'}</h5>
                                             </div>
                                             <Button size="sm" className="h-9 px-4 rounded-xl bg-slate-100 text-foreground font-black uppercase text-[9px] border border-slate-200">Shop Now</Button>
                                         </div>
                                     </div>
                                 </div>
                             )}
+
+                            {previewPlatform === 'whatsapp' && (
+                                <WhatsAppPreview
+                                    imageUrl=""
+                                    body={overrides['whatsapp']?.description || description || 'Direct mission details...'}
+                                />
+                            )}
+
+                            {previewPlatform === 'gmail' && (
+                                <EmailPreview
+                                    productName={overrides['gmail']?.title || title || 'Gadget Protocol'}
+                                    productPrice={15000}
+                                    imageUrl=""
+                                    subject={overrides['gmail']?.title || title || 'Tactical Update'}
+                                    body={overrides['gmail']?.description || description || 'Establishing technical narrative...'}
+                                />
+                            )}
                         </Card>
                     </div>
 
-                    <Card className="p-8 rounded-[3rem] bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden">
+                    <Card className="p-8 rounded-[3rem] bg-primary text-white border-none shadow-2xl relative overflow-hidden">
                         <div className="relative z-10 flex flex-col gap-6">
                             <div className="flex items-center gap-3">
                                 <BarChart3 className="h-5 w-5 text-primary" />
@@ -323,7 +379,7 @@ export default function SocialHubPage() {
 
             {/* RESULTS MODAL (Tactical Response) */}
             {results && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-6">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-md p-6">
                     <Card className="max-w-xl w-full p-10 rounded-[3rem] bg-white shadow-2xl space-y-8 animate-in zoom-in-95 duration-500 text-left">
                         <div className="flex items-center gap-4">
                             <div className="h-14 w-14 rounded-3xl bg-primary/10 flex items-center justify-center text-primary shadow-inner"><Rocket size={28} /></div>

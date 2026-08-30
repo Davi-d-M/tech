@@ -136,7 +136,7 @@ export default function CustomerJourneyReplay() {
                         </div>
                     </Card>
 
-                    <Card className="p-8 rounded-[3rem] bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden">
+                    <Card className="p-8 rounded-[3rem] bg-primary text-white border-none shadow-2xl relative overflow-hidden">
                         <div className="relative z-10 space-y-6">
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Operational Intelligence</p>
                             <div className="space-y-4">
