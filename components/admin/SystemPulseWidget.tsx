@@ -21,7 +21,7 @@ export default function SystemPulseWidget() {
         const start = performance.now();
         try {
             // 1. Database Ping
-            const { data: dbCheck } = await supabase!.from('settings').select('key').limit(1);
+            await supabase!.from('settings').select('key').limit(1);
             const endDb = performance.now();
 
             // 2. Logistics Node Ping (Rider Grid)
@@ -32,9 +32,9 @@ export default function SystemPulseWidget() {
             // 3. API Key Audit (Live Status)
             const { data: settings } = await supabase!.from('settings').select('key, value');
 
-            const socialApis = settings?.find(s => s.key === 'social_apis')?.value as any || {};
-            const socialLinks = settings?.find(s => s.key === 'social_links')?.value as any || {};
-            const lockdown = settings?.find(s => s.key === 'system_lockdown')?.value as any || {};
+            const socialApis = (settings?.find(s => s.key === 'social_apis')?.value || {}) as Record<string, string>;
+            const socialLinks = (settings?.find(s => s.key === 'social_links')?.value || {}) as Record<string, string>;
+            const lockdown = (settings?.find(s => s.key === 'system_lockdown')?.value || {}) as Record<string, boolean>;
 
             setApiStatus({
                 whatsapp: (socialApis.whatsapp_token && socialApis.whatsapp_phone_id) ? 'active' : 'offline',

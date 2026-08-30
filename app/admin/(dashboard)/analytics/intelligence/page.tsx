@@ -19,6 +19,11 @@ import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 import Link from 'next/link';
 
+interface SearchIntelRecord {
+    query: string;
+    is_success: boolean;
+}
+
 interface IntelligenceData {
     onlineVisitors: number;
     registeredCount: number;
@@ -26,7 +31,7 @@ interface IntelligenceData {
     topSearches: { query: string; count: number; success: boolean }[];
     funnel: { step: string; count: number; dropoff: string }[];
     sectionDwell: { name: string; avgTime: number }[];
-    recentSignals: { created_at: string; event_type: string; target: string; url: string; metadata?: any }[];
+    recentSignals: { created_at: string; event_type: string; target: string; url: string; metadata?: Record<string, unknown> }[];
 }
 
 export default function IntelligenceHub() {
@@ -46,7 +51,7 @@ export default function IntelligenceHub() {
             const { data: searchIntel } = await supabase.from('search_intelligence').select('*').order('created_at', { ascending: false }).limit(20);
 
             const searchMap: Record<string, { count: number; success: boolean }> = {};
-            (searchIntel || []).forEach((curr) => {
+            ((searchIntel || []) as SearchIntelRecord[]).forEach((curr) => {
                 const q = curr.query;
                 if (!searchMap[q]) {
                     searchMap[q] = { count: 0, success: curr.is_success };
@@ -81,7 +86,7 @@ export default function IntelligenceHub() {
                     { name: 'PRODUCTS', avgTime: 45 },
                     { name: 'BLOG', avgTime: 8 }
                 ],
-                recentSignals: (recentSigs || []) as { created_at: string; event_type: string; target: string; url: string }[]
+                recentSignals: (recentSigs || []) as { created_at: string; event_type: string; target: string; url: string; metadata?: Record<string, unknown> }[]
             });
         } finally {
             setLoading(false);
