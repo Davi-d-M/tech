@@ -42,9 +42,10 @@ export default async function AdminLayout({
 
   return (
     <AdminLayoutClient
-        role={sessionData.role as 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer'}
+        role={sessionData.role as 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer' | 'rider'}
         email={userEmail}
         permissions={sessionData.permissions as unknown as Permissions}
+        tenant_id={sessionData.tenant_id}
         supplier_id={sessionData.supplier_id}
     >
       {children}

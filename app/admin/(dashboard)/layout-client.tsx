@@ -50,9 +50,10 @@ import { logAuditAction } from '@/lib/auditService';
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;
-  role: 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer';
+  role: 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer' | 'rider';
   email: string;
   permissions: Permissions;
+  tenant_id: string | null;
   supplier_id?: string | null;
 }
 
@@ -61,6 +62,7 @@ export default function AdminLayoutClient({
   role,
   email,
   permissions,
+  tenant_id,
   supplier_id,
 }: AdminLayoutClientProps) {
   const router = useRouter();
@@ -73,6 +75,12 @@ export default function AdminLayoutClient({
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   useEffect(() => {
+      // Role-based Redirection
+      if (role === 'rider' && !pathname.startsWith('/rider/dashboard')) {
+          router.push('/rider/dashboard');
+          return;
+      }
+
       const savedSidebar = localStorage.getItem('admin_sidebar_collapsed');
 
       if (savedSidebar === 'true') {
@@ -87,7 +95,7 @@ export default function AdminLayoutClient({
       };
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [pathname, role, router]);
 
   const toggleSidebarCollapse = () => {
       const next = !isSidebarCollapsed;
@@ -176,7 +184,7 @@ export default function AdminLayoutClient({
   };
 
   return (
-    <AdminProvider role={role} email={email} permissions={permissions} supplier_id={supplier_id}>
+    <AdminProvider role={role} email={email} permissions={permissions} tenant_id={tenant_id} supplier_id={supplier_id}>
       <AdminErrorBoundary>
           <div className="min-h-screen bg-background flex flex-col md:flex-row text-left">
 

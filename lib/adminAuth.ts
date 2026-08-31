@@ -59,10 +59,11 @@ export async function createSessionCookie(
     email: string,
     role: string = 'owner',
     permissions: Record<string, boolean | string[]> = {},
+    tenant_id: string | null = null,
     supplier_id: string | null = null
 ) {
   const token = crypto.randomUUID();
-  const payload = JSON.stringify({ email, role, permissions, supplier_id });
+  const payload = JSON.stringify({ email, role, permissions, tenant_id, supplier_id });
 
   const base64Payload = toBase64(payload);
 
@@ -77,6 +78,7 @@ export async function verifySessionCookie(value?: string): Promise<{
     email: string;
     role: string;
     permissions: Record<string, boolean | string[]>;
+    tenant_id: string | null;
     supplier_id?: string | null;
 } | null> {
   if (!value) return null;

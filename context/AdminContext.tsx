@@ -19,9 +19,10 @@ export interface Permissions {
 }
 
 interface AdminContextProps {
-  role: 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer';
+  role: 'owner' | 'admin' | 'staff' | 'supplier' | 'viewer' | 'rider';
   email: string;
   permissions: Permissions;
+  tenant_id: string | null;
   supplier_id?: string | null; // NEW: For multi-supplier isolation
 }
 
@@ -31,6 +32,7 @@ export const AdminProvider = ({
     children,
     role = 'viewer',
     email = '',
+    tenant_id = null,
     supplier_id = null,
     permissions = {
         can_view_revenue: false,
@@ -51,10 +53,17 @@ export const AdminProvider = ({
     role?: AdminContextProps['role'],
     email?: string,
     supplier_id?: string | null,
-    permissions?: Permissions
+    permissions?: Permissions,
+    tenant_id?: string | null
 }) => {
   return (
-    <AdminContext.Provider value={{ role: role as AdminContextProps['role'], email, permissions: permissions as Permissions, supplier_id }}>
+    <AdminContext.Provider value={{
+        role: role as AdminContextProps['role'],
+        email,
+        permissions: permissions as Permissions,
+        tenant_id,
+        supplier_id
+    }}>
       {children}
     </AdminContext.Provider>
   );

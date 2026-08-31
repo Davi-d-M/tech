@@ -10,6 +10,7 @@ import android.net.NetworkRequest
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.webkit.JavascriptInterface
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -48,6 +49,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.material3.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.RocketLaunch
+import androidx.compose.foundation.layout.Arrangement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -59,6 +67,9 @@ class MainActivity : FragmentActivity() {
     private var titanWebView: WebView? = null
     
     private var appUrl by mutableStateOf("https://tech-wb1o.onrender.com/admin")
+    private var tenantId by mutableStateOf<String?>(null)
+    private var riderRole by mutableStateOf<String?>(null)
+    private var deviceId: String = ""
 
     private var memberPassBitmap by mutableStateOf<Bitmap?>(null)
 
@@ -90,6 +101,7 @@ class MainActivity : FragmentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         
+        deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID) ?: "UNKNOWN_TITAN"
         executor = ContextCompat.getMainExecutor(this)
         
         var isAuthorized by mutableStateOf(false)
@@ -127,24 +139,31 @@ class MainActivity : FragmentActivity() {
         biometricPrompt.authenticate(promptInfo)
 
         lifecycleScope.launch(Dispatchers.IO) {
+            val masterKey = MasterKey.Builder(this@MainActivity)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            val securePrefs = EncryptedSharedPreferences.create(
+                this@MainActivity,
+                "titan_secure_storage",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+            
+            tenantId = securePrefs.getString("tenant_id", null)
+            riderRole = securePrefs.getString("user_role", null)
+
             val config = SupabaseNode.fetchBridgeConfig()
             if (config != null) {
                 val (domain, url) = config
-                val masterKey = MasterKey.Builder(this@MainActivity)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build()
-                val securePrefs = EncryptedSharedPreferences.create(
-                    this@MainActivity,
-                    "titan_secure_storage",
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                )
                 securePrefs.edit().putString("bridge_domain", domain).apply()
                 
                 withContext(Dispatchers.Main) {
-                    appUrl = "$url/admin"
-                    titanWebView?.loadUrl(appUrl)
+                    val path = if (riderRole == "RIDER") "rider/dashboard" else "admin"
+                    appUrl = "$url/$path"
+                    if (tenantId != null) {
+                        titanWebView?.loadUrl(appUrl)
+                    }
                 }
             }
         }
@@ -176,11 +195,26 @@ class MainActivity : FragmentActivity() {
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     if (isAuthorized) {
-                        TitanHubWebBridge(appUrl, onWebViewCreated = { titanWebView = it })
+                        var provisioningSuccess by remember { mutableStateOf(false) }
 
-                        // Handle Intent after WebView is ready or via URL change
-                        LaunchedEffect(intent) {
-                            handleIntent(intent)
+                        if (tenantId == null) {
+                            BootstrapUI(onClaimed = { id, role ->
+                                provisioningSuccess = true
+                                tenantId = id
+                                riderRole = role
+                                // Delay slightly for animation before loading webview
+                            })
+                        } else if (provisioningSuccess) {
+                            ProvisioningSuccessUI(onComplete = {
+                                provisioningSuccess = false
+                            })
+                        } else {
+                            TitanHubWebBridge(appUrl, onWebViewCreated = { titanWebView = it })
+
+                            // Handle Intent after WebView is ready or via URL change
+                            LaunchedEffect(intent) {
+                                handleIntent(intent)
+                            }
                         }
 
                         // Phase 10: Titan Member Pass Overlay
@@ -296,6 +330,11 @@ class MainActivity : FragmentActivity() {
 
         // Sync Node Health (Battery)
         val batteryPct = getBatteryPercentage()
+        
+        lifecycleScope.launch(Dispatchers.IO) {
+            SupabaseNode.updateDevicePulse(deviceId, batteryPct)
+        }
+        
         titanWebView?.evaluateJavascript("javascript:if(window.onTitanNodePulse) window.onTitanNodePulse($batteryPct);", null)
     }
 
@@ -366,7 +405,9 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
     fun toggleTracking(active: Boolean) {
         if (!isTrustedOrigin()) return
         activity.runOnUiThread {
-            val intent = Intent(activity, LocationService::class.java)
+            val intent = Intent(activity, LocationService::class.java).apply {
+                putExtra("DEVICE_ID", Settings.Secure.getString(activity.contentResolver, Settings.Secure.ANDROID_ID))
+            }
             if (active) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     activity.startForegroundService(intent)
@@ -424,4 +465,144 @@ fun TitanHubWebBridge(url: String, onWebViewCreated: (WebView) -> Unit) {
             }
         }
     )
+}
+
+@Composable
+fun BootstrapUI(onClaimed: (String, String) -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var token by remember { mutableStateOf("") }
+    var loading by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.RocketLaunch,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            "Claim Apex Workspace",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Black,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            "Enter your invitation token to provision this device to your organization.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        Spacer(modifier = Modifier.height(48.dp))
+        OutlinedTextField(
+            value = token,
+            onValueChange = { token = it },
+            label = { Text("INVITATION TOKEN") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+            singleLine = true,
+            enabled = !loading
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = {
+                loading = true
+                scope.launch(Dispatchers.IO) {
+                    val result = SupabaseNode.claimInvitation(token)
+                    withContext(Dispatchers.Main) {
+                        if (result != null) {
+                            val (tenantId, role) = result
+                            val dId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "TITAN_NODE"
+                            
+                            // 1. Register Device in Organization Registry
+                            val regSuccess = SupabaseNode.registerDevice(
+                                tenantId, 
+                                dId, 
+                                "${Build.MANUFACTURER} ${Build.MODEL}", 
+                                "Android ${Build.VERSION.RELEASE}"
+                            )
+
+                            if (regSuccess) {
+                                val masterKey = MasterKey.Builder(context)
+                                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                    .build()
+                                val securePrefs = EncryptedSharedPreferences.create(
+                                    context,
+                                    "titan_secure_storage",
+                                    masterKey,
+                                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                                )
+                                securePrefs.edit()
+                                    .putString("tenant_id", tenantId)
+                                    .putString("user_role", role)
+                                    .apply()
+                                
+                                loading = false
+                                onClaimed(tenantId, role)
+                            } else {
+                                loading = false
+                                Toast.makeText(context, "Provisioning Failure: Registry Offline", Toast.LENGTH_LONG).show()
+                            }
+                        } else {
+                            loading = false
+                            Toast.makeText(context, "Invalid or Expired Token", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp),
+            shape = MaterialTheme.shapes.large,
+            enabled = token.isNotEmpty() && !loading
+        ) {
+            if (loading) CircularProgressIndicator(color = Color.White)
+            else Text("ACTIVATE TITAN NODE", fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun ProvisioningSuccessUI(onComplete: () -> Unit) {
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(3000)
+        onComplete()
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = null,
+                modifier = Modifier.size(100.dp),
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                "TITAN NODE ACTIVATED",
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White,
+                fontWeight = FontWeight.Black,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                "Organization Provisioning Complete",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
 }

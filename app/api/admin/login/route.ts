@@ -72,8 +72,11 @@ export async function POST(request: Request) {
         can_manage_media: true
     };
 
+    // Get Apex Master Tenant ID
+    const { data: masterTenant } = await supabase.from('tenants').select('id').eq('slug', 'apex-master').single();
+
     const response = NextResponse.json({ ok: true, role: 'owner' });
-    const sessionValue = await createSessionCookie('owner@apexstores.com', 'owner', ownerPermissions);
+    const sessionValue = await createSessionCookie('owner@apexstores.com', 'owner', ownerPermissions, masterTenant?.id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -101,7 +104,7 @@ export async function POST(request: Request) {
 
     const { data: staffData, error: staffError } = await supabase
         .from('staff')
-        .select('role, supplier_id, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
+        .select('role, tenant_id, supplier_id, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
         .eq('id', data.user.id)
         .maybeSingle();
 
@@ -123,7 +126,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    const sessionValue = await createSessionCookie(email.trim(), staffData.role, permissions, staffData.supplier_id);
+    const sessionValue = await createSessionCookie(email.trim(), staffData.role, permissions, staffData.tenant_id, staffData.supplier_id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -156,7 +159,7 @@ export async function POST(request: Request) {
 
     const { data: staffData, error: staffError } = await supabase
         .from('staff')
-        .select('id, role, pin, supplier_id, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
+        .select('id, role, pin, tenant_id, supplier_id, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
         .eq('email', (email || '').trim().toLowerCase())
         .single();
 
@@ -187,7 +190,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    const sessionValue = await createSessionCookie(email.trim().toLowerCase(), staffData.role, permissions, staffData.supplier_id);
+    const sessionValue = await createSessionCookie(email.trim().toLowerCase(), staffData.role, permissions, staffData.tenant_id, staffData.supplier_id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -222,7 +225,7 @@ export async function POST(request: Request) {
 
     const { data: riderData, error: riderError } = await supabase
         .from('rider_status')
-        .select('id, rider_phone, pin, verification_status')
+        .select('id, rider_phone, pin, verification_status, tenant_id')
         .eq('rider_phone', normalizedPhone)
         .maybeSingle();
 
@@ -245,7 +248,16 @@ export async function POST(request: Request) {
     await supabase.from('login_attempts').insert([{ success: true, ip_address: ip }]);
     await supabase.from('login_attempts').delete().eq('success', false).eq('ip_address', ip);
 
-    return NextResponse.json({ ok: true, role: 'rider' });
+    const response = NextResponse.json({ ok: true, role: 'rider' });
+    const sessionValue = await createSessionCookie(normalizedPhone, 'rider', {}, riderData.tenant_id);
+    response.cookies.set('admin_session', sessionValue, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24,
+    });
+    return response;
   }
 
   return NextResponse.json({ error: 'Invalid login mode.' }, { status: 400 });
