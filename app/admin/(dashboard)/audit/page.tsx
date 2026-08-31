@@ -126,7 +126,7 @@ function DetailRenderer({ log }: { log: AuditLog }) {
 }
 
 export default function AdminAuditPage() {
-  const { role, permissions } = useAdmin();
+  const { role, permissions, tenant_id } = useAdmin();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -135,10 +135,16 @@ export default function AdminAuditPage() {
     if (!supabase) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('audit_logs')
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (role !== 'owner' && tenant_id) {
+          query = query.eq('tenant_id', tenant_id);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setLogs(data || []);
@@ -151,7 +157,7 @@ export default function AdminAuditPage() {
 
   useEffect(() => {
     fetchLogs();
-  }, []);
+  }, [tenant_id]);
 
   const clearLogs = async () => {
       if (!supabase || !confirm("Clear all audit history? This cannot be undone.")) return;

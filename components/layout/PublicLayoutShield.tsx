@@ -35,6 +35,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
     const { settings: hookSettings } = useSettings();
     const settings = initialSettings || hookSettings;
     const isAdmin = pathname?.startsWith('/admin');
+    const isRider = pathname?.startsWith('/rider');
 
     // 0. Dynamic Favicon
     useEffect(() => {
@@ -155,7 +156,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
         return () => clearInterval(interval);
     }, [pathname, isAdmin]);
 
-    if (isAdmin) {
+    if (isAdmin || isRider) {
         return <main className="flex-grow">{children}</main>;
     }
 

@@ -85,7 +85,7 @@ const initialManualOrder: ManualOrderForm = {
 };
 
 export default function AdminOrdersPage() {
-  const { role, email } = useAdmin();
+  const { role, email, tenant_id } = useAdmin();
   const [orders, setOrders] = React.useState<OrderRecord[]>([]);
   const [products, setProducts] = React.useState<{ id: number; name: string; price: number; cost_price: number; stock: number; variant_stock: Record<string, number> }[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -135,9 +135,17 @@ export default function AdminOrdersPage() {
     setIsLoading(true);
 
     try {
+      let ordersQuery = supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false });
+      let productsQuery = supabase.from('products').select('id, name, price, cost_price, stock, variant_stock');
+
+      if (role !== 'owner' && tenant_id) {
+          ordersQuery = ordersQuery.eq('tenant_id', tenant_id);
+          productsQuery = productsQuery.eq('tenant_id', tenant_id);
+      }
+
       const [ordersRes, productsRes] = await Promise.all([
-          supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }),
-          supabase.from('products').select('id, name, price, cost_price, stock, variant_stock')
+          ordersQuery,
+          productsQuery
       ]);
 
       if (ordersRes.error) throw ordersRes.error;
@@ -419,7 +427,8 @@ export default function AdminOrdersPage() {
         payment_method: manualOrder.payment_method,
         note: manualOrder.note.trim() || null,
         product_id: targetProductId,
-        captured_by: email || 'system'
+        captured_by: email || 'system',
+        tenant_id: tenant_id
     };
 
     const { error } = await supabase.from('orders').insert([orderData]);

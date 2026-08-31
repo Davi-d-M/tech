@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import { useAdmin } from '@/context/AdminContext';
 
 interface Mission {
     id: string;
@@ -30,32 +31,36 @@ interface Mission {
 
 export default function RiderDashboard() {
     const router = useRouter();
+    const { email: riderPhone, tenant_id } = useAdmin();
     const [loading, setLoading] = React.useState(true);
     const [missions, setMissions] = React.useState<Mission[]>([]);
     const [stats, setStats] = React.useState({ completed: 0, earnings: 0 });
 
     const fetchMissions = React.useCallback(async () => {
         setLoading(true);
-        if (!supabase) return;
+        if (!supabase || !riderPhone) return;
         try {
-            // In a real scenario, we'd filter by the authenticated rider's phone
-            const { data } = await supabase
+            // Securely filter by current rider's phone and tenant
+            let query = supabase
                 .from('orders')
                 .select('*')
+                .eq('rider_phone', riderPhone)
+                .eq('tenant_id', tenant_id)
                 .in('status', ['Dispatched', 'Processing', 'Delivered'])
-                .order('created_at', { ascending: false })
-                .limit(5);
+                .order('created_at', { ascending: false });
+
+            const { data } = await query.limit(10);
 
             setMissions((data as Mission[]) || []);
 
             const completed = (data || []).filter(m => m.status === 'Delivered').length;
-            const earnings = (data || []).filter(m => m.status === 'Delivered').reduce((s) => s + 450, 0); // Flat KSh 450/drop for demo
+            const earnings = (data || []).filter(m => m.status === 'Delivered').reduce((s) => s + 450, 0); // Flat KSh 450/drop
 
             setStats({ completed, earnings });
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [riderPhone]);
 
     React.useEffect(() => {
         fetchMissions();

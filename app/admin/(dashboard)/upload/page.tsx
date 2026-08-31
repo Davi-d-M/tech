@@ -133,7 +133,7 @@ export default function AdminUploadPage() {
 }
 
 function UploadContent() {
-  const { role, email } = useAdmin();
+  const { role, email, tenant_id } = useAdmin();
   const { settings } = useSettings();
   const [activeTab, setActiveTab] = useState<'live' | 'proposals'>('live');
   const [form, setForm] = useState(initialForm);
@@ -200,10 +200,16 @@ function UploadContent() {
     if (!supabase) return;
     try {
       setLoadingProducts(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('products')
         .select('*')
         .order('id', { ascending: false });
+
+      if (role !== 'owner' && tenant_id) {
+          query = query.eq('tenant_id', tenant_id);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setProducts(data || []);
@@ -469,7 +475,8 @@ function UploadContent() {
           height_cm: Number(form.height_cm) || null,
           wholesale_price: Number(form.wholesale_price) || null,
           wholesale_min_qty: Number(form.wholesale_min_qty),
-          wholesale_stock_reserve: Number(form.wholesale_stock_reserve)
+          wholesale_stock_reserve: Number(form.wholesale_stock_reserve),
+          tenant_id: tenant_id
       };
 
       if (editingId) {

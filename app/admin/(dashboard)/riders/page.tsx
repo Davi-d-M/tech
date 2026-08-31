@@ -62,7 +62,7 @@ interface MissionHistory {
 }
 
 export default function AdminRidersPage() {
-    const { role, email, permissions } = useAdmin();
+    const { role, email, permissions, tenant_id } = useAdmin();
     const [riders, setRiders] = React.useState<Rider[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
     const [searchQuery, setSearchQuery] = React.useState('');
@@ -76,10 +76,17 @@ export default function AdminRidersPage() {
         if (!supabase) return;
         setIsLoading(true);
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('rider_status')
                 .select('*')
                 .order('created_at', { ascending: false });
+
+            // Apply Tenant Isolation
+            if (role !== 'owner' && tenant_id) {
+                query = query.eq('tenant_id', tenant_id);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
             setRiders(data as Rider[]);
@@ -92,7 +99,7 @@ export default function AdminRidersPage() {
 
     React.useEffect(() => {
         loadRiders();
-    }, []);
+    }, [tenant_id]);
 
     const loadRiderHistory = async (phone: string) => {
         if (!supabase) return;

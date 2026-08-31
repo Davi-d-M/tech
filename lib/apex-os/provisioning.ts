@@ -40,7 +40,7 @@ export const provisioningEngine = {
 
         return {
             tenantId,
-            ownerInviteLink: `${window.location.origin}/invite/claim?token=${inviteToken}`
+            ownerInviteLink: `${window.location.origin}/onboarding/claim?token=${inviteToken}`
         };
     },
 
