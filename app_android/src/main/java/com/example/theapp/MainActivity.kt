@@ -22,6 +22,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -69,9 +70,17 @@ class MainActivity : FragmentActivity() {
     private var appUrl by mutableStateOf("https://tech-wb1o.onrender.com/admin")
     private var tenantId by mutableStateOf<String?>(null)
     private var riderRole by mutableStateOf<String?>(null)
+    private var tenantName by mutableStateOf<String?>(null)
     private var deviceId: String = ""
 
     private var memberPassBitmap by mutableStateOf<Bitmap?>(null)
+
+    val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        val allGranted = permissions.entries.all { it.value }
+        if (!allGranted) {
+            Toast.makeText(this, "Permissions required for tactical features.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     private val scannerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -122,6 +131,19 @@ class MainActivity : FragmentActivity() {
                     super.onAuthenticationSucceeded(result)
                     isAuthorized = true
                     isAuthenticating = false
+                    
+                    // Save auth timestamp
+                    val masterKey = MasterKey.Builder(this@MainActivity)
+                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                        .build()
+                    val securePrefs = EncryptedSharedPreferences.create(
+                        this@MainActivity,
+                        "titan_secure_storage",
+                        masterKey,
+                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                    )
+                    securePrefs.edit().putLong("last_biometric_auth", System.currentTimeMillis()).apply()
                 }
 
                 override fun onAuthenticationFailed() {
@@ -136,7 +158,26 @@ class MainActivity : FragmentActivity() {
             .setNegativeButtonText("Exit")
             .build()
 
-        biometricPrompt.authenticate(promptInfo)
+        // Smart Biometric: Check if we authenticated recently (2 hour grace period)
+        val masterKey = MasterKey.Builder(this)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        val securePrefs = EncryptedSharedPreferences.create(
+            this,
+            "titan_secure_storage",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+        val lastAuth = securePrefs.getLong("last_biometric_auth", 0L)
+        val now = System.currentTimeMillis()
+
+        if (now - lastAuth > 2 * 60 * 60 * 1000) {
+            biometricPrompt.authenticate(promptInfo)
+        } else {
+            isAuthorized = true
+            isAuthenticating = false
+        }
 
         lifecycleScope.launch(Dispatchers.IO) {
             val masterKey = MasterKey.Builder(this@MainActivity)
@@ -152,6 +193,7 @@ class MainActivity : FragmentActivity() {
             
             tenantId = securePrefs.getString("tenant_id", null)
             riderRole = securePrefs.getString("user_role", null)
+            tenantName = securePrefs.getString("tenant_name", "Unknown Org")
 
             val config = SupabaseNode.fetchBridgeConfig()
             if (config != null) {
@@ -198,10 +240,11 @@ class MainActivity : FragmentActivity() {
                         var provisioningSuccess by remember { mutableStateOf(false) }
 
                         if (tenantId == null) {
-                            BootstrapUI(onClaimed = { id, role ->
+                            BootstrapUI(onClaimed = { id, role, name ->
                                 provisioningSuccess = true
                                 tenantId = id
                                 riderRole = role
+                                tenantName = name
                                 // Delay slightly for animation before loading webview
                             })
                         } else if (provisioningSuccess) {
@@ -246,6 +289,39 @@ class MainActivity : FragmentActivity() {
                                             modifier = Modifier.padding(top = 16.dp)
                                         )
                                     }
+                                }
+                            }
+                        }
+
+                        // Active Node Status Badge
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            Surface(
+                                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                                shape = MaterialTheme.shapes.medium,
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+                                modifier = Modifier.height(32.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(6.dp)
+                                            .background(Color(0xFF10B981), shape = androidx.compose.foundation.shape.CircleShape)
+                                    )
+                                    Text(
+                                        text = "Node: ${tenantName ?: "Apex Master"} | ${riderRole ?: "OWNER"}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    )
                                 }
                             }
                         }
@@ -370,7 +446,11 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
     fun triggerScanner(mode: String = "BARCODE") {
         if (!isTrustedOrigin()) return
         activity.runOnUiThread {
-            activity.launchScanner(mode)
+            if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                activity.launchScanner(mode)
+            } else {
+                activity.permissionLauncher.launch(arrayOf(android.Manifest.permission.CAMERA))
+            }
         }
     }
 
@@ -409,12 +489,22 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
                 putExtra("DEVICE_ID", Settings.Secure.getString(activity.contentResolver, Settings.Secure.ANDROID_ID))
             }
             if (active) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    activity.startForegroundService(intent)
+                val hasFine = ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                val hasCoarse = ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+                if (hasFine || hasCoarse) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        activity.startForegroundService(intent)
+                    } else {
+                        activity.startService(intent)
+                    }
+                    Toast.makeText(activity, "Titan Tracker Engaged", Toast.LENGTH_SHORT).show()
                 } else {
-                    activity.startService(intent)
+                    activity.permissionLauncher.launch(arrayOf(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    ))
                 }
-                Toast.makeText(activity, "Titan Tracker Engaged", Toast.LENGTH_SHORT).show()
             } else {
                 activity.stopService(intent)
                 Toast.makeText(activity, "Titan Tracker Offline", Toast.LENGTH_SHORT).show()
@@ -468,7 +558,7 @@ fun TitanHubWebBridge(url: String, onWebViewCreated: (WebView) -> Unit) {
 }
 
 @Composable
-fun BootstrapUI(onClaimed: (String, String) -> Unit) {
+fun BootstrapUI(onClaimed: (String, String, String) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var token by remember { mutableStateOf("") }
@@ -519,7 +609,7 @@ fun BootstrapUI(onClaimed: (String, String) -> Unit) {
                     val result = SupabaseNode.claimInvitation(token)
                     withContext(Dispatchers.Main) {
                         if (result != null) {
-                            val (tenantId, role) = result
+                            val (tenantId, role, name) = result
                             val dId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "TITAN_NODE"
                             
                             // 1. Register Device in Organization Registry
@@ -544,10 +634,11 @@ fun BootstrapUI(onClaimed: (String, String) -> Unit) {
                                 securePrefs.edit()
                                     .putString("tenant_id", tenantId)
                                     .putString("user_role", role)
+                                    .putString("tenant_name", name)
                                     .apply()
                                 
                                 loading = false
-                                onClaimed(tenantId, role)
+                                onClaimed(tenantId, role, name)
                             } else {
                                 loading = false
                                 Toast.makeText(context, "Provisioning Failure: Registry Offline", Toast.LENGTH_LONG).show()

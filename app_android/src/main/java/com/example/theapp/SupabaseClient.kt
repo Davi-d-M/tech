@@ -43,9 +43,9 @@ object SupabaseNode {
         }
     }
 
-    fun claimInvitation(token: String): Pair<String, String>? {
+    fun claimInvitation(token: String): Triple<String, String, String>? {
         val request = Request.Builder()
-            .url("$SUPABASE_URL/rest/v1/invitations?token=eq.$token&status=eq.Unused&select=tenant_id,role")
+            .url("$SUPABASE_URL/rest/v1/invitations?token=eq.$token&status=eq.Unused&select=tenant_id,role,tenants(name)")
             .addHeader("apikey", SUPABASE_KEY)
             .addHeader("Authorization", "Bearer $SUPABASE_KEY")
             .build()
@@ -59,6 +59,7 @@ object SupabaseNode {
                         val obj = jsonArray.getJSONObject(0)
                         val tenantId = obj.getString("tenant_id")
                         val role = obj.getString("role")
+                        val tenantName = obj.getJSONObject("tenants").getString("name")
                         
                         // 2. Mark as Claimed
                         val updatePayload = JSONObject().apply { put("status", "Claimed") }
@@ -71,7 +72,7 @@ object SupabaseNode {
                         
                         client.newCall(updateRequest).execute().use { updateResponse ->
                             if (updateResponse.isSuccessful) {
-                                Pair(tenantId, role)
+                                Triple(tenantId, role, tenantName)
                             } else null
                         }
                     } else null
