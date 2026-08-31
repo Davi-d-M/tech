@@ -54,8 +54,8 @@ class LocationService : Service() {
 
         try {
             fusedLocationClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper())
-        } catch (unlikely: SecurityException) {
-            // Handle error
+        } catch (e: SecurityException) {
+            println("TITAN: Security Exception -> ${e.message}")
         }
     }
 
