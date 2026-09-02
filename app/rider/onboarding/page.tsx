@@ -239,6 +239,27 @@ export default function RiderOnboarding() {
                         <h1 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter text-foreground leading-none">TechPax <span className="text-primary italic">Driver</span></h1>
                         <p className="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] lg:tracking-[0.3em] mt-1.5 lg:mt-2">Move • Deliver • Earn</p>
                     </div>
+
+                    {/* Visual Progress Stepper */}
+                    <div className="flex items-center justify-center gap-2 mt-6">
+                        {[
+                            { id: 'welcome', label: 'Start' },
+                            { id: 'phone', label: 'Identity' },
+                            { id: 'identity', label: 'Docs' },
+                            { id: 'vehicle', label: 'Specs' },
+                            { id: 'verification', label: 'Check' },
+                            { id: 'agreement', label: 'Legal' },
+                            { id: 'pending', label: 'Review' }
+                        ].map((s, i, arr) => (
+                            <div key={s.id} className="flex items-center">
+                                <div className={cn(
+                                    "h-1.5 rounded-full transition-all duration-500",
+                                    step === s.id ? "w-8 bg-primary shadow-lg shadow-primary/20" :
+                                    arr.findIndex(x => x.id === step) > i ? "w-4 bg-emerald-500" : "w-2 bg-slate-100"
+                                )} />
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* 🚀 PROGRESSIVE FLOW */}

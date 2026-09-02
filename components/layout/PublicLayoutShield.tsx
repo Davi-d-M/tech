@@ -39,14 +39,13 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
     // 0. Dynamic Favicon
     useEffect(() => {
-        if (settings?.branding?.favicon_url) {
-            const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement || document.createElement('link');
-            link.type = 'image/x-icon';
-            link.rel = 'shortcut icon';
-            link.href = settings.branding.favicon_url;
-            document.getElementsByTagName('head')[0].appendChild(link);
-        }
-    }, [settings]);
+        if (!settings?.branding?.favicon_url || isAdmin || isRider) return;
+        const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement || document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        link.href = settings.branding.favicon_url;
+        document.getElementsByTagName('head')[0].appendChild(link);
+    }, [settings, isAdmin, isRider]);
 
     // 1. Referral Tracking
     useEffect(() => {
@@ -71,7 +70,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
     // 2. Live Visitor Heartbeat & Demand Prediction
     useEffect(() => {
-        if (!supabase || isAdmin) return;
+        if (!supabase || isAdmin || isRider) return;
 
         let sessionId = localStorage.getItem('apex_session_id');
         if (!sessionId) {
@@ -152,9 +151,9 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
         };
 
         sendHeartbeat();
-        const interval = setInterval(sendHeartbeat, 60000); // Pulse every 60s
+        const interval = setInterval(sendHeartbeat, 300000); // Pulse every 5 minutes (300s) to save battery
         return () => clearInterval(interval);
-    }, [pathname, isAdmin]);
+    }, [pathname, isAdmin, isRider]);
 
     if (isAdmin || isRider) {
         return <main className="flex-grow">{children}</main>;

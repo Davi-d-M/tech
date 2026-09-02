@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.layout.padding
+import android.util.Size
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
@@ -96,11 +97,14 @@ fun EdgeAiTriage(onTriageDetected: (String) -> Unit) {
 
                 cameraProviderFuture.addListener({
                     val cameraProvider = cameraProviderFuture.get()
-                    val preview = Preview.Builder().build().also {
-                        it.surfaceProvider = previewView.surfaceProvider
-                    }
+                    val preview = Preview.Builder()
+                        .setTargetResolution(Size(1280, 720))
+                        .build().also {
+                            it.surfaceProvider = previewView.surfaceProvider
+                        }
 
                     val imageAnalyzer = ImageAnalysis.Builder()
+                        .setTargetResolution(Size(1280, 720))
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
                         .also {
@@ -166,11 +170,14 @@ fun ShelfScanner(onLabelsDetected: (List<String>) -> Unit) {
 
                 cameraProviderFuture.addListener({
                     val cameraProvider = cameraProviderFuture.get()
-                    val preview = Preview.Builder().build().also {
-                        it.surfaceProvider = previewView.surfaceProvider
-                    }
+                    val preview = Preview.Builder()
+                        .setTargetResolution(Size(1280, 720))
+                        .build().also {
+                            it.surfaceProvider = previewView.surfaceProvider
+                        }
 
                     val imageAnalyzer = ImageAnalysis.Builder()
+                        .setTargetResolution(Size(1280, 720))
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
                         .also {
@@ -234,11 +241,14 @@ fun BarcodeScanner(onBarcodeDetected: (String) -> Unit) {
 
                 cameraProviderFuture.addListener({
                     val cameraProvider = cameraProviderFuture.get()
-                    val preview = Preview.Builder().build().also {
-                        it.surfaceProvider = previewView.surfaceProvider
-                    }
+                    val preview = Preview.Builder()
+                        .setTargetResolution(Size(1280, 720))
+                        .build().also {
+                            it.surfaceProvider = previewView.surfaceProvider
+                        }
 
                     val imageAnalyzer = ImageAnalysis.Builder()
+                        .setTargetResolution(Size(1280, 720))
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
                         .also {

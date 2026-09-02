@@ -86,6 +86,8 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
       title: "Logistics",
       links: [
         { href: "/rider/dashboard", label: "Rider Command" },
+        { href: "/onboarding/apply", label: "Become a Retailer" },
+        { href: "/supplier/onboarding", label: "Merchant Program" },
         { href: "/track", label: "Global Tracking" },
       ],
     },
