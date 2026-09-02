@@ -152,7 +152,7 @@ export default function AdminCustomersPage() {
             const lastOrderDate = new Date(c.lastOrder);
             const daysSinceLastOrder = (now.getTime() - lastOrderDate.getTime()) / (1000 * 3600 * 24);
 
-            if (c.totalSpend >= 100000 || c.totalOrders >= 10) segment = 'VIP Elite';
+            if (c.totalSpend >= 100000 || c.totalOrders >= 10) segment = 'VIP Premium';
             else if (c.totalSpend >= 50000) segment = 'High Value';
             else if (daysSinceLastOrder > 60) segment = 'At Risk';
             else if (daysSinceLastOrder > 120) segment = 'Dormant';
@@ -162,7 +162,7 @@ export default function AdminCustomersPage() {
         return {
             ...c,
             segment,
-            isVIP: segment === 'VIP Elite'
+            isVIP: segment === 'VIP Premium'
         };
     }).sort((a, b) => b.totalSpend - a.totalSpend);
   }, [orders, profiles]);
@@ -204,7 +204,7 @@ export default function AdminCustomersPage() {
         </div>
         <div className="flex gap-2">
             <div className="bg-white p-1 rounded-2xl border border-slate-100 shadow-sm flex overflow-x-auto no-scrollbar max-w-sm sm:max-w-none">
-                {['all', 'VIP Elite', 'Repeat Buyer', 'Partner'].map(f => (
+                {['all', 'VIP Premium', 'Repeat Buyer', 'Partner'].map(f => (
                     <button
                         key={f}
                         onClick={() => setSegmentFilter(f)}
@@ -256,7 +256,7 @@ export default function AdminCustomersPage() {
             <Crown className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Elite VIPs</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Premium VIPs</p>
             <h3 className="text-2xl font-black text-foreground mt-2 uppercase tracking-tighter">
               {customers.filter(c => c.isVIP).length}
             </h3>
@@ -339,7 +339,7 @@ export default function AdminCustomersPage() {
                     <td className="px-8 py-6">
                         <span className={cn(
                             "px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border",
-                            customer.segment === 'VIP Elite' ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" :
+                            customer.segment === 'VIP Premium' ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" :
                         customer.segment === 'Partner' ? "bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100" :
                         customer.segment === 'High Value' ? "bg-indigo-50 text-indigo-600 border-indigo-100" :
                             customer.segment === 'Repeat Buyer' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :

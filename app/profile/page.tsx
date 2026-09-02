@@ -359,7 +359,7 @@ export default function ProfilePage() {
             }
         }
     } else {
-        if (points >= 2000) { level = "Diamond"; nextTier = "Elite"; target = 5000; rankIcon = Gem; }
+        if (points >= 2000) { level = "Diamond"; nextTier = "Legend"; target = 5000; rankIcon = Gem; }
         else if (points >= 1000) { level = "Gold"; nextTier = "Diamond"; target = 2000; rankIcon = Crown; }
         else if (points >= 500) { level = "Silver"; nextTier = "Gold"; target = 1000; rankIcon = ShieldCheck; }
     }
@@ -479,7 +479,7 @@ export default function ProfilePage() {
 
       setProfile(prev => prev ? { ...prev, ...editForm } : null);
       setIsEditing(false);
-      alert("Elite profile synchronized successfully! 🛡️");
+      alert("Profile synchronized successfully! 🛡️");
     } catch (err: unknown) {
       console.error("Profile Update Error:", err);
       alert(`Failed to sync profile: ${(err as Error).message}`);
@@ -517,7 +517,7 @@ export default function ProfilePage() {
           total_price: order.total_price,
           created_at: order.created_at,
           payment_method: order.payment_method,
-          product_name: 'Apexstores Elite Tech'
+          product_name: 'Apexstores Premium Tech'
       } as Parameters<typeof generateReceiptPDF>[0]);
       doc.save(`Receipt_Apexstores_${order.id}.pdf`);
   };
@@ -708,7 +708,7 @@ export default function ProfilePage() {
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Trophy className="h-5 w-5" /></div>
                         <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground leading-none">Mission Control</h2>
                     </div>
-                    <p className="text-slate-500 font-medium text-lg max-w-2xl leading-relaxed italic">&quot;Execute daily tech assignments to accelerate your rank and unlock elite rewards.&quot;</p>
+                    <p className="text-slate-500 font-medium text-lg max-w-2xl leading-relaxed italic">&quot;Execute daily tech assignments to accelerate your rank and unlock premium rewards.&quot;</p>
                 </div>
             </div>
 
@@ -741,7 +741,7 @@ export default function ProfilePage() {
             <Card className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-6 group hover:shadow-xl transition-all">
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary"><StatsIcon className="h-5 w-5" /></div>
-                    <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Elite Insights</h3>
+                    <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Premium Insights</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-4 border-b border-slate-50 pb-4">
                     <div>
@@ -754,7 +754,7 @@ export default function ProfilePage() {
                     </div>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400">
-                    <span className="flex items-center gap-2"><Check className="h-3 w-3 text-primary" /> Elite Member Status</span>
+                    <span className="flex items-center gap-2"><Check className="h-3 w-3 text-primary" /> Member Status</span>
                     <button onClick={() => document.getElementById('order-summary-metrics')?.scrollIntoView({ behavior: 'smooth' })} className="text-primary hover:underline">Portfolio Stats ↓</button>
                 </div>
             </Card>
@@ -857,7 +857,7 @@ export default function ProfilePage() {
                                 { level: 'Explorer', icon: 'Star' },
                                 { level: 'Silver', icon: 'ShieldCheck' },
                                 { level: 'Gold', icon: 'Crown' },
-                                { level: 'Elite', icon: 'Gem' },
+                                { level: 'Premium', icon: 'Gem' },
                                 { level: 'Legend', icon: 'Trophy' },
                             ]).map((step) => {
                                 const Icon = IconMap[step.icon] || Star;
@@ -981,7 +981,7 @@ export default function ProfilePage() {
                             <div className="relative z-10 space-y-4">
                                 <Headphones className="h-10 w-10 text-primary" />
                                 <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-foreground">Global <br /> <span className="text-primary italic">Support Hub</span></h3>
-                                <p className="text-[10px] text-slate-400 font-medium italic">&quot;Real-time technical extraction. No bots, just elite engineers.&quot;</p>
+                                <p className="text-[10px] text-slate-400 font-medium italic">&quot;Real-time technical assistance. No bots, just expert engineers.&quot;</p>
                                 <Button
                                     onClick={() => setIsSupportFormOpen(true)}
                                     className="w-full h-12 rounded-xl bg-primary text-white font-black uppercase text-[9px] tracking-widest active:scale-95 shadow-lg shadow-primary/20"
@@ -1075,7 +1075,7 @@ export default function ProfilePage() {
 
                 {/* 📚 YOUR TECH LIBRARY */}
                 <section className="space-y-6">
-                    <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Elite Accomplishments</h2>
+                    <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Accomplishments</h2>
                     {achievements.length > 0 ? <AchievementBadges userId={user?.id || ''} /> : (
                         <div className="py-12 text-center bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-100">
                              <Trophy className="h-10 w-10 text-slate-200 mx-auto mb-4" />
@@ -1216,13 +1216,13 @@ export default function ProfilePage() {
                                 )}
                             </div>
                             <div className="text-left">
-                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-2 text-foreground">Tactical <br /> <span className="text-primary italic">Drop Point</span></h3>
+                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-2 text-foreground">Delivery <br /> <span className="text-primary italic">Location</span></h3>
                                 <p className="text-slate-500 text-[10px] font-medium leading-relaxed italic opacity-80">
-                                    {profile?.latitude ? "Precision coordinates updated. Your rider will extract your tech at this exact pin." : "Pin your exact delivery location on the map for zero-delay dispatch."}
+                                    {profile?.latitude ? "Precision coordinates updated. Your rider will deliver your tech at this exact pin." : "Pin your exact delivery location on the map for zero-delay dispatch."}
                                 </p>
                             </div>
                             <Button className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl active:scale-95 transition-all shadow-primary/20">
-                                {profile?.latitude ? "Update Pinned Location" : "Open Tactical Map"}
+                                {profile?.latitude ? "Update Pinned Location" : "Open Map"}
                             </Button>
                         </div>
                         <Zap className="absolute -bottom-10 -right-10 h-32 w-32 text-slate-50 rotate-12" />
@@ -1367,7 +1367,7 @@ export default function ProfilePage() {
                                 <Zap className="h-3 w-3 text-primary animate-pulse" />
                             </div>
                         </div>
-                        <Button onClick={handleShareReferral} className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase text-[10px] tracking-widest shadow-xl transition-all shadow-primary/20 active:scale-95">WhatsApp Elite Invite</Button>
+                        <Button onClick={handleShareReferral} className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase text-[10px] tracking-widest shadow-xl transition-all shadow-primary/20 active:scale-95">Invite Friends</Button>
                     </div>
                     <Users className="absolute -bottom-10 -left-10 h-64 w-64 text-primary/5 -z-0 rotate-12" />
                 </div>

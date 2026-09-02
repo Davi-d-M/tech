@@ -444,8 +444,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     {isAdding ? 'Syncing...' : justAdded ? 'Added to Bag!' : 'Add to Bag'}
                   </Button>
 
-                  <div className="grid grid-cols-3 gap-3 text-center text-[9px] font-black uppercase tracking-tighter text-slate-400 pt-4">
-                      <div className="p-2 bg-slate-50 rounded-xl">Free Delivery</div>
+                  <div className="grid grid-cols-2 gap-3 text-center text-[9px] font-black uppercase tracking-tighter text-slate-400 pt-4">
                       <div className="p-2 bg-slate-50 rounded-xl">Verified Tech</div>
                       <div className="p-2 bg-slate-50 rounded-xl">Secure Pay</div>
                   </div>

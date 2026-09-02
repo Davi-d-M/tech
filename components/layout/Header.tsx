@@ -127,6 +127,8 @@ function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
   );
 }
 
+import AnnouncementBar from "./AnnouncementBar";
+
 export default function Header({ initialSettings }: { initialSettings?: StoreSettings }) {
   const { cart } = useCart();
   const { wishlist } = useWishlist();
@@ -266,7 +268,7 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
       setIsSearchOpen(false);
   };
 
-  const navItems = [
+  const navItems = settings?.navigation?.header_links || [
     { href: "/shop", label: "Shop" },
     { href: "/shop/category/new-arrivals", label: "New" },
     { href: "/shop/category/sale", label: "Sale" },
@@ -276,6 +278,8 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
   ];
 
   return (
+    <>
+    <AnnouncementBar />
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         isScrolled
@@ -586,5 +590,6 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
         )}
       </div>
     </header>
+    </>
   );
 }

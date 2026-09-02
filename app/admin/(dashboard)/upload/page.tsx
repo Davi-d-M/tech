@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useMemo, useState, useEffect, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -196,7 +197,7 @@ function UploadContent() {
 
   const canManageInventory = role === 'staff' || role === 'admin' || role === 'owner';
 
-  const fetchProducts = async () => {
+  const fetchProducts = React.useCallback(async () => {
     if (!supabase) return;
     try {
       setLoadingProducts(true);
@@ -218,7 +219,7 @@ function UploadContent() {
     } finally {
       setLoadingProducts(false);
     }
-  };
+  }, [role, tenant_id]);
 
   useEffect(() => {
     if (supabase) {
@@ -233,7 +234,7 @@ function UploadContent() {
     };
 
     return () => { delete (window as Window & { onTitanScan?: (sku: string) => void }).onTitanScan; };
-  }, []);
+  }, [fetchProducts]);
 
   const triggerTitanScanner = () => {
     if ((window as Window & { TitanNode?: { triggerScanner: () => void } }).TitanNode?.triggerScanner) {

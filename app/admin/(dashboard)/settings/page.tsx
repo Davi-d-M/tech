@@ -34,7 +34,8 @@ import {
     MapPin,
     Bot,
     Share2 as Facebook,
-    Music
+    Music,
+    X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,15 +48,61 @@ const DEFAULTS = {
     homepage: { hero_image_url: "", hero_starting_price: 4500, hero_badge_text: "The New Era of Tech is Here", hero_visual_label: "Apex Premium Series" },
     shipping: { nairobi_cbd_label: "Nairobi CBD / Local", nairobi_cbd: 0, nairobi_outskirts_label: "Nairobi Outskirts", nairobi_outskirts: 300, upcountry_label: "Upcountry / Major Towns", upcountry: 500 },
     logistics: { dispatch_zones: ["CBD", "Westlands", "Kilimani", "Lavington", "Kileleshwa", "Karen", "Langata", "South C", "South B", "Embakasi", "Roysambu", "Kasarani", "Kahawa", "Githurai", "Zimmerman", "Utawala", "Syokimau", "Kitengela", "Rongai", "Ngong", "Kikuyu", "Thika Road", "Mombasa Road"] },
-    catalog: { categories: [{ id: 'airpods', label: 'Elite Audio' }, { id: 'chargers', label: 'Super Chargers' }, { id: 'cases', label: 'Cases' }, { id: 'watches', label: 'Watches' }, { id: 'accessories', label: 'Others' }] },
+    catalog: { categories: [{ id: 'airpods', label: 'Premium Audio' }, { id: 'chargers', label: 'Super Chargers' }, { id: 'cases', label: 'Cases' }, { id: 'watches', label: 'Watches' }, { id: 'accessories', label: 'Others' }] },
     promotions: { flash_sale_text: 'Flash Sale: 20% OFF All Tech!', discount_percent: 20, is_active: true, flash_sale_end: '' },
     theme_config: { primary: "#F5A000", secondary: "#0F172A", accent: "#F5A000", custom_css: "" },
-    seo_config: { title: "Apexstores | Elite Tech", description: "Premium tech store in Nairobi.", keywords: "AirPods, Chargers, iPhone", og_image: "" },
+    seo_config: { title: "Apexstores | Premium Tech", description: "Premium tech store in Nairobi.", keywords: "AirPods, Chargers, iPhone", og_image: "" },
     social_links: { instagram: "", tiktok: "", facebook: "", x: "", youtube: "" },
     social_apis: { meta_pixel_id: "", whatsapp_token: "", whatsapp_phone_id: "", instagram_access_token: "" },
     store_info: { name: "APEXSTORES", hours: "9am - 6pm", google_maps: "", footer_copy: "© 2026 Apexstores™" },
-    ai_config: { build_setup_limit: 5000, assistant_name: "Apex AI", response_style: "Tactical" },
-    bridge_config: { trusted_domain: "tech-wb1o.onrender.com", production_url: "https://tech-wb1o.onrender.com" }
+    ai_config: { build_setup_limit: 5000, assistant_name: "Apex AI", response_style: "Professional" },
+    bridge_config: { trusted_domain: "tech-wb1o.onrender.com", production_url: "https://tech-wb1o.onrender.com" },
+    layout: {
+        homepage_sections: [
+            { id: 'hero', label: 'Premium Hero', visible: true, order: 1 },
+            { id: 'promotions', label: 'Flash Sale Banner', visible: true, order: 2 },
+            { id: 'products', label: 'Tech Catalog', visible: true, order: 3 },
+            { id: 'personalized-feed', label: 'Personalized Recommendations', visible: true, order: 4 },
+            { id: 'blog', label: 'Tech Library (Blog)', visible: true, order: 5 },
+            { id: 'cta', label: 'Fast Power CTA', visible: true, order: 6 },
+        ]
+    },
+    navigation: {
+        header_links: [
+            { label: 'Shop', href: '/shop' },
+            { label: 'New', href: '/shop/category/new-arrivals' },
+            { label: 'Sale', href: '/shop/category/sale' },
+            { label: 'Library', href: '/blog' },
+            { label: 'Warranty', href: '/warranty' },
+            { label: 'Track', href: '/track' }
+        ],
+        footer_sections: [
+            {
+                title: "Shop",
+                links: [
+                    { href: "/shop", label: "All Products" },
+                    { href: "/shop/category/new-arrivals", label: "New Arrivals" },
+                    { href: "/shop/category/sale", label: "Sale" },
+                    { href: "/shop/category/featured", label: "Featured" },
+                ],
+            }
+        ]
+    },
+    globals: {
+        announcement_bar: {
+            text: "FREE DISPATCH FOR ORDERS OVER KSH 10,000! 🚚",
+            enabled: false,
+            bg_color: "#F5A000",
+            text_color: "#FFFFFF"
+        }
+    },
+    content: {
+        privacy_policy: "",
+        terms_and_conditions: "",
+        about_us: "",
+        cta_title: "Need Fast .Power?",
+        cta_subtitle: "Our authentic charging kits deliver 0-100% in record time. Safe, verified, and guaranteed for your device."
+    }
 };
 
 interface FeatureToggles {
@@ -74,7 +121,7 @@ interface SocialApis {
     whatsapp_flow_support_id?: string;
 }
 
-type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced' | 'integrations';
+type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced' | 'integrations' | 'layout' | 'navigation' | 'content';
 
 export default function AdminSettingsPage() {
     const { email } = useAdmin();
@@ -95,6 +142,10 @@ export default function AdminSettingsPage() {
     const [store, setStore] = useState(DEFAULTS.store_info);
     const [aiConfig, setAiConfig] = useState(DEFAULTS.ai_config);
     const [bridgeConfig, setBridgeConfig] = useState(DEFAULTS.bridge_config);
+    const [layout, setLayout] = useState(DEFAULTS.layout);
+    const [navigation, setNavigation] = useState(DEFAULTS.navigation);
+    const [globals, setGlobals] = useState(DEFAULTS.globals);
+    const [content, setContent] = useState(DEFAULTS.content);
     const [socialApis, setSocialApis] = useState<SocialApis>(DEFAULTS.social_apis);
     const [features, setFeatures] = useState<FeatureToggles>({
         ai_concierge_enabled: true,
@@ -147,6 +198,10 @@ export default function AdminSettingsPage() {
                     if (item.key === 'store_info') setStore(item.value as typeof DEFAULTS.store_info);
                     if (item.key === 'ai_config') setAiConfig(item.value as typeof DEFAULTS.ai_config);
                     if (item.key === 'bridge_config') setBridgeConfig(item.value as typeof DEFAULTS.bridge_config);
+                    if (item.key === 'layout') setLayout(item.value as typeof DEFAULTS.layout);
+                    if (item.key === 'navigation') setNavigation(item.value as typeof DEFAULTS.navigation);
+                    if (item.key === 'globals') setGlobals(item.value as typeof DEFAULTS.globals);
+                    if (item.key === 'content') setContent(item.value as typeof DEFAULTS.content);
                     if (item.key === 'social_apis') setSocialApis(item.value as SocialApis);
                     if (item.key === 'features') setFeatures(item.value as FeatureToggles);
                 });
@@ -250,6 +305,10 @@ export default function AdminSettingsPage() {
                 { key: 'catalog', value: catalog },
                 { key: 'features', value: features },
                 { key: 'ai_config', value: aiConfig },
+                { key: 'layout', value: layout },
+                { key: 'navigation', value: navigation },
+                { key: 'globals', value: globals },
+                { key: 'content', value: content },
                 { key: 'bridge_config', value: bridgeConfig },
                 { key: 'social_apis', value: socialApis },
             ];
@@ -313,6 +372,9 @@ export default function AdminSettingsPage() {
                             else if (activeTab === 'ai') handleSave('ai_config', aiConfig, true);
                             else if (activeTab === 'features') handleSave('features', features, true);
                             else if (activeTab === 'integrations') handleSave('social_apis', socialApis, true);
+                            else if (activeTab === 'layout') handleSave('layout', layout, true);
+                            else if (activeTab === 'navigation') handleSave('navigation', navigation, true);
+                            else if (activeTab === 'content') handleSave('content', content, true);
                             else if (activeTab === 'advanced') {
                                 handleSave('theme_config', theme, true);
                                 handleSave('bridge_config', bridgeConfig, true);
@@ -350,6 +412,9 @@ export default function AdminSettingsPage() {
                     { id: 'ai', label: 'AI Node', icon: Bot },
                     { id: 'features', label: 'Features', icon: Zap },
                     { id: 'integrations', label: 'Integrations', icon: Share2 },
+                    { id: 'layout', label: 'Layout', icon: Palette },
+                    { id: 'navigation', label: 'Navigation', icon: MapPin },
+                    { id: 'content', label: 'Legal & Content', icon: Info },
                     { id: 'advanced', label: 'Advanced', icon: Code },
                 ].map(tab => (
                     <button
@@ -851,8 +916,7 @@ export default function AdminSettingsPage() {
                                             onChange={e => setAiConfig({...aiConfig, response_style: e.target.value})}
                                             className="w-full h-14 rounded-2xl bg-secondary border-border px-4 text-xs font-black uppercase outline-none"
                                         >
-                                            <option value="Tactical">Tactical (Business-Ready)</option>
-                                            <option value="Elite">Elite (Premium/Formal)</option>
+                                            <option value="Professional">Professional (Premium/Formal)</option>
                                             <option value="Friendly">Friendly (Casual)</option>
                                         </select>
                                     </div>
@@ -945,6 +1009,282 @@ export default function AdminSettingsPage() {
                         </div>
                     )}
 
+                    {activeTab === 'layout' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 text-left">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Palette className="h-5 w-5 text-primary" /> Homepage Architecture</h2>
+                                <div className="space-y-4">
+                                    {layout.homepage_sections.sort((a,b) => a.order - b.order).map((section, idx) => (
+                                        <div key={section.id} className="p-6 rounded-3xl bg-secondary border border-border flex items-center justify-between group transition-all hover:border-primary/20">
+                                            <div className="flex items-center gap-6">
+                                                <div className="h-10 w-10 rounded-xl bg-white border border-border flex items-center justify-center font-black text-xs text-primary shadow-sm">{section.order}</div>
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-black uppercase text-foreground">{section.label}</p>
+                                                    <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest">ID: {section.id}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex gap-1">
+                                                    <button
+                                                        disabled={idx === 0}
+                                                        onClick={() => {
+                                                            const newSections = [...layout.homepage_sections];
+                                                            const target = newSections[idx];
+                                                            const above = newSections[idx - 1];
+                                                            const tempOrder = target.order;
+                                                            target.order = above.order;
+                                                            above.order = tempOrder;
+                                                            setLayout({...layout, homepage_sections: newSections});
+                                                        }}
+                                                        className="h-8 w-8 rounded-lg bg-white border border-border flex items-center justify-center text-muted-foreground hover:text-primary disabled:opacity-30 transition-all"
+                                                    >
+                                                        ↑
+                                                    </button>
+                                                    <button
+                                                        disabled={idx === layout.homepage_sections.length - 1}
+                                                        onClick={() => {
+                                                            const newSections = [...layout.homepage_sections];
+                                                            const target = newSections[idx];
+                                                            const below = newSections[idx + 1];
+                                                            const tempOrder = target.order;
+                                                            target.order = below.order;
+                                                            below.order = tempOrder;
+                                                            setLayout({...layout, homepage_sections: newSections});
+                                                        }}
+                                                        className="h-8 w-8 rounded-lg bg-white border border-border flex items-center justify-center text-muted-foreground hover:text-primary disabled:opacity-30 transition-all"
+                                                    >
+                                                        ↓
+                                                    </button>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        const newSections = [...layout.homepage_sections];
+                                                        newSections[idx].visible = !newSections[idx].visible;
+                                                        setLayout({...layout, homepage_sections: newSections});
+                                                    }}
+                                                    className={cn(
+                                                        "w-12 h-6 rounded-full transition-all relative p-1 flex items-center shadow-inner",
+                                                        section.visible ? "bg-emerald-500" : "bg-slate-200"
+                                                    )}
+                                                >
+                                                    <div className={cn(
+                                                        "h-4 w-4 rounded-full bg-white shadow-sm transition-all",
+                                                        section.visible ? "translate-x-6" : "translate-x-0"
+                                                    )} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Zap className="h-5 w-5 text-primary" /> Announcement Bar</h2>
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-1">
+                                            <p className="text-xs font-black uppercase text-foreground">Global Visibility</p>
+                                            <p className="text-[10px] text-muted-foreground font-medium italic">Display a sticky alert at the top of every page.</p>
+                                        </div>
+                                        <button
+                                            onClick={() => setGlobals({...globals, announcement_bar: {...globals.announcement_bar, enabled: !globals.announcement_bar.enabled}})}
+                                            className={cn(
+                                                "w-12 h-6 rounded-full transition-all relative p-1 flex items-center shadow-inner",
+                                                globals.announcement_bar.enabled ? "bg-emerald-500" : "bg-slate-200"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "h-4 w-4 rounded-full bg-white shadow-sm transition-all",
+                                                globals.announcement_bar.enabled ? "translate-x-6" : "translate-x-0"
+                                            )} />
+                                        </button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[9px] font-black uppercase text-muted-foreground ml-1">Alert Payload (Text)</label>
+                                            <Input
+                                                value={globals.announcement_bar.text}
+                                                onChange={e => setGlobals({...globals, announcement_bar: {...globals.announcement_bar, text: e.target.value}})}
+                                                className="h-12 rounded-xl bg-secondary border-border font-bold text-xs"
+                                            />
+                                        </div>
+                                        <div className="grid sm:grid-cols-2 gap-4">
+                                            <div className="space-y-1.5">
+                                                <label className="text-[9px] font-black uppercase text-muted-foreground ml-1">Background Color</label>
+                                                <div className="flex gap-2">
+                                                    <Input type="color" value={globals.announcement_bar.bg_color} onChange={e => setGlobals({...globals, announcement_bar: {...globals.announcement_bar, bg_color: e.target.value}})} className="w-12 h-12 p-1 rounded-xl" />
+                                                    <Input value={globals.announcement_bar.bg_color} onChange={e => setGlobals({...globals, announcement_bar: {...globals.announcement_bar, bg_color: e.target.value}})} className="flex-1 h-12 rounded-xl bg-secondary border-border font-mono text-[10px]" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-[9px] font-black uppercase text-muted-foreground ml-1">Text Color</label>
+                                                <div className="flex gap-2">
+                                                    <Input type="color" value={globals.announcement_bar.text_color} onChange={e => setGlobals({...globals, announcement_bar: {...globals.announcement_bar, text_color: e.target.value}})} className="w-12 h-12 p-1 rounded-xl" />
+                                                    <Input value={globals.announcement_bar.text_color} onChange={e => setGlobals({...globals, announcement_bar: {...globals.announcement_bar, text_color: e.target.value}})} className="flex-1 h-12 rounded-xl bg-secondary border-border font-mono text-[10px]" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    )}
+
+                    {activeTab === 'navigation' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 text-left">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><MapPin className="h-5 w-5 text-primary" /> Header Navigation</h2>
+                                    <Button onClick={() => setNavigation({...navigation, header_links: [...navigation.header_links, { label: 'New Link', href: '/' }]})} variant="outline" className="h-10 rounded-xl text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-2" /> Add Link</Button>
+                                </div>
+                                <div className="space-y-4">
+                                    {navigation.header_links.map((link, idx) => (
+                                        <div key={idx} className="flex gap-4 items-end p-6 bg-secondary rounded-3xl border border-border relative group/link">
+                                            <div className="flex-1 space-y-2">
+                                                <label className="text-[8px] font-black uppercase text-muted-foreground">Label</label>
+                                                <Input value={link.label} onChange={e => {
+                                                    const newLinks = [...navigation.header_links];
+                                                    newLinks[idx].label = e.target.value;
+                                                    setNavigation({...navigation, header_links: newLinks});
+                                                }} className="h-12 rounded-xl bg-white border-none font-bold text-xs" />
+                                            </div>
+                                            <div className="flex-1 space-y-2">
+                                                <label className="text-[8px] font-black uppercase text-muted-foreground">Route (e.g. /shop)</label>
+                                                <Input value={link.href} onChange={e => {
+                                                    const newLinks = [...navigation.header_links];
+                                                    newLinks[idx].href = e.target.value;
+                                                    setNavigation({...navigation, header_links: newLinks});
+                                                }} className="h-12 rounded-xl bg-white border-none font-mono text-xs" />
+                                            </div>
+                                            <button
+                                                onClick={() => setNavigation({...navigation, header_links: navigation.header_links.filter((_, i) => i !== idx)})}
+                                                className="h-12 w-12 rounded-xl bg-white border border-border flex items-center justify-center text-muted-foreground hover:text-rose-500 opacity-0 group-hover/link:opacity-100 transition-all"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 text-left">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><MapPin className="h-5 w-5 text-primary" /> Footer Sections</h2>
+                                    <Button onClick={() => setNavigation({...navigation, footer_sections: [...navigation.footer_sections, { title: 'New Sector', links: [] }]})} variant="outline" className="h-10 rounded-xl text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-2" /> Add Section</Button>
+                                </div>
+                                <div className="space-y-10">
+                                    {navigation.footer_sections.map((section, sIdx) => (
+                                        <div key={sIdx} className="p-8 rounded-[2.5rem] bg-secondary border border-border space-y-6 relative group/sec">
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex-1 max-w-xs space-y-2">
+                                                    <label className="text-[8px] font-black uppercase text-muted-foreground">Section Title</label>
+                                                    <Input value={section.title} onChange={e => {
+                                                        const newSecs = [...navigation.footer_sections];
+                                                        newSecs[sIdx].title = e.target.value;
+                                                        setNavigation({...navigation, footer_sections: newSecs});
+                                                    }} className="h-12 rounded-xl bg-white border-none font-black text-sm uppercase" />
+                                                </div>
+                                                <button
+                                                    onClick={() => setNavigation({...navigation, footer_sections: navigation.footer_sections.filter((_, i) => i !== sIdx)})}
+                                                    className="h-12 w-12 rounded-xl bg-white border border-border flex items-center justify-center text-muted-foreground hover:text-rose-500 opacity-0 group-hover/sec:opacity-100 transition-all"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                            <div className="grid sm:grid-cols-2 gap-4">
+                                                {section.links.map((link, lIdx) => (
+                                                    <div key={lIdx} className="flex gap-2 items-center bg-white p-3 rounded-2xl border border-border group/link">
+                                                        <Input value={link.label} onChange={e => {
+                                                            const newSecs = [...navigation.footer_sections];
+                                                            newSecs[sIdx].links[lIdx].label = e.target.value;
+                                                            setNavigation({...navigation, footer_sections: newSecs});
+                                                        }} className="h-10 rounded-lg border-slate-100 text-[10px] font-bold" placeholder="Label" />
+                                                        <Input value={link.href} onChange={e => {
+                                                            const newSecs = [...navigation.footer_sections];
+                                                            newSecs[sIdx].links[lIdx].href = e.target.value;
+                                                            setNavigation({...navigation, footer_sections: newSecs});
+                                                        }} className="h-10 rounded-lg border-slate-100 text-[10px] font-mono" placeholder="Route" />
+                                                        <button
+                                                            onClick={() => {
+                                                                const newSecs = [...navigation.footer_sections];
+                                                                newSecs[sIdx].links = newSecs[sIdx].links.filter((_, i) => i !== lIdx);
+                                                                setNavigation({...navigation, footer_sections: newSecs});
+                                                            }}
+                                                            className="text-slate-300 hover:text-rose-500"
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                <button
+                                                    onClick={() => {
+                                                        const newSecs = [...navigation.footer_sections];
+                                                        newSecs[sIdx].links.push({ label: 'Link', href: '/' });
+                                                        setNavigation({...navigation, footer_sections: newSecs});
+                                                    }}
+                                                    className="p-3 rounded-2xl border border-dashed border-slate-300 text-[10px] font-black uppercase text-slate-400 hover:border-primary hover:text-primary transition-all"
+                                                >
+                                                    + Add Link
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
+                        </div>
+                    )}
+
+                    {activeTab === 'content' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 text-left">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Info className="h-5 w-5 text-primary" /> Institutional Content</h2>
+                                <div className="space-y-8">
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">About Us Statement</label>
+                                            <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Footer Descriptor</span>
+                                        </div>
+                                        <textarea
+                                            value={content.about_us}
+                                            onChange={e => setContent({...content, about_us: e.target.value})}
+                                            className="w-full h-32 p-6 rounded-[2.5rem] bg-secondary border border-border text-foreground font-medium text-xs leading-relaxed resize-none outline-none focus:ring-4 focus:ring-primary/5 transition-all"
+                                            placeholder="Write your brand mission here..."
+                                        />
+                                    </div>
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">CTA Headline</label>
+                                            <Input value={content.cta_title} onChange={e => setContent({...content, cta_title: e.target.value})} className="h-12 rounded-xl bg-secondary border-border font-black text-sm" />
+                                            <p className="text-[6px] font-bold text-primary uppercase italic px-1">* Use &quot;.&quot; to split colors.</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">CTA Subtitle</label>
+                                            <Input value={content.cta_subtitle} onChange={e => setContent({...content, cta_subtitle: e.target.value})} className="h-12 rounded-xl bg-secondary border-border font-medium text-xs" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Privacy Policy (HTML/Markdown)</label>
+                                        <textarea
+                                            value={content.privacy_policy}
+                                            onChange={e => setContent({...content, privacy_policy: e.target.value})}
+                                            className="w-full h-80 p-8 rounded-[2.5rem] bg-secondary border border-border text-foreground font-mono text-[11px] leading-relaxed resize-none outline-none focus:ring-4 focus:ring-primary/5 transition-all"
+                                            placeholder="Paste legal parameters here..."
+                                        />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Terms & Conditions (HTML/Markdown)</label>
+                                        <textarea
+                                            value={content.terms_and_conditions}
+                                            onChange={e => setContent({...content, terms_and_conditions: e.target.value})}
+                                            className="w-full h-80 p-8 rounded-[2.5rem] bg-secondary border border-border text-foreground font-mono text-[11px] leading-relaxed resize-none outline-none focus:ring-4 focus:ring-primary/5 transition-all"
+                                            placeholder="Paste contractual terms here..."
+                                        />
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    )}
+
                     {activeTab === 'advanced' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
                             <Card className="rounded-[3rem] border border-slate-100 p-10 bg-white shadow-sm space-y-10 relative overflow-hidden text-left">
@@ -987,7 +1327,7 @@ export default function AdminSettingsPage() {
                                     <div className="flex items-center gap-4">
                                         <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><ShieldAlert className="h-6 w-6" /></div>
                                         <div>
-                                            <h2 className="text-xl font-black text-foreground uppercase">Tactical Sandbox</h2>
+                                            <h2 className="text-xl font-black text-foreground uppercase">Developer Sandbox</h2>
                                             <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mt-1">Simulate orders & payments</p>
                                         </div>
                                     </div>
@@ -1024,11 +1364,11 @@ export default function AdminSettingsPage() {
 
                             <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 overflow-hidden relative text-left">
                                 <div className="flex items-center justify-between text-left">
-                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Code className="h-5 w-5 text-muted-foreground" /> Surgical Tweaks</h2>
+                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Code className="h-5 w-5 text-muted-foreground" /> Advanced Tweaks</h2>
                                     <div className="flex items-center gap-3 p-1 bg-secondary rounded-xl border border-border text-left">
                                         <button onClick={() => setIsAdvancedEnabled(!isAdvancedEnabled)} className={cn("px-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all flex items-center gap-2", isAdvancedEnabled ? "bg-rose-500 text-white shadow-lg" : "text-muted-foreground")}>
                                             {isAdvancedEnabled ? <Unlock className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-                                            {isAdvancedEnabled ? 'Armed' : 'Locked'}
+                                            {isAdvancedEnabled ? 'Active' : 'Locked'}
                                         </button>
                                     </div>
                                 </div>

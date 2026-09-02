@@ -56,14 +56,16 @@ export const AdminProvider = ({
     permissions?: Permissions,
     tenant_id?: string | null
 }) => {
+  const value = React.useMemo(() => ({
+    role: role as AdminContextProps['role'],
+    email,
+    permissions: permissions as Permissions,
+    tenant_id,
+    supplier_id
+  }), [role, email, permissions, tenant_id, supplier_id]);
+
   return (
-    <AdminContext.Provider value={{
-        role: role as AdminContextProps['role'],
-        email,
-        permissions: permissions as Permissions,
-        tenant_id,
-        supplier_id
-    }}>
+    <AdminContext.Provider value={value}>
       {children}
     </AdminContext.Provider>
   );

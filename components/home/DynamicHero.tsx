@@ -26,7 +26,7 @@ export default function DynamicHero({ initialSettings }: { initialSettings?: Sto
             <div className="inline-flex items-center gap-2 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full bg-slate-50 border border-slate-100 shadow-sm">
                 <Sparkles className="h-3.5 w-3.5 lg:h-4 w-4 text-primary animate-pulse" />
                 <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-slate-500">
-                    {settings?.homepage?.hero_badge_text || 'Elite Tech Protocol'}
+                    {settings?.homepage?.hero_badge_text || 'Premium Tech Experience'}
                 </span>
             </div>
 
@@ -71,7 +71,7 @@ export default function DynamicHero({ initialSettings }: { initialSettings?: Sto
                     <div className="h-7 w-7 lg:h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
                         <Trophy className="h-3.5 w-3.5 lg:h-4 w-4" />
                     </div>
-                    <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-tighter text-foreground">Elite Tech</p>
+                    <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-tighter text-foreground">Premium Tech</p>
                 </div>
             </div>
           </div>

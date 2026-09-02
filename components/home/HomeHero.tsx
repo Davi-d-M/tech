@@ -68,7 +68,7 @@ export default function HomeHero() {
                     <div className="h-8 w-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
                         <Trophy className="h-4 w-4" />
                     </div>
-                    <p className="text-[10px] font-black uppercase tracking-tighter text-foreground">Elite Tech</p>
+                    <p className="text-[10px] font-black uppercase tracking-tighter text-foreground">Premium Tech</p>
                 </div>
             </div>
           </div>

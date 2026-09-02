@@ -44,7 +44,7 @@ export default class AdminErrorBoundary extends Component<Props, State> {
   private handleReset = () => {
     // Clear potentially corrupted session cookies
     document.cookie = 'admin_session=; path=/; max-age=0';
-    window.location.href = '/admin/login';
+    window.location.href = '/apex-portal';
   };
 
   public render() {

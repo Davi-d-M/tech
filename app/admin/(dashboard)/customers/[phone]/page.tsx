@@ -20,13 +20,20 @@ import {
   Loader2,
   MapPin,
   ExternalLink,
-  MessageSquare
+  MessageSquare,
+  Settings2,
+  UserCog,
+  PlusCircle,
+  MinusCircle,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { formatPrice, cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useAdmin } from '@/context/AdminContext';
+import { logAuditAction } from '@/lib/auditService';
 
 interface Order {
   id: number;
@@ -71,6 +78,24 @@ export default function CustomerIntelligence() {
   const [loyaltyLedger, setLoyaltyLedger] = useState<{ id: number; amount: number; description: string; created_at: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Admin Controls State
+  const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editForm, setEditForm] = useState({
+    full_name: '',
+    address: '',
+    birth_date: '',
+    latitude: '',
+    longitude: '',
+    is_partner: false,
+    credit_limit: '',
+    relationship_manager: ''
+  });
+
+  const [isAdjustingPoints, setIsAdjustingPoints] = useState(false);
+  const [pointAmount, setPointAmount] = useState('');
+  const [pointReason, setPointReason] = useState('Admin manual adjustment');
+
   const loadData = useCallback(async () => {
     if (!supabase || !phone) return;
 
@@ -88,7 +113,19 @@ export default function CustomerIntelligence() {
       ]);
 
       if (ordersRes.data) setOrders(ordersRes.data as Order[]);
-      if (profileData) setProfile(profileData);
+      if (profileData) {
+          setProfile(profileData);
+          setEditForm({
+              full_name: profileData.full_name || '',
+              address: profileData.address || '',
+              birth_date: profileData.birth_date || '',
+              latitude: profileData.latitude?.toString() || '',
+              longitude: profileData.longitude?.toString() || '',
+              is_partner: !!profileData.is_partner,
+              credit_limit: profileData.credit_limit?.toString() || '0',
+              relationship_manager: profileData.relationship_manager || ''
+          });
+      }
       if (productsRes.data) setProducts(productsRes.data as ProductInfo[]);
       if (referralsRes.data) setReferrals(referralsRes.data as { id: number; total_price: number; created_at: string }[]);
       if (reviewsRes.data) setReviews(reviewsRes.data as { id: string; rating: number; comment: string; created_at: string; is_verified_owner: boolean }[]);
@@ -220,7 +257,68 @@ export default function CustomerIntelligence() {
     return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [orders, products, supportTickets, loyaltyLedger, reviews]);
 
-  const { role, permissions } = useAdmin();
+  const { role, permissions, email: adminEmail } = useAdmin();
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!supabase || !profile) return;
+      setIsUpdating(true);
+      try {
+          const { error } = await supabase
+              .from('profiles')
+              .update({
+                  full_name: editForm.full_name,
+                  address: editForm.address,
+                  birth_date: editForm.birth_date || null,
+                  latitude: editForm.latitude ? parseFloat(editForm.latitude) : null,
+                  longitude: editForm.longitude ? parseFloat(editForm.longitude) : null,
+                  is_partner: editForm.is_partner,
+                  credit_limit: parseFloat(editForm.credit_limit || '0'),
+                  relationship_manager: editForm.relationship_manager
+              })
+              .eq('id', profile.id);
+
+          if (error) throw error;
+          await logAuditAction(adminEmail, 'ADMIN_UPDATE_CUSTOMER_PROFILE', { phone, updates: editForm });
+          setIsEditing(false);
+          loadData();
+          alert("Customer profile updated successfully.");
+      } catch (err: unknown) {
+          alert((err as Error).message);
+      } finally {
+          setIsUpdating(false);
+      }
+  };
+
+  const handleAdjustPoints = async (type: 'add' | 'sub') => {
+      if (!supabase || !profile || !pointAmount) return;
+      const amount = parseInt(pointAmount) * (type === 'add' ? 1 : -1);
+      setIsAdjustingPoints(true);
+      try {
+          // 1. Update points
+          const { error: pError } = await supabase.rpc('adjust_loyalty_points', {
+              p_user_id: profile.id,
+              p_amount: amount
+          });
+          if (pError) throw pError;
+
+          // 2. Log to ledger
+          await supabase.from('loyalty_ledger').insert([{
+              profile_id: profile.id,
+              amount: amount,
+              description: pointReason
+          }]);
+
+          await logAuditAction(adminEmail, 'ADMIN_ADJUST_POINTS', { phone, amount, reason: pointReason });
+          setPointAmount('');
+          loadData();
+          alert(`Loyalty points ${type === 'add' ? 'added' : 'deducted'} successfully.`);
+      } catch (err: unknown) {
+          alert((err as Error).message);
+      } finally {
+          setIsAdjustingPoints(false);
+      }
+  };
 
   if (loading) {
     return (
@@ -256,6 +354,9 @@ export default function CustomerIntelligence() {
           </div>
         </div>
         <div className="flex gap-3">
+            <Button onClick={() => setIsEditing(true)} variant="outline" className="h-14 px-8 rounded-2xl border-primary/20 bg-white text-primary font-black uppercase text-[10px] tracking-widest shadow-sm hover:shadow-xl transition-all">
+                <UserCog className="h-4 w-4 mr-2" /> Edit Profile
+            </Button>
             <Button onClick={() => window.open(`tel:${phone}`, '_self')} variant="outline" className="h-14 px-8 rounded-2xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest shadow-sm hover:shadow-xl transition-all">
                 <Phone className="h-4 w-4 mr-2" /> Direct Call
             </Button>
@@ -286,7 +387,7 @@ export default function CustomerIntelligence() {
           <div className="lg:col-span-1 space-y-8">
               <Card className="p-10 rounded-[3rem] border-slate-100 shadow-sm bg-white">
                   <h2 className="text-xl font-black text-foreground uppercase mb-8 flex items-center gap-3">
-                      <ShieldCheck className="h-5 w-5 text-primary" /> Intelligence Data
+                      <ShieldCheck className="h-5 w-5 text-primary" /> Customer Profile
                   </h2>
                   <div className="space-y-6">
                       <div className="flex justify-between items-center py-4 border-b border-slate-50">
@@ -347,6 +448,50 @@ export default function CustomerIntelligence() {
                   <p className="text-slate-500 font-medium leading-relaxed italic text-sm group-hover:text-foreground transition-colors">&quot;Recommended Action: Send early-access WhatsApp alert for restocks.&quot;</p>
                   <div className="absolute -bottom-10 -right-10 h-48 w-48 bg-primary/5 rounded-full blur-3xl"></div>
               </div>
+
+              {/* LOYALTY MANAGEMENT */}
+              <Card className="p-10 rounded-[3rem] border border-primary/10 bg-white shadow-xl space-y-8">
+                  <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3">
+                      <Gem className="h-5 w-5 text-primary" /> Loyalty Control
+                  </h2>
+                  <div className="space-y-6">
+                      <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Adjustment Amount</label>
+                          <Input
+                            type="number"
+                            value={pointAmount}
+                            onChange={e => setPointAmount(e.target.value)}
+                            placeholder="e.g. 500"
+                            className="h-12 rounded-xl bg-slate-50 border-slate-100 font-black"
+                          />
+                      </div>
+                      <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Reason for Adjustment</label>
+                          <Input
+                            value={pointReason}
+                            onChange={e => setPointReason(e.target.value)}
+                            placeholder="Customer satisfaction bonus"
+                            className="h-12 rounded-xl bg-slate-50 border-slate-100 font-medium italic text-sm"
+                          />
+                      </div>
+                      <div className="flex gap-2">
+                          <Button
+                            onClick={() => handleAdjustPoints('add')}
+                            disabled={isAdjustingPoints || !pointAmount}
+                            className="flex-1 h-12 rounded-xl bg-emerald-600 text-white font-black uppercase text-[9px] tracking-widest shadow-lg shadow-emerald-600/20"
+                          >
+                              {isAdjustingPoints ? <Loader2 className="h-4 w-4 animate-spin" /> : <><PlusCircle className="h-4 w-4 mr-2" /> Add Points</>}
+                          </Button>
+                          <Button
+                            onClick={() => handleAdjustPoints('sub')}
+                            disabled={isAdjustingPoints || !pointAmount}
+                            className="flex-1 h-12 rounded-xl bg-rose-600 text-white font-black uppercase text-[9px] tracking-widest shadow-lg shadow-rose-600/20"
+                          >
+                              {isAdjustingPoints ? <Loader2 className="h-4 w-4 animate-spin" /> : <><MinusCircle className="h-4 w-4 mr-2" /> Deduct</>}
+                          </Button>
+                      </div>
+                  </div>
+              </Card>
           </div>
 
           <div className="lg:col-span-2 space-y-8">
@@ -355,7 +500,7 @@ export default function CustomerIntelligence() {
                       <div className="p-8 border-b border-slate-50 flex items-center justify-between">
                           <div className="flex items-center gap-3">
                               <MapPin className="h-6 w-6 text-primary" />
-                              <h2 className="text-xl font-black text-foreground uppercase">Tactical Drop Point</h2>
+                              <h2 className="text-xl font-black text-foreground uppercase">Delivery Location</h2>
                           </div>
                           <Button
                             onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${profile.latitude},${profile.longitude}`, '_blank')}
@@ -451,6 +596,73 @@ export default function CustomerIntelligence() {
 
           </div>
       </div>
+
+      {/* EDIT PROFILE MODAL */}
+      {isEditing && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/20 backdrop-blur-md p-4 animate-in fade-in duration-300">
+              <Card className="max-w-2xl w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-none animate-in zoom-in-95 duration-500">
+                  <div className="bg-primary p-8 text-white flex justify-between items-center shadow-lg">
+                      <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center text-white"><Settings2 className="h-5 w-5" /></div>
+                          <div className="text-left">
+                              <h2 className="text-xl font-black uppercase tracking-tighter">Modify Identity</h2>
+                              <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Customer Protocol Override</p>
+                          </div>
+                      </div>
+                      <button onClick={() => setIsEditing(false)} className="h-10 w-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"><X className="h-6 w-6" /></button>
+                  </div>
+
+                  <form onSubmit={handleUpdateProfile} className="p-10 space-y-6 max-h-[70vh] overflow-y-auto no-scrollbar">
+                      <div className="grid sm:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Full Name</label>
+                              <Input value={editForm.full_name} onChange={e => setEditForm({...editForm, full_name: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" />
+                          </div>
+                          <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Birthday</label>
+                              <Input type="date" value={editForm.birth_date} onChange={e => setEditForm({...editForm, birth_date: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" />
+                          </div>
+                          <div className="sm:col-span-2 space-y-2">
+                              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Address</label>
+                              <Input value={editForm.address} onChange={e => setEditForm({...editForm, address: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" />
+                          </div>
+                          <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Latitude</label>
+                              <Input value={editForm.latitude} onChange={e => setEditForm({...editForm, latitude: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-mono text-xs" />
+                          </div>
+                          <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Longitude</label>
+                              <Input value={editForm.longitude} onChange={e => setEditForm({...editForm, longitude: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-mono text-xs" />
+                          </div>
+                          <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Credit Limit (KES)</label>
+                              <Input value={editForm.credit_limit} onChange={e => setEditForm({...editForm, credit_limit: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-black text-primary" />
+                          </div>
+                          <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Account Manager</label>
+                              <Input value={editForm.relationship_manager} onChange={e => setEditForm({...editForm, relationship_manager: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" />
+                          </div>
+                          <div className="sm:col-span-2 flex items-center gap-4 p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                              <div className="flex-1">
+                                  <p className="text-[10px] font-black uppercase text-indigo-600">Partner Status</p>
+                                  <p className="text-[8px] font-medium text-indigo-400">Grants access to wholesale pricing and credits.</p>
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={editForm.is_partner}
+                                onChange={e => setEditForm({...editForm, is_partner: e.target.checked})}
+                                className="h-6 w-6 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500"
+                              />
+                          </div>
+                      </div>
+
+                      <Button type="submit" disabled={isUpdating} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
+                          {isUpdating ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : "Commit Identity Changes"}
+                      </Button>
+                  </form>
+              </Card>
+          </div>
+      )}
     </div>
   );
 }

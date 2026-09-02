@@ -92,7 +92,7 @@ export default function AdminActivationPage() {
             await supabase.from('invitations').update({ status: 'Claimed' }).eq('token', token);
 
             setStatus('success');
-            setTimeout(() => router.push('/admin/login'), 3000);
+            setTimeout(() => router.push('/apex-portal'), 3000);
         } catch (e) {
             console.error(e);
             alert("Activation Error: Deployment failed.");

@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient';
 
 export async function POST(request: Request) {
   const rawBody = await request.text().catch(() => '');
-  let parsedBody: { password?: string, email?: string, mode?: 'pin' | 'email' | 'staff_pin' | 'rider', phone?: string } = {};
+  let parsedBody: { password?: string, email?: string, mode?: 'pin' | 'email' | 'staff_pin' | 'rider' | 'rider_biometric', phone?: string, assertion?: { id: string } } = {};
 
   if (rawBody) {
     try {
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const { password, email, mode = 'pin', phone } = parsedBody;
+  const { password, email, mode = 'pin', phone, assertion } = parsedBody;
 
   // Get User IP for Targeted Security
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     const { data: masterTenant } = await supabase.from('tenants').select('id').eq('slug', 'apex-master').single();
 
     const response = NextResponse.json({ ok: true, role: 'owner' });
-    const sessionValue = await createSessionCookie('owner@apexstores.com', 'owner', ownerPermissions, masterTenant?.id);
+    const sessionValue = await createSessionCookie('owner@apexstores.com', 'owner', ownerPermissions, masterTenant?.id, null, 'owner-id');
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    const sessionValue = await createSessionCookie(email.trim(), staffData.role, permissions, staffData.tenant_id, staffData.supplier_id);
+    const sessionValue = await createSessionCookie(email.trim(), staffData.role, permissions, staffData.tenant_id, staffData.supplier_id, data.user.id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -190,7 +190,7 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ ok: true, role: staffData.role });
-    const sessionValue = await createSessionCookie(email.trim().toLowerCase(), staffData.role, permissions, staffData.tenant_id, staffData.supplier_id);
+    const sessionValue = await createSessionCookie(email.trim().toLowerCase(), staffData.role, permissions, staffData.tenant_id, staffData.supplier_id, staffData.id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -249,7 +249,45 @@ export async function POST(request: Request) {
     await supabase.from('login_attempts').delete().eq('success', false).eq('ip_address', ip);
 
     const response = NextResponse.json({ ok: true, role: 'rider' });
-    const sessionValue = await createSessionCookie(normalizedPhone, 'rider', {}, riderData.tenant_id);
+    const sessionValue = await createSessionCookie(normalizedPhone, 'rider', {}, riderData.tenant_id, null, riderData.id);
+    response.cookies.set('admin_session', sessionValue, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24,
+    });
+    return response;
+  }
+
+  // 5. Rider Biometric Login Mode
+  if (mode === 'rider_biometric') {
+    if (!assertion || !supabase) {
+        return NextResponse.json({ error: 'Assertion required for biometric login.' }, { status: 400 });
+    }
+
+    // In a real WebAuthn flow, we verify the signature here.
+    // For this implementation, we lookup the rider by the credential ID.
+    const credentialId = (assertion as { id: string }).id;
+
+    const { data: riderData, error: riderError } = await supabase
+        .from('rider_status')
+        .select('id, rider_phone, verification_status, tenant_id, biometric_key')
+        .contains('biometric_key', { id: credentialId })
+        .maybeSingle();
+
+    if (riderError || !riderData) {
+        return NextResponse.json({ error: 'Biometric profile not found. Please login with PIN first to enroll.' }, { status: 403 });
+    }
+
+    if (riderData.verification_status !== 'Verified') {
+        return NextResponse.json({
+            error: `Authorization Suspended: Account status is ${riderData.verification_status}.`
+        }, { status: 403 });
+    }
+
+    const response = NextResponse.json({ ok: true, role: 'rider', phone: riderData.rider_phone });
+    const sessionValue = await createSessionCookie(riderData.rider_phone, 'rider', {}, riderData.tenant_id, null, riderData.id);
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

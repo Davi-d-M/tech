@@ -1,8 +1,28 @@
-"use strict";
-import React from "react";
+import { getCachedSettings } from "@/lib/cachedData";
+import { type StoreSettings } from "@/lib/useSettings";
 
-export default function PrivacyPolicyPage() {
-  const lastUpdated = "May 2026";
+export default async function PrivacyPolicyPage() {
+  const { data: settingsRes } = await getCachedSettings();
+  const settings = {} as StoreSettings;
+  (settingsRes || []).forEach(item => {
+      (settings as unknown as Record<string, unknown>)[item.key] = item.value;
+  });
+
+  const content = settings?.content?.privacy_policy;
+
+  if (content && content !== "Standard Privacy Policy Content") {
+      return (
+          <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 text-left">
+              <div className="max-w-4xl mx-auto bg-white p-8 sm:p-16 rounded-[3rem] shadow-sm border border-slate-100">
+                  <div className="prose prose-slate max-w-none prose-headings:uppercase prose-headings:font-black prose-headings:tracking-tighter prose-p:font-medium prose-p:leading-relaxed">
+                      <div dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br />') }} />
+                  </div>
+              </div>
+          </div>
+      );
+  }
+
+  const lastUpdated = "September 2026";
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 text-left">

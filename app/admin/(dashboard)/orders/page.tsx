@@ -122,7 +122,7 @@ export default function AdminOrdersPage() {
     return new Map(products.map((product) => [product.id, product.name]));
   }, [products]);
 
-  const loadOrders = async () => {
+  const loadOrders = React.useCallback(async () => {
     if (!supabase) {
       setStatusMessage({
         type: 'error',
@@ -160,7 +160,7 @@ export default function AdminOrdersPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [role, tenant_id]);
 
   const filteredOrders = React.useMemo(() => {
       return orders.filter(o =>
@@ -172,7 +172,7 @@ export default function AdminOrdersPage() {
 
   React.useEffect(() => {
     loadOrders();
-  }, []);
+  }, [loadOrders]);
 
   const summary = React.useMemo(() => {
     const totalRevenue = orders
@@ -966,7 +966,7 @@ export default function AdminOrdersPage() {
       {assigningRiderId && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-500/10 backdrop-blur-md p-4">
               <div className="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95">
-                  <h3 className="text-xl font-black uppercase tracking-tighter text-foreground mb-6">Assign Elite Rider</h3>
+                  <h3 className="text-xl font-black uppercase tracking-tighter text-foreground mb-6">Assign Delivery Rider</h3>
                   <div className="space-y-4">
                       <div className="space-y-1">
                           <label className="text-[9px] font-black uppercase text-slate-400 ml-1">Rider Name</label>

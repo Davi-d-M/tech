@@ -55,7 +55,7 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
     }
   };
 
-  const footerSections = [
+  const footerSections = settings?.navigation?.footer_sections || [
     {
       title: "Shop",
       links: [
@@ -83,12 +83,11 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
       ],
     },
     {
-      title: "Logistics",
+      title: "Partners",
       links: [
-        { href: "/rider/dashboard", label: "Rider Command" },
-        { href: "/onboarding/apply", label: "Become a Retailer" },
+        { href: "/rider/login", label: "Fleet Portal" },
         { href: "/supplier/onboarding", label: "Merchant Program" },
-        { href: "/track", label: "Global Tracking" },
+        { href: "/onboarding/apply", label: "Become a Retailer" },
       ],
     },
     {
@@ -108,7 +107,7 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
         <div className="py-12 border-b border-border" id="footer-newsletter">
           <div className="max-w-2xl mx-auto text-center">
             <h3 className="text-2xl font-black uppercase tracking-tighter text-foreground mb-4">
-              Join the Elite
+              Join the Community
             </h3>
             <p className="text-muted-foreground mb-6 font-medium">
               Subscribe to our newsletter for exclusive tech offers, new gadget arrivals,
@@ -157,7 +156,7 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
                 Apex<span className="text-primary">stores</span>
               </Link>
               <p className="text-muted-foreground mt-4 mb-6 max-w-sm font-medium leading-relaxed">
-                Premium electronics and mobile accessories engineered for excellence. Performance and design in every gadget.
+                {settings?.content?.about_us || 'Premium electronics and mobile accessories engineered for excellence. Performance and design in every gadget.'}
               </p>
 
               <div className="space-y-3">

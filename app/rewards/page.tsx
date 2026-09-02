@@ -19,10 +19,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const VOUCHERS = [
-    { points: 500, value: 500, code_prefix: 'ELITE500' },
-    { points: 1000, value: 1000, code_prefix: 'ELITE1000' },
-    { points: 2500, value: 2500, code_prefix: 'ELITE2500' },
-    { points: 5000, value: 5000, code_prefix: 'ELITE5000' },
+    { points: 500, value: 500, code_prefix: 'APEX500' },
+    { points: 1000, value: 1000, code_prefix: 'APEX1000' },
+    { points: 2500, value: 2500, code_prefix: 'APEX2500' },
+    { points: 5000, value: 5000, code_prefix: 'APEX5000' },
 ];
 
 export default function RewardsShop() {
@@ -137,10 +137,10 @@ export default function RewardsShop() {
                 <header className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
                     <div className="space-y-4">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
-                            <Gift className="h-3 w-3" /> Elite Rewards Shop
+                            <Gift className="h-3 w-3" /> Premium Rewards Shop
                         </div>
                         <h1 className="text-5xl font-black text-foreground tracking-tighter uppercase leading-none">The Apex <br/> <span className="text-primary italic">Exchange</span></h1>
-                        <p className="text-slate-500 font-medium max-w-md italic">&quot;Trade your battlefield points for elite gear and store credits. No games, just gains.&quot;</p>
+                        <p className="text-slate-500 font-medium max-w-md italic">&quot;Trade your points for high-performance gear and store credits. No games, just gains.&quot;</p>
                     </div>
 
                     <div className="bg-white rounded-[2.5rem] p-8 border-2 border-primary/10 text-foreground relative overflow-hidden shadow-2xl min-w-[280px] group hover:border-primary/30 transition-all">
@@ -243,7 +243,7 @@ export default function RewardsShop() {
                 <div className="mt-16 bg-white rounded-[3rem] p-12 text-center border-2 border-primary/10 text-foreground relative overflow-hidden group hover:border-primary/30 transition-all shadow-2xl">
                     <div className="relative z-10">
                         <Flame className="h-10 w-10 text-primary mx-auto mb-6 animate-pulse fill-current" />
-                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-4">The Apex Elite League</h2>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-4">The Apex Rewards Program</h2>
                         <p className="text-slate-500 max-w-xl mx-auto font-medium italic leading-relaxed">&quot;Earn more points by referring friends, writing verified reviews with photos, and completing orders. Higher level members get early access to restocks.&quot;</p>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12 pt-12 border-t border-slate-100">

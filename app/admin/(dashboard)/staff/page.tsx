@@ -241,7 +241,7 @@ export default function AdminStaffPage() {
           <div className="relative z-10 text-left">
               <div className="flex items-center gap-3 mb-8">
                   <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform"><Trophy className="h-6 w-6" /></div>
-                  <h2 className="text-2xl font-black uppercase tracking-tighter">Elite Sales Leaderboard</h2>
+                  <h2 className="text-2xl font-black uppercase tracking-tighter">Team Sales Leaderboard</h2>
                   <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-secondary px-3 py-1 rounded-full border border-border ml-auto">This Month</span>
               </div>
 

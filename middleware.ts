@@ -6,16 +6,22 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Protected Paths
-  const isAdminPath = pathname.startsWith('/admin') && !pathname.startsWith('/admin/login');
+  const isAdminPath = pathname.startsWith('/admin');
   const isSupplierPath = pathname.startsWith('/supplier');
+  const isRiderPath = pathname.startsWith('/rider');
 
-  if ((isAdminPath || isSupplierPath) && !pathname.includes('.')) {
+  if ((isAdminPath || isSupplierPath || isRiderPath) && !pathname.includes('.')) {
     try {
       const sessionCookie = request.cookies.get('admin_session')?.value;
       const sessionData = await verifySessionCookie(sessionCookie);
 
       if (!sessionData) {
-        return NextResponse.redirect(new URL('/admin/login', request.url));
+        // STEALTH: Admin/Supplier stay cloaked (404)
+        if (isAdminPath || isSupplierPath) {
+          return NextResponse.rewrite(new URL('/404', request.url));
+        }
+        // RIDER: Easy access redirect
+        return NextResponse.redirect(new URL('/rider/login', request.url));
       }
 
       // 1.5 SHIELD: Lockdown Admin APIs to Owners/Admins Only
@@ -36,7 +42,7 @@ export async function middleware(request: NextRequest) {
 
     } catch (err) {
       console.error("Middleware Auth Error:", err);
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return NextResponse.rewrite(new URL('/404', request.url));
     }
   }
 
@@ -44,5 +50,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/supplier/:path*'],
+  matcher: ['/admin/:path*', '/supplier/:path*', '/rider/:path*'],
 };

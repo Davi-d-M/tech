@@ -16,7 +16,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Apexstores | Premium Electronics & Mobile Accessories Kenya',
-  description: 'Authentic AirPods, high-speed chargers, and elite phone accessories. Nairobi fast dispatch. 100% genuine tech guaranteed.',
+  description: 'Authentic AirPods, high-speed chargers, and premium phone accessories. Nairobi fast dispatch. 100% genuine tech guaranteed.',
   keywords: ['AirPods Nairobi', 'iPhone Chargers Kenya', 'Phone Accessories Nairobi', 'Apexstores Tech', 'Lipa na M-Pesa Shop'],
   openGraph: {
     title: 'Apexstores | Premium Tech Store',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Apexstores | Elite Tech Catalog',
+    title: 'Apexstores | Premium Tech Catalog',
     description: 'High-performance electronics delivered instantly across Kenya.',
   },
   manifest: '/manifest.json',

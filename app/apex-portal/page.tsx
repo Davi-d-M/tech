@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { logAuditAction } from '@/lib/auditService';
+import { supabase } from '@/lib/supabaseClient';
 
 function AdminLoginContent() {
   const searchParams = useSearchParams();
@@ -42,6 +43,16 @@ function AdminLoginContent() {
     setStatus({ type: 'idle', message: '' });
 
     try {
+      // 1. Client-side Supabase Auth for session persistence
+      if (mode === 'email' && supabase) {
+          const { error: sbError } = await supabase.auth.signInWithPassword({
+              email: email.trim(),
+              password
+          });
+          if (sbError) throw sbError;
+      }
+
+      // 2. Server-side session & RBAC
       const response = await fetch('/api/admin/login', {
         method: 'POST',
         headers: {
@@ -152,8 +163,8 @@ function AdminLoginContent() {
             </div>
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
             disabled={isSubmitting}
           >

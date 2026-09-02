@@ -71,8 +71,8 @@ class LocationService : Service() {
     }
 
     private fun requestLocationUpdates() {
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, TimeUnit.SECONDS.toMillis(60))
-            .setMinUpdateIntervalMillis(TimeUnit.SECONDS.toMillis(30))
+        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, TimeUnit.SECONDS.toMillis(10))
+            .setMinUpdateIntervalMillis(TimeUnit.SECONDS.toMillis(5))
             .build()
 
         try {

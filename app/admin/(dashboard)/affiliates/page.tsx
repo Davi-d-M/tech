@@ -186,7 +186,7 @@ export default function AdminAffiliates() {
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <div className="h-2 w-2 rounded-full bg-primary animate-pulse"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Creator Economy</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Partner Economy</span>
                     </div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">Affiliate Center</h1>
                     <p className="text-muted-foreground text-sm font-medium mt-2">Scale your reach through authentic creator partnerships.</p>
@@ -340,7 +340,7 @@ export default function AdminAffiliates() {
                                 try {
                                     const { generateProductCatalog } = await import('@/lib/catalogService');
                                     const doc = await generateProductCatalog(new Date().toLocaleString('default', { month: 'long' }));
-                                    doc.save('Elite_Tech_Catalog.pdf');
+                                    doc.save('Apex_Tech_Catalog.pdf');
                                     setMessage({ type: 'success', text: "Catalog compilation successful! 📁" });
                                     setTimeout(() => setMessage(null), 3000);
                                 } catch {

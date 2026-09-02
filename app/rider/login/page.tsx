@@ -2,10 +2,11 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, Truck, Loader2, ArrowLeft, Lock } from 'lucide-react';
+import { Phone, Truck, Loader2, ArrowLeft, Lock, Fingerprint } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { authenticateBiometrics } from '@/lib/biometricService';
 
 export default function RiderLogin() {
     const router = useRouter();
@@ -33,6 +34,31 @@ export default function RiderLogin() {
             localStorage.setItem('apex_rider_phone', phone);
             localStorage.setItem('apex_rider_pin', pin);
             router.push(`/rider/dashboard?phone=${phone}`);
+        } catch (err: unknown) {
+            setError((err as Error).message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleBiometricAuth = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const assertion = await authenticateBiometrics();
+            if (!assertion) throw new Error("Biometric challenge failed or cancelled.");
+
+            const res = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode: 'rider_biometric', assertion })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Biometric Authorization Denied.");
+
+            localStorage.setItem('apex_rider_phone', data.phone);
+            router.push(`/rider/dashboard?phone=${data.phone}`);
         } catch (err: unknown) {
             setError((err as Error).message);
         } finally {
@@ -84,12 +110,24 @@ export default function RiderLogin() {
                         </div>
                     </div>
 
-                    <Button
-                        disabled={loading}
-                        className="w-full h-20 rounded-[2rem] bg-primary text-white font-black uppercase text-sm tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
-                    >
-                        {loading ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : 'Establish Uplink'}
-                    </Button>
+                    <div className="flex flex-col gap-3">
+                        <Button
+                            disabled={loading}
+                            className="w-full h-20 rounded-[2rem] bg-primary text-white font-black uppercase text-sm tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                        >
+                            {loading ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : 'Establish Uplink'}
+                        </Button>
+
+                        <Button
+                            type="button"
+                            onClick={handleBiometricAuth}
+                            disabled={loading}
+                            variant="outline"
+                            className="w-full h-16 rounded-2xl border-2 border-slate-100 font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3"
+                        >
+                            <Fingerprint className="h-5 w-5 text-primary" /> Login with Fingerprint
+                        </Button>
+                    </div>
                 </form>
 
                 {error && (

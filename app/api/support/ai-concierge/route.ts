@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
         if (!GEMINI_API_KEY) {
             return NextResponse.json({
-                response: "Yo bro! I'm currently in 'Tactical Silence' mode because my Neural Key (Gemini API) isn't linked. Tell the commander to add GOOGLE_GEMINI_API_KEY to the environment variables so I can help you find fire tech! 🔥"
+                response: "Hello! I'm currently in 'Standby' mode because the API key isn't linked. Please ensure the GOOGLE_GEMINI_API_KEY is configured in the environment variables so I can assist you with your technical needs."
             }, { status: 200 });
         }
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
                         parts: [{
                             text: `You are the Apex AI Concierge for Apexstores Tech Kenya.
                             Your goal is to help customers find the best gadgets and tech accessories.
-                            Be professional, friendly, and use Kenyan tech slang (like "bro", "fire tech", "elite setup") where appropriate.
+                            Be professional, friendly, and helpful.
 
                             Context:
                             ${productsContext}

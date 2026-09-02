@@ -72,7 +72,7 @@ export default function AdminRidersPage() {
     const [loadingHistory, setLoadingHistory] = React.useState(false);
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-    const loadRiders = async () => {
+    const loadRiders = React.useCallback(async () => {
         if (!supabase) return;
         setIsLoading(true);
         try {
@@ -95,11 +95,11 @@ export default function AdminRidersPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [role, tenant_id]);
 
     React.useEffect(() => {
         loadRiders();
-    }, [tenant_id]);
+    }, [loadRiders]);
 
     const loadRiderHistory = async (phone: string) => {
         if (!supabase) return;

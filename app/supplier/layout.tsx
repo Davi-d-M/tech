@@ -28,7 +28,7 @@ export default async function SupplierLayout({
   }
 
   if (!sessionData || (sessionData.role !== 'supplier' && sessionData.role !== 'owner' && sessionData.role !== 'admin')) {
-    redirect('/admin/login');
+    redirect('/apex-portal');
   }
 
   // Fetch the current user session (Server-side)

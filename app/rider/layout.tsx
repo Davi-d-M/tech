@@ -26,7 +26,7 @@ export default async function RiderLayout({
 
   // If not a rider or no session, redirect to login
   if (!sessionData || sessionData.role !== 'rider') {
-    redirect('/admin/login');
+    redirect('/apex-portal');
   }
 
   return (

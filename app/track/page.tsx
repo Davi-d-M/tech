@@ -24,9 +24,9 @@ interface OrderDetails {
 }
 
 const STEPS = [
-    { id: 'Pending', label: 'Order Received', icon: Clock, detail: 'Securing your items in our elite warehouse...' },
+    { id: 'Pending', label: 'Order Received', icon: Clock, detail: 'Securing your items in our warehouse...' },
     { id: 'Paid', label: 'Payment Verified', icon: ShieldCheck, detail: 'M-Pesa sync complete. Funds verified.' },
-    { id: 'Processing', label: 'Quality Check', icon: Package, detail: 'Zero-defect inspection in progress.' },
+    { id: 'Processing', label: 'Quality Check', icon: Package, detail: 'Quality inspection in progress.' },
     { id: 'Dispatched', label: 'Out for Delivery', icon: Truck, detail: 'Fast dispatch active. Rider approaching.' },
     { id: 'Delivered', label: 'Handed Over', icon: CheckCircle, detail: 'Tech secured. Welcome to the Apex Club.' },
 ];
@@ -162,7 +162,7 @@ function TrackingContent() {
 
         <div className="mb-12">
             <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase mb-4">Track Gadget</h1>
-            <p className="text-slate-500 font-medium text-lg italic">Elite real-time visibility into your tech dispatch.</p>
+            <p className="text-slate-500 font-medium text-lg italic">Real-time visibility into your tech dispatch.</p>
         </div>
 
         <Card className="rounded-[3rem] border-slate-100 shadow-2xl shadow-slate-200/50 mb-16 overflow-hidden">
@@ -301,7 +301,7 @@ function TrackingContent() {
                                             {order.rider_name ? `Rider ${order.rider_name} is moving!` : 'Your tech is moving!'}
                                         </p>
                                         <p className="text-indigo-600 text-[10px] font-bold uppercase">
-                                            {order.rider_name ? 'Our elite rider is approaching your location.' : 'Our rider is approaching your location.'}
+                                            {order.rider_name ? 'Our rider is approaching your location.' : 'Our rider is approaching your location.'}
                                         </p>
                                     </div>
                                 </div>
@@ -407,7 +407,7 @@ function TrackingContent() {
                                     </div>
 
                                     <p className="mt-8 text-[10px] text-slate-400 font-medium italic leading-relaxed">
-                                        &quot;Zero-defect guarantee. If your tech has a manufacturer flaw, our elite team will replace it instantly within 7 days.&quot;
+                                        &quot;Quality guarantee. If your tech has a manufacturer flaw, our team will replace it within 7 days.&quot;
                                     </p>
                                 </div>
                             </div>

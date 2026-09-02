@@ -111,8 +111,7 @@ async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
     const rewards = [
         { type: 'xp', amount: 50, label: '50 XP' },
         { type: 'xp', amount: 100, label: '100 XP' },
-        { type: 'voucher', amount: 100, label: 'KSh 100 Coupon' },
-        { type: 'perk', amount: 0, label: 'Free Delivery' }
+        { type: 'voucher', amount: 100, label: 'KSh 100 Coupon' }
     ];
     const prize = rewards[Math.floor(Math.random() * rewards.length)];
 

@@ -49,16 +49,14 @@ const DEFAULTS = {
     ],
     rewards: {
         crate_probabilities: [
-            { label: '50 XP', chance: 40, value: 50, type: 'xp' },
-            { label: '100 XP', chance: 30, value: 100, type: 'xp' },
+            { label: '50 XP', chance: 45, value: 50, type: 'xp' },
+            { label: '100 XP', chance: 35, value: 100, type: 'xp' },
             { label: 'KSh 100 Coupon', chance: 20, value: 100, type: 'voucher' },
-            { label: 'Free Delivery', chance: 10, value: 0, type: 'perk' },
         ],
         spin_probabilities: [
             { label: '10 XP', chance: 50, value: 10, type: 'xp' },
-            { label: '100 XP', chance: 25, value: 100, type: 'xp' },
-            { label: 'Free Shipping', chance: 15, value: 0, type: 'perk' },
-            { label: 'KSh 500 Coupon', chance: 5, value: 500, type: 'voucher' },
+            { label: '100 XP', chance: 35, value: 100, type: 'xp' },
+            { label: 'KSh 500 Coupon', chance: 10, value: 500, type: 'voucher' },
             { label: 'Mystery Prize', chance: 5, value: 0, type: 'mystery' },
         ]
     },
@@ -66,12 +64,12 @@ const DEFAULTS = {
         { id: 'explorer', label: 'Explorer', threshold: 0, icon: 'Star' },
         { id: 'silver', label: 'Silver', threshold: 500, icon: 'ShieldCheck' },
         { id: 'gold', label: 'Gold', threshold: 1000, icon: 'Crown' },
-        { id: 'elite', label: 'Elite', threshold: 2000, icon: 'Gem' },
+        { id: 'premium', label: 'Premium', threshold: 2000, icon: 'Gem' },
         { id: 'legend', label: 'Legend', threshold: 5000, icon: 'Trophy' },
     ],
     badges: [
         { key: 'first-purchase', label: 'First Purchase', icon: 'ShoppingBag', desc: 'Your first tech extraction complete.' },
-        { key: 'gadget-hunter', label: 'Gadget Hunter', icon: 'Smartphone', desc: 'Own 5+ elite devices.' },
+        { key: 'gadget-hunter', label: 'Gadget Hunter', icon: 'Smartphone', desc: 'Own 5+ premium devices.' },
         { key: 'reviewer', label: 'Reviewer', icon: 'MessageSquare', desc: 'Shared expertise on 5+ gadgets.' },
         { key: 'influencer', label: 'Influencer', icon: 'Users', desc: 'Referred a friend successfully.' },
         { key: 'vip-shopper', label: 'VIP Shopper', icon: 'Rocket', desc: 'Spent over KSh 50,000.' },

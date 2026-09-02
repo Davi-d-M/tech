@@ -15,7 +15,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 
 export default function ClaimInvitationPage() {
     const searchParams = useSearchParams();
@@ -43,7 +42,6 @@ export default function ClaimInvitationPage() {
                 throw new Error("Invalid or expired invitation token.");
             }
 
-            const tenantId = invite.tenant_id;
             const role = invite.role;
             const tenantName = (invite.tenants as unknown as { name: string }).name;
 
@@ -64,7 +62,7 @@ export default function ClaimInvitationPage() {
             setTimeout(() => {
                 if (role === 'RIDER') router.push(`/rider/activate?token=${token}`);
                 else if (role === 'OWNER' || role === 'STAFF') router.push(`/admin/activate?token=${token}`);
-                else router.push(`/admin/login?token=${token}`);
+                else router.push(`/apex-portal?token=${token}`);
             }, 3000);
 
         } catch (e) {

@@ -28,7 +28,7 @@ export default async function AdminLayout({
   }
 
   if (!sessionData) {
-    redirect('/admin/login');
+    redirect('/apex-portal');
   }
 
   // Fetch the current user session (Server-side)

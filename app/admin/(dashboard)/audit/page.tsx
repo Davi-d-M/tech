@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
@@ -131,7 +132,7 @@ export default function AdminAuditPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchLogs = async () => {
+  const fetchLogs = React.useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
     try {
@@ -153,11 +154,11 @@ export default function AdminAuditPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [role, tenant_id]);
 
   useEffect(() => {
     fetchLogs();
-  }, [tenant_id]);
+  }, [fetchLogs]);
 
   const clearLogs = async () => {
       if (!supabase || !confirm("Clear all audit history? This cannot be undone.")) return;

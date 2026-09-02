@@ -12,6 +12,9 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.GeolocationPermissions
+import android.webkit.PermissionRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -481,9 +484,14 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
         }
     }
 
+    private var isTrackingActive = false
+
     @JavascriptInterface
     fun toggleTracking(active: Boolean) {
         if (!isTrustedOrigin()) return
+        if (active == isTrackingActive) return // Already in desired state
+        
+        isTrackingActive = active
         activity.runOnUiThread {
             val intent = Intent(activity, LocationService::class.java).apply {
                 putExtra("DEVICE_ID", Settings.Secure.getString(activity.contentResolver, Settings.Secure.ANDROID_ID))
@@ -500,6 +508,7 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
                     }
                     Toast.makeText(activity, "Titan Tracker Engaged", Toast.LENGTH_SHORT).show()
                 } else {
+                    isTrackingActive = false // Reset state if permission missing
                     activity.permissionLauncher.launch(arrayOf(
                         android.Manifest.permission.ACCESS_FINE_LOCATION,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -533,6 +542,18 @@ fun TitanHubWebBridge(url: String, onWebViewCreated: (WebView) -> Unit) {
         factory = { context ->
             WebView(context).apply {
                 webViewClient = WebViewClient()
+                webChromeClient = object : WebChromeClient() {
+                    override fun onGeolocationPermissionsShowPrompt(
+                        origin: String?,
+                        callback: GeolocationPermissions.Callback?
+                    ) {
+                        callback?.invoke(origin, true, false)
+                    }
+
+                    override fun onPermissionRequest(request: PermissionRequest?) {
+                        request?.grant(request.resources)
+                    }
+                }
                 settings.apply {
                     javaScriptEnabled = true
                     domStorageEnabled = true

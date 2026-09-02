@@ -8,6 +8,7 @@ import {
   Package,
   ShoppingCart,
   Users,
+  User,
   MessageSquare,
   LogOut,
   Menu,
@@ -108,7 +109,7 @@ export default function AdminLayoutClient({
     try {
       await logAuditAction(email, 'OS_SESSION_END', { duration: 'calculated-on-server' });
       document.cookie = 'admin_session=; path=/; max-age=0';
-      router.push('/admin/login');
+      router.push('/apex-portal');
     } catch (error) {
       console.error('Logout failed:', error);
       setIsLoggingOut(false);
@@ -159,6 +160,7 @@ export default function AdminLayoutClient({
     ]},
     { group: 'ENTERPRISE', items: [
       { name: 'Staff Control', href: '/admin/staff', icon: ShieldCheck, minRole: 'owner' },
+      { name: 'My Profile', href: '/admin/profile', icon: User, minRole: 'viewer' },
       { name: 'System Audit', href: '/admin/audit', icon: HistoryIcon, permission: 'can_view_revenue' },
       { name: 'Security Hub', href: '/admin/security', icon: SecurityIcon, permission: 'can_manage_settings' },
       { name: 'Brand Settings', href: '/admin/settings', icon: Settings, permission: 'can_manage_settings' },

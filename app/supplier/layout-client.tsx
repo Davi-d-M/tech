@@ -42,7 +42,7 @@ export default function SupplierLayoutClient({
   const handleLogout = async () => {
     setIsLoggingOut(true);
     document.cookie = 'admin_session=; path=/; max-age=0';
-    router.push('/admin/login');
+    router.push('/apex-portal');
   };
 
   const navItems = [

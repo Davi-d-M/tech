@@ -168,9 +168,9 @@ export default function SupportCaseManagement() {
     });
 
     const getAISuggestion = (item: UniversalItem) => {
-        if (item.type === 'Review') return "Thank you for the elite feedback, bro! 🚀";
-        if (item.body.toLowerCase().includes('delivery')) return "Your mission is currently en route. Estimated extraction in 12 mins. 🚚";
-        return "I'm analyzing your technical payload. Our engineers will assist shortly. 🛡️";
+        if (item.type === 'Review') return "Thank you for your valuable feedback! 🚀";
+        if (item.body.toLowerCase().includes('delivery')) return "Your order is currently en route. Estimated arrival in 12 mins. 🚚";
+        return "I'm analyzing your request. Our support team will assist shortly. 🛡️";
     };
 
     const updateItemStatus = async (item: UniversalItem, newStatus: string) => {
@@ -362,7 +362,7 @@ export default function SupportCaseManagement() {
                         {activeChat.status === 'Resolved' && (
                              <div className="flex justify-end">
                                 <div className="max-w-[85%] p-6 rounded-[2rem] rounded-tr-sm bg-primary text-white shadow-lg text-sm font-bold leading-relaxed">
-                                    {activeChat.type === 'Review' ? 'Official response logged for customer feedback.' : 'Mission Resolved. Resolution payload transmitted.'}
+                                    {activeChat.type === 'Review' ? 'Official response logged for customer feedback.' : 'Support Case Resolved.'}
                                 </div>
                             </div>
                         )}
@@ -380,7 +380,7 @@ export default function SupportCaseManagement() {
                             <textarea
                                 value={replyText}
                                 onChange={e => setReplyText(e.target.value)}
-                                placeholder="Establish tactical response..."
+                                placeholder="Enter your response..."
                                 className="w-full h-32 p-6 rounded-[2rem] bg-slate-50 border-slate-100 text-sm font-medium resize-none focus:ring-4 focus:ring-primary/5 transition-all outline-none"
                             />
                             <Button
@@ -388,7 +388,7 @@ export default function SupportCaseManagement() {
                                 disabled={!replyText.trim() || isSending}
                                 className="absolute bottom-4 right-4 h-12 px-6 rounded-xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all"
                             >
-                                {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-3 w-3 mr-2" /> Dispatch</>}
+                                {isSending ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-3 w-3 mr-2" /> Send Reply</>}
                             </Button>
                         </div>
                     </div>
