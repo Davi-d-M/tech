@@ -33,7 +33,7 @@ interface Mission {
     created_at: string;
 }
 
-interface TitanNode {
+interface ApexDevice {
     toggleTracking: (active: boolean) => void;
 }
 
@@ -41,16 +41,16 @@ export default function RiderDashboard() {
     const router = useRouter();
     const { email: riderPhone, tenant_id } = useAdmin();
     const [loading, setLoading] = React.useState(true);
-    const [missions, setMissions] = React.useState<Mission[]>([]);
+    const [tasks, setTasks] = React.useState<Mission[]>([]);
     const [stats, setStats] = React.useState({ completed: 0, earnings: 0 });
-    const [activeTab, setActiveTab] = React.useState<'missions' | 'stats' | 'profile'>('missions');
+    const [activeTab, setActiveTab] = React.useState<'tasks' | 'stats' | 'profile'>('tasks');
 
     // PIN Change State
     const [isPinModalOpen, setIsPinModalOpen] = React.useState(false);
     const [newPin, setNewPin] = React.useState('');
     const [isUpdatingPin, setIsUpdatingPin] = React.useState(false);
 
-    const fetchMissions = React.useCallback(async () => {
+    const fetchTasks = React.useCallback(async () => {
         setLoading(true);
         if (!supabase || !riderPhone) return;
         try {
@@ -65,7 +65,7 @@ export default function RiderDashboard() {
 
             const { data } = await query.limit(10);
 
-            setMissions((data as Mission[]) || []);
+            setTasks((data as Mission[]) || []);
 
             const completed = (data || []).filter(m => m.status === 'Delivered').length;
             const earnings = (data || []).filter(m => m.status === 'Delivered').reduce((s) => s + 450, 0); // Flat KSh 450/drop
@@ -77,14 +77,14 @@ export default function RiderDashboard() {
     }, [riderPhone, tenant_id]);
 
     React.useEffect(() => {
-        fetchMissions();
+        fetchTasks();
 
-        // Initialize high-velocity tracking node
-        const win = window as unknown as Window & { TitanNode?: TitanNode };
-        if (typeof window !== 'undefined' && win.TitanNode?.toggleTracking) {
-            win.TitanNode.toggleTracking(true);
+        // Initialize high-velocity tracking
+        const win = window as unknown as Window & { ApexDevice?: ApexDevice };
+        if (typeof window !== 'undefined' && win.ApexDevice?.toggleTracking) {
+            win.ApexDevice.toggleTracking(true);
         }
-    }, [fetchMissions]);
+    }, [fetchTasks]);
 
     const handleLogout = () => {
         document.cookie = 'admin_session=; path=/; max-age=0';
@@ -121,7 +121,7 @@ export default function RiderDashboard() {
         }
     };
 
-    if (loading && missions.length === 0) {
+    if (loading && tasks.length === 0) {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
                 <Loader2 className="animate-spin text-primary h-10 w-10" />
@@ -159,9 +159,9 @@ export default function RiderDashboard() {
             </header>
 
             <main className="p-6 space-y-8 mt-4">
-                {activeTab === 'missions' && (
+                {activeTab === 'tasks' && (
                     <div className="space-y-8 animate-in fade-in duration-500">
-                        {/* Active Mission Alert */}
+                        {/* Active Task Alert */}
                         <Card className="p-6 rounded-[2.5rem] bg-indigo-600 text-white relative overflow-hidden border-none">
                             <div className="relative z-10 space-y-4">
                                 <div className="flex items-center gap-3">
@@ -174,11 +174,11 @@ export default function RiderDashboard() {
                             <Truck className="absolute -bottom-6 -right-6 h-32 w-32 text-white/10 rotate-12" />
                         </Card>
 
-                        {/* Mission Stream */}
+                        {/* Task Stream */}
                         <div className="space-y-6">
-                            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Recent Mission History</h3>
+                            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Recent Task History</h3>
                             <div className="space-y-4">
-                                {missions.map(m => (
+                                {tasks.map(m => (
                                     <Card key={m.id} className="p-6 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex items-center justify-between group hover:shadow-xl transition-all">
                                         <div className="flex items-center gap-4">
                                             <div className={cn(
@@ -272,17 +272,17 @@ export default function RiderDashboard() {
                 )}
             </main>
 
-            {/* Tactical Navigation Bar */}
+            {/* Navigation Bar */}
             <nav className="fixed bottom-8 left-6 right-8 h-20 bg-white/90 backdrop-blur-2xl rounded-[2.5rem] border border-slate-200 shadow-2xl flex items-center justify-around px-8 z-50">
                 <button
-                    onClick={() => setActiveTab('missions')}
+                    onClick={() => setActiveTab('tasks')}
                     className={cn(
                         "flex flex-col items-center gap-1 transition-all",
-                        activeTab === 'missions' ? "text-primary" : "text-slate-300 hover:text-foreground"
+                        activeTab === 'tasks' ? "text-primary" : "text-slate-300 hover:text-foreground"
                     )}
                 >
                     <Truck size={24} />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Missions</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest">Tasks</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('stats')}
