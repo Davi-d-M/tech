@@ -161,8 +161,8 @@ function TrackingContent() {
       <div className="max-w-4xl mx-auto">
 
         <div className="mb-12">
-            <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase mb-4">Track Gadget</h1>
-            <p className="text-slate-500 font-medium text-lg italic">Real-time visibility into your tech dispatch.</p>
+            <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase mb-4">Track Order</h1>
+            <p className="text-slate-500 font-medium text-lg italic">Real-time visibility into your delivery.</p>
         </div>
 
         <Card className="rounded-[3rem] border-slate-100 shadow-2xl shadow-slate-200/50 mb-16 overflow-hidden">
@@ -271,22 +271,22 @@ function TrackingContent() {
                             </div>
                         </div>
 
-                        {/* Titan Pass Secure Handover (Android Only) */}
+                        {/* QR Access Pass (Android Only) */}
                         {order.status === 'Dispatched' && (
                             <div className="mt-8 pt-8 border-t border-slate-50 flex justify-center">
                                 <Button
                                     onClick={() => {
-                                        const win = window as unknown as { TitanNode?: { generateMemberPass: (id: string) => void } };
-                                        if (win.TitanNode?.generateMemberPass) {
-                                            win.TitanNode.generateMemberPass(order.id.toString());
+                                        const win = window as unknown as { NativeDevice?: { generateMemberPass: (id: string) => void } };
+                                        if (win.NativeDevice?.generateMemberPass) {
+                                            win.NativeDevice.generateMemberPass(order.id.toString());
                                         } else {
-                                            alert("Titan Pass requires the native Android Node. Access denied.");
+                                            alert("QR Pass requires the official mobile application.");
                                         }
                                     }}
                                     className="h-14 px-10 rounded-2xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-[0.3em] shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
                                 >
                                     <Zap size={16} className="text-primary animate-pulse" />
-                                    Show Titan Pass
+                                    Show QR Pass
                                 </Button>
                             </div>
                         )}
@@ -328,10 +328,10 @@ function TrackingContent() {
                                     <div className="relative z-10 space-y-6">
                                         <div className="flex items-center gap-3">
                                             <div className="h-10 w-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-lg"><Star size={20} className="fill-current" /></div>
-                                            <h3 className="text-xl font-black uppercase tracking-tighter text-amber-900">Rate your Pilot</h3>
+                                            <h3 className="text-xl font-black uppercase tracking-tighter text-amber-900">Rate your Experience</h3>
                                         </div>
                                         <p className="text-sm font-medium text-amber-800 italic leading-relaxed">
-                                            &quot;How was your delivery experience with {order.rider_name || 'our rider'}? Your feedback powers the fleet.&quot;
+                                            &quot;How was your delivery experience with {order.rider_name || 'our rider'}? Your feedback helps us improve our service.&quot;
                                         </p>
                                         <div className="flex justify-center gap-4 py-4">
                                             {[1, 2, 3, 4, 5].map((star) => (
@@ -344,7 +344,7 @@ function TrackingContent() {
                                                             .update({ rider_rating: star })
                                                             .eq('id', order.id);
 
-                                                        // Sync Rider Merit Node
+                                                        // Sync Rider Merit
                                                         if (order.rider_phone) {
                                                             fetch('/api/rider/merit', {
                                                                 method: 'POST',
@@ -353,7 +353,7 @@ function TrackingContent() {
                                                             }).catch(() => {});
                                                         }
 
-                                                        alert("Feedback Synchronized! Thank you, Commander.");
+                                                        alert("Feedback Submitted! Thank you.");
                                                     }}
                                                     className="h-12 w-12 rounded-xl bg-white border-2 border-amber-200 text-amber-400 hover:bg-amber-500 hover:text-white transition-all active:scale-95 shadow-sm flex items-center justify-center"
                                                 >

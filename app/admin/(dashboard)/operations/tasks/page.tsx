@@ -70,7 +70,7 @@ export default function TaskCenter() {
 
             if (error) throw error;
 
-            setMessage({ type: 'success', text: "New operations protocol established. 📝" });
+            setMessage({ type: 'success', text: "New task created successfully. 📝" });
             setTimeout(() => setMessage(null), 3000);
             setIsAdding(false);
             setNewTask({ title: '', description: '', priority: 'Medium' });
@@ -97,7 +97,7 @@ export default function TaskCenter() {
             const { error } = await supabase.from('admin_tasks').delete().eq('id', id);
             if (error) throw error;
             setTasks(prev => prev.filter(t => t.id !== id));
-            setMessage({ type: 'success', text: "Protocol decommissioned." });
+            setMessage({ type: 'success', text: "Task deleted." });
             setTimeout(() => setMessage(null), 3000);
         } catch (err) {
             console.error(err);
@@ -122,7 +122,7 @@ export default function TaskCenter() {
                         <RefreshCcw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} /> Sync Board
                     </Button>
                     <Button onClick={() => setIsAdding(true)} className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-                        <Plus className="h-4 w-4 mr-2" /> New Protocol
+                        <Plus className="h-4 w-4 mr-2" /> New Task
                     </Button>
                 </div>
             </header>
@@ -223,15 +223,15 @@ export default function TaskCenter() {
                     <Card className="max-w-md w-full bg-card rounded-[3rem] border border-border shadow-2xl p-10 space-y-8 animate-in zoom-in-95 duration-300">
                         <div className="flex items-center gap-4">
                             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Zap size={24} /></div>
-                            <h3 className="text-2xl font-black uppercase text-foreground tracking-tighter">New Mission</h3>
+                            <h3 className="text-2xl font-black uppercase text-foreground tracking-tighter">New Task</h3>
                         </div>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Protocol Title</label>
-                                <Input value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground" placeholder="e.g. Audit Warehouse Bin B" />
+                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Task Title</label>
+                                <Input value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground" placeholder="e.g. Audit Inventory" />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Severity</label>
+                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Priority</label>
                                 <select
                                     value={newTask.priority}
                                     onChange={e => setNewTask({...newTask, priority: e.target.value as Task['priority']})}
@@ -245,8 +245,8 @@ export default function TaskCenter() {
                             </div>
                         </div>
                         <div className="flex gap-4 pt-4">
-                            <Button onClick={handleCreateTask} className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all">Establish</Button>
-                            <Button onClick={() => setIsAdding(false)} variant="outline" className="flex-1 h-14 rounded-2xl font-black uppercase text-[10px] border-border">Abort</Button>
+                            <Button onClick={handleCreateTask} className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all">Create</Button>
+                            <Button onClick={() => setIsAdding(false)} variant="outline" className="flex-1 h-14 rounded-2xl font-black uppercase text-[10px] border-border">Cancel</Button>
                         </div>
                     </Card>
                 </div>

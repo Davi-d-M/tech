@@ -23,7 +23,7 @@ class ApexMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         // Sync token to Supabase for targeted missions
-        println("TITAN: New Node Token -> $token")
+        println("APEX: New Device Token -> $token")
     }
 
     private fun sendNotification(title: String, messageBody: String) {

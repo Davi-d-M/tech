@@ -396,7 +396,7 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
                     </div>
 
                     <div className="mt-10 pt-6 border-t border-slate-50 text-center">
-                        <p className="text-[8px] font-black uppercase text-slate-300 tracking-[0.5em]">Titan Hub Real-time Sync Active</p>
+                        <p className="text-[8px] font-black uppercase text-slate-300 tracking-[0.5em]">Apex Hub Real-time Sync Active</p>
                     </div>
                 </div>
             )}
@@ -485,7 +485,7 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
                             ) : (
                                 <div className="py-8 text-center space-y-2">
                                     <CheckCircle className="h-8 w-8 text-emerald-500 mx-auto opacity-20" />
-                                    <p className="text-[10px] font-black uppercase text-slate-400">No new alerts, bro!</p>
+                                    <p className="text-[10px] font-black uppercase text-slate-400">No new alerts.</p>
                                 </div>
                             )}
                             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex gap-4 group/item hover:border-primary/20 transition-all opacity-50 grayscale">

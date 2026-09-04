@@ -4,7 +4,15 @@ import { supabase } from '@/lib/supabaseClient';
 
 export async function POST(request: Request) {
   const rawBody = await request.text().catch(() => '');
-  let parsedBody: { password?: string, email?: string, mode?: 'pin' | 'email' | 'staff_pin' | 'rider' | 'rider_biometric', phone?: string, assertion?: { id: string } } = {};
+  let parsedBody: {
+      password?: string,
+      email?: string,
+      mode?: 'pin' | 'email' | 'staff_pin' | 'rider' | 'rider_biometric',
+      phone?: string,
+      assertion?: { id: string },
+      device_id?: string,
+      device_name?: string
+  } = {};
 
   if (rawBody) {
     try {
@@ -14,10 +22,17 @@ export async function POST(request: Request) {
     }
   }
 
-  const { password, email, mode = 'pin', phone, assertion } = parsedBody;
+  const { password, email, mode = 'pin', phone, assertion, device_id, device_name } = parsedBody;
 
   // Get User IP for Targeted Security
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
+
+  // HELER: Check for Trusted Hardware
+  const isDeviceTrusted = (authorizedList: { id: string }[], currentId?: string) => {
+      if (!currentId) return true; // Fallback if ID missing
+      if (!authorizedList || authorizedList.length === 0) return false;
+      return authorizedList.some(d => d.id === currentId);
+  };
 
   // 1. PIN Login Mode (Master Admin / Owner)
   if (mode === 'pin') {
@@ -38,7 +53,7 @@ export async function POST(request: Request) {
 
     if (failCount && failCount >= 5) {
         return NextResponse.json({
-            error: 'Security Lockout: Too many failed attempts. Try again in 15 minutes.'
+            error: 'Access Restricted: Multiple failed login attempts detected. Please try again in 15 minutes.'
         }, { status: 429 });
     }
 
@@ -104,12 +119,29 @@ export async function POST(request: Request) {
 
     const { data: staffData, error: staffError } = await supabase
         .from('staff')
-        .select('role, tenant_id, supplier_id, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
+        .select('role, tenant_id, supplier_id, authorized_devices, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
         .eq('id', data.user.id)
         .maybeSingle();
 
     if (staffError || !staffData) {
         return NextResponse.json({ error: 'Access denied. You do not have admin or staff permissions.' }, { status: 403 });
+    }
+
+    // GHOST PROTOCOL: Hardware Binding
+    if (!isDeviceTrusted(staffData.authorized_devices || [], device_id)) {
+        await supabase.from('login_attempts').insert([{
+            success: false,
+            ip_address: ip,
+            device_id,
+            device_name,
+            staff_email: email,
+            action: 'BLOCK_UNAUTHORIZED_DEVICE'
+        }]);
+        return NextResponse.json({
+            error: 'Security Alert: This device is not authorized to access this account. Please contact your administrator.',
+            is_new_device: true,
+            node_id: device_id
+        }, { status: 403 });
     }
 
     const permissions = {
@@ -159,13 +191,18 @@ export async function POST(request: Request) {
 
     const { data: staffData, error: staffError } = await supabase
         .from('staff')
-        .select('id, role, pin, tenant_id, supplier_id, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
+        .select('id, role, pin, tenant_id, supplier_id, authorized_devices, can_view_revenue, can_manage_inventory, can_manage_orders, can_delete_items, can_manage_blog, can_manage_affiliates, can_manage_customer_care, can_manage_broadcast, can_manage_settings, can_manage_media')
         .eq('email', (email || '').trim().toLowerCase())
         .single();
 
     if (staffError || !staffData) {
         await supabase.from('login_attempts').insert([{ success: false, ip_address: ip }]);
         return NextResponse.json({ error: 'Access denied or invalid account.' }, { status: 403 });
+    }
+
+    // GHOST PROTOCOL: Hardware Binding
+    if (!isDeviceTrusted(staffData.authorized_devices || [], device_id)) {
+        return NextResponse.json({ error: 'Access Denied: This device is not registered for administrative access.' }, { status: 403 });
     }
 
     if (!staffData.pin || staffData.pin !== password) {
@@ -225,13 +262,18 @@ export async function POST(request: Request) {
 
     const { data: riderData, error: riderError } = await supabase
         .from('rider_status')
-        .select('id, rider_phone, pin, verification_status, tenant_id')
+        .select('id, rider_phone, pin, verification_status, tenant_id, authorized_devices')
         .eq('rider_phone', normalizedPhone)
         .maybeSingle();
 
     if (riderError || !riderData) {
         await supabase.from('login_attempts').insert([{ success: false, ip_address: ip }]);
         return NextResponse.json({ error: 'Rider not found or unauthorized.' }, { status: 403 });
+    }
+
+    // GHOST PROTOCOL: Hardware Binding
+    if (!isDeviceTrusted(riderData.authorized_devices || [], device_id)) {
+        return NextResponse.json({ error: 'Access Denied: This mobile device is not registered for logistics operations. Please contact dispatch.' }, { status: 403 });
     }
 
     if (riderData.pin !== password) {
@@ -241,7 +283,7 @@ export async function POST(request: Request) {
 
     if (riderData.verification_status !== 'Verified') {
         return NextResponse.json({
-            error: `Tactical Alert: Your account status is ${riderData.verification_status || 'Pending'}. Access restricted until Admin Approval.`
+            error: `Account Notice: Your account status is ${riderData.verification_status || 'Pending'}. Access is restricted pending administrative approval.`
         }, { status: 403 });
     }
 

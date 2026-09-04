@@ -137,9 +137,9 @@ export default function RiderDashboard() {
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Titan Node Active</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">System Connected</span>
                         </div>
-                        <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground leading-none">Titan Console</h1>
+                        <h1 className="text-4xl font-black uppercase tracking-tighter text-foreground leading-none">Fleet Dashboard</h1>
                     </div>
                     <button onClick={handleLogout} className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
                         <LogOut size={20} />
@@ -152,7 +152,7 @@ export default function RiderDashboard() {
                         <p className="text-2xl font-black">{formatPrice(stats.earnings)}</p>
                     </div>
                     <div className="p-5 rounded-3xl bg-slate-900 text-white space-y-1">
-                        <p className="text-[9px] font-black uppercase tracking-widest opacity-40">Missions</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest opacity-40">Tasks</p>
                         <p className="text-2xl font-black">{stats.completed} Done</p>
                     </div>
                 </div>
@@ -166,9 +166,9 @@ export default function RiderDashboard() {
                             <div className="relative z-10 space-y-4">
                                 <div className="flex items-center gap-3">
                                     <Activity size={18} className="animate-pulse" />
-                                    <h3 className="text-sm font-black uppercase tracking-widest">Active Dispatch</h3>
+                                    <h3 className="text-sm font-black uppercase tracking-widest">Active Task</h3>
                                 </div>
-                                <p className="text-lg font-bold leading-tight">Proceed to Westlands Central for pickup of Payload #10291</p>
+                                <p className="text-lg font-bold leading-tight">Proceed to Westlands Central for pickup of Order #10291</p>
                                 <Button className="w-full h-14 rounded-2xl bg-white text-indigo-600 font-black uppercase text-xs tracking-widest shadow-xl">Start Navigation</Button>
                             </div>
                             <Truck className="absolute -bottom-6 -right-6 h-32 w-32 text-white/10 rotate-12" />
@@ -176,7 +176,7 @@ export default function RiderDashboard() {
 
                         {/* Mission Stream */}
                         <div className="space-y-6">
-                            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Chronological Missions</h3>
+                            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Recent Mission History</h3>
                             <div className="space-y-4">
                                 {missions.map(m => (
                                     <Card key={m.id} className="p-6 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex items-center justify-between group hover:shadow-xl transition-all">
@@ -212,7 +212,7 @@ export default function RiderDashboard() {
 
                 {activeTab === 'stats' && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Performance Insights</h3>
+                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Earnings Insights</h3>
                          <div className="grid gap-6">
                             <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex items-center gap-6">
                                 <div className="h-14 w-14 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center shadow-inner"><TrendingUp size={24} /></div>
@@ -227,7 +227,7 @@ export default function RiderDashboard() {
 
                 {activeTab === 'profile' && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Unit Identity</h3>
+                         <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Rider Identity</h3>
 
                          <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-8">
                             <div className="flex items-center gap-6">
@@ -235,10 +235,10 @@ export default function RiderDashboard() {
                                     <User size={40} />
                                 </div>
                                 <div>
-                                    <h4 className="text-2xl font-black text-foreground uppercase tracking-tight">Pilot Node</h4>
+                                    <h4 className="text-2xl font-black text-foreground uppercase tracking-tight">Rider Profile</h4>
                                     <div className="flex items-center gap-2 mt-1">
                                         <Phone size={12} className="text-slate-300" />
-                                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">ID: {riderPhone}</p>
+                                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Rider ID: {riderPhone}</p>
                                     </div>
                                 </div>
                             </div>
@@ -247,7 +247,7 @@ export default function RiderDashboard() {
                                 <div className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl group transition-all hover:bg-white hover:shadow-lg hover:border-primary/10 border border-transparent">
                                     <div className="flex items-center gap-4">
                                         <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm"><ShieldCheck size={20} /></div>
-                                        <span className="text-[10px] font-black uppercase text-slate-600 tracking-widest">Biometric Enrollment</span>
+                                        <span className="text-[10px] font-black uppercase text-slate-600 tracking-widest">Security Access</span>
                                     </div>
                                     <span className="text-[8px] font-black text-emerald-500 uppercase bg-emerald-50 px-2 py-1 rounded">Active</span>
                                 </div>
@@ -258,14 +258,14 @@ export default function RiderDashboard() {
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm"><Key size={20} /></div>
-                                        <span className="text-[10px] font-black uppercase text-slate-600 tracking-widest">Change Secret PIN</span>
+                                        <span className="text-[10px] font-black uppercase text-slate-600 tracking-widest">Update Security PIN</span>
                                     </div>
                                     <Zap size={14} className="text-slate-200 group-hover:text-primary transition-colors" />
                                 </button>
                             </div>
 
                             <Button onClick={handleLogout} variant="ghost" className="w-full h-14 rounded-2xl text-rose-500 font-black uppercase text-[10px] tracking-widest hover:bg-rose-50">
-                                Terminate Session
+                                Sign Out
                             </Button>
                          </Card>
                     </div>

@@ -195,7 +195,7 @@ export default function AdminMediaHub() {
             <div className="grid lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-3 space-y-6">
                     <Card className="p-8 rounded-[2.5rem] border border-slate-100 bg-white shadow-sm space-y-6">
-                        <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Library Intel</h2>
+                        <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Media Library</h2>
                         <div className="space-y-6 text-left">
                             <div className="flex justify-between items-center border-b border-slate-50 pb-4">
                                 <span className="text-[9px] font-black uppercase text-slate-400">Section</span>
@@ -223,12 +223,12 @@ export default function AdminMediaHub() {
                     {loading ? (
                         <div className="p-32 text-center flex flex-col items-center gap-4 bg-white rounded-[3rem] border border-slate-100">
                             <Loader2 className="h-12 w-12 text-primary animate-spin" />
-                            <p className="text-[10px] font-black uppercase text-slate-300 tracking-[0.3em]">Extracting Cloud Payload...</p>
+                            <p className="text-[10px] font-black uppercase text-slate-300 tracking-[0.3em]">Loading Media Assets...</p>
                         </div>
                     ) : filteredAssets.length === 0 ? (
                         <div className="p-32 text-center bg-white rounded-[3rem] border border-slate-100 shadow-inner flex flex-col items-center gap-6">
                             <ImageIcon className="h-20 w-20 text-slate-50" />
-                            <p className="text-xl font-black text-slate-300 uppercase italic">Sector Empty.</p>
+                            <p className="text-xl font-black text-slate-300 uppercase italic">No assets found.</p>
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">

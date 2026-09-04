@@ -55,7 +55,7 @@ export default function ClaimInvitationPage() {
 
             if (updateError) throw updateError;
 
-            // 3. Simulated Provisioning Success
+            // 3. Complete Provisioning
             setStatus('success');
 
             // Redirect after 3s
@@ -84,15 +84,15 @@ export default function ClaimInvitationPage() {
                             <Rocket size={40} className="animate-pulse" />
                         </div>
                         <div className="space-y-3">
-                            <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Activate Node</h1>
-                            <p className="text-slate-500 font-medium">Claim your invitation to join your organization&apos;s digital grid.</p>
+                            <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Activate Invitation</h1>
+                            <p className="text-slate-500 font-medium">Claim your invitation to join your organization&apos;s workspace.</p>
                         </div>
                         <div className="space-y-4">
                             <div className="relative">
                                 <Input
                                     value={token}
                                     onChange={e => setToken(e.target.value.toUpperCase())}
-                                    placeholder="ENTER MAGIC TOKEN"
+                                    placeholder="ENTER INVITATION TOKEN"
                                     className="h-16 rounded-2xl bg-slate-50 border-slate-100 pl-14 font-black tracking-widest text-sm"
                                 />
                                 <Key className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
@@ -112,8 +112,8 @@ export default function ClaimInvitationPage() {
                     <div className="space-y-8 text-center py-10">
                         <Loader2 size={64} className="animate-spin text-primary mx-auto" />
                         <div className="space-y-2">
-                            <h2 className="text-2xl font-black uppercase tracking-tighter">Synchronizing...</h2>
-                            <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em]">Negotiating Grid Handshake</p>
+                            <h2 className="text-2xl font-black uppercase tracking-tighter">Processing...</h2>
+                            <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em]">Authorizing credentials</p>
                         </div>
                     </div>
                 )}
@@ -132,7 +132,7 @@ export default function ClaimInvitationPage() {
                         </div>
                         <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center gap-3">
                             <Zap size={16} className="text-primary animate-bounce" />
-                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Redirecting to Command Center...</p>
+                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Redirecting to Dashboard...</p>
                         </div>
                     </div>
                 )}
@@ -153,7 +153,7 @@ export default function ClaimInvitationPage() {
                 <footer className="pt-8 text-center border-t border-slate-50 opacity-30">
                     <div className="flex items-center justify-center gap-2 mb-2">
                         <ShieldCheck size={14} />
-                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Secured by Apex Singularity</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Secured by Apex Platform</span>
                     </div>
                 </footer>
             </Card>

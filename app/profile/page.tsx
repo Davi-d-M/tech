@@ -34,6 +34,7 @@ import {
   Users,
   Smartphone,
   Rocket,
+  Share2,
   ArrowRight,
   Calendar,
   Heart,
@@ -674,6 +675,7 @@ export default function ProfilePage() {
                         { label: 'Apex XP', val: stats.points, icon: Zap, color: 'primary', href: '#points-ledger-section' },
                         { label: 'Active Warranty', val: stats.activeWarranties, icon: ShieldCheck, color: 'primary', href: '#warranty-section' },
                         { label: 'Wishlist', val: stats.wishlistCount, icon: Heart, color: 'primary', href: '/wishlist' },
+                        { label: 'Affiliate', val: profile?.referral_code || 'Apply', icon: Share2, color: 'primary', href: '/affiliate/dashboard' },
                         { label: 'Rank', val: stats.level, icon: stats.rankIcon, color: 'primary', href: '#loyalty-pathway-section' },
                     ].map(item => (
                         <button
@@ -1421,7 +1423,7 @@ export default function ProfilePage() {
                           <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center text-white"><UserIcon className="h-5 w-5" /></div>
                           <div className="text-left">
                               <h2 className="text-xl font-black uppercase tracking-tighter">Update Profile</h2>
-                              <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Titan Account Management</p>
+                              <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Apex Account Management</p>
                           </div>
                       </div>
                       <button onClick={() => setIsEditing(false)} className="h-10 w-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors"><X className="h-6 w-6" /></button>

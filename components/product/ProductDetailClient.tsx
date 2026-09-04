@@ -46,13 +46,14 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
 
   const [justAdded, setJustAdded] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [isAffiliate, setIsAffiliate] = useState(false);
 
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const router = useRouter();
   const { settings } = useSettings();
 
-  // 1. Browsing History & Referral Fetch Logic
+  // 1. Browsing History & Affiliate Logic
   React.useEffect(() => {
     async function initData() {
         if (!supabase) return;
@@ -60,9 +61,14 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             const { data: { session } } = await supabase.auth.getSession();
 
             if (session) {
-                // Fetch Referral Code for sharing
-                const { data: profile } = await supabase.from('profiles').select('referral_code').eq('id', session.user.id).single();
-                if (profile) setReferralCode(profile.referral_code);
+                // 1.1 Fetch Referral Code & Affiliate Status
+                const [profileRes, affRes] = await Promise.all([
+                    supabase.from('profiles').select('referral_code').eq('id', session.user.id).single(),
+                    supabase.from('affiliate_profiles').select('status').eq('user_id', session.user.id).eq('status', 'Active').maybeSingle()
+                ]);
+
+                if (profileRes.data) setReferralCode(profileRes.data.referral_code);
+                if (affRes.data) setIsAffiliate(true);
 
                 // Log to Database for members
                 await supabase.from('browsing_history').insert([{
@@ -411,9 +417,27 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                     {isInWishlist(product.id) ? '❤️ Saved' : '🤍 Wishlist'}
                 </button>
                 <button onClick={() => handleShare('copy')} className="text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground flex items-center gap-3 transition-colors">
-                    <Share2 className="h-4 w-4" /> Share Tech
+                    <Share2 className="h-4 w-4" /> Share Product
                 </button>
             </div>
+
+            {isAffiliate && (
+                <div className="mt-8 p-6 rounded-[2rem] bg-indigo-50 border-2 border-indigo-100 flex flex-col gap-4 animate-in slide-in-from-bottom-2">
+                    <div className="flex items-center gap-3 text-left">
+                        <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-indigo-600 shadow-sm"><Zap className="h-5 w-5 fill-current" /></div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase text-indigo-900 tracking-widest">Partner Rewards</p>
+                            <p className="text-[8px] font-bold text-indigo-500 uppercase">Earn commission on every successful referral</p>
+                        </div>
+                    </div>
+                    <Button
+                        onClick={() => handleShare('whatsapp')}
+                        className="w-full h-14 rounded-xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-indigo-200 hover:bg-indigo-700 active:scale-95 transition-all"
+                    >
+                        Promote & Earn
+                    </Button>
+                </div>
+            )}
           </div>
         </div>
 

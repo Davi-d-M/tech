@@ -72,7 +72,7 @@ export default function CampaignHistory() {
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Deployment Log</span>
                     </div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Campaign History</h1>
-                    <p className="text-muted-foreground text-sm font-medium mt-1">Review past tactical missions and monitor scheduled launches.</p>
+                    <p className="text-muted-foreground text-sm font-medium mt-1">Review past marketing activities and monitor scheduled launches.</p>
                 </div>
                 <Link href="/admin/marketing/create">
                     <Button className="rounded-xl h-12 px-6 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
@@ -87,7 +87,7 @@ export default function CampaignHistory() {
                     <Input
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        placeholder="Search by mission name or type..."
+                        placeholder="Search by campaign name or type..."
                         className="h-14 rounded-2xl bg-card border-border pl-12 text-sm font-bold shadow-sm"
                     />
                 </div>
@@ -112,8 +112,8 @@ export default function CampaignHistory() {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-secondary text-muted-foreground font-black uppercase text-[9px] tracking-[0.2em]">
-                                    <th className="px-10 py-6">Mission Details</th>
-                                    <th className="px-10 py-6">Target Payload</th>
+                                    <th className="px-10 py-6">Campaign Details</th>
+                                    <th className="px-10 py-6">Target Product</th>
                                     <th className="px-10 py-6">Status</th>
                                     <th className="px-10 py-6">Scheduled</th>
                                     <th className="px-10 py-6 text-right">Actions</th>
@@ -133,7 +133,7 @@ export default function CampaignHistory() {
                                                 <div className="h-8 w-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary border border-primary/10">
                                                     <Zap size={14} />
                                                 </div>
-                                                <span className="text-[10px] font-black uppercase text-slate-500">{camp.products?.name || 'Multi-Payload'}</span>
+                                                <span className="text-[10px] font-black uppercase text-slate-500">{camp.products?.name || 'Multi-Product'}</span>
                                             </div>
                                         </td>
                                         <td className="px-10 py-8">

@@ -77,11 +77,11 @@ export default function AbandonedCartEngine() {
 
     const nudgeCustomer = (cart: AbandonedCart, channel: 'WhatsApp' | 'Email') => {
         if (channel === 'WhatsApp') {
-            const message = `Hello ${cart.customer_name}! This is ${settings?.branding?.owner_name || 'Admin'} from Apexstores. I noticed you left some elite tech in your bag! 🚀\n\nUse code "RECOVER5" for 5% OFF to complete your mission. \n\nCheck your bag here: ${window.location.origin}/cart`;
+            const message = `Hello ${cart.customer_name}! This is ${settings?.branding?.owner_name || 'Admin'} from Apexstores. We noticed you left some items in your bag! 🚀\n\nUse code "RECOVER5" for 5% OFF to complete your purchase. \n\nCheck your bag here: ${window.location.origin}/cart`;
             window.open(`https://wa.me/${cart.customer_phone.replace(/\+/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
         }
 
-        setMessage({ type: 'success', text: `Tactical nudge dispatched via ${channel} for ${cart.customer_name}. ⚡` });
+        setMessage({ type: 'success', text: `Recovery message sent via ${channel} to ${cart.customer_name}.` });
         setTimeout(() => setMessage(null), 5000);
         setCarts(prev => prev.map(c => c.id === cart.id ? { ...c, recovery_status: 'Nudged' } : c));
     };
@@ -97,7 +97,7 @@ export default function AbandonedCartEngine() {
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Conversion Optimizer</span>
                     </div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Abandoned Carts</h1>
-                    <p className="text-muted-foreground text-sm font-medium mt-1">Intercept and recover leaking revenue through tactical nudges.</p>
+                    <p className="text-muted-foreground text-sm font-medium mt-1">Recover abandoned carts and re-engage potential customers.</p>
                 </div>
                 <div className="flex gap-2">
                     <Button onClick={fetchCarts} variant="outline" className="rounded-xl h-12 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest transition-all">

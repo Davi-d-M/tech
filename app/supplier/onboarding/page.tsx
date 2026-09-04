@@ -45,7 +45,7 @@ export default function SupplierOnboarding() {
         'Elite Audio',
         'Super Chargers',
         'Armor Cases',
-        'Titan Watches',
+        'Apex Watches',
         'Elite Cables',
         'Smart Gadgets'
     ];

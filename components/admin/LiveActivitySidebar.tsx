@@ -139,7 +139,7 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
                         {events.length === 0 ? (
                             <div className="py-20 text-center space-y-4 opacity-30">
                                 <ActivityIcon className="h-10 w-10 mx-auto animate-pulse" />
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground">Awaiting Uplink...</p>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground">Waiting for Activity...</p>
                             </div>
                         ) : (
                             events.map((event) => {
@@ -167,7 +167,7 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
                                                 </div>
                                                 {event.amount && <p className="text-sm font-black text-primary mt-1">{formatPrice(event.amount)}</p>}
                                                 <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <span className="text-[8px] font-black uppercase text-primary">Tactical View</span>
+                                                    <span className="text-[8px] font-black uppercase text-primary">View Details</span>
                                                     <ChevronRight className="h-3 w-3 text-primary" />
                                                 </div>
                                             </div>
@@ -182,9 +182,9 @@ export default function LiveActivitySidebar({ isOpen, setIsOpen }: { isOpen: boo
                         <div className="flex justify-between items-center text-[9px] font-black uppercase text-muted-foreground tracking-widest">
                             <span className="flex items-center gap-2">
                                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                Satellite Link Stable
+                                Connection Stable
                             </span>
-                            <span>v4.2-Titan</span>
+                            <span>v4.2.0</span>
                         </div>
                     </div>
                 </div>

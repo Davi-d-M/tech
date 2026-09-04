@@ -4,7 +4,7 @@ import { verifySessionCookie } from "@/lib/adminAuth";
 import { cookies } from "next/headers";
 
 /**
- * Apex OS: Secure Server-Side Audit Logger
+ * Apex Platform: Secure Server-Side Audit Logger
  * Captures real IP and verifies authorization before persistence.
  */
 export async function POST(request: Request) {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         const sessionData = await verifySessionCookie(sessionToken);
 
         if (!sessionData) {
-            return NextResponse.json({ error: "Unauthorized: Protocol Access Denied" }, { status: 401 });
+            return NextResponse.json({ error: "Unauthorized: Access Denied" }, { status: 401 });
         }
 
         const body = await request.json();
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
         const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
                    'unknown-internal';
 
-        // 3. Persist to Audit Grid
+        // 3. Persist to Audit Ledger
         const { error } = await supabase
             .from('audit_logs')
             .insert([{
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
                 action,
                 details,
                 ip_address: ip,
-                device_info: deviceInfo || 'Titan API Node',
+                device_info: deviceInfo || 'Apex API',
                 created_at: new Date().toISOString()
             }]);
 

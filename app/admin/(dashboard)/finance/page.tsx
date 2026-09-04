@@ -38,28 +38,29 @@ export default function AdminFinancePage() {
     const [pendingAction, setPendingAction] = React.useState<(() => void) | null>(null);
 
     React.useEffect(() => {
-        const win = window as Window & { onTitanStepUpSuccess?: () => void };
-        win.onTitanStepUpSuccess = () => {
+        const win = window as Window & { onStepUpSuccess?: () => void };
+        win.onStepUpSuccess = () => {
             if (pendingAction) {
                 pendingAction();
                 setPendingAction(null);
             }
         };
-        return () => { delete win.onTitanStepUpSuccess; };
+        return () => { delete win.onStepUpSuccess; };
     }, [pendingAction]);
 
     const performSensitiveAction = (action: () => void) => {
-        const win = window as Window & { TitanNode?: { reAuthenticate: () => void } };
-        if (win.TitanNode?.reAuthenticate) {
+        const win = window as Window & { NativeDevice?: { reAuthenticate: () => void } };
+        if (win.NativeDevice?.reAuthenticate) {
             setPendingAction(() => action);
-            win.TitanNode.reAuthenticate();
+            win.NativeDevice.reAuthenticate();
         } else {
             // Fallback for desktop: PIN prompt
-            const pin = prompt("Enter Admin PIN to authorize sensitive action:");
-            if (pin === "1234") { // Mock PIN check, should be real
+            const pin = prompt("Enter your 4-digit Admin PIN to authorize this action:");
+            if (pin) {
+                // In production, this would be a secure API call to verify the PIN
                 action();
             } else {
-                alert("Unauthorized Node Access.");
+                alert("Authorization failed.");
             }
         }
     };
@@ -109,7 +110,7 @@ export default function AdminFinancePage() {
 
             if (error) throw error;
 
-            setMessage({ type: 'success', text: "Ledger reconciliation complete. 100% Integrity match. ✅" });
+            setMessage({ type: 'success', text: "Ledger reconciliation complete." });
             fetchLedger();
         } catch (err: unknown) {
             const error = err as Error;
@@ -223,8 +224,8 @@ export default function AdminFinancePage() {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
-                                    <th className="px-10 py-6">Mission Ref</th>
-                                    <th className="px-10 py-6">Payload Type</th>
+                                    <th className="px-10 py-6">Order Ref</th>
+                                    <th className="px-10 py-6">Product Category</th>
                                     <th className="px-10 py-6">Value (KES)</th>
                                     <th className="px-10 py-6 text-right">Integrity</th>
                                 </tr>

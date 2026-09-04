@@ -63,29 +63,41 @@ export default function IntelligenceHub() {
                 .map(([query, meta]) => ({ query, count: meta.count, success: meta.success }))
                 .sort((a,b) => b.count - a.count);
 
-            // 3. Funnel logic (Mocked based on Signal Stream for high fidelity)
-            const { data: sigs } = await supabase.from('user_signals').select('event_type').gte('created_at', fiveMinsAgo);
+            // 3. Funnel logic
+            const { data: sigs } = await supabase.from('user_signals').select('event_type, target, metadata').gte('created_at', fiveMinsAgo);
+
+            const landingCount = onlineTotal || 0;
+            const viewCount = sigs?.filter(s => s.event_type === 'VIEW').length || 0;
+            const addCount = sigs?.filter(s => s.event_type === 'ADD_TO_BAG').length || 0;
+            const checkCount = sigs?.filter(s => s.event_type === 'CHECKOUT_START').length || 0;
+
+            const calculateDropoff = (curr: number, prev: number) => {
+                if (prev === 0 || curr >= prev) return '0%';
+                return Math.round(((prev - curr) / prev) * 100) + '%';
+            };
+
             const funnel = [
-                { step: 'Landing', count: onlineTotal || 0, dropoff: '0%' },
-                { step: 'Product View', count: sigs?.filter(s => s.event_type === 'VIEW').length || 0, dropoff: '42%' },
-                { step: 'Add to Bag', count: sigs?.filter(s => s.event_type === 'ADD_TO_BAG').length || 0, dropoff: '68%' },
-                { step: 'Checkout', count: sigs?.filter(s => s.event_type === 'CHECKOUT_START').length || 0, dropoff: '22%' },
+                { step: 'Landing', count: landingCount, dropoff: '0%' },
+                { step: 'Product View', count: viewCount, dropoff: calculateDropoff(viewCount, landingCount) },
+                { step: 'Add to Bag', count: addCount, dropoff: calculateDropoff(addCount, viewCount) },
+                { step: 'Checkout', count: checkCount, dropoff: calculateDropoff(checkCount, addCount) },
             ];
 
             // 4. Recent signals stream
             const { data: recentSigs } = await supabase.from('user_signals').select('*').order('created_at', { ascending: false }).limit(10);
 
+            // 5. Registration Intel (Actual data if linked to profiles)
+            const { count: regCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+
             setData({
                 onlineVisitors: onlineTotal || 0,
-                registeredCount: Math.round((onlineTotal || 0) * 0.3),
-                anonymousCount: Math.round((onlineTotal || 0) * 0.7),
+                registeredCount: regCount || 0,
+                anonymousCount: Math.max(0, (onlineTotal || 0) - (regCount || 0)),
                 topSearches: searchSummary,
                 funnel,
-                sectionDwell: [
-                    { name: 'HERO', avgTime: 12 },
-                    { name: 'PRODUCTS', avgTime: 45 },
-                    { name: 'BLOG', avgTime: 8 }
-                ],
+                sectionDwell: (sigs || [])
+                    .filter(s => s.event_type === 'DWELL')
+                    .map(s => ({ name: s.target || 'Unknown', avgTime: Math.round((s.metadata?.duration_ms as number || 0) / 1000) })),
                 recentSignals: (recentSigs || []) as { created_at: string; event_type: string; target: string; url: string; metadata?: Record<string, unknown> }[]
             });
         } finally {
@@ -140,8 +152,8 @@ export default function IntelligenceHub() {
                         <div className="h-2 w-2 rounded-full bg-rose-500 animate-ping"></div>
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-rose-600">Global Radar Active</span>
                     </div>
-                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Customer Intelligence</h1>
-                    <p className="text-muted-foreground text-sm font-medium mt-1">Real-time behavioral audit and intent monitoring.</p>
+                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Customer Insights</h1>
+                    <p className="text-muted-foreground text-sm font-medium mt-1">Real-time behavioral analysis and intent monitoring.</p>
                 </div>
                 <Button onClick={fetchIntelligence} variant="outline" className="rounded-xl h-11 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest"><Zap className="h-4 w-4 mr-2" /> Refresh Radar</Button>
             </header>
@@ -153,15 +165,14 @@ export default function IntelligenceHub() {
                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Live Visitors</p>
                         <h3 className="text-5xl font-black tracking-tighter">{data?.onlineVisitors}</h3>
                         <div className="flex gap-4 mt-4">
-                            <span className="text-[9px] font-black uppercase text-emerald-400">● {data?.registeredCount} Members</span>
-                            <span className="text-[9px] font-black uppercase text-slate-400">○ {data?.anonymousCount} Guests</span>
+                            <span className="text-[9px] font-black uppercase text-emerald-400">Online Now</span>
                         </div>
                     </div>
                     <Activity className="absolute -bottom-6 -right-6 h-32 w-32 text-white/5 rotate-12" />
                 </Card>
                 {[
-                    { label: 'Engagement Velocity', val: 'Tactical', icon: Flame, color: 'primary' },
-                    { label: 'Active Funnels', val: '12 Streams', icon: Target, color: 'indigo' },
+                    { label: 'Active Signals', val: data?.recentSignals.length || 0, icon: Flame, color: 'primary' },
+                    { label: 'Funnels Monitor', val: 'Active', icon: Target, color: 'indigo' },
                     { label: 'Inventory Needs', val: data?.topSearches.filter(s => !s.success).length || 0, icon: AlertTriangle, color: 'amber' },
                 ].map((item) => (
                     <Card key={item.label} className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all">
@@ -230,9 +241,9 @@ export default function IntelligenceHub() {
                 <div className="p-10 border-b border-slate-50 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Activity className="h-5 w-5 text-primary" />
-                        <h3 className="text-lg font-black uppercase tracking-tighter">Tactical Signal Stream</h3>
+                        <h3 className="text-lg font-black uppercase tracking-tighter">Signal Stream</h3>
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-300">Live Updates Every 10s</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-300">Live Updates Every 30s</span>
                 </div>
                 <div className="divide-y divide-slate-50">
                     {data?.recentSignals.map((sig, i) => (

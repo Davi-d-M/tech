@@ -53,7 +53,7 @@ export default function RiderActivationPage() {
     const handleActivate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (form.pin !== form.confirmPin) {
-            alert("PIN mismatch, bro.");
+            alert("PINs do not match.");
             return;
         }
         if (!inviteInfo || !supabase) return;

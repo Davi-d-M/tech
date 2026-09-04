@@ -400,7 +400,7 @@ function CheckoutContent() {
       const sessionId = localStorage.getItem('apex_session_id');
 
       // 1. Create Master Order (Header)
-      const headerPayload = {
+      const headerPayload: Record<string, string | number | boolean | null | undefined> = {
           user_id: user?.id || null,
           session_id: sessionId,
           customer_name: customerName.trim(),
@@ -417,6 +417,14 @@ function CheckoutContent() {
           longitude: coords.lng || profile?.longitude || null,
           note: `Region: ${currentRegion.label}${activeCoupon ? ` | Coupon: ${activeCoupon.code}` : ''}${usePoints ? ` | Used ${pointsDiscount * 10} points` : ''}${referralCode ? ` | Referred by ${referralCode}` : ''}`
       };
+
+      // 1.1 Link Affiliate if referral code is an affiliate promo name
+      if (referralCode) {
+          const { data: aff } = await client.from('affiliate_profiles').select('user_id').eq('promo_name', referralCode.toLowerCase()).maybeSingle();
+          if (aff) {
+              headerPayload.affiliate_id = aff.user_id;
+          }
+      }
 
       const { data: headerData, error: headerError } = await client
           .from("orders")

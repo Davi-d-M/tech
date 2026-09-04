@@ -45,7 +45,7 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                 throw new Error(data.error);
             }
         } catch {
-            setError("Tactical link offline. Try again later, bro!");
+            setError("Connection unavailable. Please try again later.");
             setStatus('idle');
         }
     };
@@ -81,9 +81,9 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                             <Trophy className="h-16 w-16" />
                         </div>
                         <div className="space-y-2">
-                            <h4 className="text-4xl font-black uppercase tracking-tighter">Mission Accomplished</h4>
+                            <h4 className="text-4xl font-black uppercase tracking-tighter">Reward Claimed</h4>
                             <p className="text-primary font-black text-2xl italic tracking-widest">{prize.label} Received</p>
-                            <p className="text-slate-400 text-xs font-medium italic mt-4">&quot;Your elite reward has been added to your account ledger, bro!&quot;</p>
+                            <p className="text-slate-400 text-xs font-medium italic mt-4">&quot;Your reward has been added to your account balance.&quot;</p>
                         </div>
                         <Button onClick={() => setStatus('idle')} className="h-14 px-12 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[10px] hover:bg-primary/90 transition-all active:scale-95 mt-4">
                             Dismiss
@@ -118,7 +118,7 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                                     disabled={status !== 'idle'}
                                     className="h-16 w-full rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-primary/90 active:scale-95 transition-all"
                                 >
-                                    {status === 'opening' ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Tap to Extract Payload'}
+                                    {status === 'opening' ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Tap to Claim Reward'}
                                 </Button>
                             )}
                         </div>
@@ -129,7 +129,7 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                             "relative w-64 h-64 border-8 border-slate-50 rounded-full flex items-center justify-center bg-white transition-all duration-[3000ms] ease-out shadow-inner",
                             status === 'spinning' && "rotate-[1080deg]"
                         )}>
-                             {/* Mock Spin Wheel segments */}
+                             {/* Reward Wheel segments */}
                              <div className="absolute inset-0 rounded-full border-4 border-primary/10 animate-spin-slow"></div>
                              <Zap className={cn(
                                  "h-20 w-20 text-primary fill-current",
@@ -139,9 +139,9 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                         </div>
 
                         <div className="space-y-4 max-w-xs mx-auto">
-                            <h4 className="text-2xl font-black uppercase tracking-tighter text-foreground">Elite Wheel</h4>
+                            <h4 className="text-2xl font-black uppercase tracking-tighter text-foreground">Reward Wheel</h4>
                             <p className="text-slate-500 text-[10px] font-medium leading-relaxed">
-                                One spin, total power. High probability of XP, low probability of vouchers.
+                                One spin for a chance to win exclusive rewards and vouchers.
                             </p>
                             {error ? (
                                 <p className="text-primary font-black text-[9px] uppercase tracking-widest bg-primary/5 py-3 rounded-xl border border-primary/10 px-6">⚠️ {error}</p>
@@ -151,7 +151,7 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                                     disabled={status !== 'idle'}
                                     className="h-16 w-full rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all"
                                 >
-                                    {status === 'spinning' ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Execute Spin Sequence'}
+                                    {status === 'spinning' ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Spin Now'}
                                 </Button>
                             )}
                         </div>

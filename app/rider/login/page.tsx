@@ -14,6 +14,16 @@ export default function RiderLogin() {
     const [pin, setPin] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
+    const [nodeId, setNodeId] = React.useState('');
+
+    React.useEffect(() => {
+        let dId = localStorage.getItem('apex_node_id');
+        if (!dId) {
+            dId = `node_${Math.random().toString(36).substring(2, 15)}`;
+            localStorage.setItem('apex_node_id', dId);
+        }
+        setNodeId(dId);
+    }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,7 +34,13 @@ export default function RiderLogin() {
             const res = await fetch('/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mode: 'rider', phone, password: pin })
+                body: JSON.stringify({
+                    mode: 'rider',
+                    phone,
+                    password: pin,
+                    device_id: nodeId,
+                    device_name: 'Logistics Handheld'
+                })
             });
 
             const data = await res.json();
@@ -74,14 +90,14 @@ export default function RiderLogin() {
                         <Truck className="h-8 w-8" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Rider Terminal</h1>
-                        <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mt-2">Logistics Authorization</p>
+                        <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Fleet Portal</h1>
+                        <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mt-2">Logistics Access Hub</p>
                     </div>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div className="space-y-2 text-left">
-                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Tactical Phone</label>
+                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Phone Number</label>
                         <div className="relative">
                             <Input
                                 value={phone}
@@ -95,7 +111,7 @@ export default function RiderLogin() {
                     </div>
 
                     <div className="space-y-2 text-left">
-                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Secret PIN</label>
+                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1 tracking-widest">Secure PIN</label>
                         <div className="relative">
                             <Input
                                 type="password"
@@ -115,7 +131,7 @@ export default function RiderLogin() {
                             disabled={loading}
                             className="w-full h-20 rounded-[2rem] bg-primary text-white font-black uppercase text-sm tracking-[0.3em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
                         >
-                            {loading ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : 'Establish Uplink'}
+                            {loading ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : 'Sign In'}
                         </Button>
 
                         <Button
@@ -132,13 +148,24 @@ export default function RiderLogin() {
 
                 {error && (
                     <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-center animate-shake">
-                        <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest leading-relaxed">Violation: {error}</p>
+                        <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest leading-relaxed">Error: {error}</p>
+                        {error.includes('UNAUTHORIZED') && (
+                            <div className="mt-4 p-3 bg-white rounded-xl border border-rose-100">
+                                <p className="text-[7px] font-black text-slate-400 uppercase">Device ID (Copy for Dispatch)</p>
+                                <code
+                                    onClick={() => { navigator.clipboard.writeText(nodeId); alert('ID Copied!'); }}
+                                    className="text-[9px] font-mono font-black text-primary cursor-pointer"
+                                >
+                                    {nodeId}
+                                </code>
+                            </div>
+                        )}
                     </div>
                 )}
 
                 <div className="text-center pt-4 border-t border-slate-50">
                     <Link href="/" className="text-[10px] font-black text-slate-300 hover:text-primary uppercase tracking-widest flex items-center justify-center gap-2">
-                        <ArrowLeft size={12} /> Abort to Base
+                        <ArrowLeft size={12} /> Back to Shop
                     </Link>
                 </div>
             </div>

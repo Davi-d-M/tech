@@ -138,13 +138,13 @@ export default function CreateCampaign() {
 
         // Final Validation
         if (!campaign.name || !campaign.product_id) {
-            setMessage({ type: 'error', text: "Incomplete Mission Specs: Name and Product required." });
+            setMessage({ type: 'error', text: "Incomplete Campaign Details: Name and Product required." });
             setStep('context');
             return;
         }
 
         if (!channels.instagram.caption && !channels.whatsapp.body && !channels.email.body) {
-            setMessage({ type: 'error', text: "Payload Empty: At least one channel must have content." });
+            setMessage({ type: 'error', text: "Campaign Empty: At least one channel must have content." });
             setStep('content');
             return;
         }
@@ -200,7 +200,7 @@ export default function CreateCampaign() {
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-border pb-8">
                 <div className="space-y-4">
                     <button onClick={() => window.history.back()} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
-                        <ArrowLeft size={14} /> Cancel Mission
+                        <ArrowLeft size={14} /> Cancel
                     </button>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Campaign Builder</h1>
                     <div className="flex gap-2">
@@ -234,7 +234,7 @@ export default function CreateCampaign() {
                         <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 animate-in fade-in slide-in-from-left-4">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Package size={18} /></div>
-                                <h2 className="text-xl font-black uppercase text-foreground">Mission Context</h2>
+                                <h2 className="text-xl font-black uppercase text-foreground">Campaign Details</h2>
                             </div>
 
                             <div className="grid sm:grid-cols-2 gap-8">
@@ -261,7 +261,7 @@ export default function CreateCampaign() {
                                     </select>
                                 </div>
                                 <div className="space-y-2 sm:col-span-2">
-                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Select Tactical Payload (Product)</label>
+                                    <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Select Product</label>
                                     <div className="grid sm:grid-cols-3 gap-3">
                                         {products.slice(0, 5).map(p => (
                                             <button
@@ -349,7 +349,7 @@ export default function CreateCampaign() {
 
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 px-2 text-indigo-500 font-black uppercase text-[10px] tracking-widest">
-                                            <Mail size={14} /> Tactical Email
+                                            <Mail size={14} /> Marketing Email
                                         </div>
                                         <div className="space-y-3">
                                             <Input
@@ -387,7 +387,7 @@ export default function CreateCampaign() {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Zap size={18} /></div>
-                                        <h2 className="text-xl font-black uppercase text-foreground">Tactical Preview</h2>
+                                        <h2 className="text-xl font-black uppercase text-foreground">Campaign Preview</h2>
                                     </div>
                                     <div className="flex gap-2 p-1 bg-secondary rounded-xl border border-border">
                                         {(['instagram', 'whatsapp', 'email'] as const).map(p => (
@@ -504,7 +504,7 @@ export default function CreateCampaign() {
                                                     onChange={e => setCampaign({...campaign, scheduled_at: e.target.value})}
                                                     className="h-14 rounded-2xl bg-white border-border font-black text-xs uppercase"
                                                 />
-                                                <p className="text-[8px] font-medium text-slate-400 italic">Leave empty for instant tactical dispatch across all selected channels.</p>
+                                                <p className="text-[8px] font-medium text-slate-400 italic">Leave empty for instant dispatch.</p>
                                             </div>
                                         </div>
 
@@ -540,7 +540,7 @@ export default function CreateCampaign() {
                 <div className="lg:col-span-4 space-y-8">
                     <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-xl relative overflow-hidden group">
                         <div className="relative z-10 space-y-6 text-left">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Payload Specs</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Product Details</h3>
                             {selectedProduct ? (
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-4">
@@ -564,7 +564,7 @@ export default function CreateCampaign() {
                                     </div>
                                 </div>
                             ) : (
-                                <p className="text-sm font-medium text-slate-400 italic leading-relaxed">Select a tactical payload to view specifications.</p>
+                                <p className="text-sm font-medium text-slate-400 italic leading-relaxed">Select a product to view details.</p>
                             )}
                         </div>
                         <Zap className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/5 rotate-12 -z-0" />

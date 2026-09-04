@@ -25,7 +25,9 @@ import {
   MessageSquare,
   Send,
   Settings,
-  ImageIcon
+  ImageIcon,
+  Smartphone,
+  XCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +40,7 @@ interface StaffMember {
   email: string;
   role: 'owner' | 'super_admin' | 'admin' | 'finance' | 'operations' | 'support' | 'staff' | 'viewer';
   pin?: string;
+  authorized_devices?: { id: string; name: string; added_at: string }[];
   can_view_revenue: boolean;
   can_manage_inventory: boolean;
   can_manage_orders: boolean;
@@ -225,15 +228,44 @@ export default function AdminStaffPage() {
       }
   };
 
+  const authorizeDevice = async (staffId: string, device: { id: string, name: string }) => {
+      if (!supabase) return;
+      const member = staff.find(s => s.id === staffId);
+      if (!member) return;
+
+      const currentDevices = member.authorized_devices || [];
+      const updatedDevices = [...currentDevices, { ...device, added_at: new Date().toISOString() }];
+
+      const { error } = await supabase.from('staff').update({ authorized_devices: updatedDevices }).eq('id', staffId);
+      if (!error) {
+          setStaff(staff.map(s => s.id === staffId ? { ...s, authorized_devices: updatedDevices } : s));
+          setMessage({ type: 'success', text: 'Hardware node authorized.' });
+      }
+  };
+
+  const revokeDevice = async (staffId: string, deviceId: string) => {
+      if (!supabase) return;
+      const member = staff.find(s => s.id === staffId);
+      if (!member) return;
+
+      const updatedDevices = (member.authorized_devices || []).filter(d => d.id !== deviceId);
+
+      const { error } = await supabase.from('staff').update({ authorized_devices: updatedDevices }).eq('id', staffId);
+      if (!error) {
+          setStaff(staff.map(s => s.id === staffId ? { ...s, authorized_devices: updatedDevices } : s));
+          setMessage({ type: 'success', text: 'Hardware node revoked.' });
+      }
+  };
+
   return (
     <div className="p-8 space-y-8 bg-background min-h-screen text-left selection:bg-primary/20">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-border pb-8">
         <div>
-          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Command & Control</h1>
-          <p className="text-muted-foreground text-sm font-medium mt-1">Manage team permissions and granular access levels.</p>
+          <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Staff Management</h1>
+          <p className="text-muted-foreground text-sm font-medium mt-1">Manage team permissions and access levels.</p>
         </div>
         <Button onClick={fetchStaffData} variant="outline" className="rounded-xl h-12 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest transition-all hover:shadow-lg active:scale-95">
-            <RefreshCcw className="h-4 w-4 mr-2" /> Sync Records
+            <RefreshCcw className="h-4 w-4 mr-2" /> Sync Staff
         </Button>
       </header>
 
@@ -306,7 +338,7 @@ export default function AdminStaffPage() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Enterprise Role</label>
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">System Role</label>
                             <select
                                 value={newRole}
                                 onChange={e => setNewRole(e.target.value as 'owner' | 'super_admin' | 'admin' | 'finance' | 'operations' | 'support' | 'staff' | 'viewer')}
@@ -366,7 +398,7 @@ export default function AdminStaffPage() {
                       </div>
 
                       <Button type="submit" disabled={isAdding} className="w-full h-16 rounded-[1.5rem] bg-primary text-background font-black uppercase text-[10px] tracking-widest shadow-2xl shadow-primary/20 mt-4 transition-all hover:scale-105 active:scale-95">
-                          {isAdding ? 'Syncing...' : 'Authorize Member'}
+                          {isAdding ? 'Processing...' : 'Authorize Staff Member'}
                       </Button>
                   </form>
               </div>
@@ -416,7 +448,7 @@ export default function AdminStaffPage() {
                                                       <select
                                                         value={member.role}
                                                         onChange={e => updateStaffRole(member.id, e.target.value as 'admin' | 'staff' | 'viewer')}
-                                                        className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 block italic bg-transparent border-none outline-none cursor-pointer hover:text-primary transition-colors whitespace-nowrap"
+                                                        className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-1.5 block bg-transparent border-none outline-none cursor-pointer hover:text-primary transition-colors whitespace-nowrap"
                                                       >
                                                         <option value="staff">Staff</option>
                                                         <option value="super_admin">Super Admin</option>
@@ -472,6 +504,28 @@ export default function AdminStaffPage() {
                                                           <p.icon className="h-3.5 w-3.5" />
                                                       </button>
                                                   ))}
+                                              </div>
+                                          </td>
+                                          <td className="px-8 py-8">
+                                              <div className="space-y-2">
+                                                {(member.authorized_devices || []).map(d => (
+                                                    <div key={d.id} className="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
+                                                        <Smartphone className="h-3 w-3 text-emerald-500" />
+                                                        <span className="text-[7px] font-black text-foreground truncate max-w-[60px]">{d.name}</span>
+                                                        <button onClick={() => revokeDevice(member.id, d.id)} className="text-slate-300 hover:text-rose-500"><XCircle className="h-3 w-3" /></button>
+                                                    </div>
+                                                ))}
+                                                <Button
+                                                    onClick={() => {
+                                                        const id = prompt("Enter Device ID to authorize:");
+                                                        const name = prompt("Enter Device Name (e.g. iPhone 15):");
+                                                        if (id && name) authorizeDevice(member.id, { id, name });
+                                                    }}
+                                                    variant="ghost"
+                                                    className="h-6 px-2 rounded-md text-[7px] font-black uppercase text-primary border border-primary/20"
+                                                >
+                                                    + Authorize Device
+                                                </Button>
                                               </div>
                                           </td>
                                           <td className="px-8 py-8 text-right">

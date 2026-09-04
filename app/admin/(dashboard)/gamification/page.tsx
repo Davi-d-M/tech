@@ -182,8 +182,8 @@ export default function AdminGamificationPage() {
             <div className="flex gap-2 p-1 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto no-scrollbar max-w-4xl">
                 {[
                     { id: 'streaks', label: 'Streaks', icon: Flame },
-                    { id: 'missions', label: 'Daily Missions', icon: Target },
-                    { id: 'rewards', label: 'Interaction Odds', icon: Dices },
+                    { id: 'missions', label: 'Challenges', icon: Target },
+                    { id: 'rewards', label: 'Odds Management', icon: Dices },
                     { id: 'tiers', label: 'Tiers & Badges', icon: Crown },
                     { id: 'simulator', label: 'Reward Simulator', icon: Zap },
                 ].map(tab => (
@@ -400,7 +400,7 @@ export default function AdminGamificationPage() {
                             <div className="grid sm:grid-cols-2 gap-10 items-start">
                                 <div className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Mock Purchase Amount</label>
+                                        <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Test Purchase Amount</label>
                                         <div className="relative">
                                             <Input
                                                 value={simPurchase}

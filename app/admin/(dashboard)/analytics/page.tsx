@@ -10,7 +10,6 @@ import {
     ArrowUpRight,
     ArrowDownRight,
     Download,
-    Sparkles,
     Loader2,
     EyeOff,
     Flame,
@@ -77,7 +76,7 @@ export default function AdminAnalyticsPage() {
                 const [, ordRes, sigRes] = await Promise.all([
                     supabase.from('products').select('category'),
                     supabase.from('orders')
-                        .select('id, total_price, unit_cost, created_at, status, customer_phone, referred_by_code')
+                        .select('id, total_price, created_at, status, customer_phone, referred_by_code, order_items(unit_cost, quantity)')
                         .gte('created_at', dateLimit),
                     supabase.from('user_signals')
                         .select('*')
@@ -120,12 +119,16 @@ export default function AdminAnalyticsPage() {
                 ['Delivered', 'Paid', 'Dispatched'].includes(o.status)
             );
 
-            const revenue = dayOrders.reduce((s, o) => s + (o.total_price || 0), 0);
+            const dayRevenue = dayOrders.reduce((s, o) => s + (o.total_price || 0), 0);
+            const dayCost = dayOrders.reduce((s, o) => {
+                const items = (o as { order_items?: { unit_cost: number; quantity: number }[] }).order_items || [];
+                return s + items.reduce((is: number, i) => is + (Number(i.unit_cost || 0) * (i.quantity || 1)), 0);
+            }, 0);
 
             return {
                 name: date.toLocaleDateString('en-KE', { day: '2-digit' }),
-                revenue,
-                profit: revenue * 0.3,
+                revenue: dayRevenue,
+                profit: dayRevenue - dayCost,
                 users: dayOrders.length,
                 isProjected: false
             };
@@ -138,7 +141,7 @@ export default function AdminAnalyticsPage() {
                 date.setDate(now.getDate() + (i + 1));
                 return {
                     name: date.toLocaleDateString('en-KE', { day: '2-digit' }),
-                    revenue: Math.round(avgRev * (1 + (Math.random() * 0.2 - 0.1))),
+                    revenue: Math.round(avgRev),
                     profit: Math.round(avgRev * 0.3),
                     users: Math.round(avgRev / 2500),
                     isProjected: true
@@ -174,8 +177,13 @@ export default function AdminAnalyticsPage() {
             .filter(o => o.status === 'Delivered' && new Date(o.created_at) > sixtyDaysAgo && new Date(o.created_at) <= thirtyDaysAgo)
             .reduce((s, o) => s + (o.total_price || 0), 0);
 
+        const costTotal = delivered.reduce((s, o) => {
+            const items = (o as { order_items?: { unit_cost: number; quantity: number }[] }).order_items || [];
+            return s + items.reduce((is: number, i) => is + (Number(i.unit_cost || 0) * (i.quantity || 1)), 0);
+        }, 0);
+
         const margin = totalRevenue > 0
-            ? ((totalRevenue - delivered.reduce((s, o) => s + (o.unit_cost || 0), 0)) / totalRevenue) * 100
+            ? ((totalRevenue - costTotal) / totalRevenue) * 100
             : 0;
 
         return [
@@ -412,21 +420,16 @@ export default function AdminAnalyticsPage() {
                             </div>
                         </Card>
 
-                        {/* User Acquisition */}
+                        {/* Monthly Performance */}
                         <div className="grid md:grid-cols-2 gap-8">
                             <Card className="p-10 rounded-[3rem] border border-slate-100 bg-white shadow-sm">
-                                <h3 className="text-sm font-black uppercase text-foreground tracking-tighter mb-8">P&L Projection (12m)</h3>
+                                <h3 className="text-sm font-black uppercase text-foreground tracking-tighter mb-8">Monthly Trend</h3>
                                 <div className="h-64 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={[
-                                            { m: 'Sep', rev: 120, prof: 36 },
-                                            { m: 'Oct', rev: 140, prof: 42 },
-                                            { m: 'Nov', rev: 210, prof: 63 },
-                                            { m: 'Dec', rev: 350, prof: 105 },
-                                        ]}>
-                                            <XAxis dataKey="m" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900 }} />
-                                            <Bar dataKey="rev" fill="#ff6b00" radius={[4, 4, 0, 0]} name="Gross Revenue" />
-                                            <Bar dataKey="prof" fill="#5B5BFF" radius={[4, 4, 0, 0]} name="Net Profit" />
+                                        <BarChart data={chartData.slice(-12)}>
+                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900 }} />
+                                            <Bar dataKey="revenue" fill="#ff6b00" radius={[4, 4, 0, 0]} name="Revenue" />
+                                            <Bar dataKey="profit" fill="#5B5BFF" radius={[4, 4, 0, 0]} name="Profit" />
                                             <Tooltip />
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -434,38 +437,10 @@ export default function AdminAnalyticsPage() {
                             </Card>
 
                             <Card className="p-10 rounded-[3rem] border border-slate-100 bg-white shadow-sm flex flex-col items-center">
-                                <h3 className="text-sm font-black uppercase text-foreground tracking-tighter mb-8 w-full text-left">Capital Allocation AI</h3>
+                                <h3 className="text-sm font-black uppercase text-foreground tracking-tighter mb-8 w-full text-left">Insight Engine</h3>
                                 <div className="space-y-6 w-full text-left">
-                                    <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 relative overflow-hidden group">
-                                        <div className="flex justify-between items-center relative z-10">
-                                            <p className="text-[10px] font-black uppercase text-primary">Reinvest in Stock</p>
-                                            <span className="text-sm font-black text-foreground">65%</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-slate-100 rounded-full mt-3 overflow-hidden">
-                                            <div className="h-full bg-primary w-[65%]" />
-                                        </div>
-                                        <Sparkles className="absolute -bottom-4 -right-4 h-16 w-16 text-primary/10 rotate-12" />
-                                    </div>
-                                    <div className="p-5 rounded-2xl bg-indigo-50 border border-indigo-100 relative overflow-hidden group">
-                                        <div className="flex justify-between items-center relative z-10">
-                                            <p className="text-[10px] font-black uppercase text-indigo-600">Marketing Spend</p>
-                                            <span className="text-sm font-black text-foreground">25%</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-white rounded-full mt-3 overflow-hidden">
-                                            <div className="h-full bg-indigo-500 w-[25%]" />
-                                        </div>
-                                    </div>
-                                    <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-100 relative overflow-hidden group">
-                                        <div className="flex justify-between items-center relative z-10">
-                                            <p className="text-[10px] font-black uppercase text-emerald-600">Operations Fund</p>
-                                            <span className="text-sm font-black text-foreground">10%</span>
-                                        </div>
-                                        <div className="h-1.5 w-full bg-white rounded-full mt-3 overflow-hidden">
-                                            <div className="h-full bg-emerald-500 w-[10%]" />
-                                        </div>
-                                    </div>
-                                    <p className="text-[9px] text-muted-foreground font-medium italic text-center px-4 pt-2">
-                                        &quot;AI recommendation based on current 14.8% net margin and supply chain lead times.&quot;
+                                    <p className="text-[10px] text-muted-foreground font-medium italic text-center px-4 pt-2">
+                                        &quot;Analyzing store performance metrics to provide growth recommendations. Data synchronization active.&quot;
                                     </p>
                                 </div>
                             </Card>

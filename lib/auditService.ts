@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 
 /**
- * Apex OS Audit Interface
+ * Apex Platform Audit Interface
  * Transmits actions to the secure server-side logger.
  */
 export async function logAuditAction(email: string, action: string, details: Record<string, unknown>) {
@@ -9,18 +9,18 @@ export async function logAuditAction(email: string, action: string, details: Rec
 
   try {
     // 1. Detect Device Info (Frontend Only)
-    let deviceInfo = 'Titan Node';
+    let deviceInfo = 'Apex Device';
     if (typeof navigator !== 'undefined') {
         const ua = navigator.userAgent;
         if (ua.includes('Windows')) deviceInfo = 'Windows Desktop';
         else if (ua.includes('iPhone') || ua.includes('iPad')) deviceInfo = 'iOS Device';
         else if (ua.includes('Android')) deviceInfo = 'Android Mobile';
         else if (ua.includes('Macintosh')) deviceInfo = 'Mac OS X';
-        else if (ua.includes('Linux')) deviceInfo = 'Linux Node';
+        else if (ua.includes('Linux')) deviceInfo = 'Linux Device';
         else deviceInfo = ua.substring(0, 30);
     }
 
-    // 2. Transmit to Secure API Node
+    // 2. Transmit to Secure API
     // This ensures the IP is captured server-side and the action is authenticated.
     const res = await fetch('/api/admin/audit', {
         method: 'POST',

@@ -2,7 +2,7 @@ import { createHmac } from 'crypto';
 import { supabase } from '../supabaseClient';
 
 /**
- * Apex OS: Immutability Protocol
+ * Apex Platform: Warranty Ledger
  * Generates and verifies tamper-proof digital warranty certificates.
  */
 export interface WarrantyCertificate {
@@ -16,7 +16,7 @@ export interface WarrantyCertificate {
     is_active: boolean;
 }
 
-const APEX_IMMUTABILITY_SECRET = process.env.APEX_IMMUTABILITY_SECRET || 'titan-ledger-v1';
+const APEX_IMMUTABILITY_SECRET = process.env.APEX_IMMUTABILITY_SECRET || 'apex-ledger-v1';
 
 export function generateWarrantyHash(payload: string): string {
     return createHmac('sha256', APEX_IMMUTABILITY_SECRET).update(payload).digest('hex');

@@ -61,7 +61,7 @@ export default function AIConcierge() {
             });
 
             const data = await res.json();
-            let aiText = data.response || "System link unstable, bro. Re-initiating connection...";
+            let aiText = data.response || "System connection unstable. Re-initiating connection...";
 
             // Intelligence Node: Detect Product IDs in response [PROD-123]
             const productMatches = aiText.match(/\[PROD-(\d+)\]/g);
@@ -94,7 +94,7 @@ export default function AIConcierge() {
             }]);
         } catch (err) {
             console.error("AI Link Failure:", err);
-            setMessages(prev => [...prev, { role: 'assistant', text: "Signal interference detected. Try again in 30s, bro." }]);
+            setMessages(prev => [...prev, { role: 'assistant', text: "Signal interference detected. Please try again in 30 seconds." }]);
         } finally {
             setIsLoading(false);
         }
@@ -110,7 +110,7 @@ export default function AIConcierge() {
             quantity: 1
         }));
         addBundleToCart(cartItems);
-        setMessages(prev => [...prev, { role: 'assistant', text: "Target payload added to bag. Ready for extraction! 🚀" }]);
+        setMessages(prev => [...prev, { role: 'assistant', text: "Items added to your bag. Ready for checkout! 🚀" }]);
     };
 
     return (
@@ -142,9 +142,9 @@ export default function AIConcierge() {
                             <div className="h-full flex flex-col items-center justify-center text-center space-y-10 py-10">
                                 <div className="h-24 w-24 rounded-[3rem] bg-white flex items-center justify-center shadow-inner animate-pulse"><Sparkles className="h-10 w-10 text-primary" /></div>
                                 <div className="space-y-4 px-10">
-                                    <h4 className="text-2xl font-black uppercase tracking-tighter text-foreground">Mission Brief</h4>
+                                    <h4 className="text-2xl font-black uppercase tracking-tighter text-foreground">Assistant Brief</h4>
                                     <p className="text-xs text-slate-400 font-medium leading-relaxed italic">
-                                        &quot;I am your tactical sales agent. Tell me what setup you need or your budget, and I will bundle it for you.&quot;
+                                        &quot;I am your personal shopping assistant. Tell me what setup you need or your budget, and I will bundle it for you.&quot;
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3 w-full px-4">
@@ -194,7 +194,7 @@ export default function AIConcierge() {
                             <Input
                                 value={query}
                                 onChange={e => setQuery(e.target.value)}
-                                placeholder="Type mission query..."
+                                placeholder="Ask about a gadget..."
                                 className="h-16 rounded-[1.5rem] bg-slate-50 border-slate-100 pr-16 font-bold text-sm text-foreground focus:ring-4 focus:ring-primary/5 transition-all"
                             />
                             <Button

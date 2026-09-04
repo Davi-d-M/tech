@@ -178,10 +178,10 @@ export default function SupportCaseManagement() {
         const tableMap = { Support: 'support_tickets', Message: 'messages', Review: 'reviews' };
         const id = parseInt(item.id.split('-')[1]);
 
-        let updatePayload: Record<string, unknown> = { status: newStatus };
-        if (item.type === 'Review') updatePayload = { admin_response: 'Internal status change' };
+        let updateData: Record<string, unknown> = { status: newStatus };
+        if (item.type === 'Review') updateData = { admin_response: 'Internal status change' };
 
-        const { error } = await supabase.from(tableMap[item.type]).update(updatePayload).eq('id', id);
+        const { error } = await supabase.from(tableMap[item.type]).update(updateData).eq('id', id);
         if (!error) {
             setItems(prev => prev.map(i => i.id === item.id ? { ...i, status: newStatus } : i));
             await logAuditAction(adminEmail, 'UNIVERSAL_STATUS_CHANGE', { id: item.id, status: newStatus });
@@ -307,7 +307,7 @@ export default function SupportCaseManagement() {
                                         <p className="text-slate-600 font-medium leading-relaxed italic max-w-4xl">&quot;{item.body}&quot;</p>
 
                                         <div className="pt-6 flex items-center gap-6 text-[9px] font-black uppercase text-slate-400 tracking-widest">
-                                            <div className="flex items-center gap-2"><Clock size={12} /> Established {new Date(item.created_at).toLocaleString()}</div>
+                                            <div className="flex items-center gap-2"><Clock size={12} /> Received {new Date(item.created_at).toLocaleString()}</div>
                                             {item.metadata?.sla ? <div className="flex items-center gap-2 text-rose-400"><AlertCircle size={12} /> SLA: {String(item.metadata.sla)}h Remaining</div> : null}
                                         </div>
                                     </div>

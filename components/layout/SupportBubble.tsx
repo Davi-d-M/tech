@@ -114,7 +114,7 @@ export default function SupportBubble() {
                 setAiChat(prev => [...prev, { role: 'ai', text: data.response }]);
             }
         } catch {
-            setAiChat(prev => [...prev, { role: 'ai', text: "Sorry bro, my uplink is a bit unstable right now. Try again in a second!" }]);
+            setAiChat(prev => [...prev, { role: 'ai', text: "I apologize, my connection is temporarily unstable. Please try again in a moment." }]);
         } finally {
             setIsAiAiTyping(false);
         }
@@ -156,7 +156,7 @@ export default function SupportBubble() {
                     <div className="text-left">
                         <p className="font-black text-foreground uppercase text-[10px] tracking-tight">{userProfile?.full_name || settings?.branding?.owner_name || 'Admin'}</p>
                         <p className="text-slate-400 text-[9px] font-bold uppercase tracking-widest mt-0.5">
-                            {userProfile?.full_name ? `Need help with your tech, ${userProfile.full_name.split(' ')[0]}?` : "Need help with tech, bro?"}
+                            {userProfile?.full_name ? `How can we help you today, ${userProfile.full_name.split(' ')[0]}?` : "How can we help you today?"}
                         </p>
                     </div>
                     <button onClick={handleDismissLabel} className="text-slate-300 hover:text-rose-500 ml-4 transition-colors"><X className="h-3 w-3" /></button>
@@ -215,8 +215,8 @@ export default function SupportBubble() {
 
                                 <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-hide no-scrollbar">
                                     <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                                        <p className="text-[9px] font-black uppercase text-primary mb-1">Apex AI</p>
-                                        <p className="text-[10px] font-bold text-slate-600 leading-relaxed italic">&quot;Yo bro! I&apos;m your elite tech assistant. What gadget can I help you find today?&quot;</p>
+                                        <p className="text-[9px] font-black uppercase text-primary mb-1">Apex Assistant</p>
+                                        <p className="text-[10px] font-bold text-slate-600 leading-relaxed italic">&quot;Hello! I&apos;m your Apex assistant. How can I help you find the perfect gadget today?&quot;</p>
                                     </div>
 
                                     {aiChat.map((chat, i) => (

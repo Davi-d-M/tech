@@ -86,8 +86,8 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
       title: "Partners",
       links: [
         { href: "/rider/login", label: "Fleet Portal" },
-        { href: "/supplier/onboarding", label: "Merchant Program" },
-        { href: "/onboarding/apply", label: "Become a Retailer" },
+        { href: "/supplier/login", label: "Merchant Portal" },
+        { href: "/supplier/onboarding", label: "Apply to Supply" },
       ],
     },
     {

@@ -67,7 +67,7 @@ export default function MarketingOverview() {
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Marketing Command</span>
                     </div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Campaign Overview</h1>
-                    <p className="text-muted-foreground text-sm font-medium mt-1">Multi-channel growth engine and tactical audience outreach.</p>
+                    <p className="text-muted-foreground text-sm font-medium mt-1">Multi-channel growth engine and audience outreach.</p>
                 </div>
                 <Link href="/admin/marketing/create">
                     <Button className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
@@ -79,8 +79,8 @@ export default function MarketingOverview() {
             {/* Performance KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
                 {[
-                    { label: 'Total Tactical Reach', val: stats.totalReach.toLocaleString(), icon: Users, color: 'indigo' },
-                    { label: 'Active Deployments', val: stats.activeCampaigns, icon: Send, color: 'primary' },
+                    { label: 'Total Reach', val: stats.totalReach.toLocaleString(), icon: Users, color: 'indigo' },
+                    { label: 'Active Campaigns', val: stats.activeCampaigns, icon: Send, color: 'primary' },
                     { label: 'Orders Generated', val: stats.generatedOrders, icon: Target, color: 'emerald' },
                     { label: 'Campaign ROI', val: `${stats.marketingROI}x`, icon: TrendingUp, color: 'primary' },
                 ].map((item) => (
@@ -108,7 +108,7 @@ export default function MarketingOverview() {
                 <div className="lg:col-span-8 space-y-8 flex flex-col h-full">
                     <div className="flex items-center justify-between px-4 shrink-0">
                         <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Recent Deployments</h2>
-                        <Link href="/admin/marketing/list" className="text-[10px] font-black text-primary uppercase underline tracking-widest">View Mission Log</Link>
+                        <Link href="/admin/marketing/list" className="text-[10px] font-black text-primary uppercase underline tracking-widest">View Campaign Log</Link>
                     </div>
 
                     <div className="grid gap-4 flex-1">
@@ -142,7 +142,7 @@ export default function MarketingOverview() {
 
                                 <div className="flex items-center gap-12 text-right">
                                     <div className="hidden sm:block">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Target Payload</p>
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Target Product</p>
                                         <p className="text-sm font-black text-foreground uppercase">{camp.products?.name?.substring(0, 15) || 'Global'}</p>
                                     </div>
                                     <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 group-hover:bg-primary group-hover:text-white transition-all">
@@ -204,7 +204,7 @@ export default function MarketingOverview() {
                             <h3 className="text-xl font-black uppercase tracking-tighter text-foreground leading-none">Personalization</h3>
                         </div>
                         <p className="text-[10px] text-muted-foreground font-medium leading-relaxed italic">
-                            &quot;Current category affinity maps show elite preference for Audio gadgets. Personalized &apos;Welcome Back&apos; triggers active for Gold tier.&quot;
+                            &quot;Campaign analysis shows customer preference for Audio products. Personalized engagement triggers are active for high-tier members.&quot;
                         </p>
                         <div className="pt-4 border-t border-border flex justify-between items-center">
                             <span className="text-[8px] font-black text-indigo-600 uppercase tracking-widest">Logic Active</span>
@@ -218,7 +218,7 @@ export default function MarketingOverview() {
                             <h3 className="text-xl font-black uppercase tracking-tighter text-foreground leading-none">Yield Insight</h3>
                         </div>
                         <p className="text-[10px] text-muted-foreground font-medium leading-relaxed italic">
-                            &quot;Rider broadcasts on Saturday mornings see a 40% higher open rate. I recommend scheduling the Weekend Tech Drop for 09:30 AM tomorrow.&quot;
+                            &quot;Campaign broadcasts on Saturday mornings show higher engagement rates. Recommended schedule: 09:30 AM.&quot;
                         </p>
                         <div className="pt-4 border-t border-border flex justify-between items-center">
                             <span className="text-[8px] font-black text-primary uppercase tracking-widest">Confidence Score</span>

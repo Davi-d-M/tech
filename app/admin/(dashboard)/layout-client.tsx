@@ -120,50 +120,50 @@ export default function AdminLayoutClient({
   const isAdmin = role === 'admin' || isOwner;
 
   const allNavItems = [
-    { group: 'COMMAND CENTER', items: [
-      { name: 'Today Console', href: '/admin', icon: LayoutDashboard, minRole: 'viewer' },
+    { group: 'DASHBOARD', items: [
+      { name: 'System Console', href: '/admin', icon: LayoutDashboard, minRole: 'viewer' },
     ]},
-    { group: 'COMMERCE', items: [
-      { name: 'Inventory Hub', href: '/admin/upload', icon: Package, permission: 'can_manage_inventory' },
-      { name: 'Orders Pipeline', href: '/admin/orders', icon: ShoppingCart, permission: 'can_manage_orders' },
+    { group: 'INVENTORY', items: [
+      { name: 'Product Catalog', href: '/admin/upload', icon: Package, permission: 'can_manage_inventory' },
+      { name: 'Order Management', href: '/admin/orders', icon: ShoppingCart, permission: 'can_manage_orders' },
     ]},
     { group: 'OPERATIONS', items: [
       { name: 'Live Dispatch', href: '/admin/dispatch', icon: Truck, permission: 'can_manage_orders' },
-      { name: 'Tasks Board', href: '/admin/operations/tasks', icon: LayoutIcon, permission: 'can_manage_orders' },
-      { name: 'Partners Node', href: '/admin/operations/vendors', icon: Store, permission: 'can_manage_settings' },
-      { name: 'Sourcing Bridge', href: '/admin/operations/sourcing', icon: Globe, permission: 'can_manage_inventory' },
+      { name: 'Task Board', href: '/admin/operations/tasks', icon: LayoutIcon, permission: 'can_manage_orders' },
+      { name: 'Partner Network', href: '/admin/operations/vendors', icon: Store, permission: 'can_manage_settings' },
+      { name: 'Sourcing Hub', href: '/admin/operations/sourcing', icon: Globe, permission: 'can_manage_inventory' },
       { name: 'Suppliers', href: '/admin/operations/suppliers', icon: Zap, permission: 'can_manage_inventory' },
     ]},
     { group: 'CUSTOMERS', items: [
-      { name: 'Directory', href: '/admin/customers', icon: Users, permission: 'can_manage_customer_care' },
+      { name: 'Customer Directory', href: '/admin/customers', icon: Users, permission: 'can_manage_customer_care' },
       { name: 'Support Inbox', href: '/admin/messages', icon: MessageSquare, permission: 'can_manage_customer_care' },
-      { name: 'Reviews Hub', href: '/admin/reviews', icon: Star, permission: 'can_manage_customer_care' },
-      { name: 'Loyalty Logic', href: '/admin/gamification', icon: Trophy, permission: 'can_manage_settings' },
+      { name: 'Review Management', href: '/admin/reviews', icon: Star, permission: 'can_manage_customer_care' },
+      { name: 'Loyalty Program', href: '/admin/gamification', icon: Trophy, permission: 'can_manage_settings' },
     ]},
-    { group: 'GROWTH', items: [
-      { name: 'Social Hub', href: '/admin/marketing/social-hub', icon: Share2, permission: 'can_manage_broadcast' },
+    { group: 'MARKETING', items: [
+      { name: 'Social Center', href: '/admin/marketing/social-hub', icon: Share2, permission: 'can_manage_broadcast' },
       { name: 'Marketing Hub', href: '/admin/marketing', icon: TrendingUp, permission: 'can_manage_broadcast' },
-      { name: 'AI Ad Agency', href: '/admin/marketing/ai-agency', icon: Target, permission: 'can_manage_broadcast' },
-      { name: 'Autopilot', href: '/admin/marketing/automation', icon: Rocket, permission: 'can_manage_broadcast' },
+      { name: 'Ad Campaigns', href: '/admin/marketing/ai-agency', icon: Target, permission: 'can_manage_broadcast' },
+      { name: 'Automations', href: '/admin/marketing/automation', icon: Rocket, permission: 'can_manage_broadcast' },
       { name: 'Affiliates', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
       { name: 'Promotions', href: '/admin/coupons', icon: Tag, permission: 'can_manage_broadcast' },
     ]},
     { group: 'FINANCE', items: [
-      { name: 'Finance Fortress', href: '/admin/finance', icon: DollarSign, permission: 'can_view_revenue' },
+      { name: 'Finance Center', href: '/admin/finance', icon: DollarSign, permission: 'can_view_revenue' },
       { name: 'Payout Requests', href: '/admin/payouts', icon: CreditCard, permission: 'can_view_revenue' },
-      { name: 'Document Vault', href: '/admin/vault', icon: Lock, permission: 'can_view_revenue' },
+      { name: 'Secure Vault', href: '/admin/vault', icon: Lock, permission: 'can_view_revenue' },
     ]},
-    { group: 'INTELLIGENCE', items: [
-      { name: 'Intelligence Hub', href: '/admin/analytics/intelligence', icon: Zap, permission: 'can_view_revenue' },
-      { name: 'Deep Analytics', href: '/admin/analytics', icon: Activity, permission: 'can_view_revenue' },
-      { name: 'AI Command Log', href: '/admin/messages?filter=ai', icon: Bot, permission: 'can_manage_customer_care' },
+    { group: 'ANALYTICS', items: [
+      { name: 'Market Insights', href: '/admin/analytics/intelligence', icon: Zap, permission: 'can_view_revenue' },
+      { name: 'Data Analytics', href: '/admin/analytics', icon: Activity, permission: 'can_view_revenue' },
+      { name: 'AI Activity Log', href: '/admin/messages?filter=ai', icon: Bot, permission: 'can_manage_customer_care' },
     ]},
-    { group: 'ENTERPRISE', items: [
-      { name: 'Staff Control', href: '/admin/staff', icon: ShieldCheck, minRole: 'owner' },
-      { name: 'My Profile', href: '/admin/profile', icon: User, minRole: 'viewer' },
-      { name: 'System Audit', href: '/admin/audit', icon: HistoryIcon, permission: 'can_view_revenue' },
+    { group: 'ADMINISTRATION', items: [
+      { name: 'Staff Management', href: '/admin/staff', icon: ShieldCheck, minRole: 'owner' },
+      { name: 'User Profile', href: '/admin/profile', icon: User, minRole: 'viewer' },
+      { name: 'Audit Logs', href: '/admin/audit', icon: HistoryIcon, permission: 'can_view_revenue' },
       { name: 'Security Hub', href: '/admin/security', icon: SecurityIcon, permission: 'can_manage_settings' },
-      { name: 'Brand Settings', href: '/admin/settings', icon: Settings, permission: 'can_manage_settings' },
+      { name: 'Store Settings', href: '/admin/settings', icon: Settings, permission: 'can_manage_settings' },
     ]},
   ];
 
@@ -225,11 +225,11 @@ export default function AdminLayoutClient({
                     {!isSidebarCollapsed && (
                         <div className="animate-in fade-in duration-500">
                           <select className="font-black text-foreground leading-none uppercase tracking-tighter text-sm bg-transparent border-none outline-none appearance-none cursor-pointer">
-                              <option>Apex Master</option>
-                              <option>TechPax Budget</option>
-                              <option>Global Wholesale</option>
+                              <option>Apex Administration</option>
+                              <option>Regional Branch</option>
+                              <option>Support Center</option>
                           </select>
-                          <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mt-1">Nexus Command</p>
+                          <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mt-1">Management Console</p>
                         </div>
                     )}
                 </div>
@@ -321,7 +321,7 @@ export default function AdminLayoutClient({
                         className="flex items-center gap-4 px-6 h-12 rounded-2xl bg-secondary border border-border text-muted-foreground hover:border-primary/30 transition-all group min-w-[400px]"
                       >
                           <Search className="h-4 w-4 group-hover:text-primary transition-colors" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Search Protocol...</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest">Search System...</span>
                           <kbd className="ml-auto bg-background px-2 py-1 rounded-lg border border-border text-[8px] font-black text-muted-foreground group-hover:text-primary transition-colors">Ctrl + K</kbd>
                       </button>
                   </div>
@@ -340,7 +340,7 @@ export default function AdminLayoutClient({
 
                       <Link href="/admin/upload">
                           <Button className="h-12 px-6 rounded-2xl bg-primary text-white font-black uppercase text-[9px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
-                              <Plus className="h-4 w-4" /> Quick Deployment
+                              <Plus className="h-4 w-4" /> Add Product
                           </Button>
                       </Link>
                   </div>

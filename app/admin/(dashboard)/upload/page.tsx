@@ -127,7 +127,7 @@ const WAREHOUSE_HUBS = ["Nairobi Central", "Mombasa Port", "Kisumu Base", "Eldor
 
 export default function AdminUploadPage() {
     return (
-        <Suspense fallback={<div className="p-24 text-center animate-pulse font-black text-slate-400 uppercase">Establishing Stock Sync...</div>}>
+        <Suspense fallback={<div className="p-24 text-center animate-pulse font-black text-slate-400 uppercase">Loading Inventory...</div>}>
             <UploadContent />
         </Suspense>
     );
@@ -155,13 +155,13 @@ function UploadContent() {
 
   // AI Audit Bridge
   useEffect(() => {
-    const win = window as unknown as { onTitanShelfAudit?: (labels: string) => void };
-    win.onTitanShelfAudit = (labels: string) => {
+    const win = window as unknown as { onShelfAudit?: (labels: string) => void };
+    win.onShelfAudit = (labels: string) => {
         const detected = labels.split(',');
         console.log("Vision AI Detected:", detected);
-        alert(`Vision AI Audit: Detected ${detected.length} items. Machine is verifying stock counts...`);
+        alert(`AI Inventory Audit: Detected ${detected.length} items. The system is verifying stock counts...`);
     };
-    return () => { delete win.onTitanShelfAudit; };
+    return () => { delete win.onShelfAudit; };
   }, []);
 
   // Section States
@@ -227,20 +227,20 @@ function UploadContent() {
     }
 
     // Bridge Listener: Handle Native SKU Scans
-    (window as Window & { onTitanScan?: (sku: string) => void }).onTitanScan = (sku: string) => {
+    (window as Window & { onScan?: (sku: string) => void }).onScan = (sku: string) => {
         setForm(prev => ({ ...prev, sku: sku }));
-        setMessage({ type: 'success', text: `Node Synced: ${sku}` });
+        setMessage({ type: 'success', text: `Device Synced: ${sku}` });
         setTimeout(() => setMessage(null), 3000);
     };
 
-    return () => { delete (window as Window & { onTitanScan?: (sku: string) => void }).onTitanScan; };
+    return () => { delete (window as Window & { onScan?: (sku: string) => void }).onScan; };
   }, [fetchProducts]);
 
-  const triggerTitanScanner = () => {
-    if ((window as Window & { TitanNode?: { triggerScanner: () => void } }).TitanNode?.triggerScanner) {
-        (window as Window & { TitanNode?: { triggerScanner: () => void } }).TitanNode?.triggerScanner();
+  const triggerAppScanner = () => {
+    if ((window as Window & { NativeDevice?: { triggerScanner: () => void } }).NativeDevice?.triggerScanner) {
+        (window as Window & { NativeDevice?: { triggerScanner: () => void } }).NativeDevice?.triggerScanner();
     } else {
-        alert("Native Scanner Node not detected. Use the Titan Mobile App, bro.");
+        alert("Native scanner not detected. Please use the mobile application.");
     }
   };
 
@@ -490,7 +490,7 @@ function UploadContent() {
 
       cancelEditing();
       fetchProducts();
-      setMessage({ type: 'success', text: editingId ? 'Payload updated.' : 'Gadget deployed!' });
+      setMessage({ type: 'success', text: editingId ? 'Product updated.' : 'Product deployed!' });
       setTimeout(() => setMessage(null), 3000);
     } catch (err: unknown) {
         const error = err as Error;
@@ -537,12 +537,12 @@ function UploadContent() {
             <div className="relative z-10 space-y-2">
                 <div className="flex items-center gap-3">
                     <div className="h-2 w-2 rounded-full bg-primary animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Inventory Command</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Inventory Management</span>
                 </div>
                 <h1 className="text-4xl font-black tracking-tighter text-foreground uppercase leading-none">
-                  {editingId ? 'Refine Gadget' : 'Stock Control'}
+                  {editingId ? 'Edit Product' : 'Stock Control'}
                 </h1>
-                <p className="text-slate-500 text-sm font-medium italic">Deploy premium tech payload to the global marketplace.</p>
+                <p className="text-slate-500 text-sm font-medium italic">Add and manage products in the global marketplace.</p>
             </div>
 
             {message && (
@@ -558,7 +558,7 @@ function UploadContent() {
             <div className="flex items-center gap-8 relative z-10">
                 <div className="hidden sm:flex flex-col items-end gap-2">
                     <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-black uppercase text-slate-400">Readiness Score</span>
+                        <span className="text-[10px] font-black uppercase text-slate-400">Completion Progress</span>
                         <span className="text-lg font-black text-primary">{formCompletion}%</span>
                     </div>
                     <div className="h-1.5 w-48 bg-slate-100 rounded-full overflow-hidden border border-slate-50">
@@ -569,11 +569,11 @@ function UploadContent() {
                     <Button
                         variant="outline"
                         onClick={() => {
-                            const win = window as unknown as { TitanNode?: { triggerScanner: (mode: string) => void } };
-                            if (win.TitanNode?.triggerScanner) {
-                                win.TitanNode.triggerScanner("SHELF");
+                            const win = window as unknown as { NativeDevice?: { triggerScanner: (mode: string) => void } };
+                            if (win.NativeDevice?.triggerScanner) {
+                                win.NativeDevice.triggerScanner("SHELF");
                             } else {
-                                alert("Vision AI Audit requires the native Android Node.");
+                                alert("AI Inventory Audit requires the mobile application.");
                             }
                         }}
                         className="h-12 px-6 rounded-xl border-slate-200 bg-white font-black uppercase text-[9px] tracking-widest hover:border-primary hover:text-primary transition-all shadow-sm"
@@ -600,7 +600,7 @@ function UploadContent() {
                   <button type="button" onClick={() => toggleSection('basic')} className="w-full p-8 flex items-center justify-between hover:bg-slate-50 transition-colors">
                       <div className="flex items-center gap-4">
                           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Info className="h-5 w-5" /></div>
-                          <div className="text-left"><h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Basic Information</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Identify tech payload specs</p></div>
+                          <div className="text-left"><h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Basic Information</h2><p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Specify product details</p></div>
                       </div>
                       {openSections.basic ? <ChevronUp className="h-5 w-5 text-slate-300" /> : <ChevronDown className="h-5 w-5 text-slate-300" />}
                   </button>
@@ -633,9 +633,9 @@ function UploadContent() {
                                       <Input name="sku" value={form.sku} onChange={handleInputChange} className="h-14 rounded-2xl border-slate-100 bg-slate-50 font-mono text-xs flex-1" />
                                       <Button
                                           type="button"
-                                          onClick={triggerTitanScanner}
+                                          onClick={triggerAppScanner}
                                           className="h-14 w-14 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
-                                          title="Native Scan Node"
+                                          title="Native Scan"
                                       >
                                           <Scan className="h-6 w-6" />
                                       </Button>
@@ -661,7 +661,7 @@ function UploadContent() {
                               </div>
                               <div className="text-left">
                                   <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Stock Intelligence</h2>
-                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Predictive Velocity Scan</p>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Stock Prediction</p>
                               </div>
                           </div>
                           {stockIntelligence.isReorderUrgent && (
@@ -797,7 +797,7 @@ function UploadContent() {
                               </div>
                               <div className="text-left">
                                   <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Stock Intelligence</h2>
-                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Predictive Velocity Scan</p>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Stock Prediction</p>
                               </div>
                           </div>
                           {stockIntelligence.isReorderUrgent && (
@@ -899,7 +899,7 @@ function UploadContent() {
                               </div>
                               <div className="text-left">
                                   <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Stock Intelligence</h2>
-                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Predictive Velocity Scan</p>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Stock Prediction</p>
                               </div>
                           </div>
                           {stockIntelligence.isReorderUrgent && (
@@ -985,7 +985,7 @@ function UploadContent() {
                               </div>
                               <div className="text-left">
                                   <h2 className="text-lg font-black text-foreground uppercase tracking-tighter">Stock Intelligence</h2>
-                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Predictive Velocity Scan</p>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Stock Prediction</p>
                               </div>
                           </div>
                           {stockIntelligence.isReorderUrgent && (
@@ -1077,13 +1077,13 @@ function UploadContent() {
                                                 type="button"
                                                 onClick={(e) => {
                                                     e.preventDefault();
-                                                    const win = window as unknown as { TitanNode?: { triggerScanner: (mode: string) => void } };
-                                                    win.TitanNode?.triggerScanner('TRIAGE');
+                                                    const win = window as unknown as { NativeDevice?: { triggerScanner: (mode: string) => void } };
+                                                    win.NativeDevice?.triggerScanner('TRIAGE');
                                                 }}
                                                 disabled={isVisionScanning}
                                                 className="flex-1 h-8 rounded-lg bg-emerald-600 text-white font-black uppercase text-[7px] tracking-widest animate-in zoom-in-95"
                                               >
-                                                  <Bot size={10} className="mr-1" /> Edge-AI Triage
+                                                  <Bot size={10} className="mr-1" /> AI Triage
                                               </Button>
                                           </div>
                                       )}
@@ -1117,17 +1117,17 @@ function UploadContent() {
                                   await supabase.from('products').update({ status: 'Live' }).eq('id', editingId);
                                   cancelEditing();
                                   fetchProducts();
-                                  setMessage({ type: 'success', text: 'Gadget Authorized for Grid! ✅' });
+                                  setMessage({ type: 'success', text: 'Product authorized for sale! ✅' });
                                   setIsSubmitting(false);
                               }}
                               className="h-16 px-8 rounded-2xl bg-emerald-500 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-600 transition-all active:scale-95"
                           >
-                              Authorize for Grid
+                              Authorize for Sale
                           </Button>
                       )}
                       <Button type="submit" disabled={isSubmitting} className="flex-1 h-16 rounded-2xl bg-primary text-white font-black uppercase tracking-[0.3em] text-xs hover:bg-primary/90 transition-all active:scale-95 shadow-xl shadow-primary/20">
                         {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : <Rocket className="h-5 w-5 mr-3" />}
-                        {editingId ? 'Save Product Changes' : 'Deploy New Gadget'}
+                        {editingId ? 'Save Changes' : 'Add Product'}
                       </Button>
                       {editingId && <Button type="button" onClick={cancelEditing} variant="ghost" className="h-16 px-10 rounded-2xl text-slate-400 hover:text-foreground hover:bg-white font-black uppercase text-[10px] active:scale-95 transition-all">Abort</Button>}
                   </div>
@@ -1138,7 +1138,7 @@ function UploadContent() {
 
           <div className="lg:col-span-5 space-y-10">
               <div className="sticky top-8 space-y-8">
-                  <div className="flex items-center justify-between px-4"><h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em]">Payload Preview</h3><div className="px-3 py-1.5 rounded-lg bg-white border border-slate-100 shadow-sm text-[9px] font-black text-primary flex items-center gap-2"><Smartphone className="h-3 w-3" /> Live Mobile</div></div>
+                  <div className="flex items-center justify-between px-4"><h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em]">Product Preview</h3><div className="px-3 py-1.5 rounded-lg bg-white border border-slate-100 shadow-sm text-[9px] font-black text-primary flex items-center gap-2"><Smartphone className="h-3 w-3" /> Live Mobile</div></div>
                   <div className="w-[320px] h-[640px] bg-white rounded-[3.5rem] border-[12px] border-slate-100 mx-auto shadow-2xl relative overflow-hidden flex flex-col transition-all duration-500 hover:scale-[1.02] origin-top scale-90 xl:scale-100">
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-100 rounded-b-2xl z-20"></div>
                         <div className="flex-1 overflow-y-auto pt-10 pb-20 no-scrollbar">
@@ -1155,10 +1155,10 @@ function UploadContent() {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-[8px] font-black uppercase text-primary tracking-widest">{form.brand || 'Apexstores'}</p>
-                                    <h4 className="text-xl font-black uppercase text-foreground tracking-tighter leading-none truncate">{form.name || 'Gadget Title'}</h4>
+                                    <h4 className="text-xl font-black uppercase text-foreground tracking-tighter leading-none truncate">{form.name || 'Product Title'}</h4>
                                     <p className="text-2xl font-black text-foreground tracking-tighter">{formatPrice(Number(form.price) || 0)}</p>
                                 </div>
-                                <p className="text-[10px] text-slate-500 font-medium italic line-clamp-3">&quot;{form.short_description || form.description || 'Manuscript pending...'}&quot;</p>
+                                <p className="text-[10px] text-slate-500 font-medium italic line-clamp-3">&quot;{form.short_description || form.description || 'Details pending...'}&quot;</p>
                                 <div className="space-y-2">
                                     <Button className="w-full h-12 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20">Add to Bag</Button>
                                     <Button variant="outline" className="w-full h-10 rounded-2xl border-primary/20 text-primary font-black uppercase text-[8px] tracking-widest">Buy via WhatsApp</Button>

@@ -68,7 +68,7 @@ class MainActivity : FragmentActivity() {
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
-    private var titanWebView: WebView? = null
+    private var apexWebView: WebView? = null
     
     private var appUrl by mutableStateOf("https://tech-wb1o.onrender.com/admin")
     private var tenantId by mutableStateOf<String?>(null)
@@ -91,19 +91,19 @@ class MainActivity : FragmentActivity() {
             val triage = result.data?.getStringExtra("TRIAGE_RESULT")
 
             barcode?.let {
-                titanWebView?.evaluateJavascript("javascript:if(window.onTitanScan) window.onTitanScan('$it');", null)
+                apexWebView?.evaluateJavascript("javascript:if(window.onScan) window.onScan('$it');", null)
                 Toast.makeText(this, "SKU Captured: $it", Toast.LENGTH_SHORT).show()
             }
 
             triage?.let {
-                titanWebView?.evaluateJavascript("javascript:if(window.onTitanTriage) window.onTitanTriage('$it');", null)
+                apexWebView?.evaluateJavascript("javascript:if(window.onTriage) window.onTriage('$it');", null)
                 Toast.makeText(this, "AI Triage: $it", Toast.LENGTH_LONG).show()
             }
 
             val shelfLabels = result.data?.getStringArrayExtra("SHELF_LABELS")
             shelfLabels?.let { labels ->
                 val labelsJson = labels.joinToString(",")
-                titanWebView?.evaluateJavascript("javascript:if(window.onTitanShelfAudit) window.onTitanShelfAudit('$labelsJson');", null)
+                apexWebView?.evaluateJavascript("javascript:if(window.onShelfAudit) window.onShelfAudit('$labelsJson');", null)
                 Toast.makeText(this, "Shelf Data Synced", Toast.LENGTH_SHORT).show()
             }
         }
@@ -113,7 +113,7 @@ class MainActivity : FragmentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         
-        deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID) ?: "UNKNOWN_TITAN"
+        deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID) ?: "UNKNOWN_DEVICE"
         executor = ContextCompat.getMainExecutor(this)
         
         var isAuthorized by mutableStateOf(false)
@@ -141,7 +141,7 @@ class MainActivity : FragmentActivity() {
                         .build()
                     val securePrefs = EncryptedSharedPreferences.create(
                         this@MainActivity,
-                        "titan_secure_storage",
+                        "apex_secure_storage",
                         masterKey,
                         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
@@ -156,7 +156,7 @@ class MainActivity : FragmentActivity() {
             })
 
         promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Apex Titan Shield")
+            .setTitle("Apex Security Shield")
             .setSubtitle("Biometric authorization required for Command Access")
             .setNegativeButtonText("Exit")
             .build()
@@ -167,7 +167,7 @@ class MainActivity : FragmentActivity() {
             .build()
         val securePrefs = EncryptedSharedPreferences.create(
             this,
-            "titan_secure_storage",
+            "apex_secure_storage",
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
@@ -188,7 +188,7 @@ class MainActivity : FragmentActivity() {
                 .build()
             val securePrefs = EncryptedSharedPreferences.create(
                 this@MainActivity,
-                "titan_secure_storage",
+                "apex_secure_storage",
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
@@ -207,7 +207,7 @@ class MainActivity : FragmentActivity() {
                     val path = if (riderRole == "RIDER") "rider/dashboard" else "admin"
                     appUrl = "$url/$path"
                     if (tenantId != null) {
-                        titanWebView?.loadUrl(appUrl)
+                        apexWebView?.loadUrl(appUrl)
                     }
                 }
             }
@@ -225,8 +225,8 @@ class MainActivity : FragmentActivity() {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (titanWebView?.canGoBack() == true) {
-                    titanWebView?.goBack()
+                if (apexWebView?.canGoBack() == true) {
+                    apexWebView?.goBack()
                 } else {
                     finish()
                 }
@@ -255,7 +255,7 @@ class MainActivity : FragmentActivity() {
                                 provisioningSuccess = false
                             })
                         } else {
-                            TitanHubWebBridge(appUrl, onWebViewCreated = { titanWebView = it })
+                            apexHubWebBridge(appUrl, onWebViewCreated = { apexWebView = it })
 
                             // Handle Intent after WebView is ready or via URL change
                             LaunchedEffect(intent) {
@@ -263,7 +263,7 @@ class MainActivity : FragmentActivity() {
                             }
                         }
 
-                        // Phase 10: Titan Member Pass Overlay
+                        // Phase 10: apex Member Pass Overlay
                         memberPassBitmap?.let { bitmap ->
                             Dialog(onDismissRequest = { memberPassBitmap = null }) {
                                 Box(
@@ -275,7 +275,7 @@ class MainActivity : FragmentActivity() {
                                 ) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(
-                                            "Titan Member Pass",
+                                            "apex Member Pass",
                                             style = MaterialTheme.typography.headlineSmall,
                                             color = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.padding(bottom = 16.dp)
@@ -347,7 +347,7 @@ class MainActivity : FragmentActivity() {
                 launchScanner()
             }
             "new_order" -> {
-                titanWebView?.loadUrl("https://tech-paxv.onrender.com/admin/orders?action=new")
+                apexWebView?.loadUrl("https://tech-paxv.onrender.com/admin/orders?action=new")
             }
         }
     }
@@ -373,7 +373,7 @@ class MainActivity : FragmentActivity() {
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
-                    titanWebView?.evaluateJavascript("javascript:if(window.onTitanStepUpSuccess) window.onTitanStepUpSuccess();", null)
+                    apexWebView?.evaluateJavascript("javascript:if(window.onapexStepUpSuccess) window.onapexStepUpSuccess();", null)
                 }
             })
 
@@ -392,7 +392,7 @@ class MainActivity : FragmentActivity() {
             .build()
         val prefs = EncryptedSharedPreferences.create(
             this,
-            "titan_secure_storage",
+            "apex_secure_storage",
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
@@ -400,21 +400,21 @@ class MainActivity : FragmentActivity() {
         val queue = prefs.getStringSet("offline_drops", mutableSetOf())?.toList() ?: emptyList()
         
         if (queue.isNotEmpty()) {
-            Toast.makeText(this, "Singularity: Syncing ${queue.size} Secure Drops...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Syncing ${queue.size} pending orders...", Toast.LENGTH_SHORT).show()
             queue.forEach { orderId ->
-                titanWebView?.evaluateJavascript("javascript:if(window.onTitanSyncOrder) window.onTitanSyncOrder('$orderId');", null)
+                apexWebView?.evaluateJavascript("javascript:if(window.onSyncOrder) window.onSyncOrder('$orderId');", null)
             }
             prefs.edit().remove("offline_drops").apply()
         }
 
-        // Sync Node Health (Battery)
+        // Sync Device Health (Battery)
         val batteryPct = getBatteryPercentage()
         
         lifecycleScope.launch(Dispatchers.IO) {
             SupabaseNode.updateDevicePulse(deviceId, batteryPct)
         }
         
-        titanWebView?.evaluateJavascript("javascript:if(window.onTitanNodePulse) window.onTitanNodePulse($batteryPct);", null)
+        apexWebView?.evaluateJavascript("javascript:if(window.onDevicePulse) window.onDevicePulse($batteryPct);", null)
     }
 
     private fun getBatteryPercentage(): Int {
@@ -427,13 +427,13 @@ class MainActivity : FragmentActivity() {
     }
 }
 
-class TitanBridge(private val activity: MainActivity, private val webView: WebView) {
+class ApexBridge(private val activity: MainActivity, private val webView: WebView) {
     private val masterKey = MasterKey.Builder(activity)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
     private val prefs = EncryptedSharedPreferences.create(
         activity,
-        "titan_secure_storage",
+        "apex_secure_storage",
         masterKey,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
@@ -460,10 +460,9 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
     @JavascriptInterface
     fun generateMemberPass(token: String) {
         if (!isTrustedOrigin()) return
-        // Phase 10: Dynamic QR Node
         activity.runOnUiThread {
             try {
-                val bitmap = QRCodeGenerator.generate("TITAN-PASS|$token")
+                val bitmap = QRCodeGenerator.generate("APEX-PASS|$token")
                 activity.setMemberPass(bitmap)
             } catch (e: Exception) {
                 Toast.makeText(activity, "Encryption Error", Toast.LENGTH_SHORT).show()
@@ -474,13 +473,12 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
     @JavascriptInterface
     fun queueMissionCompletion(orderId: Int) {
         if (!isTrustedOrigin()) return
-        // Phase 13: Fortified Offline Persistence
         activity.runOnUiThread {
             val queue = prefs.getStringSet("offline_drops", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
             queue.add(orderId.toString())
             prefs.edit().putStringSet("offline_drops", queue).apply()
             
-            Toast.makeText(activity, "Secure Drop Saved. Syncing on Uplink...", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, "Order Saved. Syncing on reconnect...", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -506,7 +504,7 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
                     } else {
                         activity.startService(intent)
                     }
-                    Toast.makeText(activity, "Titan Tracker Engaged", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Apex Tracker Engaged", Toast.LENGTH_SHORT).show()
                 } else {
                     isTrackingActive = false // Reset state if permission missing
                     activity.permissionLauncher.launch(arrayOf(
@@ -516,7 +514,7 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
                 }
             } else {
                 activity.stopService(intent)
-                Toast.makeText(activity, "Titan Tracker Offline", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Apex Tracker Offline", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -536,7 +534,7 @@ class TitanBridge(private val activity: MainActivity, private val webView: WebVi
 }
 
 @Composable
-fun TitanHubWebBridge(url: String, onWebViewCreated: (WebView) -> Unit) {
+fun ApexHubWebBridge(url: String, onWebViewCreated: (WebView) -> Unit) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
@@ -570,7 +568,7 @@ fun TitanHubWebBridge(url: String, onWebViewCreated: (WebView) -> Unit) {
                     WebSettingsCompat.setForceDark(settings, WebSettingsCompat.FORCE_DARK_OFF)
                 }
 
-                addJavascriptInterface(TitanBridge(context as MainActivity, this), "TitanNode")
+                addJavascriptInterface(ApexBridge(context as MainActivity, this), "ApexDevice")
                 onWebViewCreated(this)
                 loadUrl(url)
             }
@@ -631,7 +629,7 @@ fun BootstrapUI(onClaimed: (String, String, String) -> Unit) {
                     withContext(Dispatchers.Main) {
                         if (result != null) {
                             val (tenantId, role, name) = result
-                            val dId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "TITAN_NODE"
+                            val dId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "APEX_DEVICE"
                             
                             // 1. Register Device in Organization Registry
                             val regSuccess = SupabaseNode.registerDevice(
@@ -647,7 +645,7 @@ fun BootstrapUI(onClaimed: (String, String, String) -> Unit) {
                                     .build()
                                 val securePrefs = EncryptedSharedPreferences.create(
                                     context,
-                                    "titan_secure_storage",
+                                    "apex_secure_storage",
                                     masterKey,
                                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
@@ -678,7 +676,7 @@ fun BootstrapUI(onClaimed: (String, String, String) -> Unit) {
             enabled = token.isNotEmpty() && !loading
         ) {
             if (loading) CircularProgressIndicator(color = Color.White)
-            else Text("ACTIVATE TITAN NODE", fontWeight = FontWeight.Bold)
+            else Text("ACTIVATE APEX DEVICE", fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -703,7 +701,7 @@ fun ProvisioningSuccessUI(onComplete: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                "TITAN NODE ACTIVATED",
+                "APEX DEVICE ACTIVATED",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White,
                 fontWeight = FontWeight.Black,

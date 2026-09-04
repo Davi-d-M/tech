@@ -533,7 +533,7 @@ export default function RiderOnboarding() {
                                                 if (data.pin) setPin(data.pin);
                                                 setStep('success');
                                             } else {
-                                                setError("Verification still pending. Check back soon, bro.");
+                                                setError("Verification is still pending. Please check back later.");
                                                 setTimeout(() => setError(null), 3000);
                                             }
                                             setLoading(false);

@@ -46,8 +46,8 @@ export default function VIPVideoRelay() {
                                 <div className="absolute inset-0 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin" />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">Waiting for Client Payload</h3>
-                                <p className="text-xs font-black uppercase text-slate-400 tracking-widest italic">Link status: Secure • Signal: 100%</p>
+                                <h3 className="text-2xl font-black uppercase tracking-tight text-foreground">Waiting for Client Connection</h3>
+                                <p className="text-xs font-black uppercase text-slate-400 tracking-widest italic">Status: Secure • Signal: 100%</p>
                             </div>
                             <Button
                                 onClick={() => setIsConnecting(true)}
@@ -55,7 +55,7 @@ export default function VIPVideoRelay() {
                                 className="h-16 px-12 rounded-2xl bg-indigo-600 text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95"
                             >
                                 {isConnecting ? <Loader2 className="animate-spin mr-3" /> : <Zap className="mr-3" />}
-                                {isConnecting ? 'Establishing Neural Link...' : 'Initiate Relay'}
+                                {isConnecting ? 'Connecting...' : 'Start Session'}
                             </Button>
                         </div>
 
@@ -86,7 +86,7 @@ export default function VIPVideoRelay() {
                                 <h3 className="text-lg font-black uppercase text-foreground">Encrypted Stream</h3>
                             </div>
                             <p className="text-[10px] text-slate-500 font-medium leading-relaxed italic">
-                                &quot;All high-touch relay sessions are end-to-end encrypted under the Apex Singularity protocol. No recordings are stored without consent.&quot;
+                                &quot;All high-touch relay sessions are end-to-end encrypted under the Apex Platform security standards. No recordings are stored without consent.&quot;
                             </p>
                         </Card>
                     </div>
@@ -105,7 +105,7 @@ export default function VIPVideoRelay() {
                                     <ShieldCheck size={16} className="text-emerald-500" /> Verify Device Ownership
                                 </Button>
                                 <Button className="w-full h-14 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 font-black uppercase text-[10px] hover:bg-rose-600 hover:text-white transition-all flex items-center gap-3 shadow-sm">
-                                    <PhoneCall size={16} /> Terminate Link
+                                    <PhoneCall size={16} /> End Session
                                 </Button>
                             </div>
                         </div>

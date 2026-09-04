@@ -33,7 +33,7 @@ export default function AskApex() {
         // @ts-expect-error - SpeechRecognition global check
         const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Voice Protocol not supported in this browser.");
+            alert("Voice commands are not supported in this browser.");
             return;
         }
 
@@ -74,7 +74,7 @@ export default function AskApex() {
             const response = await processQueryLocally(userQuery);
             setMessages(prev => [...prev, { role: 'assistant', text: response }]);
         } catch {
-            setMessages(prev => [...prev, { role: 'assistant', text: "Data link interrupted. Please retry, bro." }]);
+            setMessages(prev => [...prev, { role: 'assistant', text: "Connection interrupted. Please try again." }]);
         } finally {
             setIsLoading(false);
         }
@@ -104,7 +104,7 @@ export default function AskApex() {
                     </div>
                 );
             }
-            return "No delivered missions found in history to calculate top shoppers, bro.";
+            return "No completed orders found in history to calculate top shoppers.";
         }
 
         // 2. PROFIT / REVENUE (Real Data)
@@ -152,11 +152,11 @@ export default function AskApex() {
                                 </div>
                             ))}
                         </div>
-                        <p className="text-[9px] font-medium italic text-slate-400">Initialize procurement for {critical.length} assets now, bro.</p>
+                        <p className="text-[9px] font-medium italic text-slate-400">Inventory replenishment is recommended for {critical.length} items.</p>
                     </div>
                 );
             }
-            return "Inventory levels are stabilized across all nodes. No critical stock-outs detected, bro. 📦";
+            return "Inventory levels are stabilized. No critical stock-outs detected. 📦";
         }
 
         // 4. ORDERS / MISSIONS (Real Data)
@@ -188,7 +188,7 @@ export default function AskApex() {
         return (
             <div className="space-y-3">
                 <p className="text-sm font-medium italic leading-relaxed">
-                    &quot;I am synced to the live database, bro. I can analyze your **revenue**, identify **low stock**, or brief you on **top customers**. What mission shall we run?&quot;
+                    &quot;I am synced to the live database. I can analyze your **revenue**, identify **low stock**, or provide insights on **top customers**. How can I help you today?&quot;
                 </p>
                 <div className="flex flex-wrap gap-2 pt-2">
                     <span className="px-2 py-1 bg-slate-100 rounded-md text-[8px] font-black uppercase text-slate-500">Revenue Analysis</span>

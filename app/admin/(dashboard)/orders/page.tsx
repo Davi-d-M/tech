@@ -198,7 +198,7 @@ export default function AdminOrdersPage() {
     if (!isValidTransition(orderToUpdate.status, status)) {
         setStatusMessage({
             type: 'error',
-            text: `Protocol Violation: Cannot move from ${orderToUpdate.status} to ${status}.`
+            text: `Invalid Transition: Cannot move from ${orderToUpdate.status} to ${status}.`
         });
         return;
     }
@@ -506,7 +506,7 @@ export default function AdminOrdersPage() {
           <div className="p-24 flex flex-col items-center justify-center text-center">
               <ShieldAlert className="h-16 w-16 text-primary mb-6" />
               <h2 className="text-2xl font-black uppercase text-foreground">Access Denied</h2>
-              <p className="text-slate-500 mt-2">You don&apos;t have permission to manage orders, bro.</p>
+              <p className="text-slate-500 mt-2">You do not have the required permissions to manage orders.</p>
           </div>
       );
   }
@@ -719,11 +719,11 @@ export default function AdminOrdersPage() {
                             </button>
                         </th>
                         <th className="px-8 py-5 min-w-[180px]">Customer Identity</th>
-                        <th className="px-8 py-5 min-w-[220px]">Payload Details</th>
+                        <th className="px-8 py-5 min-w-[220px]">Order Details</th>
                         <th className="px-8 py-5 w-32">Authorized By</th>
-                        {canSeeMoney && <th className="px-8 py-5 w-32">Profit Node</th>}
-                        <th className="px-8 py-5 w-48">Pipeline State</th>
-                        <th className="px-8 py-5 text-right rounded-r-2xl">Tactical Actions</th>
+                        {canSeeMoney && <th className="px-8 py-5 w-32">Profit</th>}
+                        <th className="px-8 py-5 w-48">Order Status</th>
+                        <th className="px-8 py-5 text-right rounded-r-2xl">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y-0">

@@ -46,7 +46,7 @@ export default function ExitIntentPopup() {
                 </div>
 
                 <div className="space-y-2">
-                    <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter">Wait, Bro!</h2>
+                    <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter">Wait!</h2>
                     <p className="text-slate-500 font-medium text-lg">Don&apos;t leave your gear behind.</p>
                 </div>
 

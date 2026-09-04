@@ -112,8 +112,8 @@ export default function MarketingAutopilot() {
                         <Rocket className="h-4 w-4 text-primary" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Autopilot Active</span>
                     </div>
-                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">Journey Builder</h1>
-                    <p className="text-muted-foreground text-sm font-medium mt-1">Automated engagement loops and self-scaling growth protocols.</p>
+                    <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">Campaign Builder</h1>
+                    <p className="text-muted-foreground text-sm font-medium mt-1">Automated engagement loops and scaling growth protocols.</p>
                 </div>
                 <Button onClick={() => setIsAdding(true)} className="rounded-xl h-12 px-8 bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                     <Plus size={16} className="mr-2" /> New Automation
@@ -202,24 +202,15 @@ export default function MarketingAutopilot() {
                         <div className="relative z-10 space-y-10">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm group-hover:scale-105 transition-transform"><Activity size={20} /></div>
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Autopilot Yield</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Automation Yield</h3>
                             </div>
                             <div className="space-y-6">
                                 <div>
-                                    <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Automated Revenue (30d)</p>
-                                    <p className="text-4xl font-black text-foreground tracking-tighter">KSh 42,400</p>
+                                    <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Total Executions (30d)</p>
+                                    <p className="text-4xl font-black text-foreground tracking-tighter">{rules.reduce((s, r) => s + (r.runs_count || 0), 0).toLocaleString()}</p>
                                     <div className="flex items-center gap-2 mt-2 text-emerald-500">
                                         <TrendingUp size={12} />
-                                        <span className="text-[10px] font-black uppercase">+18.4% Efficiency Boost</span>
-                                    </div>
-                                </div>
-                                <div className="pt-6 border-t border-slate-50 space-y-4">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400">
-                                        <span>Retention Index</span>
-                                        <span className="text-foreground">84%</span>
-                                    </div>
-                                    <div className="h-1.5 w-full bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-                                        <div className="h-full bg-primary" style={{ width: '84%' }}></div>
+                                        <span className="text-[10px] font-black uppercase">Efficiency Monitoring Active</span>
                                     </div>
                                 </div>
                             </div>
@@ -229,9 +220,9 @@ export default function MarketingAutopilot() {
 
                     <div className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-4 text-left">
                         <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><Users size={18} /></div>
-                        <h4 className="text-lg font-black uppercase text-foreground leading-none">Customer Cycle</h4>
+                        <h4 className="text-lg font-black uppercase text-foreground leading-none">Insight</h4>
                         <p className="text-[10px] text-muted-foreground font-medium italic">
-                            &quot;Current loops are saving 14 hours of manual outreach weekly. I recommend activating the &apos;VIP Tier-Up&apos; loop to boost LTV.&quot;
+                            &quot;Automated engagement loops are active. Monitor conversion rates to optimize customer retention.&quot;
                         </p>
                     </div>
                 </div>
@@ -254,12 +245,12 @@ export default function MarketingAutopilot() {
 
                         <div className="space-y-8">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Mission Name</label>
+                                <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Campaign Name</label>
                                 <Input
                                     value={newRule.name}
                                     onChange={e => setNewRule({...newRule, name: e.target.value})}
                                     className="h-14 rounded-2xl bg-secondary border-border font-bold text-foreground"
-                                    placeholder="e.g. Lapsed VIP Recovery"
+                                    placeholder="e.g. Inactive Customer Recovery"
                                 />
                             </div>
 
@@ -314,7 +305,7 @@ export default function MarketingAutopilot() {
                                 disabled={!newRule.name || loading}
                                 className="flex-1 h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
                             >
-                                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Establish Node"}
+                                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Create Automation"}
                             </Button>
                         </div>
                     </Card>

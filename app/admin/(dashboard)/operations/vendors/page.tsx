@@ -67,7 +67,7 @@ export default function MultiVendorHub() {
     const handleApproveVendor = async (id: string) => {
         setVendors(prev => prev.map(v => v.id === id ? { ...v, status: 'Active' } : v));
         await logAuditAction(adminEmail, 'APPROVE_VENDOR', { id });
-        setMessage({ type: 'success', text: "Partner Node Activated. Commission logic synchronized." });
+        setMessage({ type: 'success', text: "Partner account activated." });
         setTimeout(() => setMessage(null), 3000);
     };
 
@@ -77,7 +77,7 @@ export default function MultiVendorHub() {
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <Store className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Nexus Partner Grid</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Partner Network</span>
                     </div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">Multi-Vendor Hub</h1>
                     <p className="text-muted-foreground text-sm font-medium mt-2">Manage 3rd party partners and autonomous commission settlements.</p>
@@ -128,14 +128,14 @@ export default function MultiVendorHub() {
                                         setIsOnboarding(false);
                                         setNewVendor({ name: '', email: '' });
                                         fetchVendors();
-                                        setMessage({ type: 'success', text: "Onboarding Payload Sent. Verification Pending." });
+                                        setMessage({ type: 'success', text: "Onboarding Request Sent. Verification Pending." });
                                     }
                                     setLoading(false);
                                     setTimeout(() => setMessage(null), 3000);
                                 }}
                                 className="flex-1 h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] shadow-lg shadow-primary/20"
                             >
-                                Initiate Protocol
+                                Send Invitation
                             </Button>
                             <Button onClick={() => setIsOnboarding(false)} variant="outline" className="flex-1 h-14 rounded-2xl border-slate-100 font-black uppercase text-[10px]">Cancel</Button>
                         </div>
@@ -159,7 +159,7 @@ export default function MultiVendorHub() {
                         <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary shadow-sm"><Users size={24} /></div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Active Marketplace Partners</p>
-                            <h3 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">{vendors.filter(v => v.status === 'Active').length} Nodes</h3>
+                            <h3 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">{vendors.filter(v => v.status === 'Active').length} Partners</h3>
                         </div>
                     </div>
                 </Card>
@@ -190,7 +190,7 @@ export default function MultiVendorHub() {
                     <thead>
                         <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em]">
                             <th className="px-10 py-6">Partner Identity</th>
-                            <th className="px-10 py-6">Grid Status</th>
+                            <th className="px-10 py-6">Partner Status</th>
                             <th className="px-10 py-6">Sales / Commission</th>
                             <th className="px-10 py-6">Items</th>
                             <th className="px-10 py-6 text-right">Actions</th>
@@ -249,10 +249,10 @@ export default function MultiVendorHub() {
                     <div className="relative z-10 space-y-6">
                         <div className="flex items-center gap-4">
                             <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/20"><ShieldCheck size={24} /></div>
-                            <h3 className="text-xl font-black uppercase tracking-tighter">Settlement Protocol</h3>
+                            <h3 className="text-xl font-black uppercase tracking-tighter">Settlement Process</h3>
                         </div>
                         <p className="text-xs font-medium leading-relaxed opacity-70 italic">
-                            &quot;All partner payouts are autonomously calculated every Monday. Commission is deducted at the source of successful extraction missions.&quot;
+                            &quot;All partner payouts are calculated every Monday. Commission is deducted at the time of successful delivery.&quot;
                         </p>
                         <div className="pt-4 border-t border-white/10 flex justify-between items-center">
                             <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Status</span>
@@ -272,11 +272,11 @@ export default function MultiVendorHub() {
                     <div className="flex gap-4">
                         <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex-1 space-y-2">
                             <p className="text-[10px] font-black uppercase text-foreground">Fulfilled by Apex</p>
-                            <p className="text-[8px] font-medium text-slate-500 italic">Partners store stock in your warehouse nodes.</p>
+                            <p className="text-[8px] font-medium text-slate-500 italic">Partners store stock in our fulfillment centers.</p>
                         </div>
                         <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex-1 space-y-2 opacity-50">
                             <p className="text-[10px] font-black uppercase text-foreground">Merchant Dispatch</p>
-                            <p className="text-[8px] font-medium text-slate-500 italic">Partners handle their own logistics node.</p>
+                            <p className="text-[8px] font-medium text-slate-500 italic">Partners manage their own delivery operations.</p>
                         </div>
                     </div>
                 </div>

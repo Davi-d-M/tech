@@ -120,7 +120,7 @@ export default function SocialHubPage() {
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <Zap className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Global Distribution Node</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Content Distribution Network</span>
                     </div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Social Hub</h1>
                     <p className="text-muted-foreground text-sm font-medium mt-1">One-click content distribution and engagement analytics.</p>
@@ -244,7 +244,7 @@ export default function SocialHubPage() {
                 <div className="lg:col-span-5 space-y-10">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between px-4">
-                            <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] flex items-center gap-2"><Eye className="h-3 w-3" /> Tactical Preview</h3>
+                            <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] flex items-center gap-2"><Eye className="h-3 w-3" /> Content Preview</h3>
                             <div className="flex gap-1 p-1 bg-white rounded-xl border border-slate-100 shadow-sm overflow-x-auto no-scrollbar max-w-[250px]">
                                 {(['instagram', 'facebook', 'tiktok', 'whatsapp', 'gmail'] as Platform[]).map(p => (
                                     <button
@@ -275,7 +275,7 @@ export default function SocialHubPage() {
                                     <div className="aspect-square bg-slate-50 flex items-center justify-center relative overflow-hidden">
                                         <div className="absolute inset-0 bg-primary/5 flex items-center justify-center"><Smartphone className="h-20 w-20 text-slate-200" /></div>
                                         <div className="relative z-10 text-center space-y-2 p-10">
-                                            <h4 className="text-xl font-black uppercase text-foreground leading-tight">{overrides['instagram']?.title || title || 'Payload Header'}</h4>
+                                            <h4 className="text-xl font-black uppercase text-foreground leading-tight">{overrides['instagram']?.title || title || 'Post Header'}</h4>
                                         </div>
                                     </div>
                                     <div className="p-6 space-y-3 flex-1">
@@ -284,7 +284,7 @@ export default function SocialHubPage() {
                                         </div>
                                         <div className="text-[11px] font-medium text-slate-600 leading-relaxed italic">
                                             <span className="font-black text-foreground mr-2">Apexstores_Kenya</span>
-                                            {overrides['instagram']?.description || description || 'Establishing tactical description...'}
+                                            {overrides['instagram']?.description || description || 'Preparing description...'}
                                             <span className="block mt-2 text-primary font-bold">#Apexstores #EliteTech #KenyaTech</span>
                                         </div>
                                     </div>
@@ -299,7 +299,7 @@ export default function SocialHubPage() {
                                         <Music className="h-32 w-32 text-white/5 animate-pulse" />
                                         <div className="absolute bottom-10 left-6 right-16 z-20 space-y-4">
                                             <h4 className="text-sm font-black uppercase tracking-widest">@apexstores.ke</h4>
-                                            <p className="text-xs font-medium line-clamp-3">🚨 NEW TECH DROP 🚨 {overrides['tiktok']?.description || description || 'Preparing mission brief...'}</p>
+                                            <p className="text-xs font-medium line-clamp-3">🚨 NEW TECH DROP 🚨 {overrides['tiktok']?.description || description || 'Preparing campaign brief...'}</p>
                                             <div className="flex items-center gap-2">
                                                 <Music size={12} className="animate-spin" />
                                                 <span className="text-[10px] font-bold">Original Sound - Apex stores</span>
@@ -328,7 +328,7 @@ export default function SocialHubPage() {
                                         <div className="p-4 flex justify-between items-center bg-white border-t border-slate-100">
                                             <div className="text-left">
                                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">apexstores.co.ke</p>
-                                                <h5 className="text-sm font-black text-foreground uppercase truncate max-w-[200px]">{overrides['facebook']?.title || title || 'Tech Payload'}</h5>
+                                                <h5 className="text-sm font-black text-foreground uppercase truncate max-w-[200px]">{overrides['facebook']?.title || title || 'New Product'}</h5>
                                             </div>
                                             <Button size="sm" className="h-9 px-4 rounded-xl bg-slate-100 text-foreground font-black uppercase text-[9px] border border-slate-200">Shop Now</Button>
                                         </div>
@@ -339,17 +339,17 @@ export default function SocialHubPage() {
                             {previewPlatform === 'whatsapp' && (
                                 <WhatsAppPreview
                                     imageUrl=""
-                                    body={overrides['whatsapp']?.description || description || 'Direct mission details...'}
+                                    body={overrides['whatsapp']?.description || description || 'Campaign details...'}
                                 />
                             )}
 
                             {previewPlatform === 'gmail' && (
                                 <EmailPreview
-                                    productName={overrides['gmail']?.title || title || 'Gadget Protocol'}
+                                    productName={overrides['gmail']?.title || title || 'Product Launch'}
                                     productPrice={15000}
                                     imageUrl=""
-                                    subject={overrides['gmail']?.title || title || 'Tactical Update'}
-                                    body={overrides['gmail']?.description || description || 'Establishing technical narrative...'}
+                                    subject={overrides['gmail']?.title || title || 'Strategic Update'}
+                                    body={overrides['gmail']?.description || description || 'Preparing product details...'}
                                 />
                             )}
                         </Card>
@@ -377,14 +377,14 @@ export default function SocialHubPage() {
                 </div>
             </div>
 
-            {/* RESULTS MODAL (Tactical Response) */}
+            {/* RESULTS MODAL (Campaign Response) */}
             {results && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-md p-6">
                     <Card className="max-w-xl w-full p-10 rounded-[3rem] bg-white shadow-2xl space-y-8 animate-in zoom-in-95 duration-500 text-left">
                         <div className="flex items-center gap-4">
                             <div className="h-14 w-14 rounded-3xl bg-primary/10 flex items-center justify-center text-primary shadow-inner"><Rocket size={28} /></div>
                             <div>
-                                <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Mission Debrief</h2>
+                                <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Campaign Debrief</h2>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Multi-Platform Distribution Report</p>
                             </div>
                         </div>
@@ -409,7 +409,7 @@ export default function SocialHubPage() {
                         </div>
 
                         <Button onClick={() => setResults(null)} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all">
-                            Acknowledge Protocol
+                            Close Report
                         </Button>
                     </Card>
                 </div>

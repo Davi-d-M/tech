@@ -40,7 +40,7 @@ export default function ActiveAdmins() {
                 const latestLog = logs?.find(l => l.staff_email === v.customer_name);
                 return {
                     ...v,
-                    latest_action: latestLog?.action || 'Browsing Node'
+                    latest_action: latestLog?.action || 'Browsing Console'
                 };
             });
 
@@ -75,7 +75,7 @@ export default function ActiveAdmins() {
 
                 <div className="space-y-4">
                     {activeAdmins.length === 0 ? (
-                        <p className="py-6 text-center text-[10px] font-black text-slate-300 uppercase italic">Solo Command Protocol.</p>
+                        <p className="py-6 text-center text-[10px] font-black text-slate-300 uppercase italic">No other active sessions.</p>
                     ) : activeAdmins.map((admin) => (
                         <div key={admin.session_id} className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between group/session transition-all hover:bg-white hover:shadow-lg">
                             <div className="flex items-center gap-4">

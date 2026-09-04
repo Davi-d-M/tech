@@ -192,7 +192,7 @@ export default function AdminDashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50dvh] gap-4">
         <Loader2 className="h-10 w-10 text-primary animate-spin" />
-        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest animate-pulse">Establishing Data Uplink...</p>
+        <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest animate-pulse">Loading System Data...</p>
       </div>
     );
   }
@@ -203,11 +203,11 @@ export default function AdminDashboard() {
       {/* EXECUTIVE HEADER */}
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-10">
           <div className="text-left">
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-2">Apex OS Command</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-2">Management Console</p>
               <h1 className="text-5xl font-black text-foreground uppercase tracking-tighter leading-none">Good Morning, <span className="text-primary">{email?.split('@')[0]}</span> 👋</h1>
               <div className="flex items-center gap-4 mt-4">
                   <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-black uppercase text-slate-400">System Integrity</span>
+                      <span className="text-[9px] font-black uppercase text-slate-400">System Status</span>
                       <div className="h-1.5 w-32 bg-slate-200 rounded-full overflow-hidden">
                           <div className="h-full bg-emerald-500 w-[91%]"></div>
                       </div>
@@ -264,7 +264,7 @@ export default function AdminDashboard() {
                     <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest">Growth Locked</div>
                 </div>
                 <div className="mt-8">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Net Unit Profit</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Net Profit</p>
                     <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.netProfit)}</h3>
                     <p className="text-[9px] font-black text-primary uppercase mt-3">{stats.profitMargin.toFixed(1)}% Margin Efficiency</p>
                 </div>
@@ -286,9 +286,9 @@ export default function AdminDashboard() {
                     </div>
                 </div>
                 <div className="mt-8">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Pipeline</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Fulfillment Pipeline</p>
                     <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{orders.length}</h3>
-                    <p className="text-[9px] font-black text-primary uppercase mt-3">{orders.filter(o => o.status === 'Pending').length} Pending Fulfillment</p>
+                    <p className="text-[9px] font-black text-primary uppercase mt-3">{orders.filter(o => o.status === 'Pending').length} Pending Orders</p>
                 </div>
             </div>
         </Card>
@@ -311,8 +311,8 @@ export default function AdminDashboard() {
               <section className="bg-white rounded-[3.5rem] p-10 border border-slate-100 shadow-sm">
                   <div className="flex items-center justify-between mb-12">
                       <div>
-                          <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Market Dynamics</h2>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Revenue vs Profit Stream</p>
+                          <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground leading-none">Performance Dynamics</h2>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Revenue and Profit Analysis</p>
                       </div>
                       <Link href="/admin/analytics">
                           <Button variant="ghost" className="text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5">Advanced Analytics &rarr;</Button>
@@ -380,13 +380,13 @@ export default function AdminDashboard() {
 
               <section className="bg-white rounded-[3.5rem] p-10 border border-slate-100 shadow-sm relative overflow-hidden">
                   <div className="relative z-10 space-y-10 text-left">
-                    <h3 className="text-sm font-black uppercase text-slate-400 tracking-[0.4em]">Tactical Access</h3>
+                    <h3 className="text-sm font-black uppercase text-slate-400 tracking-[0.4em]">Quick Actions</h3>
                     <div className="grid grid-cols-2 gap-6">
                         {[
-                            { label: 'New Product', icon: Package, href: '/admin/upload' },
-                            { label: 'New Rider', icon: Truck, href: '/admin/dispatch' },
-                            { label: 'Broadcast', icon: Send, href: '/admin/broadcast' },
-                            { label: 'New Coupon', icon: Zap, href: '/admin/gamification' },
+                            { label: 'Add Product', icon: Package, href: '/admin/upload' },
+                            { label: 'Manage Riders', icon: Truck, href: '/admin/dispatch' },
+                            { label: 'System Broadcast', icon: Send, href: '/admin/broadcast' },
+                            { label: 'Create Coupon', icon: Zap, href: '/admin/gamification' },
                         ].map(action => (
                             <Link key={action.label} href={action.href} className="flex flex-col items-center gap-4 p-8 rounded-[2rem] bg-slate-50 border border-slate-100 hover:bg-primary hover:text-white transition-all group shadow-sm">
                                 <action.icon className="h-6 w-6 text-primary group-hover:text-white transition-colors" />

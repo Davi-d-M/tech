@@ -5,7 +5,7 @@ import { AdminProvider, Permissions } from '@/context/AdminContext';
 
 export const metadata = {
   robots: 'noindex, nofollow',
-  title: 'Apex Titan | Rider Console',
+  title: 'Apex Stores | Fleet Portal',
 };
 
 export const dynamic = 'force-dynamic';

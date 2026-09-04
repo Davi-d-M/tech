@@ -409,7 +409,7 @@ export default function AdminSettingsPage() {
                     { id: 'seo', label: 'SEO & Social', icon: Globe },
                     { id: 'ops', label: 'Operations', icon: Truck },
                     { id: 'catalog', label: 'Catalog', icon: Smartphone },
-                    { id: 'ai', label: 'AI Node', icon: Bot },
+                    { id: 'ai', label: 'AI Assistant', icon: Bot },
                     { id: 'features', label: 'Features', icon: Zap },
                     { id: 'integrations', label: 'Integrations', icon: Share2 },
                     { id: 'layout', label: 'Layout', icon: Palette },
@@ -1410,7 +1410,7 @@ export default function AdminSettingsPage() {
                             <div className="space-y-6 text-left">
                                 <div className="flex justify-between items-center border-b border-border pb-4 text-left">
                                     <span className="text-[9px] font-black uppercase text-muted-foreground">Version</span>
-                                    <span className="text-xs font-black text-foreground">v2.5.0-Titan</span>
+                                    <span className="text-xs font-black text-foreground">v2.5.0</span>
                                 </div>
                                 <div className="flex justify-between items-center border-b border-border pb-4 text-left">
                                     <span className="text-[9px] font-black uppercase text-muted-foreground">Cloud Storage</span>

@@ -222,7 +222,7 @@ export default function AdminReportsPage() {
                             <Button
                                 onClick={() => {
                                     if (!startDate || !endDate) {
-                                        alert("Please select both start and end dates, bro!");
+                                        alert("Please select both start and end dates.");
                                         return;
                                     }
                                     generatePDF('Custom');

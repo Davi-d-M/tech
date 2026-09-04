@@ -14,7 +14,9 @@ import {
   XCircle,
   RefreshCcw,
   Star,
-  Loader2
+  Loader2,
+  Smartphone,
+  Trash2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { formatPrice, cn } from '@/lib/utils';
@@ -48,6 +50,7 @@ interface Rider {
     last_battery_sync?: string;
     battery_level?: number;
     pin: string;
+    authorized_devices?: { id: string; name: string; added_at: string }[];
 }
 
 interface MissionHistory {
@@ -142,6 +145,37 @@ export default function AdminRidersPage() {
         }
     };
 
+    const authorizeRiderDevice = async (riderId: number, device: { id: string, name: string }) => {
+        if (!supabase) return;
+        const rider = riders.find(r => r.id === riderId);
+        if (!rider) return;
+
+        const currentDevices = rider.authorized_devices || [];
+        const updatedDevices = [...currentDevices, { ...device, added_at: new Date().toISOString() }];
+
+        const { error } = await supabase.from('rider_status').update({ authorized_devices: updatedDevices }).eq('id', riderId);
+        if (!error) {
+            setRiders(prev => prev.map(r => r.id === riderId ? { ...r, authorized_devices: updatedDevices } : r));
+            if (viewingDetails?.id === riderId) setViewingDetails({ ...viewingDetails, authorized_devices: updatedDevices });
+            setMessage({ type: 'success', text: 'Device bound to rider account.' });
+        }
+    };
+
+    const revokeRiderDevice = async (riderId: number, deviceId: string) => {
+        if (!supabase) return;
+        const rider = riders.find(r => r.id === riderId);
+        if (!rider) return;
+
+        const updatedDevices = (rider.authorized_devices || []).filter(d => d.id !== deviceId);
+
+        const { error } = await supabase.from('rider_status').update({ authorized_devices: updatedDevices }).eq('id', riderId);
+        if (!error) {
+            setRiders(prev => prev.map(r => r.id === riderId ? { ...r, authorized_devices: updatedDevices } : r));
+            if (viewingDetails?.id === riderId) setViewingDetails({ ...viewingDetails, authorized_devices: updatedDevices });
+            setMessage({ type: 'success', text: 'Hardware access revoked.' });
+        }
+    };
+
     const filteredRiders = React.useMemo(() => {
         const query = searchQuery.toLowerCase();
         return riders.filter(r => {
@@ -216,9 +250,9 @@ export default function AdminRidersPage() {
                     <thead>
                         <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em] whitespace-nowrap">
                             <th className="px-8 py-6">Rider Identity</th>
-                            <th className="px-8 py-6">Mission Stats</th>
-                            <th className="px-8 py-6">Verification Protocol</th>
-                            <th className="px-8 py-6">Sensitive Intel</th>
+                            <th className="px-8 py-6">Delivery Stats</th>
+                            <th className="px-8 py-6">Verification Status</th>
+                            <th className="px-8 py-6">Sensitive Data</th>
                             <th className="px-8 py-6 text-right">Actions</th>
                         </tr>
                     </thead>
@@ -248,7 +282,7 @@ export default function AdminRidersPage() {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Truck className="h-3.5 w-3.5 text-slate-300" />
-                                            <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">{rider.total_deliveries} Drops</span>
+                                            <span className="text-[9px] font-black uppercase text-slate-500 tracking-widest">{rider.total_deliveries} Deliveries</span>
                                         </div>
                                     </div>
                                 </td>
@@ -326,7 +360,7 @@ export default function AdminRidersPage() {
                                             onClick={() => { setViewingDetails(rider); loadRiderHistory(rider.rider_phone); }}
                                             className="h-10 px-4 rounded-xl text-primary font-black uppercase text-[8px] tracking-widest hover:bg-white hover:shadow-xl transition-all"
                                         >
-                                            Insight <ChevronRight className="h-3 w-3 ml-1" />
+                                            View Details <ChevronRight className="h-3 w-3 ml-1" />
                                         </Button>
                                         {rider.verification_status !== 'Verified' && (
                                             <Button
@@ -383,10 +417,46 @@ export default function AdminRidersPage() {
                                     <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mt-2">{viewingDetails.status} • {viewingDetails.vehicle_type}</p>
                                 </div>
                             </div>
-                            <button onClick={() => setViewingDetails(null)} className="h-12 w-12 rounded-xl hover:bg-secondary flex items-center justify-center text-muted transition-colors border border-border shadow-sm"><XCircle className="h-6 w-6" /></button>
+                            <div className="flex gap-2">
+                                <Button
+                                    onClick={() => {
+                                        const id = prompt("Enter Device ID to bind:");
+                                        const name = prompt("Device Description (e.g. Samsung A52):");
+                                        if (id && name) authorizeRiderDevice(viewingDetails.id, { id, name });
+                                    }}
+                                    variant="outline"
+                                    className="h-12 px-4 rounded-xl border-primary/20 text-primary font-black uppercase text-[8px] tracking-widest"
+                                >
+                                    + Bind Device
+                                </Button>
+                                <button onClick={() => setViewingDetails(null)} className="h-12 w-12 rounded-xl hover:bg-secondary flex items-center justify-center text-muted transition-colors border border-border shadow-sm"><XCircle className="h-6 w-6" /></button>
+                            </div>
                         </header>
 
                         <div className="p-8 space-y-10 flex-1">
+                            {/* Trusted Devices Hub */}
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground ml-2">Authorized Devices</h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {(viewingDetails.authorized_devices || []).map(d => (
+                                        <div key={d.id} className="p-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-between group/dev">
+                                            <div className="flex items-center gap-3">
+                                                <Smartphone className="h-4 w-4 text-emerald-500" />
+                                                <div className="min-w-0">
+                                                    <p className="text-[10px] font-black text-foreground truncate">{d.name}</p>
+                                                    <p className="text-[7px] font-bold text-slate-400 uppercase">ID: {d.id.substring(0,8)}...</p>
+                                                </div>
+                                            </div>
+                                            <button onClick={() => revokeRiderDevice(viewingDetails.id, d.id)} className="text-slate-200 hover:text-rose-500"><Trash2 className="h-3.5 w-3.5" /></button>
+                                        </div>
+                                    ))}
+                                    {(viewingDetails.authorized_devices || []).length === 0 && (
+                                        <div className="col-span-2 py-6 text-center border-2 border-dashed border-slate-100 rounded-3xl">
+                                            <p className="text-[8px] font-black uppercase text-slate-300">No authorized devices for this rider.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                             {/* Performance HUD */}
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div className="p-4 rounded-3xl bg-secondary border border-border space-y-1">
@@ -401,7 +471,7 @@ export default function AdminRidersPage() {
                                     <p className="text-lg font-black text-foreground">{viewingDetails.avg_delivery_speed || '12'}m</p>
                                 </div>
                                 <div className="p-4 rounded-3xl bg-secondary border border-border space-y-1">
-                                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Total Missions</p>
+                                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest">Completed</p>
                                     <p className="text-lg font-black text-foreground">{viewingDetails.total_missions_completed || viewingDetails.total_deliveries}</p>
                                 </div>
                                 <div className="p-4 rounded-3xl bg-secondary border border-border space-y-1">
@@ -415,7 +485,7 @@ export default function AdminRidersPage() {
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground ml-2">Unit Credentials</h3>
                                     <div className="px-3 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-[8px] font-black uppercase text-indigo-600">
-                                        {role === 'owner' ? 'Full Access' : 'Limited View'}
+                                        {role === 'owner' ? 'Full Access' : 'Verified View'}
                                     </div>
                                 </div>
 
@@ -425,7 +495,7 @@ export default function AdminRidersPage() {
                                         <p className="text-sm font-black text-foreground">
                                             {role === 'owner' || permissions?.can_view_sensitive_rider_data
                                                 ? viewingDetails.id_number || 'NOT LOGGED'
-                                                : 'S-XXXXXX-X'}
+                                                : 'XXXXXX'}
                                         </p>
                                     </div>
                                     <div className="p-6 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-1">
@@ -486,7 +556,7 @@ export default function AdminRidersPage() {
                                                 <tr className="bg-white/50 text-[8px] font-black uppercase text-slate-400 tracking-widest border-b border-slate-100">
                                                     <th className="px-6 py-4">Mission ID</th>
                                                     <th className="px-6 py-4">Customer</th>
-                                                    <th className="px-6 py-4 text-right">Payload</th>
+                                                    <th className="px-6 py-4 text-right">Amount</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-slate-100">

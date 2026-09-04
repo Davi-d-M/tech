@@ -66,8 +66,8 @@ export default class AdminErrorBoundary extends Component<Props, State> {
             </h1>
             <p className="text-slate-500 font-medium text-lg mb-8 italic leading-relaxed">
                 {isChunkError
-                    ? '"The Titan system detected a deployment update. We need to synchronize your local session with the grid, bro."'
-                    : '"The Titan system detected a client-side exception. Your current session might be corrupted, bro."'
+                    ? '"The system detected a deployment update. We need to synchronize your local session with the platform."'
+                    : '"The system detected a client-side exception. Your current session may need to be reset."'
                 }
             </p>
 

@@ -36,16 +36,16 @@ export default function AdminBroadcastPage() {
     const [resendActive, setResendActive] = React.useState<boolean | null>(null);
 
     const CAMPAIGN_TEMPLATES = [
-        { id: 'flash', label: 'Flash Sale', content: `🚨 ALERT: Elite Flash Sale active now! Get 20% OFF all premium accessories for the next 4 hours only. Secure yours: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}/shop` },
-        { id: 'weekend', label: 'Weekend Drop', content: `Yo bro! Our Weekend Drop is live. Restocked AirPods Pro and MagSafe kits. Nairobi fast dispatch active until 6 PM. Shop: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}` },
-        { id: 'loyalty', label: 'Reward Boost', content: `Sparkle your tech! ✨ VIP rewards just boosted. Complete your profile to unlock a KSh 500 voucher instantly. Link: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}/profile` },
+        { id: 'flash', label: 'Flash Sale', content: `🚨 ALERT: Flash Sale active now! Get 20% OFF all accessories for the next 4 hours only. Shop now: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}/shop` },
+        { id: 'weekend', label: 'Weekend Drop', content: `The Weekend Drop is live! AirPods and chargers have been restocked. Shop: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}` },
+        { id: 'loyalty', label: 'Reward Boost', content: `VIP rewards have been boosted! Complete your profile to unlock a KSh 500 voucher instantly. Link: ${process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com'}/profile` },
     ];
 
     const AUDIENCES = [
-        { id: 'all', label: 'Everyone', icon: Users },
+        { id: 'all', label: 'All Customers', icon: Users },
         { id: 'new', label: 'New Customers', icon: Sparkles },
-        { id: 'vip', label: 'Elite (VIP)', icon: Target },
-        { id: 'inactive', label: 'Inactive 30d', icon: Clock },
+        { id: 'vip', label: 'VIP Members', icon: Target },
+        { id: 'inactive', label: 'Inactive (30d)', icon: Clock },
     ];
 
     const applyTemplate = (content: string) => {
@@ -112,7 +112,7 @@ export default function AdminBroadcastPage() {
             setSubject('');
         } catch (err: unknown) {
             const error = err as Error;
-            setStatus({ type: 'error', text: error.message || "Uplink failed." });
+            setStatus({ type: 'error', text: error.message || "Broadcast failed." });
         } finally {
             setSending(false);
         }
@@ -127,7 +127,7 @@ export default function AdminBroadcastPage() {
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Marketing Hub</span>
                     </div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter">Campaign Builder</h1>
-                    <p className="text-muted-foreground text-sm font-medium mt-1">Design and deploy high-impact tactical messages to your audience.</p>
+                    <p className="text-muted-foreground text-sm font-medium mt-1">Design and deploy high-impact messages to your audience.</p>
                 </div>
             </header>
 
@@ -196,13 +196,13 @@ export default function AdminBroadcastPage() {
                         <form onSubmit={handleSend} className="space-y-6 pt-6 border-t border-border">
                             {channel === 'email' && (
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tactical Subject</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Subject</label>
                                     <Input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Flash Sale: 20% OFF Everything!" className="h-14 rounded-2xl bg-slate-50 border-slate-200 text-sm font-bold text-foreground" />
                                 </div>
                             )}
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Payload Narrative (Message)</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Message Body</label>
                                 <Textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Write your announcement here..." rows={8} className="rounded-[2rem] bg-slate-50 border-slate-200 text-sm font-medium resize-none p-8 text-foreground" />
                             </div>
 
@@ -235,7 +235,7 @@ export default function AdminBroadcastPage() {
                             <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-6 text-foreground">Audience Intel</h3>
                             <div className="space-y-6">
                                 <div className="flex justify-between items-center py-4 border-b border-slate-50">
-                                    <span className="text-[10px] font-black uppercase text-slate-400">Tactical Reach</span>
+                                    <span className="text-[10px] font-black uppercase text-slate-400">Total Reach</span>
                                     <span className="text-4xl font-black text-foreground tracking-tighter leading-none">{subscribers.length}</span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">

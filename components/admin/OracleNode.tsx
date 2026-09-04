@@ -42,13 +42,13 @@ export default function OracleNode() {
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
                         <Zap className="h-5 w-5 text-primary animate-pulse" />
-                        <h2 className="text-xl font-black uppercase tracking-tighter text-foreground leading-none">Oracle Prediction</h2>
+                        <h2 className="text-xl font-black uppercase tracking-tighter text-foreground leading-none">Inventory Forecast</h2>
                     </div>
-                    <span className="text-[9px] font-black uppercase text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10">Velocity Node</span>
+                    <span className="text-[9px] font-black uppercase text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10">Sales Velocity</span>
                 </div>
 
                 <p className="text-[10px] text-muted-foreground font-medium italic leading-relaxed">
-                    &quot;Analyzing sales velocity nodes... Calculating depletion timelines based on last 30 days throughput.&quot;
+                    &quot;Analyzing inventory throughput. Calculating projected depletion based on historical sales.&quot;
                 </p>
 
                 <div className="space-y-4">
@@ -88,7 +88,7 @@ export default function OracleNode() {
                         </div>
                     ))}
                     {predictions.length === 0 && (
-                        <p className="text-[10px] text-slate-400 font-medium italic text-center py-4">Calibration complete. Grid stable.</p>
+                        <p className="text-[10px] text-slate-400 font-medium italic text-center py-4">Inventory levels are stable.</p>
                     )}
                 </div>
 

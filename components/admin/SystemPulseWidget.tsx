@@ -25,7 +25,7 @@ export default function SystemPulseWidget() {
             await supabase!.from('settings').select('key').limit(1);
             const endDb = performance.now();
 
-            // 2. Logistics Node Ping (Rider Grid)
+            // 2. Logistics Connection Check
             const startLogistics = performance.now();
             await supabase?.from('rider_status').select('id', { count: 'exact', head: true }).limit(1);
             const endLogistics = performance.now();
@@ -64,7 +64,7 @@ export default function SystemPulseWidget() {
         checkSystem();
         const interval = setInterval(checkSystem, 15000);
 
-        // 🛰️ Realtime Radar Intelligence
+        // Real-time activity monitor
         if (supabase) {
             const channel = supabase
                 .channel('signal_pulse')
@@ -85,7 +85,7 @@ export default function SystemPulseWidget() {
 
     const systemMetrics = [
         { label: 'Database', val: `${latency.db}ms`, icon: Database, status: status.db },
-        { label: 'Edge API', val: `${latency.api}ms`, icon: Globe, status: status.api },
+        { label: 'Cloud API', val: `${latency.api}ms`, icon: Globe, status: status.api },
         { label: 'Logistics', val: `${latency.logistics}ms`, icon: Smartphone, status: status.logistics },
     ];
 
@@ -118,7 +118,7 @@ export default function SystemPulseWidget() {
                     </div>
                     {status.db === 'online' ? (
                         <div className="flex items-center gap-2">
-                            {radarPulse && <span className="text-[8px] font-black text-rose-500 animate-in fade-in">SIGNAL DETECTED</span>}
+                            {radarPulse && <span className="text-[8px] font-black text-rose-500 animate-in fade-in">ACTIVITY DETECTED</span>}
                             <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                         </div>
                     ) : (

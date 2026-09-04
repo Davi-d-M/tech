@@ -53,7 +53,7 @@ export default function AdminActivationPage() {
     const handleActivate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (form.password !== form.confirmPassword) {
-            alert("Password mismatch, bro.");
+            alert("Passwords do not match.");
             return;
         }
         if (!inviteInfo || !supabase) return;
@@ -101,7 +101,7 @@ export default function AdminActivationPage() {
         }
     };
 
-    if (status === 'error') return <div className="p-20 text-center uppercase font-black text-rose-500 tracking-widest">Protocol Violation: Invalid Invitation.</div>;
+    if (status === 'error') return <div className="p-20 text-center uppercase font-black text-rose-500 tracking-widest">Invalid Invitation.</div>;
 
     return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-left">
@@ -113,13 +113,13 @@ export default function AdminActivationPage() {
                             <ShieldCheck size={40} />
                         </div>
                         <div className="space-y-3">
-                            <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Activate Admin</h1>
-                            <p className="text-slate-500 font-medium">Provision your administrative node on the Apex OS grid.</p>
+                            <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Activate Profile</h1>
+                            <p className="text-slate-500 font-medium">Set up your administrative access on the platform.</p>
                         </div>
 
                         <div className="space-y-4">
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Admin Call Sign</label>
+                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Full Name</label>
                                 <div className="relative">
                                     <Input required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="David Maganga" className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-bold" />
                                     <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
@@ -135,7 +135,7 @@ export default function AdminActivationPage() {
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Confirm Protocol</label>
+                                <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Confirm Password</label>
                                 <Input required type="password" value={form.confirmPassword} onChange={e => setForm({...form, confirmPassword: e.target.value})} placeholder="••••••••" className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-4 font-bold" />
                             </div>
                         </div>
@@ -145,7 +145,7 @@ export default function AdminActivationPage() {
                             disabled={loading}
                             className="w-full h-20 rounded-2xl bg-primary text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 transition-all active:scale-95"
                         >
-                            {loading ? <Loader2 className="animate-spin" /> : "Deploy Administrative Access"}
+                            {loading ? <Loader2 className="animate-spin" /> : "Complete Activation"}
                         </Button>
                     </form>
                 )}
@@ -156,8 +156,8 @@ export default function AdminActivationPage() {
                             <CheckCircle2 size={48} className="animate-bounce" />
                         </div>
                         <div className="space-y-2">
-                            <h2 className="text-3xl font-black uppercase tracking-tighter">Node Activated</h2>
-                            <p className="text-slate-500 font-medium">Your organization is live. Redirecting to Terminal...</p>
+                            <h2 className="text-3xl font-black uppercase tracking-tighter">Profile Activated</h2>
+                            <p className="text-slate-500 font-medium">Your account is ready. Redirecting to portal...</p>
                         </div>
                         <Zap size={24} className="text-primary animate-pulse mx-auto" />
                     </div>

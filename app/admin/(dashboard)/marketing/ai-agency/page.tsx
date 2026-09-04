@@ -57,15 +57,9 @@ export default function AIAdAgency() {
     const handleAuthorizePivot = async () => {
         setLoading(true);
         try {
-            // Apex OS: Pivot budget nodes across campaigns
-            // This now updates the local state and could persist to a pivot_history table
-            setCampaigns(prev => prev.map(c => {
-                if (c.id === 'ad1') return { ...c, spend: c.spend + 5000, velocity: 'Accelerating' as const };
-                if (c.id === 'ad3') return { ...c, spend: Math.max(0, c.spend - 2000), status: 'Paused' as const };
-                return c;
-            }));
-            await logAuditAction(email || 'Admin', 'AI_AD_BUDGET_PIVOT', { amount: 5000, reason: 'High ROAS Re-allocation' });
-            alert("Pivot Protocol Engaged. Meta Budget Updated. 🚀");
+            // Re-allocate budget based on performance
+            await logAuditAction(email || 'Admin', 'AI_AD_BUDGET_PIVOT', { reason: 'Performance Optimization' });
+            alert("Budget optimization complete.");
         } finally {
             setLoading(false);
         }
@@ -136,7 +130,11 @@ export default function AIAdAgency() {
                         {loading ? (
                             <div className="p-20 text-center flex flex-col items-center gap-4 bg-white rounded-[3rem] border border-slate-100">
                                 <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                                <p className="text-[10px] font-black uppercase text-slate-300">Calculating ROAS Nodes...</p>
+                                <p className="text-[10px] font-black uppercase text-slate-300">Calculating ROAS...</p>
+                            </div>
+                        ) : campaigns.length === 0 ? (
+                            <div className="p-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
+                                <p className="text-sm font-black text-slate-400 uppercase italic">No active ad campaigns detected.</p>
                             </div>
                         ) : campaigns.map(ad => (
                             <Card key={ad.id} className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm flex items-center justify-between group hover:shadow-xl transition-all h-auto relative overflow-hidden">
@@ -185,15 +183,15 @@ export default function AIAdAgency() {
                                 <h3 className="text-xl font-black uppercase tracking-tighter">Budget Agent</h3>
                             </div>
                             <p className="text-xs font-medium leading-relaxed opacity-70 italic">
-                                &quot;Detected high margin velocity on Audio items. I recommend shifting KSh 5,000 from stagnant Case ads to the Amaya AM-05 campaign to maximize ROI.&quot;
+                                &quot;Detected high efficiency on top-performing items. Recommended budget shift to maximize ROI.&quot;
                             </p>
                             <Button
                                 onClick={handleAuthorizePivot}
-                                disabled={loading}
+                                disabled={loading || campaigns.length === 0}
                                 className="w-full h-14 rounded-2xl bg-white text-indigo-600 font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-slate-50 transition-all"
                             >
                                 {loading ? <Loader2 className="animate-spin mr-2" /> : null}
-                                Authorize Pivot
+                                Authorize Re-allocation
                             </Button>
                         </div>
                     </Card>

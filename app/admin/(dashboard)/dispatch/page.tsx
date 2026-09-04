@@ -39,7 +39,7 @@ const LiveDispatchMap = dynamic(() => import('@/components/admin/dispatch/LiveDi
         <div className="w-full h-full bg-secondary flex items-center justify-center rounded-[3rem] border border-border">
             <div className="text-center space-y-4">
                 <div className="h-10 w-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
-                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Warming Satellite Uplink...</p>
+                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Initializing Tracking...</p>
             </div>
         </div>
     )
@@ -75,10 +75,10 @@ interface Rider {
 }
 
 const DEFAULT_WAREHOUSES = [
-    { id: 'all', name: 'Global Network', city: 'All' },
-    { id: 'nairobi', name: 'Nairobi Central Hub', city: 'Nairobi' },
-    { id: 'mombasa', name: 'Mombasa Port Node', city: 'Mombasa' },
-    { id: 'kisumu', name: 'Kisumu Tech Base', city: 'Kisumu' }
+    { id: 'all', name: 'Standard Network', city: 'All' },
+    { id: 'nairobi', name: 'Nairobi Central', city: 'Nairobi' },
+    { id: 'mombasa', name: 'Mombasa Port', city: 'Mombasa' },
+    { id: 'kisumu', name: 'Kisumu Base', city: 'Kisumu' }
 ];
 
 export default function AdminDispatchPage() {
@@ -233,11 +233,11 @@ export default function AdminDispatchPage() {
         if (pending.length === 0) return;
 
         setLoading(true);
-        setMessage({ type: 'success', text: `Initializing Singularity: Geo-fencing mission routing...` });
+        setMessage({ type: 'success', text: `Initializing Auto-Dispatch: Calculating delivery routes...` });
 
         try {
             for (const order of pending) {
-                // Geo-fencing logic: Filter riders by area zone matching order warehouse if specified
+                // Route optimization logic
                 let eligibleRiders = riders.filter(r => r.status === 'Idle');
 
                 if (order.warehouse_location) {
@@ -251,7 +251,7 @@ export default function AdminDispatchPage() {
                     rider.status = 'Delivering';
                 }
             }
-            setMessage({ type: 'success', text: "Singularity Deployment Complete. Nodes Synchronized. 🦾" });
+            setMessage({ type: 'success', text: "Auto-Dispatch Complete. Fleet synchronized. 🦾" });
         } finally {
             setLoading(false);
             setTimeout(() => setMessage(null), 3000);
@@ -628,36 +628,36 @@ export default function AdminDispatchPage() {
                                 <div className="p-8 rounded-[2.5rem] bg-primary/5 border-2 border-primary/20 space-y-8 relative overflow-hidden">
                                     <div className="flex items-center justify-between relative z-10">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white"><Package className="h-5 w-5" /></div>
-                                            <h3 className="text-lg font-black uppercase text-foreground">Mission Live</h3>
-                                        </div>
-                                        <span className="px-3 py-1 bg-primary text-white text-[8px] font-black rounded-full animate-pulse uppercase">Tactical Pursuit</span>
-                                    </div>
+                                    <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white"><Package size={14} /></div>
+                                    <h3 className="text-lg font-black uppercase text-foreground">Delivery Active</h3>
+                                </div>
+                                <span className="px-3 py-1 bg-primary text-white text-[8px] font-black rounded-full animate-pulse uppercase">In Transit</span>
+                            </div>
 
-                                    <div className="space-y-6 relative z-10">
-                                        <div className="flex justify-between items-center pb-4 border-b border-primary/10">
-                                            <span className="text-[10px] font-black uppercase text-muted-foreground">Active Order</span>
-                                            <span className="text-xs font-black text-foreground">#10492</span>
-                                        </div>
-                                        <div className="flex justify-between items-center pb-4 border-b border-primary/10">
-                                            <span className="text-[10px] font-black uppercase text-muted-foreground">Payload</span>
-                                            <span className="text-xs font-bold text-foreground truncate max-w-[150px]">AMAYA AM-05 + 1 Other</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-[10px] font-black uppercase text-muted-foreground">ETA to Extraction</span>
-                                            <span className="text-sm font-black text-primary uppercase">12 Minutes</span>
-                                        </div>
-                                    </div>
+                            <div className="space-y-6 relative z-10">
+                                <div className="flex justify-between items-center pb-4 border-b border-primary/10">
+                                    <span className="text-[10px] font-black uppercase text-muted-foreground">Order ID</span>
+                                    <span className="text-xs font-black text-foreground">#10492</span>
+                                </div>
+                                <div className="flex justify-between items-center pb-4 border-b border-primary/10">
+                                    <span className="text-[10px] font-black uppercase text-muted-foreground">Items</span>
+                                    <span className="text-xs font-bold text-foreground truncate max-w-[150px]">AMAYA AM-05 + 1 Other</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase text-muted-foreground">ETA</span>
+                                    <span className="text-sm font-black text-primary uppercase">12 Minutes</span>
+                                </div>
+                            </div>
 
-                                    <Button
-                                        onClick={() => {
-                                            // Real-time redirection to maps if coordinates exist
-                                            window.open(`https://www.google.com/maps/search/?api=1&query=${selectedRider.current_location || 'Nairobi'}`, '_blank');
-                                        }}
-                                        className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest relative z-10 shadow-xl shadow-primary/20"
-                                    >
-                                        View Flight Path
-                                    </Button>
+                            <Button
+                                onClick={() => {
+                                    // Real-time redirection to maps if coordinates exist
+                                    window.open(`https://www.google.com/maps/search/?api=1&query=${selectedRider.current_location || 'Nairobi'}`, '_blank');
+                                }}
+                                className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest relative z-10 shadow-xl shadow-primary/20"
+                            >
+                                View Delivery Map
+                            </Button>
 
                                     <Zap className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/5 rotate-12" />
                                 </div>
@@ -698,10 +698,10 @@ export default function AdminDispatchPage() {
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}?text=Retire unit: ${selectedRider.rider_name}`, '_blank')}
+                                    onClick={() => window.open(`https://wa.me/${settings.contact.whatsapp}?text=Deactivate rider: ${selectedRider.rider_name}`, '_blank')}
                                     className="w-full h-14 rounded-2xl border-rose-100 text-rose-400 font-black uppercase text-[10px] hover:bg-rose-50 transition-all"
                                 >
-                                    Decommission Unit
+                                    Deactivate Rider Account
                                 </Button>
                             </div>
                         </div>

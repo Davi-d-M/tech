@@ -68,7 +68,7 @@ export default function SecurityHub() {
                 <div>
                     <div className="flex items-center gap-3 mb-2">
                         <Shield className="h-4 w-4 text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Fortress Protocol</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Security Protocol</span>
                     </div>
                     <h1 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none">Security Hub</h1>
                     <p className="text-muted-foreground text-sm font-medium mt-2">Global infrastructure security and authentication auditing.</p>
@@ -138,7 +138,7 @@ export default function SecurityHub() {
                             {threats.length === 0 ? (
                                 <div className="p-16 text-center bg-white rounded-[3rem] border border-slate-100 opacity-40">
                                     <ShieldCheck className="h-10 w-10 mx-auto mb-4 text-emerald-500" />
-                                    <p className="text-[10px] font-black uppercase tracking-widest">No active threats detected by the Singularity.</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest">No active threats detected by the system.</p>
                                 </div>
                             ) : threats.map(t => (
                                 <Card key={t.id} className="p-8 rounded-[3rem] border border-rose-100 bg-white shadow-sm flex items-center justify-between group hover:shadow-xl transition-all">
@@ -175,7 +175,7 @@ export default function SecurityHub() {
                                     <tr className="bg-slate-50 text-slate-400 font-black uppercase text-[9px] tracking-[0.2em] whitespace-nowrap">
                                         <th className="px-10 py-6">Event Identity</th>
                                         <th className="px-10 py-6 text-center">Protocol Status</th>
-                                        <th className="px-10 py-6 text-center">Origin Node</th>
+                                        <th className="px-10 py-6 text-center">Origin Device</th>
                                         <th className="px-10 py-6 text-right">Timestamp</th>
                                     </tr>
                                 </thead>
@@ -208,7 +208,7 @@ export default function SecurityHub() {
                                                     {att.success ? 'Authorized' : 'Violation'}
                                                 </span>
                                             </td>
-                                            <td className="px-10 py-8 text-center font-mono text-[10px] font-black text-slate-400 tracking-widest">{att.ip_address || 'Titan Node'}</td>
+                                            <td className="px-10 py-8 text-center font-mono text-[10px] font-black text-slate-400 tracking-widest">{att.ip_address || 'Local Device'}</td>
                                             <td className="px-10 py-8 text-right">
                                                 <p className="text-[11px] font-bold text-foreground uppercase leading-none">{new Date(att.attempt_time).toLocaleTimeString()}</p>
                                                 <p className="text-[9px] font-black text-slate-400 uppercase mt-2 tracking-widest">{new Date(att.attempt_time).toLocaleDateString()}</p>
@@ -226,14 +226,14 @@ export default function SecurityHub() {
                         <div className="relative z-10 space-y-8 text-left">
                             <div className="flex items-center gap-4 text-primary">
                                 <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center shadow-inner"><ShieldAlert size={24} /></div>
-                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Global Guard</h3>
+                                <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Security Monitoring</h3>
                             </div>
                             <p className="text-[11px] text-slate-500 font-medium leading-relaxed italic">
-                                &quot;All administrative actions are immutable. Deletion and payment authorization require senior-level RBAC keys. Security protocol v4.2 active.&quot;
+                                &quot;All administrative actions are recorded and immutable. Deletion and payment authorization require senior-level access. Security protocol active.&quot;
                             </p>
                             <div className="pt-6 border-t border-slate-50 flex justify-between items-center">
                                 <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Stability Level</span>
-                                <span className="text-xs font-black text-emerald-600 tracking-tight">TITAN-Grade Verified</span>
+                                <span className="text-xs font-black text-emerald-600 tracking-tight">Enterprise Verified</span>
                             </div>
                         </div>
                     </Card>

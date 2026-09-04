@@ -47,7 +47,7 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
         document.getElementsByTagName('head')[0].appendChild(link);
     }, [settings, isAdmin, isRider]);
 
-    // 1. Referral Tracking
+    // 1. Referral & Affiliate Tracking
     useEffect(() => {
         const ref = searchParams.get('ref');
         if (ref && supabase) {
@@ -57,13 +57,16 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
             // Standard cookie set
             const expiry = new Date();
             expiry.setDate(expiry.getDate() + 30);
-            document.cookie = `apex_referral_code=${ref}; path=/; expires=${expiry.toUTCString()}; SameSite=Lax`;
+            document.cookie = `apex_ref_code=${ref}; path=/; expires=${expiry.toUTCString()}; SameSite=Lax`;
 
             // 2. Increment clicks (Idempotent per session)
             const tracked = sessionStorage.getItem(`tracked_${ref}`);
             if (!tracked) {
-                supabase.rpc('increment_referral_clicks', { code_input: ref })
-                    .then(() => sessionStorage.setItem(`tracked_${ref}`, 'true'));
+                // Call both standard and affiliate RPCs
+                Promise.all([
+                    supabase.rpc('increment_referral_clicks', { code_input: ref }),
+                    supabase.rpc('increment_affiliate_clicks', { code_input: ref })
+                ]).then(() => sessionStorage.setItem(`tracked_${ref}`, 'true'));
             }
         }
     }, [searchParams]);
@@ -82,18 +85,6 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
         const sendHeartbeat = async () => {
             if (!supabase || !isOperational) return;
-
-            // Optional: Request Geo-location for Demand Heatmap
-            let lat: number | null = null;
-            let lon: number | null = null;
-
-            if (typeof window !== 'undefined' && 'geolocation' in navigator) {
-                // Background request - non blocking
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    lat = pos.coords.latitude;
-                    lon = pos.coords.longitude;
-                }, () => {}, { timeout: 5000 });
-            }
 
             // Non-blocking heartbeat
             if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
@@ -116,8 +107,6 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
                         current_page: pathname,
                         last_active_at: new Date().toISOString(),
                         cart_value: cartValue,
-                        latitude: lat,
-                        longitude: lon,
                         status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
                     });
                 });
@@ -142,8 +131,6 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
                         current_page: pathname,
                         last_active_at: new Date().toISOString(),
                         cart_value: cartValue,
-                        latitude: lat,
-                        longitude: lon,
                         status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
                     });
                 }, 1);

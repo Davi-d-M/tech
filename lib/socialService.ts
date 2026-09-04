@@ -46,7 +46,7 @@ class SocialService {
      * Distributes content to all selected and connected platforms.
      */
     public async publishEverywhere(request: SocialPostRequest): Promise<PlatformResponse[]> {
-        if (!supabase) throw new Error("Database not linked, bro.");
+        if (!supabase) throw new Error("Database connection not established.");
 
         // 1. Create Master Campaign Record
         const { data: campaign, error: cError } = await supabase
@@ -92,10 +92,10 @@ class SocialService {
                 .single();
 
             if (!integration || !integration.is_connected) {
-                throw new Error("Platform connection not established on the grid.");
+                throw new Error("Platform connection not established.");
             }
 
-            // 🚀 Tactical Node: Execute real adapter logic
+            // Execute adapter logic
             const adapter = this.adapters[platform];
             const result = await adapter.publish(content, integration);
 
@@ -124,7 +124,7 @@ class SocialService {
     }
 
     /**
-     * Intelligence Node: Content Adaptation
+     * Content Adaptation
      * Generates platform-specific captions from the master description.
      */
     private adaptContentForPlatform(platform: Platform, description: string): string {

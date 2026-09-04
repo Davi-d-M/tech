@@ -58,8 +58,8 @@ class LocationService : Service() {
         deviceId = intent?.getStringExtra("DEVICE_ID") ?: Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         
         createNotificationChannel()
-        val notification = NotificationCompat.Builder(this, "TITAN_LOCATION")
-            .setContentTitle("Apex Titan Tracker")
+        val notification = NotificationCompat.Builder(this, "APEX_LOCATION")
+            .setContentTitle("Apex Fleet Tracker")
             .setContentText("Rider Location Synchronization Active")
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
             .build()
@@ -78,15 +78,15 @@ class LocationService : Service() {
         try {
             fusedLocationClient.requestLocationUpdates(request, locationCallback, Looper.getMainLooper())
         } catch (e: SecurityException) {
-            println("TITAN: Security Exception -> ${e.message}")
+            println("APEX: Security Exception -> ${e.message}")
         }
     }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "TITAN_LOCATION",
-                "Titan Logistics Tracking",
+                "APEX_LOCATION",
+                "Apex Fleet Tracking",
                 NotificationManager.IMPORTANCE_LOW
             )
             val manager = getSystemService(NotificationManager::class.java)

@@ -11,13 +11,29 @@ import { Suspense, useEffect } from 'react';
 import { logAuditAction } from '@/lib/auditService';
 import { supabase } from '@/lib/supabaseClient';
 
+interface LoginStatus {
+    type: 'idle' | 'error';
+    message: string;
+    is_new_device?: boolean;
+    node_id?: string;
+}
+
 function AdminLoginContent() {
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<'pin' | 'email'>('pin');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [deviceId, setDeviceId] = useState('');
 
   useEffect(() => {
+      // 0. GHOST PROTOCOL: Unique Hardware Fingerprinting
+      let dId = localStorage.getItem('apex_node_id');
+      if (!dId) {
+          dId = `node_${Math.random().toString(36).substring(2, 15)}`;
+          localStorage.setItem('apex_node_id', dId);
+      }
+      setDeviceId(dId);
+
       const modeParam = searchParams.get('mode');
       if (modeParam === 'email') {
           setMode('email');
@@ -30,7 +46,7 @@ function AdminLoginContent() {
       }
   }, [searchParams]);
 
-  const [status, setStatus] = useState<{ type: 'idle' | 'error'; message: string }>({
+  const [status, setStatus] = useState<LoginStatus>({
     type: 'idle',
     message: '',
   });
@@ -61,7 +77,9 @@ function AdminLoginContent() {
         body: JSON.stringify({
             mode,
             password,
-            email: mode === 'email' ? email : undefined
+            email: mode === 'email' ? email : undefined,
+            device_id: deviceId,
+            device_name: typeof navigator !== 'undefined' ? navigator.userAgent.substring(0, 50) : 'Web Node'
         }),
       });
 
@@ -98,9 +116,9 @@ function AdminLoginContent() {
           <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4">
               <Lock className="h-6 w-6" />
           </div>
-          <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Control Center</h1>
+          <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Administrative Portal</h1>
           <p className="mt-2 text-sm text-slate-500 font-medium italic">
-            Authorize your access to continue.
+            Please sign in to access the management dashboard.
           </p>
         </div>
 
@@ -112,7 +130,7 @@ function AdminLoginContent() {
                     mode === 'pin' ? "bg-white text-foreground shadow-sm" : "text-slate-400 hover:text-slate-600"
                 )}
             >
-                Owner PIN
+                Admin PIN
             </button>
             <button
                 onClick={() => setMode('email')}
@@ -168,15 +186,26 @@ function AdminLoginContent() {
             className="w-full h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Authenticating...' : 'Enter Dashboard'}
+            {isSubmitting ? 'Signing In...' : 'Access Dashboard'}
           </Button>
         </form>
 
         {status.message && (
           <div className="rounded-2xl bg-rose-50 p-4 border border-rose-100 text-center animate-shake">
-            <p className="text-[10px] text-rose-600 font-black uppercase tracking-widest">
-              ⚠️ {status.message}
+            <p className="text-[10px] text-rose-600 font-black uppercase tracking-widest leading-relaxed">
+              {status.message}
             </p>
+            {status.is_new_device && (
+                <div className="mt-4 p-3 bg-white rounded-xl border border-rose-100 space-y-2">
+                    <p className="text-[7px] font-black text-slate-400 uppercase">Device ID (Copy for Authorization)</p>
+                    <code
+                        onClick={() => { if (status.node_id) { navigator.clipboard.writeText(status.node_id); alert('ID Copied!'); } }}
+                        className="text-[9px] font-mono font-black text-primary cursor-pointer hover:underline"
+                    >
+                        {status.node_id}
+                    </code>
+                </div>
+            )}
           </div>
         )}
 
@@ -185,7 +214,7 @@ function AdminLoginContent() {
             href="/rider/login"
             className="text-[10px] font-black text-slate-400 hover:text-primary uppercase tracking-widest transition-colors"
           >
-            Rider Terminal Access
+            Rider Portal Access
           </Link>
           <Link
             href="/"
