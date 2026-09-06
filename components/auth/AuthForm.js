@@ -232,20 +232,6 @@ export default function AuthForm({ initialMode = 'signin' }) {
       )}
 
       <div className="mt-6 space-y-3 border-t border-slate-200 pt-4">
-        <div className="grid grid-cols-2 gap-2">
-          <button
-              onClick={() => router.push('/apex-portal')}
-              className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground hover:bg-slate-50 p-3 rounded-xl transition-all border border-slate-100"
-          >
-              🔐 Admin Hub
-          </button>
-          <button
-              onClick={() => router.push('/rider/login')}
-              className="text-center text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary hover:bg-primary/5 p-3 rounded-xl transition-all border border-slate-100"
-          >
-              🚚 Rider Terminal
-          </button>
-        </div>
         <button
           onClick={() => setIsSignUp(!isSignUp)}
           className="text-sm font-medium text-slate-600 hover:underline block w-full text-center"
