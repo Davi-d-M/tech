@@ -270,7 +270,7 @@ export default function RiderOnboarding() {
                             <div className="space-y-6 lg:space-y-8 text-center animate-in slide-in-from-bottom-4 duration-500">
                                 <div className="space-y-2">
                                     <h2 className="text-xl lg:text-2xl font-black text-foreground uppercase leading-tight">Welcome to <br/> the Fleet</h2>
-                                    <p className="text-xs lg:text-sm text-slate-500 font-medium italic">&quot;Trusted by thousands of riders. Start your tactical mission today.&quot;</p>
+                                    <p className="text-xs lg:text-sm text-slate-500 font-medium italic">&quot;Trusted by thousands of riders. Start your professional partnership today.&quot;</p>
                                 </div>
                                 <Button onClick={() => setStep('phone')} className="w-full h-14 lg:h-18 rounded-2xl lg:rounded-[1.8rem] bg-primary text-white font-black uppercase text-[10px] lg:text-xs tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
                                     Continue to Login Protocol
@@ -560,7 +560,7 @@ export default function RiderOnboarding() {
                                 </div>
                                 <div className="space-y-2 text-center">
                                     <h2 className="text-2xl font-black text-foreground uppercase">Grid Online</h2>
-                                    <p className="text-sm text-slate-500 font-medium italic">&quot;Tactical link established. Welcome to TechPax Logistics, bro.&quot;</p>
+                                    <p className="text-sm text-slate-500 font-medium italic">&quot;Professional connection established. Welcome to the Fleet.&quot;</p>
                                 </div>
 
                                 <Card className="p-6 bg-slate-900 border-none rounded-[2rem] shadow-2xl space-y-6 relative overflow-hidden">
@@ -570,7 +570,7 @@ export default function RiderOnboarding() {
                                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Access Credentials</p>
                                         </div>
                                         <div className="bg-white/5 p-5 rounded-2xl border border-white/10 flex justify-between items-center">
-                                            <span className="text-[10px] font-black uppercase text-slate-400">Tactical PIN</span>
+                                            <span className="text-[10px] font-black uppercase text-slate-400">Authorization PIN</span>
                                             <span className="text-2xl font-black text-primary tracking-[0.3em] font-mono">{pin}</span>
                                         </div>
                                         <p className="text-[8px] font-bold text-slate-500 uppercase italic text-center px-4 leading-relaxed">

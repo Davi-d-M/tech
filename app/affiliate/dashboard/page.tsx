@@ -65,6 +65,8 @@ export default function AffiliateDashboard() {
     }[]>([]);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
+    const [chartData, setChartData] = useState<{ day: string; yield: number }[]>([]);
+
     useEffect(() => {
         async function fetchAffiliateData() {
             if (!supabase) return;
@@ -76,17 +78,19 @@ export default function AffiliateDashboard() {
                 const [profileRes, walletRes, referralsRes] = await Promise.all([
                     supabase.from('affiliate_profiles').select('*').eq('user_id', session.user.id).single(),
                     supabase.from('affiliate_wallets').select('*').eq('user_id', session.user.id).single(),
-                    supabase.from('affiliate_referrals').select('*, orders(total_price, created_at, status)').eq('affiliate_id', session.user.id).order('created_at', { ascending: false }).limit(5)
+                    supabase.from('affiliate_referrals').select('*, orders(total_price, created_at, status)').eq('affiliate_id', session.user.id).order('created_at', { ascending: false }).limit(20)
                 ]);
+
+                const w = walletRes.data || { balance_available: 0, balance_pending: 0, lifetime_earned: 0 };
+                const fetchedReferrals = referralsRes.data || [];
 
                 if (profileRes.data) {
                     const p = profileRes.data;
-                    const w = walletRes.data || { balance_available: 0, balance_pending: 0, lifetime_earned: 0 };
 
                     setStats({
                         total_clicks: p.total_clicks || 0,
                         conversion_rate: p.conversion_rate || 0,
-                        total_sales: w.lifetime_earned * 10, // Simulated sales value based on commission
+                        total_sales: fetchedReferrals.reduce((sum, r) => sum + (r.orders?.total_price || 0), 0),
                         total_commission: w.lifetime_earned || 0,
                         available_balance: w.balance_available || 0,
                         pending_balance: w.balance_pending || 0,
@@ -100,7 +104,26 @@ export default function AffiliateDashboard() {
                     }
                 }
 
-                setRecentReferrals(referralsRes.data || []);
+                setRecentReferrals(fetchedReferrals.slice(0, 5));
+
+                // 2. Process Chart Data (Last 30 days)
+                const now = new Date();
+                const days = 30;
+                const dailyYield: Record<string, number> = {};
+
+                fetchedReferrals.forEach(r => {
+                    const dateStr = new Date(r.created_at).toLocaleDateString('en-KE', { day: '2-digit', month: 'short' });
+                    dailyYield[dateStr] = (dailyYield[dateStr] || 0) + r.commission_amount;
+                });
+
+                const formattedChart = Array.from({ length: days }).map((_, i) => {
+                    const d = new Date();
+                    d.setDate(now.getDate() - (days - i - 1));
+                    const label = d.toLocaleDateString('en-KE', { day: '2-digit', month: 'short' });
+                    return { day: label, yield: dailyYield[label] || 0 };
+                });
+
+                setChartData(formattedChart);
 
             } catch (err) {
                 console.error(err);
@@ -254,15 +277,7 @@ export default function AffiliateDashboard() {
 
                             <div className="h-80 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={[
-                                        { day: '01 Sep', yield: 450 },
-                                        { day: '05 Sep', yield: 1200 },
-                                        { day: '10 Sep', yield: 800 },
-                                        { day: '15 Sep', yield: 2400 },
-                                        { day: '20 Sep', yield: 1800 },
-                                        { day: '25 Sep', yield: 3500 },
-                                        { day: '30 Sep', yield: 4200 },
-                                    ]}>
+                                    <AreaChart data={chartData}>
                                         <defs>
                                             <linearGradient id="colorYield" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="#ff6b00" stopOpacity={0.1}/>
