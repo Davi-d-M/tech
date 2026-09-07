@@ -1,0 +1,5 @@
+- `[x]` Create SQL migration for `can_see_partner_offers` column
+- `[x]` Update Admin Customer Detail UI with visibility toggle
+- `[x]` Update Profile page logic for conditional partner network visibility
+- `[ ]` Verify build integrity
+- `[ ]` Push changes to GitHub

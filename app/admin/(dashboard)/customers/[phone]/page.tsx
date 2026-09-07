@@ -57,6 +57,7 @@ interface CustomerProfile {
   referral_code: string | null;
   created_at: string;
   is_partner?: boolean;
+  can_see_partner_offers?: boolean;
   credit_limit?: number;
   relationship_manager?: string;
 }
@@ -88,6 +89,7 @@ export default function CustomerIntelligence() {
     latitude: '',
     longitude: '',
     is_partner: false,
+    can_see_partner_offers: false,
     credit_limit: '',
     relationship_manager: ''
   });
@@ -122,6 +124,7 @@ export default function CustomerIntelligence() {
               latitude: profileData.latitude?.toString() || '',
               longitude: profileData.longitude?.toString() || '',
               is_partner: !!profileData.is_partner,
+              can_see_partner_offers: !!profileData.can_see_partner_offers,
               credit_limit: profileData.credit_limit?.toString() || '0',
               relationship_manager: profileData.relationship_manager || ''
           });
@@ -273,6 +276,7 @@ export default function CustomerIntelligence() {
                   latitude: editForm.latitude ? parseFloat(editForm.latitude) : null,
                   longitude: editForm.longitude ? parseFloat(editForm.longitude) : null,
                   is_partner: editForm.is_partner,
+                  can_see_partner_offers: editForm.can_see_partner_offers,
                   credit_limit: parseFloat(editForm.credit_limit || '0'),
                   relationship_manager: editForm.relationship_manager
               })
@@ -643,7 +647,7 @@ export default function CustomerIntelligence() {
                               <Input value={editForm.relationship_manager} onChange={e => setEditForm({...editForm, relationship_manager: e.target.value})} className="h-12 rounded-xl bg-slate-50 border-slate-100 font-bold" />
                           </div>
                           <div className="sm:col-span-2 flex items-center gap-4 p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
-                              <div className="flex-1">
+                              <div className="flex-1 text-left">
                                   <p className="text-[10px] font-black uppercase text-indigo-600">Partner Status</p>
                                   <p className="text-[8px] font-medium text-indigo-400">Grants access to wholesale pricing and credits.</p>
                               </div>
@@ -652,6 +656,18 @@ export default function CustomerIntelligence() {
                                 checked={editForm.is_partner}
                                 onChange={e => setEditForm({...editForm, is_partner: e.target.checked})}
                                 className="h-6 w-6 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500"
+                              />
+                          </div>
+                          <div className="sm:col-span-2 flex items-center gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                              <div className="flex-1 text-left">
+                                  <p className="text-[10px] font-black uppercase text-emerald-600">Show Partner Onboarding</p>
+                                  <p className="text-[8px] font-medium text-emerald-400">Allows client to see Rider and Supplier onboarding offers.</p>
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={editForm.can_see_partner_offers}
+                                onChange={e => setEditForm({...editForm, can_see_partner_offers: e.target.checked})}
+                                className="h-6 w-6 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
                               />
                           </div>
                       </div>
