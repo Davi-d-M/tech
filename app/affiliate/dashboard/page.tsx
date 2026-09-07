@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     MousePointer2,
@@ -8,35 +8,25 @@ import {
     TrendingUp,
     DollarSign,
     Wallet,
-    RefreshCcw,
     Trophy,
     CheckCircle2,
     AlertCircle,
-    Copy,
-    Share2,
     Zap,
     Briefcase,
     Loader2,
-    Smartphone,
     Globe,
-    ExternalLink,
     ChevronRight,
-    ArrowUpRight,
     Search,
     Download,
-    Bot,
     Megaphone,
-    FileText,
     ShieldCheck,
-    Star,
     Layout,
     Link2,
-    Settings2,
-    Camera
+    Camera,
+    Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { cn, formatPrice, getReferralLink } from '@/lib/utils';
 import {
     XAxis,
@@ -48,6 +38,8 @@ import {
     Area
 } from 'recharts';
 import Link from 'next/link';
+import LeadGenerator from '@/components/affiliate/LeadGenerator';
+import AISalesAssistant from '@/components/affiliate/AISalesAssistant';
 
 interface AffiliateProfile {
     user_id: string;
@@ -210,7 +202,7 @@ export default function AffiliateDashboard() {
                                 <Zap className="h-4 w-4 mr-2 fill-current" /> Share & Earn
                             </Button>
                             <Button variant="outline" className="flex-1 h-14 rounded-2xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all">
-                                <Settings2 className="h-4 w-4 mr-2" /> Security
+                                <Settings className="h-4 w-4 mr-2" /> Security
                             </Button>
                         </div>
                     </div>
@@ -394,7 +386,7 @@ export default function AffiliateDashboard() {
                         )}
 
                         {activeTab === 'links' && (
-                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                            <div className="space-y-10 animate-in slide-in-from-right-4 duration-500">
                                 <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-10">
                                     <div className="flex items-center gap-4 text-left">
                                         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><Globe size={24} /></div>
@@ -440,18 +432,23 @@ export default function AffiliateDashboard() {
                                     </div>
                                 </Card>
 
-                                <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-6 text-left group overflow-hidden relative">
-                                    <div className="relative z-10 flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Bot size={20} /></div>
-                                            <div>
-                                                <h3 className="text-lg font-black uppercase tracking-tighter leading-none">AI Copy Assistant</h3>
-                                                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase italic">Generate high-converting sales hooks instantly.</p>
-                                            </div>
-                                        </div>
-                                        <ArrowUpRight className="text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                <AISalesAssistant promoLink={getReferralLink(profile.promo_name)} />
+                            </div>
+                        )}
+
+                        {activeTab === 'leads' && (
+                            <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500">
+                                <LeadGenerator affiliateId={profile.user_id} />
+
+                                <Card className="rounded-[3rem] border border-slate-100 bg-white shadow-sm overflow-hidden h-[400px] flex flex-col">
+                                    <div className="p-8 border-b border-slate-50 flex items-center justify-between">
+                                        <h2 className="text-xl font-black text-foreground uppercase tracking-tighter">Active Lead Tracking</h2>
+                                        <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-3 py-1 rounded-full italic">Pipeline Status</span>
                                     </div>
-                                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <div className="flex-1 flex flex-col items-center justify-center p-20 text-center opacity-30">
+                                        <Search size={48} className="mb-4" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest leading-relaxed">No leads in negotiation yet. <br/> Submit your first lead to begin tracking conversion.</p>
+                                    </div>
                                 </Card>
                             </div>
                         )}

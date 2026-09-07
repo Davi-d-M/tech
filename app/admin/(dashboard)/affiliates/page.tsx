@@ -16,7 +16,8 @@ import {
     MessageSquare,
     Zap,
     AlertCircle,
-    Camera
+    Camera,
+    DollarSign
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -393,7 +394,44 @@ export default function AdminAffiliates() {
                         </div>
                     </div>
 
-                    <div id="partner-directory-section" className="scroll-mt-24 mt-10">
+                {/* FRAUD & COMMISSION RULES HUD */}
+                <div className="grid lg:grid-cols-2 gap-8 mt-10">
+                    <Card className="p-8 rounded-[2.5rem] bg-rose-50 border border-rose-100 shadow-sm space-y-6">
+                        <div className="flex items-center gap-3">
+                            <AlertCircle className="h-6 w-6 text-rose-500" />
+                            <h3 className="text-lg font-black uppercase text-rose-900 tracking-tighter">Fraud Protection HUD</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center p-4 bg-white rounded-2xl border border-rose-50">
+                                <span className="text-[10px] font-black uppercase text-slate-500">Suspicious Click-to-Sale Ratio</span>
+                                <span className="text-[10px] font-black text-rose-600">0 DETECTED</span>
+                            </div>
+                            <div className="flex justify-between items-center p-4 bg-white rounded-2xl border border-rose-50">
+                                <span className="text-[10px] font-black uppercase text-slate-500">Self-Referral Attempts</span>
+                                <span className="text-[10px] font-black text-rose-600">3 BLOCKED</span>
+                            </div>
+                        </div>
+                    </Card>
+
+                    <Card className="p-8 rounded-[2.5rem] bg-indigo-50 border border-indigo-100 shadow-sm space-y-6">
+                        <div className="flex items-center gap-3">
+                            <DollarSign className="h-6 w-6 text-indigo-500" />
+                            <h3 className="text-lg font-black uppercase text-indigo-900 tracking-tighter">Commission Logic</h3>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-4 bg-white rounded-2xl border border-indigo-50">
+                                <p className="text-[8px] font-black uppercase text-slate-400 mb-1">Standard Rate</p>
+                                <p className="text-xl font-black text-indigo-600">5.0%</p>
+                            </div>
+                            <div className="p-4 bg-white rounded-2xl border border-indigo-50">
+                                <p className="text-[8px] font-black uppercase text-slate-400 mb-1">Elite (Gold) Rate</p>
+                                <p className="text-xl font-black text-emerald-600">8.5%</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+
+                <div id="partner-directory-section" className="scroll-mt-24 mt-10">
                         <Card className="rounded-[3.5rem] border border-border bg-card shadow-sm overflow-hidden text-left">
                             <div className="p-10 border-b border-border flex flex-col gap-6 lg:flex-row lg:justify-between lg:items-center">
                                 <div className="flex items-center gap-4">
