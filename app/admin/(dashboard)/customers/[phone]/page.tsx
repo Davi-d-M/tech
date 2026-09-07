@@ -58,6 +58,7 @@ interface CustomerProfile {
   created_at: string;
   is_partner?: boolean;
   can_see_partner_offers?: boolean;
+  can_see_affiliate_offers?: boolean;
   credit_limit?: number;
   relationship_manager?: string;
 }
@@ -90,6 +91,7 @@ export default function CustomerIntelligence() {
     longitude: '',
     is_partner: false,
     can_see_partner_offers: false,
+    can_see_affiliate_offers: false,
     credit_limit: '',
     relationship_manager: ''
   });
@@ -125,6 +127,7 @@ export default function CustomerIntelligence() {
               longitude: profileData.longitude?.toString() || '',
               is_partner: !!profileData.is_partner,
               can_see_partner_offers: !!profileData.can_see_partner_offers,
+              can_see_affiliate_offers: !!profileData.can_see_affiliate_offers,
               credit_limit: profileData.credit_limit?.toString() || '0',
               relationship_manager: profileData.relationship_manager || ''
           });
@@ -277,6 +280,7 @@ export default function CustomerIntelligence() {
                   longitude: editForm.longitude ? parseFloat(editForm.longitude) : null,
                   is_partner: editForm.is_partner,
                   can_see_partner_offers: editForm.can_see_partner_offers,
+                  can_see_affiliate_offers: editForm.can_see_affiliate_offers,
                   credit_limit: parseFloat(editForm.credit_limit || '0'),
                   relationship_manager: editForm.relationship_manager
               })
@@ -668,6 +672,18 @@ export default function CustomerIntelligence() {
                                 checked={editForm.can_see_partner_offers}
                                 onChange={e => setEditForm({...editForm, can_see_partner_offers: e.target.checked})}
                                 className="h-6 w-6 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                              />
+                          </div>
+                          <div className="sm:col-span-2 flex items-center gap-4 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+                              <div className="flex-1 text-left">
+                                  <p className="text-[10px] font-black uppercase text-primary">Allow Affiliate Program</p>
+                                  <p className="text-[8px] font-medium text-slate-400">Grants client access to apply for the Affiliate Command Center.</p>
+                              </div>
+                              <input
+                                type="checkbox"
+                                checked={editForm.can_see_affiliate_offers}
+                                onChange={e => setEditForm({...editForm, can_see_affiliate_offers: e.target.checked})}
+                                className="h-6 w-6 rounded border-primary/20 text-primary focus:ring-primary"
                               />
                           </div>
                       </div>

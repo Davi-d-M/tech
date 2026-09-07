@@ -49,10 +49,11 @@ import {
   Hammer,
   Headphones,
   Cpu,
-  BarChart3 as StatsIcon,
+  BarChart3 as  StatsIcon,
   Download,
   Briefcase,
-  Store
+  Store,
+  Target
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -93,6 +94,7 @@ interface Profile {
   birth_date?: string;
   avatar_url?: string;
   can_see_partner_offers?: boolean;
+  can_see_affiliate_offers?: boolean;
   created_at: string;
 }
 
@@ -1096,6 +1098,31 @@ export default function ProfilePage() {
                         </div>
                     )}
                 </section>
+
+                {/* 🏆 AFFILIATE PROGRAM (Conditional Visibility) */}
+                {(profile?.can_see_affiliate_offers || profile?.referral_code) && (
+                    <Card className="p-8 rounded-[3rem] bg-slate-900 text-white relative overflow-hidden group hover:shadow-2xl transition-all border-none">
+                        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-8">
+                            <div className="flex items-center gap-6 text-left flex-1">
+                                <div className="h-16 w-16 rounded-[2rem] bg-white/10 flex items-center justify-center text-primary shadow-inner border border-white/10 group-hover:rotate-6 transition-transform">
+                                    <Target className="h-8 w-8" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter">Affiliate Command Center</h3>
+                                    <p className="text-slate-400 text-xs font-medium italic mt-1 leading-relaxed">
+                                        &quot;Monitor your link clicks, manage commissions, and generate AI promotional assets from one dashboard.&quot;
+                                    </p>
+                                </div>
+                            </div>
+                            <Link href="/affiliate/dashboard">
+                                <Button className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase text-[11px] tracking-[0.2em] shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all whitespace-nowrap">
+                                    Launch Enterprise Hub
+                                </Button>
+                            </Link>
+                        </div>
+                        <Zap className="absolute -bottom-10 -right-10 h-64 w-64 text-white/5 rotate-12 -z-0" />
+                    </Card>
+                )}
 
                 {/* 💼 PARTNER NETWORK (Conditional Visibility) */}
                 {(isRiderAccount || isSupplierAccount || profile?.can_see_partner_offers) && (
