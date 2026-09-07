@@ -79,8 +79,13 @@ ALTER TABLE public.affiliate_clicks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.affiliate_referrals ENABLE ROW LEVEL SECURITY;
 
 -- 9. Basic Policies
+DROP POLICY IF EXISTS "Users see own affiliate profile" ON public.affiliate_profiles;
 CREATE POLICY "Users see own affiliate profile" ON public.affiliate_profiles FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users see own wallet" ON public.affiliate_wallets;
 CREATE POLICY "Users see own wallet" ON public.affiliate_wallets FOR SELECT USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users manage own withdrawals" ON public.affiliate_withdrawals;
 CREATE POLICY "Users manage own withdrawals" ON public.affiliate_withdrawals FOR ALL USING (auth.uid() = user_id);
 
 -- 10. RPC for Commission Calculation

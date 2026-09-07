@@ -54,7 +54,7 @@ export default function ApexIntelligence2() {
                 const recentOrders = ordersRes.data?.filter(o => o.created_at >= thirtyDaysAgo) || [];
                 const prevOrders = ordersRes.data?.filter(o => o.created_at < thirtyDaysAgo) || [];
 
-                const calculatePeriodStats = (orderList: any[]) => {
+                const calculatePeriodStats = (orderList: { total_price: number; order_items?: { unit_cost: number; quantity: number }[] }[]) => {
                     const rev = orderList.reduce((s, o) => s + (o.total_price || 0), 0);
                     const cost = orderList.reduce((s, o) => {
                         const items = (o as { order_items?: { unit_cost: number; quantity: number }[] }).order_items || [];
