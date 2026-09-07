@@ -124,12 +124,26 @@ export default function AdminDashboard() {
     }
     loadStats();
 
+    // 🛰️ Real-time Dashboard Synchronization
+    const channel = supabase
+        ?.channel('admin_dashboard_sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+            loadStats();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+            loadStats();
+        })
+        .subscribe();
+
     // Shield Monitor Interval (Every 5 mins)
     const shieldScan = setInterval(() => {
         runSecurityScan();
     }, 300000);
 
-    return () => clearInterval(shieldScan);
+    return () => {
+        if (supabase) supabase.removeChannel(channel!);
+        clearInterval(shieldScan);
+    };
   }, []);
 
   const stats = React.useMemo(() => {

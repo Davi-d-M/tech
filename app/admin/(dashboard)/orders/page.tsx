@@ -172,6 +172,18 @@ export default function AdminOrdersPage() {
 
   React.useEffect(() => {
     loadOrders();
+
+    // 🛰️ Real-time Order Synchronization
+    const channel = supabase
+        ?.channel('order_control_sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+            loadOrders(); // Auto-refresh list on any database update
+        })
+        .subscribe();
+
+    return () => {
+        if (supabase) supabase.removeChannel(channel!);
+    };
   }, [loadOrders]);
 
   const summary = React.useMemo(() => {

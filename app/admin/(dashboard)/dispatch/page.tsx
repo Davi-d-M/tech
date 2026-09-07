@@ -143,8 +143,23 @@ export default function AdminDispatchPage() {
 
     useEffect(() => {
         fetchData();
-        const interval = setInterval(fetchData, 30000);
-        return () => clearInterval(interval);
+        const interval = setInterval(fetchData, 60000); // Slower backup sync
+
+        // 🛰️ Real-time Fleet & Order Intelligence
+        const channel = supabase
+            ?.channel('dispatch_center_sync')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'rider_status' }, () => {
+                fetchData(); // Refresh on any rider change
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+                fetchData(); // Refresh on any order change
+            })
+            .subscribe();
+
+        return () => {
+            if (supabase) supabase.removeChannel(channel!);
+            clearInterval(interval);
+        };
     }, []);
 
     const stats = React.useMemo(() => {

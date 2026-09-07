@@ -173,11 +173,11 @@ export default function AdminAnalyticsPage() {
         const revPrev30d = prevOrders.reduce((s, o) => s + (o.total_price || 0), 0);
 
         // 2. Margin Trends
-        const calculateMargin = (orderList: any[]) => {
+        const calculateMargin = (orderList: { total_price: number; order_items?: { unit_cost: number; quantity: number }[] }[]) => {
             if (orderList.length === 0) return 0;
             const rev = orderList.reduce((s, o) => s + (o.total_price || 0), 0);
             const cost = orderList.reduce((s, o) => {
-                const items = (o as { order_items?: { unit_cost: number; quantity: number }[] }).order_items || [];
+                const items = o.order_items || [];
                 return s + items.reduce((is, i) => is + (Number(i.unit_cost || 0) * (i.quantity || 1)), 0);
             }, 0);
             return rev > 0 ? ((rev - cost) / rev) * 100 : 0;
@@ -187,7 +187,7 @@ export default function AdminAnalyticsPage() {
         const prevMargin = calculateMargin(prevOrders);
 
         // 3. LTV Trends
-        const calculateLTV = (orderList: any[]) => {
+        const calculateLTV = (orderList: { total_price: number; customer_phone: string }[]) => {
             if (orderList.length === 0) return 0;
             const rev = orderList.reduce((s, o) => s + (o.total_price || 0), 0);
             const users = new Set(orderList.map(o => o.customer_phone)).size;
@@ -198,7 +198,7 @@ export default function AdminAnalyticsPage() {
         const prevLTV = calculateLTV(prevOrders);
 
         // 4. Conversion Trends
-        const calculateConv = (allOrders: any[], deliveredOnly: any[]) => {
+        const calculateConv = (allOrders: { id: number }[], deliveredOnly: { id: number }[]) => {
             return allOrders.length > 0 ? (deliveredOnly.length / allOrders.length) * 100 : 0;
         };
 

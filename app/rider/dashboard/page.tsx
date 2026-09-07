@@ -79,12 +79,29 @@ export default function RiderDashboard() {
     React.useEffect(() => {
         fetchTasks();
 
+        // 🛰️ Real-time Mission Intelligence
+        const channel = supabase
+            ?.channel(`rider_sync_${riderPhone}`)
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'orders',
+                filter: `rider_phone=eq.${riderPhone}`
+            }, () => {
+                fetchTasks(); // Refresh on any mission update
+            })
+            .subscribe();
+
         // Initialize high-velocity tracking
         const win = window as unknown as Window & { ApexDevice?: ApexDevice };
         if (typeof window !== 'undefined' && win.ApexDevice?.toggleTracking) {
             win.ApexDevice.toggleTracking(true);
         }
-    }, [fetchTasks]);
+
+        return () => {
+            if (supabase) supabase.removeChannel(channel!);
+        };
+    }, [fetchTasks, riderPhone]);
 
     const handleLogout = () => {
         document.cookie = 'admin_session=; path=/; max-age=0';

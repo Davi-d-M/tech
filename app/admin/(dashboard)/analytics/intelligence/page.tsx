@@ -95,7 +95,7 @@ export default function IntelligenceHub() {
                 anonymousCount: Math.max(0, (onlineTotal || 0) - (regCount || 0)),
                 topSearches: searchSummary,
                 funnel,
-                sectionDwell: (sigs as any[] || [])
+                sectionDwell: (sigs as { event_type: string; target: string | null; metadata: any }[] || [])
                     .filter(s => s.event_type === 'DWELL')
                     .map(s => ({ name: s.target || 'Unknown', avgTime: Math.round((s.metadata?.duration_ms as number || 0) / 1000) })),
                 recentSignals: (recentSigs || []) as { created_at: string; event_type: string; target: string; url: string; metadata?: Record<string, unknown> }[]
