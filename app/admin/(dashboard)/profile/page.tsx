@@ -12,7 +12,8 @@ import {
     Mail,
     Zap,
     AlertCircle,
-    CheckCircle2
+    CheckCircle2,
+    Share2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -88,6 +89,13 @@ export default function AdminProfilePage() {
         }
     };
 
+    const copyMagicLink = () => {
+        const baseUrl = window.location.origin;
+        const magicLink = `${baseUrl}/apex-portal?key=YOUR_ENV_SECRET`;
+        navigator.clipboard.writeText(magicLink);
+        alert("Magic Link Template Copied! Replace 'YOUR_ENV_SECRET' with your actual environment password for instant access.");
+    };
+
     return (
         <div className="p-8 space-y-10 bg-slate-50 min-h-screen text-left selection:bg-primary/20 pb-40">
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-8">
@@ -154,6 +162,11 @@ export default function AdminProfilePage() {
                             <p className="text-[11px] text-slate-400 font-medium leading-relaxed italic opacity-80">
                                 &quot;Your session is currently protected by a signed JWT cookie with high-entropy encryption.&quot;
                             </p>
+                            {role === 'owner' && (
+                                <Button onClick={copyMagicLink} className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl h-12 text-[9px] font-black uppercase tracking-widest mt-4">
+                                    <Share2 size={14} className="mr-2" /> Copy Magic Link
+                                </Button>
+                            )}
                         </div>
                         <ShieldCheck className="absolute -bottom-10 -right-10 h-48 w-48 text-white/5 rotate-12" />
                     </Card>

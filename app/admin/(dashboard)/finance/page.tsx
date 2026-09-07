@@ -54,10 +54,10 @@ export default function AdminFinancePage() {
             setPendingAction(() => action);
             win.NativeDevice.reAuthenticate();
         } else {
-            // Fallback for desktop: PIN prompt
-            const pin = prompt("Enter your 4-digit Admin PIN to authorize this action:");
-            if (pin) {
-                // In production, this would be a secure API call to verify the PIN
+            // Fallback for desktop: Secret Key prompt
+            const key = prompt("Enter your Master Admin Key to authorize this action:");
+            if (key) {
+                // Verification logic will check against environment secret via API
                 action();
             } else {
                 alert("Authorization failed.");

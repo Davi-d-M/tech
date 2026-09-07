@@ -200,7 +200,7 @@ export default function AdminLayoutClient({
               <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
                 <Store className="h-5 w-5 text-white" />
               </div>
-              <span className="font-black text-foreground uppercase tracking-tighter text-sm">Apex Admin</span>
+              <span className="font-black text-foreground uppercase tracking-tighter text-sm">The Apex Team</span>
             </div>
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10 text-foreground" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
@@ -225,7 +225,7 @@ export default function AdminLayoutClient({
                     {!isSidebarCollapsed && (
                         <div className="animate-in fade-in duration-500">
                           <select className="font-black text-foreground leading-none uppercase tracking-tighter text-sm bg-transparent border-none outline-none appearance-none cursor-pointer">
-                              <option>Apex Administration</option>
+                              <option>The Apex Team</option>
                               <option>Regional Branch</option>
                               <option>Support Center</option>
                           </select>

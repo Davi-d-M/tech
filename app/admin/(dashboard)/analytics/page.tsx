@@ -154,10 +154,6 @@ export default function AdminAnalyticsPage() {
     }, [orders, timeframe, isPredictive]);
 
     const performanceStats = React.useMemo(() => {
-        const delivered = orders.filter(o => o.status === 'Delivered');
-        const totalRevenue = delivered.reduce((s, o) => s + (o.total_price || 0), 0);
-        const convRate = orders.length > 0 ? (delivered.length / orders.length) * 100 : 0;
-
         // Dynamic Trend Calculation
         const calculateTrend = (current: number, previous: number) => {
             if (previous === 0) return '+0.0%';
@@ -169,28 +165,54 @@ export default function AdminAnalyticsPage() {
         const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
-        const rev30d = orders
-            .filter(o => o.status === 'Delivered' && new Date(o.created_at) > thirtyDaysAgo)
-            .reduce((s, o) => s + (o.total_price || 0), 0);
+        // 1. Revenue Trends
+        const currentOrders = orders.filter(o => o.status === 'Delivered' && new Date(o.created_at) > thirtyDaysAgo);
+        const prevOrders = orders.filter(o => o.status === 'Delivered' && new Date(o.created_at) > sixtyDaysAgo && new Date(o.created_at) <= thirtyDaysAgo);
 
-        const revPrev30d = orders
-            .filter(o => o.status === 'Delivered' && new Date(o.created_at) > sixtyDaysAgo && new Date(o.created_at) <= thirtyDaysAgo)
-            .reduce((s, o) => s + (o.total_price || 0), 0);
+        const rev30d = currentOrders.reduce((s, o) => s + (o.total_price || 0), 0);
+        const revPrev30d = prevOrders.reduce((s, o) => s + (o.total_price || 0), 0);
 
-        const costTotal = delivered.reduce((s, o) => {
-            const items = (o as { order_items?: { unit_cost: number; quantity: number }[] }).order_items || [];
-            return s + items.reduce((is: number, i) => is + (Number(i.unit_cost || 0) * (i.quantity || 1)), 0);
-        }, 0);
+        // 2. Margin Trends
+        const calculateMargin = (orderList: any[]) => {
+            if (orderList.length === 0) return 0;
+            const rev = orderList.reduce((s, o) => s + (o.total_price || 0), 0);
+            const cost = orderList.reduce((s, o) => {
+                const items = (o as { order_items?: { unit_cost: number; quantity: number }[] }).order_items || [];
+                return s + items.reduce((is, i) => is + (Number(i.unit_cost || 0) * (i.quantity || 1)), 0);
+            }, 0);
+            return rev > 0 ? ((rev - cost) / rev) * 100 : 0;
+        };
 
-        const margin = totalRevenue > 0
-            ? ((totalRevenue - costTotal) / totalRevenue) * 100
-            : 0;
+        const currentMargin = calculateMargin(currentOrders);
+        const prevMargin = calculateMargin(prevOrders);
+
+        // 3. LTV Trends
+        const calculateLTV = (orderList: any[]) => {
+            if (orderList.length === 0) return 0;
+            const rev = orderList.reduce((s, o) => s + (o.total_price || 0), 0);
+            const users = new Set(orderList.map(o => o.customer_phone)).size;
+            return users > 0 ? rev / users : 0;
+        };
+
+        const currentLTV = calculateLTV(currentOrders);
+        const prevLTV = calculateLTV(prevOrders);
+
+        // 4. Conversion Trends
+        const calculateConv = (allOrders: any[], deliveredOnly: any[]) => {
+            return allOrders.length > 0 ? (deliveredOnly.length / allOrders.length) * 100 : 0;
+        };
+
+        const currentAll = orders.filter(o => new Date(o.created_at) > thirtyDaysAgo);
+        const prevAll = orders.filter(o => new Date(o.created_at) > sixtyDaysAgo && new Date(o.created_at) <= thirtyDaysAgo);
+
+        const currentConv = calculateConv(currentAll, currentOrders);
+        const prevConv = calculateConv(prevAll, prevOrders);
 
         return [
             { label: 'Revenue (30d)', val: formatPrice(rev30d), trend: calculateTrend(rev30d, revPrev30d), color: 'primary' },
-            { label: 'Net Margin', val: `${margin.toFixed(1)}%`, trend: '+0.0%', color: 'emerald' },
-            { label: 'Cust. LTV', val: formatPrice(totalRevenue / (new Set(orders.map(o => o.customer_phone)).size || 1)), trend: '+0.0%', color: 'indigo' },
-            { label: 'Conv. Rate', val: `${convRate.toFixed(1)}%`, trend: '-0.0%', color: 'amber' },
+            { label: 'Net Margin', val: `${currentMargin.toFixed(1)}%`, trend: calculateTrend(currentMargin, prevMargin), color: 'emerald' },
+            { label: 'Cust. LTV', val: formatPrice(currentLTV), trend: calculateTrend(currentLTV, prevLTV), color: 'indigo' },
+            { label: 'Conv. Rate', val: `${currentConv.toFixed(1)}%`, trend: calculateTrend(currentConv, prevConv), color: 'amber' },
         ];
     }, [orders]);
 

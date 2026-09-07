@@ -13,6 +13,12 @@ interface LoginError {
     node_id?: string;
 }
 
+interface LoginError {
+    error: string;
+    is_new_device?: boolean;
+    node_id?: string;
+}
+
 export default function SupplierLogin() {
     const router = useRouter();
     const [email, setEmail] = useState('');
@@ -49,7 +55,7 @@ export default function SupplierLogin() {
             });
 
             const data = await res.json();
-            if (!res.ok) throw data;
+            if (!res.ok) throw data as LoginError;
 
             router.push('/supplier');
         } catch (err: unknown) {

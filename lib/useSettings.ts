@@ -102,7 +102,7 @@ const DEFAULT_SETTINGS: StoreSettings = {
         address: "Nairobi, Kenya"
     },
     branding: {
-        owner_name: "Apex Admin",
+        owner_name: "The Apex Team",
         portfolio_url: "",
         hero_title: "Future Sound. Total Power.",
         hero_subtitle: "Experience authentic tech engineered for excellence."

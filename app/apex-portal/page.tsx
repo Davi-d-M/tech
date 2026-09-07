@@ -12,7 +12,7 @@ import { logAuditAction } from '@/lib/auditService';
 import { supabase } from '@/lib/supabaseClient';
 
 interface LoginStatus {
-    type: 'idle' | 'error';
+    type: 'idle' | 'error' | 'processing';
     message: string;
     is_new_device?: boolean;
     node_id?: string;
@@ -24,6 +24,13 @@ function AdminLoginContent() {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [deviceId, setDeviceId] = useState('');
+  const [hasAttemptedAutoLogin, setHasAttemptedAutoLogin] = useState(false);
+
+  const [status, setStatus] = useState<LoginStatus>({
+    type: 'idle',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
       // 0. GHOST PROTOCOL: Unique Hardware Fingerprinting
@@ -35,6 +42,8 @@ function AdminLoginContent() {
       setDeviceId(dId);
 
       const modeParam = searchParams.get('mode');
+      const magicKey = searchParams.get('key');
+
       if (modeParam === 'email') {
           setMode('email');
       } else if (typeof window !== 'undefined') {
@@ -44,13 +53,43 @@ function AdminLoginContent() {
           const savedEmail = localStorage.getItem('apex_admin_email');
           if (savedEmail) setEmail(savedEmail);
       }
-  }, [searchParams]);
 
-  const [status, setStatus] = useState<LoginStatus>({
-    type: 'idle',
-    message: '',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+      // MAGIC KEY: Instant Access Protocol
+      if (magicKey && !hasAttemptedAutoLogin) {
+          setHasAttemptedAutoLogin(true);
+          handleAutoLogin(magicKey, dId);
+      }
+  }, [searchParams, hasAttemptedAutoLogin]);
+
+  const handleAutoLogin = async (key: string, dId: string) => {
+      setIsSubmitting(true);
+      setStatus({ type: 'processing', message: 'Authorizing Magic Key...' });
+
+      try {
+          const response = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                mode: 'pin',
+                password: key,
+                device_id: dId,
+                device_name: 'Magic Key Entry'
+            }),
+          });
+
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || 'Magic Key Invalid.');
+
+          await logAuditAction('owner@apexstores.com', 'MAGIC_KEY_SESSION_START', { ip: payload.ip || 'logged' });
+          window.location.href = '/admin';
+      } catch (error: unknown) {
+          setStatus({
+            type: 'error',
+            message: error instanceof Error ? error.message : 'Magic Key authentication failed.',
+          });
+          setIsSubmitting(false);
+      }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

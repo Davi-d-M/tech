@@ -44,7 +44,7 @@ export default function ApexIntelligence2() {
 
                 // Tactical Data Scans
                 const [ordersRes, productsRes, suppliersRes, leaksRes] = await Promise.all([
-                    supabase.from('orders').select('total_price, created_at').eq('status', 'Delivered').gte('created_at', sixtyDaysAgo),
+                    supabase.from('orders').select('total_price, created_at, order_items(unit_cost, quantity)').eq('status', 'Delivered').gte('created_at', sixtyDaysAgo),
                     supabase.from('products').select('stock'),
                     supabase.from('suppliers').select('rating'),
                     supabase.from('active_visitors').select('session_id', { count: 'exact', head: true }).gt('cart_value', 0)
@@ -54,11 +54,22 @@ export default function ApexIntelligence2() {
                 const recentOrders = ordersRes.data?.filter(o => o.created_at >= thirtyDaysAgo) || [];
                 const prevOrders = ordersRes.data?.filter(o => o.created_at < thirtyDaysAgo) || [];
 
-                const recentRev = recentOrders.reduce((s, o) => s + (o.total_price || 0), 0);
-                const prevRev = prevOrders.reduce((s, o) => s + (o.total_price || 0), 0);
+                const calculatePeriodStats = (orderList: any[]) => {
+                    const rev = orderList.reduce((s, o) => s + (o.total_price || 0), 0);
+                    const cost = orderList.reduce((s, o) => {
+                        const items = (o as { order_items?: { unit_cost: number; quantity: number }[] }).order_items || [];
+                        return s + items.reduce((is, i) => is + (Number(i.unit_cost || 0) * (i.quantity || 1)), 0);
+                    }, 0);
+                    const margin = rev > 0 ? ((rev - cost) / rev) * 100 : 0;
+                    return { rev, margin };
+                };
 
-                const growth = prevRev > 0 ? ((recentRev - prevRev) / prevRev) * 100 : 0;
+                const currentStats = calculatePeriodStats(recentOrders);
+                const prevStats = calculatePeriodStats(prevOrders);
+
+                const growth = prevStats.rev > 0 ? ((currentStats.rev - prevStats.rev) / prevStats.rev) * 100 : 0;
                 const volumeUp = prevOrders.length > 0 ? ((recentOrders.length - prevOrders.length) / prevOrders.length) * 100 : 0;
+                const marginChange = currentStats.margin - prevStats.margin;
 
                 // Calculate metrics
                 const lowStock = productsRes.data?.filter(p => p.stock < 5).length || 0;
@@ -67,7 +78,7 @@ export default function ApexIntelligence2() {
                 setData({
                     growth: parseFloat(growth.toFixed(1)),
                     ordersUp: parseFloat(volumeUp.toFixed(1)),
-                    marginChange: -1.2, // This requires historical margin data to be perfect
+                    marginChange: parseFloat(marginChange.toFixed(1)),
                     inventoryRisk: lowStock,
                     supplierRisk: riskySuppliers,
                     atRiskCustomers: leaksRes.count || 0
