@@ -35,7 +35,10 @@ export async function middleware(request: NextRequest) {
   const isSupplierPath = pathname.startsWith('/supplier');
   const isRiderPath = pathname.startsWith('/rider');
 
-  if ((isAdminPath || isSupplierPath || isRiderPath) && !pathname.includes('.')) {
+  // Skip middleware for login pages to avoid infinite redirect loops
+  const isLoginPath = pathname === '/rider/login' || pathname === '/supplier/login' || pathname === '/apex-portal';
+
+  if ((isAdminPath || isSupplierPath || isRiderPath) && !pathname.includes('.') && !isLoginPath) {
     try {
       const sessionCookie = request.cookies.get('admin_session')?.value;
       const sessionData = await verifySessionCookie(sessionCookie);
