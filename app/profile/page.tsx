@@ -50,7 +50,9 @@ import {
   Headphones,
   Cpu,
   BarChart3 as StatsIcon,
-  Download
+  Download,
+  Briefcase,
+  Store
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -168,6 +170,8 @@ export default function ProfilePage() {
   const [abandonedBag, setAbandonedBag] = useState<AbandonedCart | null>(null);
   const [devices, setDevices] = useState<Device[]>([]);
   const [isPickingLocation, setIsPickingLocation] = useState(false);
+  const [isRiderAccount, setIsRiderAccount] = useState(false);
+  const [isSupplierAccount, setIsSupplierAccount] = useState(false);
 
   // Profile Edit State
   const [isEditing, setIsEditing] = useState(false);
@@ -196,6 +200,8 @@ export default function ProfilePage() {
       }
 
       setUser(session.user);
+
+      const normalizePhone = (p: string) => p.replace(/^\+254/, '').replace(/^0/, '').trim();
 
       // Fetch Profile
       const { data: profileData } = await supabase
@@ -247,16 +253,20 @@ export default function ProfilePage() {
 
       // Fetch Devices & Achievements (New Infrastructure)
       if (supabase) {
-          const [devicesRes, achievementsRes, warrantiesRes, serviceRes] = await Promise.all([
+          const [devicesRes, achievementsRes, warrantiesRes, serviceRes, riderRes, supplierRes] = await Promise.all([
               supabase.from('user_devices').select('*').eq('user_id', session.user.id),
               supabase.from('user_achievements').select('*').eq('user_id', session.user.id),
               supabase.from('warranties').select('*').eq('user_id', session.user.id),
-              supabase.from('support_tickets').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false })
+              supabase.from('support_tickets').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }),
+              supabase.from('rider_status').select('rider_phone').eq('rider_phone', normalizePhone(profileData?.phone_number || '')).maybeSingle(),
+              supabase.from('suppliers').select('email').eq('email', session.user.email || '').maybeSingle()
           ]);
           setDevices(devicesRes.data || []);
           setAchievements(achievementsRes.data || []);
           setWarranties(warrantiesRes.data || []);
           setServiceRequests(serviceRes.data || []);
+          setIsRiderAccount(!!riderRes.data);
+          setIsSupplierAccount(!!supplierRes.data);
 
           // Real data only
           setCoupons([]);
@@ -1085,6 +1095,48 @@ export default function ProfilePage() {
                         </div>
                     )}
                 </section>
+
+                {/* 💼 PARTNER PORTALS (Conditional) */}
+                {(isRiderAccount || isSupplierAccount) && (
+                    <section className="space-y-6 pt-10 border-t border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><Briefcase className="h-5 w-5" /></div>
+                            <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Partner Portals</h2>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {isRiderAccount && (
+                                <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
+                                    <div className="relative z-10 space-y-4">
+                                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><Truck className="h-6 w-6" /></div>
+                                        <div>
+                                            <h3 className="text-xl font-black uppercase tracking-tight text-foreground">Fleet Portal</h3>
+                                            <p className="text-[10px] font-medium text-slate-500 italic mt-1">&quot;Manage your active tasks and track your earnings velocity.&quot;</p>
+                                        </div>
+                                        <Link href="/rider/dashboard">
+                                            <Button className="w-full h-12 rounded-xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all">Launch Dashboard</Button>
+                                        </Link>
+                                    </div>
+                                    <Zap className="absolute -bottom-6 -right-6 h-32 w-32 text-slate-50 rotate-12 -z-0" />
+                                </Card>
+                            )}
+                            {isSupplierAccount && (
+                                <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
+                                    <div className="relative z-10 space-y-4">
+                                        <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform"><Store className="h-6 w-6" /></div>
+                                        <div>
+                                            <h3 className="text-xl font-black uppercase tracking-tight text-foreground">Merchant Hub</h3>
+                                            <p className="text-[10px] font-medium text-slate-500 italic mt-1">&quot;Upload inventory, manage stock levels, and review settlements.&quot;</p>
+                                        </div>
+                                        <Link href="/supplier">
+                                            <Button className="w-full h-12 rounded-xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest hover:bg-indigo-700 transition-all">Enter Workspace</Button>
+                                        </Link>
+                                    </div>
+                                    <Briefcase className="absolute -bottom-6 -right-6 h-32 w-32 text-slate-50 rotate-12 -z-0" />
+                                </Card>
+                            )}
+                        </div>
+                    </section>
+                )}
             </div>
 
             {/* RIGHT COLUMN: REWARDS & PROFILE */}
