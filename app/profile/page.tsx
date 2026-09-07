@@ -1096,47 +1096,60 @@ export default function ProfilePage() {
                     )}
                 </section>
 
-                {/* 💼 PARTNER PORTALS (Conditional) */}
-                {(isRiderAccount || isSupplierAccount) && (
-                    <section className="space-y-6 pt-10 border-t border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><Briefcase className="h-5 w-5" /></div>
-                            <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Partner Portals</h2>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {isRiderAccount && (
-                                <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
-                                    <div className="relative z-10 space-y-4">
-                                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><Truck className="h-6 w-6" /></div>
-                                        <div>
-                                            <h3 className="text-xl font-black uppercase tracking-tight text-foreground">Fleet Portal</h3>
-                                            <p className="text-[10px] font-medium text-slate-500 italic mt-1">&quot;Manage your active tasks and track your earnings velocity.&quot;</p>
-                                        </div>
-                                        <Link href="/rider/dashboard">
-                                            <Button className="w-full h-12 rounded-xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all">Launch Dashboard</Button>
-                                        </Link>
-                                    </div>
-                                    <Zap className="absolute -bottom-6 -right-6 h-32 w-32 text-slate-50 rotate-12 -z-0" />
-                                </Card>
-                            )}
-                            {isSupplierAccount && (
-                                <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
-                                    <div className="relative z-10 space-y-4">
-                                        <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform"><Store className="h-6 w-6" /></div>
-                                        <div>
-                                            <h3 className="text-xl font-black uppercase tracking-tight text-foreground">Merchant Hub</h3>
-                                            <p className="text-[10px] font-medium text-slate-500 italic mt-1">&quot;Upload inventory, manage stock levels, and review settlements.&quot;</p>
-                                        </div>
-                                        <Link href="/supplier">
-                                            <Button className="w-full h-12 rounded-xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest hover:bg-indigo-700 transition-all">Enter Workspace</Button>
-                                        </Link>
-                                    </div>
-                                    <Briefcase className="absolute -bottom-6 -right-6 h-32 w-32 text-slate-50 rotate-12 -z-0" />
-                                </Card>
-                            )}
-                        </div>
-                    </section>
-                )}
+                {/* 💼 PARTNER NETWORK */}
+                <section className="space-y-6 pt-10 border-t border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><Briefcase className="h-5 w-5" /></div>
+                        <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">Partner Network</h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
+                            <div className="relative z-10 space-y-4">
+                                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><Truck className="h-6 w-6" /></div>
+                                <div className="text-left">
+                                    <h3 className="text-xl font-black uppercase tracking-tight text-foreground">
+                                        {isRiderAccount ? "Fleet Portal" : "Join the Fleet"}
+                                    </h3>
+                                    <p className="text-[10px] font-medium text-slate-500 italic mt-1 leading-relaxed">
+                                        {isRiderAccount
+                                            ? "Manage your active tasks and track your earnings velocity."
+                                            : "Apply to become a professional driver and earn on every delivery."
+                                        }
+                                    </p>
+                                </div>
+                                <Link href={isRiderAccount ? "/rider/dashboard" : "/rider/onboarding"}>
+                                    <Button className="w-full h-12 rounded-xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all">
+                                        {isRiderAccount ? "Launch Dashboard" : "Start Onboarding"}
+                                    </Button>
+                                </Link>
+                            </div>
+                            <Zap className="absolute -bottom-6 -right-6 h-32 w-32 text-slate-50 rotate-12 -z-0" />
+                        </Card>
+
+                        <Card className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
+                            <div className="relative z-10 space-y-4">
+                                <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform"><Store className="h-6 w-6" /></div>
+                                <div className="text-left">
+                                    <h3 className="text-xl font-black uppercase tracking-tight text-foreground">
+                                        {isSupplierAccount ? "Merchant Hub" : "Become a Supplier"}
+                                    </h3>
+                                    <p className="text-[10px] font-medium text-slate-500 italic mt-1 leading-relaxed">
+                                        {isSupplierAccount
+                                            ? "Upload inventory, manage stock levels, and review settlements."
+                                            : "Partner with us to reach thousands of premium customers and scale."
+                                        }
+                                    </p>
+                                </div>
+                                <Link href={isSupplierAccount ? "/supplier" : "/supplier/onboarding"}>
+                                    <Button className="w-full h-12 rounded-xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest hover:bg-indigo-700 transition-all">
+                                        {isSupplierAccount ? "Enter Workspace" : "Apply Now"}
+                                    </Button>
+                                </Link>
+                            </div>
+                            <Briefcase className="absolute -bottom-6 -right-6 h-32 w-32 text-slate-50 rotate-12 -z-0" />
+                        </Card>
+                    </div>
+                </section>
             </div>
 
             {/* RIGHT COLUMN: REWARDS & PROFILE */}
