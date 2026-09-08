@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     const { data: masterTenant } = await supabase.from('tenants').select('id').eq('slug', 'apex-master').single();
 
     const response = NextResponse.json({ ok: true, role: 'owner' });
-    const sessionValue = await createSessionCookie('owner@apexstores.com', 'owner', ownerPermissions, masterTenant?.id, null, 'owner-id');
+    const sessionValue = await createSessionCookie('davidmaganga130@gmail.com', 'owner', ownerPermissions, masterTenant?.id, null, 'owner-id');
     response.cookies.set('admin_session', sessionValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

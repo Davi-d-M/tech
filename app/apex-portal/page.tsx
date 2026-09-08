@@ -80,7 +80,7 @@ function AdminLoginContent() {
           const payload = await response.json();
           if (!response.ok) throw new Error(payload.error || 'Magic Key Invalid.');
 
-          await logAuditAction('owner@apexstores.com', 'MAGIC_KEY_SESSION_START', { ip: payload.ip || 'logged' });
+          await logAuditAction('davidmaganga130@gmail.com', 'MAGIC_KEY_SESSION_START', { ip: payload.ip || 'logged' });
           window.location.href = '/admin';
       } catch (error: unknown) {
           setStatus({
@@ -132,7 +132,7 @@ function AdminLoginContent() {
       localStorage.setItem('apex_admin_mode', mode);
       if (mode === 'email') localStorage.setItem('apex_admin_email', email);
 
-      const adminEmail = mode === 'email' ? email : 'owner@apexstores.com';
+      const adminEmail = mode === 'email' ? email : 'davidmaganga130@gmail.com';
       await logAuditAction(adminEmail, 'OS_SESSION_START', { mode, ip: payload.ip || 'logged' });
 
       // Wait a moment for the cookie to be set before redirecting
