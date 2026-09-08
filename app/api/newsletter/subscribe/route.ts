@@ -28,6 +28,16 @@ export async function POST(request: Request) {
 
         if (dbError) throw dbError;
 
+        // 1.5. Signal Intelligence: Notify Admin Center
+        try {
+            await supabase.from('user_signals').insert([{
+                event_type: 'NEWSLETTER_SIGNUP',
+                target: email.toLowerCase(),
+                url: '/newsletter',
+                metadata: { source: 'footer_form' }
+            }]);
+        } catch (e) { console.warn("Signal failed", e); }
+
         // 2. Add to Resend Contacts
         if (resend) {
             try {

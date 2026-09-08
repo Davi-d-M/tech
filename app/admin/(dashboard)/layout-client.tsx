@@ -146,6 +146,7 @@ export default function AdminLayoutClient({
       { name: 'Ad Campaigns', href: '/admin/marketing/ai-agency', icon: Target, permission: 'can_manage_broadcast' },
       { name: 'Automations', href: '/admin/marketing/automation', icon: Rocket, permission: 'can_manage_broadcast' },
       { name: 'Affiliates', href: '/admin/affiliates', icon: Target, permission: 'can_manage_affiliates' },
+      { name: 'Subscriber Base', href: '/admin/subscribers', icon: Users, permission: 'can_manage_broadcast' },
       { name: 'Promotions', href: '/admin/coupons', icon: Tag, permission: 'can_manage_broadcast' },
     ]},
     { group: 'FINANCE', items: [

@@ -12,7 +12,8 @@ import {
   Loader2,
   Package,
   Truck,
-  Send
+  Send,
+  Users
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { formatPrice, cn } from '@/lib/utils';
@@ -399,7 +400,7 @@ export default function AdminDashboard() {
                         {[
                             { label: 'Add Product', icon: Package, href: '/admin/upload' },
                             { label: 'Manage Riders', icon: Truck, href: '/admin/dispatch' },
-                            { label: 'System Broadcast', icon: Send, href: '/admin/broadcast' },
+                            { label: 'Subscribers', icon: Users, href: '/admin/subscribers' },
                             { label: 'Create Coupon', icon: Zap, href: '/admin/gamification' },
                         ].map(action => (
                             <Link key={action.label} href={action.href} className="flex flex-col items-center gap-4 p-8 rounded-[2rem] bg-slate-50 border border-slate-100 hover:bg-primary hover:text-white transition-all group shadow-sm">
