@@ -66,7 +66,7 @@ export default function AISalesAssistant({ promoLink }: { promoLink: string }) {
                         </div>
                         <p className="text-sm font-bold text-foreground leading-relaxed italic">&quot;{selectedHook.hook.replace('[link]', promoLink)}&quot;</p>
                         <div className="pt-6 border-t border-slate-200">
-                             <Button onClick={() => copyFinal(selectedHook.hook)} className="w-full h-14 rounded-xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest active:scale-95 shadow-xl transition-all">
+                             <Button onClick={() => copyFinal(selectedHook.hook)} className="w-full h-14 rounded-xl bg-primary text-white font-black uppercase text-[10px] tracking-widest active:scale-95 shadow-xl shadow-primary/20 transition-all">
                                  <Copy className="h-4 w-4 mr-2" /> Copy to Clipboard
                              </Button>
                         </div>

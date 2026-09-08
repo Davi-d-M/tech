@@ -11,12 +11,13 @@ import {
   Loader2
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { useSettings, type StoreSettings } from "@/lib/useSettings";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Footer({ initialSettings }: { initialSettings?: StoreSettings }) {
   const { settings: hookSettings, loading } = useSettings();
@@ -24,6 +25,30 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'idle', message: string }>({ type: 'idle', message: "" });
+
+  const [canSeePartners, setCanSeePartners] = useState(false);
+
+  useEffect(() => {
+      async function checkPermissions() {
+          if (!supabase) return;
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) {
+              setCanSeePartners(false);
+              return;
+          }
+
+          const { data: profile } = await supabase.from('profiles').select('can_see_partner_offers, can_see_affiliate_offers, phone_number').eq('id', session.user.id).single();
+
+          // Show Partners section if they have ANY partner-related permission or account
+          const [riderRes, supplierRes] = await Promise.all([
+              supabase.from('rider_status').select('rider_phone').eq('rider_phone', profile?.phone_number || '').maybeSingle(),
+              supabase.from('suppliers').select('email').eq('email', session.user.email || '').maybeSingle()
+          ]);
+
+          setCanSeePartners(!!profile?.can_see_partner_offers || !!profile?.can_see_affiliate_offers || !!riderRes.data || !!supplierRes.data);
+      }
+      checkPermissions();
+  }, []);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,14 +107,14 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
         { href: "/contact", label: "Support" },
       ],
     },
-    {
+    ...(canSeePartners ? [{
       title: "Partners",
       links: [
         { href: "/rider/login", label: "Fleet Portal" },
         { href: "/supplier/login", label: "Merchant Portal" },
         { href: "/supplier/onboarding", label: "Apply to Supply" },
       ],
-    },
+    }] : []),
     {
       title: "Legal",
       links: [

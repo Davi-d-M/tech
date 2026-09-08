@@ -23,7 +23,9 @@ import {
     Layout,
     Link2,
     Camera,
-    Settings
+    Settings,
+    Lock,
+    Settings2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -73,6 +75,8 @@ export default function AffiliateDashboard() {
 
     const [chartData, setChartData] = useState<{ day: string; yield: number }[]>([]);
 
+    const [isAllowed, setIsAllowed] = useState(false);
+
     const handleWithdrawal = async () => {
         if (wallet.available_balance < 1000) {
             alert("Minimum withdrawal is KSh 1,000.");
@@ -89,6 +93,16 @@ export default function AffiliateDashboard() {
             if (!session) return;
 
             try {
+                // 0. Check Base Profile for Permission
+                const { data: baseProfile } = await supabase.from('profiles').select('can_see_affiliate_offers, referral_code').eq('id', session.user.id).single();
+
+                if (!baseProfile?.can_see_affiliate_offers && !baseProfile?.referral_code) {
+                    setIsAllowed(false);
+                    setLoading(false);
+                    return;
+                }
+                setIsAllowed(true);
+
                 // 1. Fetch Profile & Wallet & Announcements
                 const [profileRes, walletRes, referralsRes, announcementsRes] = await Promise.all([
                     supabase.from('affiliate_profiles').select('*').eq('user_id', session.user.id).single(),
@@ -155,6 +169,17 @@ export default function AffiliateDashboard() {
         </div>
     );
 
+    if (!isAllowed) return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center gap-6">
+            <div className="h-20 w-20 rounded-[2.5rem] bg-rose-50 text-rose-500 flex items-center justify-center border border-rose-100 shadow-sm animate-shake"><Lock size={40} /></div>
+            <div>
+                <h1 className="text-2xl font-black uppercase tracking-tighter">Command Center Restricted</h1>
+                <p className="text-slate-500 mt-2">You haven&apos;t been authorized to access the Affiliate Program yet.</p>
+            </div>
+            <Link href="/profile"><Button variant="outline" className="h-12 rounded-xl">Return to Base</Button></Link>
+        </div>
+    );
+
     if (!profile) return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center gap-6">
             <div className="h-20 w-20 rounded-[2.5rem] bg-amber-50 text-amber-500 flex items-center justify-center"><AlertCircle size={40} /></div>
@@ -211,18 +236,18 @@ export default function AffiliateDashboard() {
 
                 {/* 💰 REAL-TIME EARNINGS HUD */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-                    <Card className="p-8 rounded-[3rem] bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden group h-full flex flex-col justify-between">
-                        <div className="relative z-10 space-y-8">
+                    <Card className="p-8 rounded-[3rem] bg-white border border-primary/20 shadow-sm relative overflow-hidden group h-full flex flex-col justify-between">
+                        <div className="relative z-10 space-y-8 text-left">
                             <div className="flex justify-between items-start">
-                                <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-md"><Wallet className="h-5 w-5 text-primary" /></div>
+                                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><Wallet className="h-5 w-5 text-primary" /></div>
                                 <div className="text-right">
-                                    <p className="text-[9px] font-black uppercase text-white/40 tracking-widest mb-1">Available</p>
+                                    <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-1">Available</p>
                                     <h3 className="text-3xl font-black text-foreground tracking-tighter">{formatPrice(wallet.available_balance)}</h3>
                                 </div>
                             </div>
-                            <Button onClick={() => setActiveTab('payouts')} className="w-full h-12 rounded-xl bg-white text-slate-900 font-black uppercase text-[8px] tracking-widest hover:bg-slate-100 transition-all">Request Payout</Button>
+                            <Button onClick={() => setActiveTab('payouts')} className="w-full h-12 rounded-xl bg-primary text-white font-black uppercase text-[8px] tracking-widest shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">Request Payout</Button>
                         </div>
-                        <DollarSign className="absolute -bottom-6 -right-6 h-32 w-32 text-white/5 rotate-12" />
+                        <DollarSign className="absolute -bottom-6 -right-6 h-32 w-32 text-primary/5 rotate-12" />
                     </Card>
 
                     {[
@@ -418,16 +443,16 @@ export default function AffiliateDashboard() {
                                             <Button className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">Generate Deep Link</Button>
                                         </div>
 
-                                        <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white space-y-6 relative overflow-hidden flex flex-col justify-center text-center group">
-                                            <div className="relative z-10 space-y-4">
-                                                <p className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em]">Your Personal Link</p>
+                                        <div className="p-8 rounded-[2.5rem] bg-white border border-primary/20 space-y-6 relative overflow-hidden flex flex-col justify-center text-center group shadow-sm">
+                                            <div className="relative z-10 space-y-4 text-left">
+                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Your Personal Link</p>
                                                 <p className="text-xs font-black tracking-tight text-primary break-all select-all">{getReferralLink(profile.promo_name)}</p>
                                                 <div className="flex gap-2 pt-4">
-                                                    <Button onClick={() => copyLink(getReferralLink(profile.promo_name))} className="flex-1 h-12 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black uppercase text-[9px]">Copy Link</Button>
-                                                    <Button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(getReferralLink(profile.promo_name))}`, '_blank')} className="flex-1 h-12 rounded-xl bg-emerald-500 text-white font-black uppercase text-[9px]">Share WA</Button>
+                                                    <Button onClick={() => copyLink(getReferralLink(profile.promo_name))} className="flex-1 h-12 rounded-xl bg-primary text-white font-black uppercase text-[9px] shadow-lg shadow-primary/20">Copy Link</Button>
+                                                    <Button onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(getReferralLink(profile.promo_name))}`, '_blank')} className="flex-1 h-12 rounded-xl bg-emerald-500 text-white font-black uppercase text-[9px] shadow-lg shadow-emerald-500/20">Share WA</Button>
                                                 </div>
                                             </div>
-                                            <Link2 className="absolute -bottom-10 -left-10 h-48 w-48 text-white/5 rotate-12" />
+                                            <Link2 className="absolute -bottom-10 -left-10 h-48 w-48 text-primary/5 rotate-12" />
                                         </div>
                                     </div>
                                 </Card>
@@ -470,7 +495,7 @@ export default function AffiliateDashboard() {
                                                     </div>
                                                     <ChevronRight className="text-slate-200 group-hover:text-primary transition-colors" />
                                                 </div>
-                                                <Button onClick={handleWithdrawal} className="w-full h-18 rounded-[1.8rem] bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-2xl active:scale-95 transition-all">Initiate Payout Protocol</Button>
+                                                <Button onClick={handleWithdrawal} className="w-full h-18 rounded-[1.8rem] bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all">Initiate Payout Protocol</Button>
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-center justify-center p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 shadow-inner">
