@@ -100,5 +100,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/supplier/:path*', '/rider/:path*'],
+  matcher: ['/admin/:path*', '/supplier/:path*', '/rider/:path*', '/apex-portal/:path*'],
 };

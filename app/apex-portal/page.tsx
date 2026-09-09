@@ -1,16 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { Lock, Mail, Key, Truck } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lock, Mail, Key, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { logAuditAction } from '@/lib/auditService';
 import { supabase } from '@/lib/supabaseClient';
 import { useSettings } from '@/lib/useSettings';
+import UnifiedPortalBox from '@/components/layout/UnifiedPortalBox';
 
 interface LoginStatus {
     type: 'idle' | 'error' | 'processing';
@@ -21,7 +21,7 @@ interface LoginStatus {
 
 function AdminLoginContent() {
   const searchParams = useSearchParams();
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const [mode, setMode] = useState<'pin' | 'email'>('pin');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -48,8 +48,9 @@ function AdminLoginContent() {
       const magicKey = searchParams.get('key');
       const secretFlag = searchParams.get('secret');
 
-      // Check if unlocked via secret URL or session
-      if (secretFlag === 'true') {
+      // Check if unlocked via secret URL segment
+      const masterKey = settings?.globals?.portal_security?.master_entry_key || 'davidmaganga130';
+      if (secretFlag === 'true' || window.location.pathname.endsWith(masterKey)) {
           setIsUnlocked(true);
       }
 
@@ -76,7 +77,7 @@ function AdminLoginContent() {
           setHasAttemptedAutoLogin(true);
           handleAutoLogin(magicKey, dId);
       }
-  }, [searchParams, hasAttemptedAutoLogin]);
+  }, [searchParams, hasAttemptedAutoLogin, settings]);
 
   const handleAutoLogin = async (key: string, dId: string) => {
       setIsSubmitting(true);
@@ -166,62 +167,29 @@ function AdminLoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 text-left selection:bg-primary/20">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-2xl relative overflow-hidden">
-
-        {/* Rider / Partner View (Visible to everyone on the portal) */}
+      <UnifiedPortalBox
+        title={!isUnlocked ? (settings?.globals?.portal_security?.rider_portal_name || "Partner Hub") : (settings?.globals?.portal_security?.admin_portal_name || "Management Console")}
+        description={settings?.globals?.portal_security?.portal_description || "Please sign in to access the management dashboard."}
+        loading={settingsLoading}
+        icon={!isUnlocked ? <Truck className="h-8 w-8" /> : <Lock className="h-6 w-6" />}
+      >
         {!isUnlocked ? (
-            <div className="text-center space-y-8 animate-in fade-in duration-500">
-                <div className="mx-auto h-16 w-16 rounded-3xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20 overflow-hidden">
-                    {settings?.branding?.logo_url ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={settings.branding.logo_url} alt="Logo" className="h-full w-full object-contain p-2" />
-                    ) : (
-                        <Truck className="h-8 w-8" />
-                    )}
-                </div>
-                <div>
-                    <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">{settings?.store_info?.name || "Apex"} Partner Hub</h1>
-                    <p className="mt-2 text-sm text-slate-500 font-medium italic">
-                        Fleet and Merchant logistics gateway.
-                    </p>
-                </div>
+            <div className="space-y-6 animate-in fade-in duration-500">
                 <div className="space-y-3">
                     <Link href="/rider/login" className="block">
-                        <Button className="w-full h-20 rounded-2xl bg-slate-900 text-white font-black uppercase text-xs tracking-[0.2em] shadow-xl hover:bg-black active:scale-95 transition-all">
+                        <Button className="w-full h-20 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                             Fleet Portal Access
                         </Button>
                     </Link>
                     <Link href="/supplier/login" className="block">
-                        <Button variant="outline" className="w-full h-16 rounded-2xl border-2 border-slate-100 font-black uppercase text-[10px] tracking-widest hover:bg-slate-50">
+                        <Button variant="outline" className="w-full h-16 rounded-2xl border-2 border-slate-100 font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all">
                             Merchant Hub
                         </Button>
                     </Link>
                 </div>
-                <div className="pt-6 border-t border-slate-50">
-                    <Link href="/" className="text-[10px] font-black text-slate-300 hover:text-primary uppercase tracking-widest transition-colors">
-                        ← Back to Shop
-                    </Link>
-                </div>
             </div>
         ) : (
-            /* Administrative View (Hidden unless Unlocked) */
             <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-8">
-                <div className="text-center">
-                    <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 overflow-hidden border border-primary/20">
-                        {settings?.branding?.logo_url ? (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img src={settings.branding.logo_url} alt="Logo" className="h-full w-full object-contain p-2" />
-                        ) : (
-                            <Lock className="h-6 w-6" />
-                        )}
-                    </div>
-                    <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">{settings?.store_info?.name || "Apex"} Portal</h1>
-                    <p className="mt-2 text-sm text-slate-500 font-medium italic">
-                        Authorized personnel only. Secure link established.
-                    </p>
-                </div>
-
                 <div className="flex p-1 bg-slate-50 rounded-2xl border border-slate-100">
                     <button
                         onClick={() => setMode('pin')}
@@ -244,69 +212,62 @@ function AdminLoginContent() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                {mode === 'email' && (
+                    {mode === 'email' && (
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Staff Email</label>
+                            <div className="relative">
+                                <Input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="staff@apexstores.com"
+                                    className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 pl-12"
+                                    disabled={isSubmitting}
+                                    required
+                                />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                            </div>
+                        </div>
+                    )}
+
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Staff Email</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
+                            {mode === 'pin' ? 'Secret PIN' : 'Password'}
+                        </label>
                         <div className="relative">
                             <Input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="staff@apexstores.com"
-                                className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 pl-12"
-                                disabled={isSubmitting}
-                                required
+                            type="password"
+                            value={password}
+                            onChange={(event) => setPassword(event.target.value)}
+                            placeholder={mode === 'pin' ? "••••••••" : "Your Password"}
+                            className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 pl-12"
+                            autoComplete="current-password"
+                            disabled={isSubmitting}
+                            required
                             />
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                            <Key className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                         </div>
                     </div>
-                )}
 
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                        {mode === 'pin' ? 'Secret PIN' : 'Password'}
-                    </label>
-                    <div className="relative">
-                        <Input
-                        type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        placeholder={mode === 'pin' ? "••••••••" : "Your Password"}
-                        className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 pl-12"
-                        autoComplete="current-password"
+                    <Button
+                        type="submit"
+                        className="w-full h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
                         disabled={isSubmitting}
-                        required
-                        />
-                        <Key className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
-                    </div>
-                </div>
-
-                <Button
-                    type="submit"
-                    className="w-full h-16 rounded-[1.5rem] bg-primary text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? 'Authorizing...' : 'Enter Console'}
-                </Button>
+                    >
+                        {isSubmitting ? 'Authorizing...' : 'Enter Console'}
+                    </Button>
                 </form>
-
-                <div className="text-center pt-6 border-t border-slate-100">
-                    <Link href="/" className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">
-                        ← Back to Shop
-                    </Link>
-                </div>
             </div>
         )}
 
         {status.message && (
-          <div className="rounded-2xl bg-rose-50 p-4 border border-rose-100 text-center animate-shake mt-6">
-            <p className="text-[10px] text-rose-600 font-black uppercase tracking-widest leading-relaxed">
-              {status.message}
-            </p>
-          </div>
+            <div className="rounded-2xl bg-rose-50 p-4 border border-rose-100 text-center animate-shake">
+                <p className="text-[10px] text-rose-600 font-black uppercase tracking-widest leading-relaxed">
+                    {status.message}
+                </p>
+            </div>
         )}
-      </div>
-    </div>
+      </UnifiedPortalBox>
   );
 }
 

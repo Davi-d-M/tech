@@ -86,6 +86,13 @@ export interface StoreSettings {
     };
     globals?: {
         announcement_bar: { text: string; enabled: boolean; bg_color: string; text_color: string; link?: string };
+        portal_security?: {
+            master_entry_key: string;
+            admin_portal_name: string;
+            rider_portal_name: string;
+            merchant_portal_name: string;
+            portal_description: string;
+        };
     };
     content?: {
         privacy_policy: string;
@@ -227,6 +234,13 @@ const DEFAULT_SETTINGS: StoreSettings = {
             enabled: false,
             bg_color: "#F5A000",
             text_color: "#FFFFFF"
+        },
+        portal_security: {
+            master_entry_key: "davidmaganga130",
+            admin_portal_name: "Administrative Portal",
+            rider_portal_name: "Fleet Portal",
+            merchant_portal_name: "Merchant Portal",
+            portal_description: "Please sign in to access the management dashboard."
         }
     },
     content: {

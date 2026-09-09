@@ -94,6 +94,13 @@ const DEFAULTS = {
             enabled: false,
             bg_color: "#F5A000",
             text_color: "#FFFFFF"
+        },
+        portal_security: {
+            master_entry_key: "davidmaganga130",
+            admin_portal_name: "Administrative Portal",
+            rider_portal_name: "Fleet Portal",
+            merchant_portal_name: "Merchant Portal",
+            portal_description: "Please sign in to access the management dashboard."
         }
     },
     content: {
@@ -121,7 +128,7 @@ interface SocialApis {
     whatsapp_flow_support_id?: string;
 }
 
-type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced' | 'integrations' | 'layout' | 'navigation' | 'content';
+type TabId = 'identity' | 'homepage' | 'promotions' | 'theme' | 'seo' | 'ops' | 'catalog' | 'ai' | 'features' | 'advanced' | 'integrations' | 'layout' | 'navigation' | 'content' | 'security';
 
 export default function AdminSettingsPage() {
     const { email } = useAdmin();
@@ -375,6 +382,7 @@ export default function AdminSettingsPage() {
                             else if (activeTab === 'layout') handleSave('layout', layout, true);
                             else if (activeTab === 'navigation') handleSave('navigation', navigation, true);
                             else if (activeTab === 'content') handleSave('content', content, true);
+                            else if (activeTab === 'security') handleSave('globals', globals, true);
                             else if (activeTab === 'advanced') {
                                 handleSave('theme_config', theme, true);
                                 handleSave('bridge_config', bridgeConfig, true);
@@ -415,6 +423,7 @@ export default function AdminSettingsPage() {
                     { id: 'layout', label: 'Layout', icon: Palette },
                     { id: 'navigation', label: 'Navigation', icon: MapPin },
                     { id: 'content', label: 'Legal & Content', icon: Info },
+                    { id: 'security', label: 'Portal Security', icon: Lock },
                     { id: 'advanced', label: 'Advanced', icon: Code },
                 ].map(tab => (
                     <button
@@ -1291,6 +1300,78 @@ export default function AdminSettingsPage() {
                                     </div>
                                 </div>
                             </Card>
+                        </div>
+                    )}
+
+                    {activeTab === 'security' && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 text-left">
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-10 text-left">
+                                <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Lock className="h-5 w-5 text-primary" /> Ghost Protocol: Master Access</h2>
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Magic Access Key (Secret URL Part)</label>
+                                        <div className="relative">
+                                            <Input
+                                                value={globals.portal_security?.master_entry_key}
+                                                onChange={e => setGlobals({...globals, portal_security: {...globals.portal_security!, master_entry_key: e.target.value}})}
+                                                className="h-14 rounded-2xl bg-secondary border-border font-black text-lg text-primary"
+                                                placeholder="e.g. davidmaganga130"
+                                            />
+                                            <Zap className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary animate-pulse" />
+                                        </div>
+                                        <p className="text-[8px] font-bold text-slate-400 uppercase italic px-1">
+                                            * This defines your secret entry link: /apex-portal/[your-key]
+                                        </p>
+                                    </div>
+
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Admin Portal Name</label>
+                                            <Input
+                                                value={globals.portal_security?.admin_portal_name}
+                                                onChange={e => setGlobals({...globals, portal_security: {...globals.portal_security!, admin_portal_name: e.target.value}})}
+                                                className="h-12 rounded-xl bg-secondary border-border font-bold text-foreground"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Rider Portal Name</label>
+                                            <Input
+                                                value={globals.portal_security?.rider_portal_name}
+                                                onChange={e => setGlobals({...globals, portal_security: {...globals.portal_security!, rider_portal_name: e.target.value}})}
+                                                className="h-12 rounded-xl bg-secondary border-border font-bold text-foreground"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Merchant Portal Name</label>
+                                        <Input
+                                            value={globals.portal_security?.merchant_portal_name}
+                                            onChange={e => setGlobals({...globals, portal_security: {...globals.portal_security!, merchant_portal_name: e.target.value}})}
+                                            className="h-12 rounded-xl bg-secondary border-border font-bold text-foreground"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-muted-foreground ml-1">Global Portal Description</label>
+                                        <textarea
+                                            value={globals.portal_security?.portal_description}
+                                            onChange={e => setGlobals({...globals, portal_security: {...globals.portal_security!, portal_description: e.target.value}})}
+                                            className="w-full h-24 p-5 rounded-2xl bg-secondary border border-border text-foreground font-medium text-xs resize-none outline-none focus:ring-4 focus:ring-primary/5 transition-all"
+                                        />
+                                    </div>
+                                </div>
+                            </Card>
+
+                            <div className="p-8 rounded-[3rem] bg-rose-50 border border-rose-100 flex items-start gap-4">
+                                <ShieldAlert className="h-6 w-6 text-rose-500 shrink-0 mt-0.5" />
+                                <div className="space-y-1">
+                                    <p className="text-xs font-black uppercase text-rose-700">Hardware & URL Binding</p>
+                                    <p className="text-[10px] text-rose-600 font-medium leading-relaxed italic">
+                                        &quot;Changing the Magic Access Key will immediately invalidate any existing links. Ensure you save the new URL to avoid being locked out of the administrative node.&quot;
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
