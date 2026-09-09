@@ -23,11 +23,14 @@ export async function middleware(request: NextRequest) {
 
   // GHOST PROTOCOL: Check for Cloak Access
   const ghostCookie = request.cookies.get('ghost_access')?.value;
-  const isMasterEntry = pathname === '/apex-portal/davidmaganga130';
+  const isMasterPortalEntry = pathname === '/apex-portal/davidmaganga130';
+  const isMasterAdminEntry = pathname === '/admin/davidmaganga130';
 
-  if (isMasterEntry) {
-      // Rewrite to the real portal page silently with an internal flag
-      const response = NextResponse.rewrite(new URL('/apex-portal?secret=true', request.url));
+  if (isMasterPortalEntry || isMasterAdminEntry) {
+      // Rewrite to the appropriate page silently with an internal flag
+      const target = isMasterPortalEntry ? '/apex-portal?secret=true' : '/admin';
+      const response = NextResponse.rewrite(new URL(target, request.url));
+
       // Set the ghost protocol cookie so David can see everything
       response.cookies.set('ghost_access', 'authorized', {
           path: '/',

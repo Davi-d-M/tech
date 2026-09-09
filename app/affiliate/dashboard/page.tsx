@@ -24,8 +24,7 @@ import {
     Link2,
     Camera,
     Settings,
-    Lock,
-    Settings2
+    Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -69,8 +68,8 @@ export default function AffiliateDashboard() {
     const [activeTab, setActiveTab] = useState<TabId>('overview');
     const [profile, setProfile] = useState<AffiliateProfile | null>(null);
     const [wallet, setWallet] = useState<WalletStats>({ available_balance: 0, pending_balance: 0, lifetime_earned: 0 });
-    const [recentReferrals, setRecentReferrals] = useState<any[]>([]);
-    const [announcements, setAnnouncements] = useState<any[]>([]);
+    const [recentReferrals, setRecentReferrals] = useState<{ commission_amount: number; created_at: string; order_id: number; status: string }[]>([]);
+    const [announcements, setAnnouncements] = useState<{ id: string; title: string; priority: string; created_at: string }[]>([]);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     const [chartData, setChartData] = useState<{ day: string; yield: number }[]>([]);
@@ -197,6 +196,15 @@ export default function AffiliateDashboard() {
 
                 {/* 👤 PROFESSIONAL AFFILIATE PROFILE HEADER */}
                 <header className="relative p-10 sm:p-14 rounded-[3.5rem] bg-white border border-slate-100 shadow-sm overflow-hidden group">
+                    {message && (
+                        <div className={cn(
+                            "absolute top-6 left-1/2 -translate-x-1/2 z-50 p-4 rounded-2xl border-2 flex items-center gap-3 animate-in slide-in-from-top-4 shadow-xl",
+                            message.type === 'success' ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600"
+                        )}>
+                            {message.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+                            <p className="text-[10px] font-black uppercase tracking-widest">{message.text}</p>
+                        </div>
+                    )}
                     <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
                         <div className="flex items-center gap-8">
                             <div className="relative">

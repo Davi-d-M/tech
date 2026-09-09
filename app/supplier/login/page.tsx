@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lock, Mail, Briefcase, Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useSettings } from '@/lib/useSettings';
 
 interface LoginError {
     error: string;
@@ -21,6 +22,7 @@ interface LoginError {
 
 export default function SupplierLogin() {
     const router = useRouter();
+    const { settings } = useSettings();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -69,11 +71,16 @@ export default function SupplierLogin() {
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-left selection:bg-primary/20">
             <div className="max-w-md w-full space-y-10 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100 relative overflow-hidden">
                 <div className="text-center space-y-4">
-                    <div className="mx-auto h-16 w-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-inner">
-                        <Briefcase className="h-8 w-8" />
+                    <div className="mx-auto h-16 w-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100 overflow-hidden">
+                        {settings?.branding?.logo_url ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img src={settings.branding.logo_url} alt="Logo" className="h-full w-full object-contain p-2" />
+                        ) : (
+                            <Briefcase className="h-8 w-8" />
+                        )}
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">Merchant Portal</h1>
+                        <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">{settings?.store_info?.name || "Apex"} Merchant</h1>
                         <p className="text-[10px] font-black uppercase text-indigo-500 tracking-[0.2em] mt-2">Partner Access Control</p>
                     </div>
                 </div>

@@ -48,6 +48,7 @@ import GlobalCommandPalette from '@/components/admin/GlobalCommandPalette';
 import LiveActivitySidebar from '@/components/admin/LiveActivitySidebar';
 import NotificationCenter from '@/components/admin/NotificationCenter';
 import { logAuditAction } from '@/lib/auditService';
+import { useSettings } from '@/lib/useSettings';
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;
@@ -68,6 +69,7 @@ export default function AdminLayoutClient({
 }: AdminLayoutClientProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { settings } = useSettings();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -198,10 +200,15 @@ export default function AdminLayoutClient({
           {/* Mobile Header */}
           <div className="md:hidden flex items-center justify-between px-4 py-4 bg-background border-b border-border sticky top-0 z-50 shadow-sm backdrop-blur-xl bg-background/80">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
-                <Store className="h-5 w-5 text-white" />
+              <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden">
+                {settings?.branding?.logo_url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={settings.branding.logo_url} alt="Logo" className="h-full w-full object-contain p-1" />
+                ) : (
+                    <Store className="h-5 w-5 text-white" />
+                )}
               </div>
-              <span className="font-black text-foreground uppercase tracking-tighter text-sm">The Apex Team</span>
+              <span className="font-black text-foreground uppercase tracking-tighter text-sm truncate max-w-[150px]">{settings?.store_info?.name || "Apex"}</span>
             </div>
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10 text-foreground" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
@@ -220,16 +227,17 @@ export default function AdminLayoutClient({
               {/* Sidebar Header */}
                 <div className={cn("p-8 border-b border-border flex items-center justify-between", isSidebarCollapsed && "p-6")}>
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
-                      <Store className="h-6 w-6 text-white" />
+                    <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 shrink-0 overflow-hidden">
+                      {settings?.branding?.logo_url ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={settings.branding.logo_url} alt="Logo" className="h-full w-full object-contain p-1.5" />
+                      ) : (
+                          <Store className="h-6 w-6 text-white" />
+                      )}
                     </div>
                     {!isSidebarCollapsed && (
-                        <div className="animate-in fade-in duration-500">
-                          <select className="font-black text-foreground leading-none uppercase tracking-tighter text-sm bg-transparent border-none outline-none appearance-none cursor-pointer">
-                              <option>The Apex Team</option>
-                              <option>Regional Branch</option>
-                              <option>Support Center</option>
-                          </select>
+                        <div className="animate-in fade-in duration-500 min-w-0">
+                          <p className="font-black text-foreground leading-none uppercase tracking-tighter text-sm truncate">{settings?.store_info?.name || "Apex"}</p>
                           <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em] mt-1">Management Console</p>
                         </div>
                     )}

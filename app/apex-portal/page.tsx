@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { logAuditAction } from '@/lib/auditService';
 import { supabase } from '@/lib/supabaseClient';
+import { useSettings } from '@/lib/useSettings';
 
 interface LoginStatus {
     type: 'idle' | 'error' | 'processing';
@@ -20,6 +21,7 @@ interface LoginStatus {
 
 function AdminLoginContent() {
   const searchParams = useSearchParams();
+  const { settings } = useSettings();
   const [mode, setMode] = useState<'pin' | 'email'>('pin');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -164,17 +166,22 @@ function AdminLoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 text-left">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 text-left selection:bg-primary/20">
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-2xl relative overflow-hidden">
 
         {/* Rider / Partner View (Visible to everyone on the portal) */}
         {!isUnlocked ? (
             <div className="text-center space-y-8 animate-in fade-in duration-500">
-                <div className="mx-auto h-16 w-16 rounded-3xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100">
-                    <Truck className="h-8 w-8" />
+                <div className="mx-auto h-16 w-16 rounded-3xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20 overflow-hidden">
+                    {settings?.branding?.logo_url ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={settings.branding.logo_url} alt="Logo" className="h-full w-full object-contain p-2" />
+                    ) : (
+                        <Truck className="h-8 w-8" />
+                    )}
                 </div>
                 <div>
-                    <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Apex Partner Hub</h1>
+                    <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">{settings?.store_info?.name || "Apex"} Partner Hub</h1>
                     <p className="mt-2 text-sm text-slate-500 font-medium italic">
                         Fleet and Merchant logistics gateway.
                     </p>
@@ -201,10 +208,15 @@ function AdminLoginContent() {
             /* Administrative View (Hidden unless Unlocked) */
             <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-8">
                 <div className="text-center">
-                    <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4">
-                        <Lock className="h-6 w-6" />
+                    <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 overflow-hidden border border-primary/20">
+                        {settings?.branding?.logo_url ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img src={settings.branding.logo_url} alt="Logo" className="h-full w-full object-contain p-2" />
+                        ) : (
+                            <Lock className="h-6 w-6" />
+                        )}
                     </div>
-                    <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Administrative Portal</h1>
+                    <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">{settings?.store_info?.name || "Apex"} Portal</h1>
                     <p className="mt-2 text-sm text-slate-500 font-medium italic">
                         Authorized personnel only. Secure link established.
                     </p>

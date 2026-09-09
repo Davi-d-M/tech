@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { authenticateBiometrics } from '@/lib/biometricService';
+import { useSettings } from '@/lib/useSettings';
 
 export default function RiderLogin() {
     const router = useRouter();
+    const { settings } = useSettings();
     const [phone, setPhone] = React.useState('');
     const [pin, setPin] = React.useState('');
     const [loading, setLoading] = React.useState(false);
@@ -83,14 +85,19 @@ export default function RiderLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 selection:bg-primary/20 text-left">
             <div className="max-w-md w-full space-y-10 bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100 relative overflow-hidden">
                 <div className="text-center space-y-4">
-                    <div className="mx-auto h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
-                        <Truck className="h-8 w-8" />
+                    <div className="mx-auto h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20 overflow-hidden">
+                        {settings?.branding?.logo_url ? (
+                            /* eslint-disable-next-line @next/next/no-img-element */
+                            <img src={settings.branding.logo_url} alt="Logo" className="h-full w-full object-contain p-2" />
+                        ) : (
+                            <Truck className="h-8 w-8" />
+                        )}
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">Fleet Portal</h1>
+                        <h1 className="text-3xl font-black text-foreground uppercase tracking-tighter">{settings?.store_info?.name || "Apex"} Fleet</h1>
                         <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mt-2">Logistics Access Hub</p>
                     </div>
                 </div>

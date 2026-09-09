@@ -46,8 +46,8 @@ export default function LeadGenerator({ affiliateId }: { affiliateId: string }) 
             if (error) throw error;
             alert("Lead Captured! Our sales team will follow up and attribute any sale to you. 🚀");
             setForm({ customer_name: '', customer_phone: '', product_id: '', budget: '', notes: '' });
-        } catch (err: any) {
-            alert(err.message);
+        } catch (err: unknown) {
+            alert(err instanceof Error ? err.message : "An unexpected error occurred.");
         } finally {
             setLoading(false);
         }

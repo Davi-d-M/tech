@@ -1,35 +1,35 @@
-# Implementation Plan - Secure Partner Node & Stealth Refinement 🛡️🤫
+# Implementation Plan - Dynamic Brand Identity & Partner Security 🛡️🎨✨
 
-This plan cloaks the Administrative Portal from public view and provides a streamlined experience for Riders, while keeping the high-level tools exclusive to the Master Owner and authorized staff.
+This plan makes the "Free Shipping" message adjustable from the Admin panel and ensures consistent brand identity (Logo & Info) across all portals while maintaining elite security.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Stealth Entry**: The `/apex-portal` will now return a **404 Page Not Found** to anyone who is not authorized. To access the login screen, you (David) must visit the secret URL: `/apex-portal/davidmaganga130`.
-> **Rider Simplification**: Riders who visit the portal will see a generic "Partner Hub" with a prominent link to the Fleet Portal, hiding all mentions of "Admin" or "Management".
+> **Dynamic Messaging**: The "Free shipping over KSh 50" text will now be editable in the **Brand OS (Settings)** under the **Operations** tab.
+> **Unified Branding**: I will update the Rider, Merchant, and Admin portals to display your custom logo and store name automatically.
+> **Security Lockdown**: The secret admin access link (`/apex-portal/davidmaganga130`) remains the ONLY way to unlock administrative tools, ensuring no unauthorized access.
 
 ## Proposed Changes
 
-### 1. Security Middleware (`middleware.ts`) 🛡️
-- [MODIFY] Add `/apex-portal` to the `config.matcher`. This ensures the page is hidden (404) from unauthorized visitors by default.
-- [MODIFY] Refine the 404 bypass logic to ensure the Master Owner secret (`davidmaganga130`) works reliably.
+### 1. Global Settings Refinement (`lib/useSettings.ts` & `AdminSettingsPage`) ⚙️
+- [MODIFY] Add `free_shipping_message` to the **Logistics/Shipping** settings group.
+- [MODIFY] Add a new input field in the Admin Settings (Operations tab) to allow David to edit this message.
 
-### 2. Administrative Portal UI (`app/apex-portal/page.tsx`) 🚪
-- [MODIFY] Conditionally render the "Administrative Portal" box.
-- [NEW] Default View: If not specifically "unlocked", show a minimal "Apex Partner Node" with a large "Logistics Fleet Access" button for riders.
-- [NEW] Admin View: Only reveal the PIN and Staff login tabs if the URL segment `davidmaganga130` is present.
+### 2. Dynamic Promotional Text (`components/cart/EmptyCart.tsx`) 🛒
+- [MODIFY] Replace the hardcoded "Free shipping over KSh 50" with the dynamic setting from Supabase.
 
-### 3. Ghost Paths Config (`lib/ghost/paths.ts`) 👻
-- [VERIFY] Ensure `/apex-portal` is correctly flagged as a hidden path while allowing `/rider/login` to remain public.
+### 3. Unified Portal Branding (`app/apex-portal`, `app/rider/login`, `app/supplier/login`) 🏢
+- [MODIFY] Update all login portals to fetch global settings.
+- [MODIFY] Replace generic icons with the official **Store Logo** and **Store Name** from the database.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure no route collisions or build errors.
+- Run `npm run build` to ensure settings fetching across different routes doesn't break production builds.
 
 ### Manual Verification
-1. **Stealth Test**: Visit `yourdomain.com/apex-portal` in an incognito tab. It should show the standard 404 page.
-2. **Master Test**: Visit `yourdomain.com/apex-portal/davidmaganga130`. The Admin PIN and Staff Login should appear.
-3. **Rider Test**: Ensure the "Rider Portal" link on the secret page leads to the Fleet Login without any admin distractions.
+1. **Settings Test**: Change the "Free Shipping" message in Admin Settings -> Save -> Verify it updates in the Empty Cart view.
+2. **Branding Test**: Upload a new logo in Admin Settings -> Verify it appears on the Main Header, Admin Portal, Rider Portal, and Merchant Portal.
+3. **Security Check**: Attempt to access `/admin` or `/apex-portal` PIN/Staff tabs from an incognito window. They should remain hidden (404) or show the generic "Partner Hub" without admin buttons.

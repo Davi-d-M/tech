@@ -24,10 +24,10 @@ export function ghost(key: keyof typeof PATH_MAP): string {
  */
 export function isGhostPath(pathname: string): boolean {
     // Hidden paths that require ghost_access cookie
-    const hidden = ['/admin', '/supplier', '/apex-portal', '/gateway'];
+    const hidden = ['/admin', '/supplier', '/gateway'];
 
     // EXCEPTIONS: Allow public access to login screens for Suppliers and Riders
-    const publicLogins = ['/supplier/login', '/rider/login'];
+    const publicLogins = ['/supplier/login', '/rider/login', '/apex-portal'];
 
     if (publicLogins.some(p => pathname.startsWith(p))) {
         return false;

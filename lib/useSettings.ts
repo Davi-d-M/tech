@@ -33,6 +33,7 @@ export interface StoreSettings {
         nairobi_outskirts: number;
         upcountry_label: string;
         upcountry: number;
+        free_shipping_message?: string;
     };
     logistics: {
         dispatch_zones: string[];
@@ -128,7 +129,8 @@ const DEFAULT_SETTINGS: StoreSettings = {
         nairobi_outskirts_label: "Nairobi Outskirts",
         nairobi_outskirts: 300,
         upcountry_label: "Upcountry / Major Towns",
-        upcountry: 500
+        upcountry: 500,
+        free_shipping_message: "Free shipping over KSh 10,000"
     },
     logistics: {
         dispatch_zones: ["CBD", "Westlands", "Kilimani", "Lavington", "Kileleshwa", "Karen", "Langata", "South C", "South B", "Embakasi", "Roysambu", "Kasarani", "Kahawa", "Githurai", "Zimmerman", "Utawala", "Syokimau", "Kitengela", "Rongai", "Ngong", "Kikuyu", "Thika Road", "Mombasa Road"],

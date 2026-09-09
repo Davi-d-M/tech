@@ -46,7 +46,7 @@ const DEFAULTS = {
     contact: { whatsapp: "254769345599", email: "support@apexstores.com", address: "Nairobi, Kenya" },
     branding: { owner_name: "Apex Master", portfolio_url: "https://apexstores.co.ke", hero_title: "Future Sound. Total Power.", hero_subtitle: "Experience authentic tech engineered for excellence.", logo_url: "", favicon_url: "" },
     homepage: { hero_image_url: "", hero_starting_price: 4500, hero_badge_text: "The New Era of Tech is Here", hero_visual_label: "Apex Premium Series" },
-    shipping: { nairobi_cbd_label: "Nairobi CBD / Local", nairobi_cbd: 0, nairobi_outskirts_label: "Nairobi Outskirts", nairobi_outskirts: 300, upcountry_label: "Upcountry / Major Towns", upcountry: 500 },
+    shipping: { nairobi_cbd_label: "Nairobi CBD / Local", nairobi_cbd: 0, nairobi_outskirts_label: "Nairobi Outskirts", nairobi_outskirts: 300, upcountry_label: "Upcountry / Major Towns", upcountry: 500, free_shipping_message: "Free shipping over KSh 10,000" },
     logistics: { dispatch_zones: ["CBD", "Westlands", "Kilimani", "Lavington", "Kileleshwa", "Karen", "Langata", "South C", "South B", "Embakasi", "Roysambu", "Kasarani", "Kahawa", "Githurai", "Zimmerman", "Utawala", "Syokimau", "Kitengela", "Rongai", "Ngong", "Kikuyu", "Thika Road", "Mombasa Road"] },
     catalog: { categories: [{ id: 'airpods', label: 'Premium Audio' }, { id: 'chargers', label: 'Super Chargers' }, { id: 'cases', label: 'Cases' }, { id: 'watches', label: 'Watches' }, { id: 'accessories', label: 'Others' }] },
     promotions: { flash_sale_text: 'Flash Sale: 20% OFF All Tech!', discount_percent: 20, is_active: true, flash_sale_end: '' },
@@ -810,6 +810,15 @@ export default function AdminSettingsPage() {
                                                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Upcountry Fee</label>
                                                 <Input type="number" value={shipping.upcountry} onChange={e => setShipping({...shipping, upcountry: Number(e.target.value)})} className="rounded-xl h-12 bg-secondary border-border font-black text-foreground" />
                                             </div>
+                                        </div>
+                                        <div className="space-y-1 mt-2">
+                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Promo Message (e.g. Free Shipping)</label>
+                                            <Input
+                                                value={shipping.free_shipping_message || ''}
+                                                onChange={e => setShipping({...shipping, free_shipping_message: e.target.value})}
+                                                className="rounded-xl h-12 bg-secondary border-border font-bold text-primary italic"
+                                                placeholder="e.g. Free shipping over KSh 5,000"
+                                            />
                                         </div>
                                     </div>
                                 </div>
