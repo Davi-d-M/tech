@@ -23,9 +23,22 @@ export async function middleware(request: NextRequest) {
 
   // GHOST PROTOCOL: Check for Cloak Access
   const ghostCookie = request.cookies.get('ghost_access')?.value;
-  const isMasterOwner = pathname.includes('davidmaganga130'); // Stealth bypass hint
+  const isMasterEntry = pathname === '/apex-portal/davidmaganga130';
 
-  if (isGhostPath(pathname) && !isMasterOwner) {
+  if (isMasterEntry) {
+      // Rewrite to the real portal page silently with an internal flag
+      const response = NextResponse.rewrite(new URL('/apex-portal?secret=true', request.url));
+      // Set the ghost protocol cookie so David can see everything
+      response.cookies.set('ghost_access', 'authorized', {
+          path: '/',
+          maxAge: 60 * 60 * 24, // 24 Hours
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production'
+      });
+      return response;
+  }
+
+  if (isGhostPath(pathname)) {
       if (ghostCookie !== 'authorized') {
           return NextResponse.rewrite(new URL('/404', request.url));
       }
