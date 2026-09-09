@@ -27,11 +27,11 @@ export async function middleware(request: NextRequest) {
   const isMasterAdminEntry = pathname === '/admin/davidmaganga130';
 
   if (isMasterPortalEntry || isMasterAdminEntry) {
-      // Rewrite to the appropriate page silently with an internal flag
+      // REDIRECT to the portal with an 'unlocked' state
       const target = isMasterPortalEntry ? '/apex-portal?secret=true' : '/admin';
-      const response = NextResponse.rewrite(new URL(target, request.url));
+      const response = NextResponse.redirect(new URL(target, request.url));
 
-      // Set the ghost protocol cookie so David can see everything
+      // Force-set the ghost protocol cookie so David is recognized instantly
       response.cookies.set('ghost_access', 'authorized', {
           path: '/',
           maxAge: 60 * 60 * 24, // 24 Hours
@@ -61,8 +61,12 @@ export async function middleware(request: NextRequest) {
       const sessionData = await verifySessionCookie(sessionCookie);
 
       if (!sessionData) {
-        // STEALTH: Admin/Staff stay cloaked (404)
+        // STEALTH: Admin/Staff stay cloaked (404) unless they have used the secret key
         if (isAdminPath) {
+          if (ghostCookie === 'authorized') {
+            // They know the secret, but aren't signed in. Redirect to portal login.
+            return NextResponse.redirect(new URL('/apex-portal', request.url));
+          }
           return NextResponse.rewrite(new URL('/404', request.url));
         }
         // RIDER & SUPPLIER: Easy access redirect

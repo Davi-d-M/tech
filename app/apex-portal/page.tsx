@@ -48,9 +48,11 @@ function AdminLoginContent() {
       const magicKey = searchParams.get('key');
       const secretFlag = searchParams.get('secret');
 
-      // Check if unlocked via secret URL segment
+      // Check if unlocked via secret URL segment, session, or cookie
       const masterKey = settings?.globals?.portal_security?.master_entry_key || 'davidmaganga130';
-      if (secretFlag === 'true' || window.location.pathname.endsWith(masterKey)) {
+      const hasGhostAccess = typeof document !== 'undefined' && document.cookie.includes('ghost_access=authorized');
+
+      if (secretFlag === 'true' || window.location.pathname.endsWith(masterKey) || hasGhostAccess) {
           setIsUnlocked(true);
       }
 

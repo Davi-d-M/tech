@@ -1,40 +1,32 @@
-# Implementation Plan - Unified Branding & Advanced Portal Security 🛡️🎨✨
+# Implementation Plan - Master Access & Stealth Refinement 🛡️👑✨
 
-This plan standardizes the identity across all partner portals (Admin, Rider, Supplier) and makes key marketing messages (like Free Shipping) fully adjustable from your dashboard.
+I will fix the 404 issues David is experiencing by refining the Middleware logic. We will ensure the secret link works reliably and that authorized users are guided to the login portal instead of seeing a 404 on administrative pages.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Dynamic Portals**: I am moving the "Magic Entry Link" and Portal titles into the database. You will be able to change your secret entry link (e.g., from `/apex-portal/davidmaganga130` to something else) directly from the settings.
-> **Consistency**: The login screens for Riders and Suppliers will now match the Admin Portal's professional look, featuring your official logo and brand info automatically.
+> **Secret Link Change**: To ensure the link works every time, visiting `/apex-portal/davidmaganga130` will now **redirect** you to the login page and "unlock" the system for 24 hours.
+> **Smart Stealth**: If a stranger tries to go to `/admin`, they will see a **404**. But if YOU (who know the secret) go to `/admin`, you will be redirected to the login page instead of seeing a 404, as long as you've unlocked the system recently.
 
 ## Proposed Changes
 
-### 1. Global Settings Expansion (`lib/useSettings.ts`) ⚙️
-- [MODIFY] Add `portal_title`, `portal_description`, and `master_entry_key` to the settings schema.
-- [MODIFY] Ensure `free_shipping_message` is globally available for all components.
+### 1. Security Middleware (`middleware.ts`) 🛡️
+- [MODIFY] **Unlock Logic**: Change the secret link handler from `rewrite` to `redirect`. This is more reliable across different hosting environments (like Render) and ensures cookies are set correctly.
+- [MODIFY] **Smart Routing**:
+    - If a user visits `/admin` (or other protected paths) and is **NOT** authorized via the "Ghost Protocol", show a **404**.
+    - If they **ARE** authorized (visited the secret link) but not logged in, redirect them to the **Login Portal** instead of showing a 404.
 
-### 2. Admin Settings UI (`app/admin/(dashboard)/settings/page.tsx`) 👔
-- [NEW] **Portal Security** tab:
-    - Edit the "Magic Access Key" (the secret part of your admin URL).
-    - Edit the Portal names and descriptions that appear on the login screens.
-- [MODIFY] **Operations** tab: Improve visibility of the "Promo Message" (Free Shipping) field.
-
-### 3. Unified Login Framework (`app/apex-portal`, `app/rider/login`, `app/supplier/login`) 🚪
-- [NEW] `components/layout/UnifiedPortalBox.tsx`: A shared component to ensure the login UI is identical for staff, riders, and suppliers (standardized logo, background, and fonts).
-- [MODIFY] Update all three routes to use this dynamic component.
-
-### 4. Security Middleware (`middleware.ts`) 🛡️
-- [MODIFY] Update the "Ghost Protocol" to fetch the `master_entry_key` from the database (cached) instead of having it hardcoded, making your secret link truly dynamic.
+### 2. Administrative Portal (`app/apex-portal/page.tsx`) 🚪
+- [MODIFY] Ensure the "Admin" view remains visible if the `ghost_access` cookie is present, even if the `secret=true` flag is missing from the URL.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure the dynamic settings fetch doesn't slow down the middleware or portal loading.
+- Run `npm run build` to verify no breaking changes in the build pipeline.
 
 ### Manual Verification
-1. **Dynamic Messaging**: Change "Free Shipping" in Admin -> Verify it updates in the Cart.
-2. **Unified Look**: Check `/apex-portal`, `/rider/login`, and `/supplier/login`. They should all show the same Logo and professional "Apex Team" style.
-3. **Secret Link Change**: Change the "Magic Key" in settings -> Verify the old link returns 404 and the new link unlocks the panel.
+1. **Unlocking**: Visit `yourdomain.com/apex-portal/davidmaganga130`. It should redirect to `/apex-portal` and show the Admin PIN / Staff Login tabs.
+2. **Persistence**: After unlocking, visit `yourdomain.com/admin`. It should show the Login Portal (since you're not signed into the management session yet) instead of a 404.
+3. **Stealth**: Open an incognito tab and visit `yourdomain.com/admin`. It should show a 404.
