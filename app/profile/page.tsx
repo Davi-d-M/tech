@@ -175,6 +175,8 @@ export default function ProfilePage() {
   const [isPickingLocation, setIsPickingLocation] = useState(false);
   const [isRiderAccount, setIsRiderAccount] = useState(false);
   const [isSupplierAccount, setIsSupplierAccount] = useState(false);
+  const [isAdminAccount, setIsAdminAccount] = useState(false);
+  const [staffRole, setStaffRole] = useState<string | null>(null);
 
   // Profile Edit State
   const [isEditing, setIsEditing] = useState(false);
@@ -256,13 +258,14 @@ export default function ProfilePage() {
 
       // Fetch Devices & Achievements (New Infrastructure)
       if (supabase) {
-          const [devicesRes, achievementsRes, warrantiesRes, serviceRes, riderRes, supplierRes] = await Promise.all([
+          const [devicesRes, achievementsRes, warrantiesRes, serviceRes, riderRes, supplierRes, staffRes] = await Promise.all([
               supabase.from('user_devices').select('*').eq('user_id', session.user.id),
               supabase.from('user_achievements').select('*').eq('user_id', session.user.id),
               supabase.from('warranties').select('*').eq('user_id', session.user.id),
               supabase.from('support_tickets').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }),
               supabase.from('rider_status').select('rider_phone').eq('rider_phone', normalizePhone(profileData?.phone_number || '')).maybeSingle(),
-              supabase.from('suppliers').select('email').eq('email', session.user.email || '').maybeSingle()
+              supabase.from('suppliers').select('email').eq('email', session.user.email || '').maybeSingle(),
+              supabase.from('staff').select('role').eq('id', session.user.id).maybeSingle()
           ]);
           setDevices(devicesRes.data || []);
           setAchievements(achievementsRes.data || []);
@@ -270,6 +273,10 @@ export default function ProfilePage() {
           setServiceRequests(serviceRes.data || []);
           setIsRiderAccount(!!riderRes.data);
           setIsSupplierAccount(!!supplierRes.data);
+
+          const isMaster = session.user.email === 'davidmaganga130@gmail.com';
+          setIsAdminAccount(!!staffRes.data || isMaster);
+          setStaffRole(staffRes.data?.role || (isMaster ? 'owner' : null));
 
           // Real data only
           setCoupons([]);
@@ -1099,6 +1106,34 @@ export default function ProfilePage() {
                     )}
                 </section>
 
+                {/* 🛡️ ADMINISTRATIVE HUB (Conditional Visibility) */}
+                {isAdminAccount && (
+                    <Card className="p-8 rounded-[3rem] bg-white border border-primary/20 relative overflow-hidden group hover:shadow-2xl transition-all shadow-sm">
+                        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-8">
+                            <div className="flex items-center gap-6 text-left flex-1">
+                                <div className="h-16 w-16 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary shadow-inner border border-primary/20 group-hover:rotate-6 transition-transform">
+                                    <ShieldCheck className="h-8 w-8" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter text-foreground">Management Console</h3>
+                                    <p className="text-slate-500 text-xs font-medium italic mt-1 leading-relaxed">
+                                        &quot;System-level access authorized. Manage inventory, orders, and staff from the central command center.&quot;
+                                    </p>
+                                    <span className="inline-block px-2 py-0.5 bg-primary/5 text-primary text-[8px] font-black uppercase rounded mt-2 border border-primary/10">
+                                        Role: {staffRole || 'Authorized'}
+                                    </span>
+                                </div>
+                            </div>
+                            <Link href="/admin">
+                                <Button className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase text-[11px] tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all whitespace-nowrap">
+                                    Enter Command Center
+                                </Button>
+                            </Link>
+                        </div>
+                        <Zap className="absolute -bottom-10 -right-10 h-64 w-64 text-primary/5 rotate-12 -z-0" />
+                    </Card>
+                )}
+
                 {/* 🏆 AFFILIATE PROGRAM (Conditional Visibility) */}
                 {(profile?.can_see_affiliate_offers || profile?.referral_code) && (
                     <Card className="p-8 rounded-[3rem] bg-white border border-primary/20 relative overflow-hidden group hover:shadow-2xl transition-all shadow-sm">
@@ -1125,7 +1160,7 @@ export default function ProfilePage() {
                 )}
 
                 {/* 💼 PARTNER NETWORK (Conditional Visibility) */}
-                {(isRiderAccount || isSupplierAccount || profile?.can_see_partner_offers) && (
+                {(isRiderAccount || isSupplierAccount || profile?.can_see_partner_offers || isAdminAccount) && (
                     <section className="space-y-6 pt-10 border-t border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><Briefcase className="h-5 w-5" /></div>
@@ -1148,7 +1183,7 @@ export default function ProfilePage() {
                                             </p>
                                         </div>
                                         <Link href={isRiderAccount ? "/rider/dashboard" : "/rider/onboarding"}>
-                                            <Button className="w-full h-12 rounded-xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:bg-black transition-all">
+                                            <Button className="w-full h-12 rounded-xl bg-primary text-white font-black uppercase text-[10px] tracking-widest hover:bg-primary/90 transition-all">
                                                 {isRiderAccount ? "Launch Dashboard" : "Start Onboarding"}
                                             </Button>
                                         </Link>

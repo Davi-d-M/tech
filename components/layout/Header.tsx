@@ -4,7 +4,7 @@ import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { getLocalSession } from "@/lib/localAuth";
 import { supabase } from "../../lib/supabaseClient";
-import { Menu, Search, ShoppingCart, Heart, X, Smartphone, Zap, Package, User as UserIcon, Bell, CheckCircle, ChevronRight, History, ArrowRight } from "lucide-react";
+import { Menu, Search, ShoppingCart, Heart, X, Smartphone, Zap, Package, User as UserIcon, Bell, CheckCircle, ChevronRight, History, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
@@ -27,11 +27,15 @@ interface RecentView {
 function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
   const [displayEmail, setDisplayEmail] = useState<string | null>(null);
   const [points, setPoints] = useState<number | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, email: string) => {
       if (!supabase) return;
-      const { data } = await supabase.from('profiles').select('loyalty_points').eq('id', userId).limit(1).maybeSingle();
-      if (data) setPoints(data.loyalty_points);
+      const { data: profile } = await supabase.from('profiles').select('loyalty_points').eq('id', userId).limit(1).maybeSingle();
+      if (profile) setPoints(profile.loyalty_points);
+
+      const { data: staff } = await supabase.from('staff').select('role').eq('id', userId).maybeSingle();
+      setIsAdmin(!!staff || email === 'davidmaganga130@gmail.com');
   };
 
   useEffect(() => {
@@ -45,7 +49,7 @@ function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (isMounted && session) {
         setDisplayEmail(session.user.email ?? null);
-        fetchProfile(session.user.id);
+        fetchProfile(session.user.id, session.user.email || '');
       }
     });
 
@@ -55,9 +59,10 @@ function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
       if (isMounted) {
         setDisplayEmail(session?.user?.email ?? null);
         if (session) {
-            fetchProfile(session.user.id);
+            fetchProfile(session.user.id, session.user.email || '');
         } else {
             setPoints(null);
+            setIsAdmin(false);
         }
       }
     });
@@ -83,9 +88,19 @@ function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
                   {displayEmail?.split('@')?.[0] || 'Member'}
                 </span>
                 {points !== null && (
-                    <Link href="/rewards" className="text-[8px] font-black text-primary uppercase tracking-tighter flex items-center gap-0.5 mt-0.5 hover:underline">
-                        <Zap className="h-2 w-2 fill-current" /> {(points || 0).toLocaleString()} PTS
-                    </Link>
+                    <div className="flex items-center gap-2 mt-1">
+                        <Link href="/rewards" className="text-[8px] font-black text-primary uppercase tracking-tighter flex items-center gap-0.5 hover:underline">
+                            <Zap className="h-2 w-2 fill-current" /> {(points || 0).toLocaleString()} PTS
+                        </Link>
+                        {isAdmin && (
+                            <>
+                                <span className="text-[8px] text-slate-300">•</span>
+                                <Link href="/admin" className="text-[8px] font-black text-indigo-500 uppercase tracking-tighter hover:underline flex items-center gap-0.5">
+                                    <ShieldCheck className="h-2 w-2" /> Admin
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 )}
             </div>
         </Link>
