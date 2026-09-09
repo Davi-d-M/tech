@@ -143,7 +143,7 @@ export default function LiveDispatchMap({ riders, demandZones = [], warehouses =
             </Marker>
         ))}
 
-        {riders.map((rider) => (
+        {riders.filter(r => r.lat && r.lng).map((rider) => (
           <React.Fragment key={rider.id}>
             {/* 🏎️ Animated Route Pathing (Delivering Only) */}
             {rider.status === 'Delivering' && rider.lat && rider.lng && rider.target_lat && rider.target_lng && (
@@ -161,8 +161,8 @@ export default function LiveDispatchMap({ riders, demandZones = [], warehouses =
 
             <Marker
                 position={[
-                    rider.lat || -1.286389,
-                    rider.lng || 36.817223
+                    rider.lat!,
+                    rider.lng!
                 ]}
                 icon={createRiderIcon(rider.status)}
                 eventHandlers={{

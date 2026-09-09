@@ -178,7 +178,9 @@ export default function ApexIntelligence2() {
                                     <p className="text-[10px] font-black uppercase text-primary">Profit Optimization</p>
                                 </div>
                                 <p className="text-xs font-bold text-slate-600 leading-relaxed italic relative z-10">
-                                    &quot;Supplier B has lowered cost by 4.2%. Adjust procurement allocation to maintain 14% target margin.&quot;
+                                    {data.growth > 0
+                                        ? `"Revenue growth of ${data.growth}% detected. Maintaining current target margins to capitalize on volume velocity."`
+                                        : `"Volume stabilized. Optimizing procurement allocation to maintain target margins during current cycle."`}
                                 </p>
                                 <Sparkles className="absolute -bottom-4 -right-4 h-16 w-16 text-primary/10 rotate-12" />
                             </div>
@@ -188,7 +190,9 @@ export default function ApexIntelligence2() {
                                     <p className="text-[10px] font-black uppercase text-indigo-500">Retention Strategy</p>
                                 </div>
                                 <p className="text-xs font-bold text-slate-600 leading-relaxed italic">
-                                    &quot;{data.atRiskCustomers} high-value customers are dormant. Initialize Re-Engagement Campaign C89.&quot;
+                                    {data.atRiskCustomers > 0
+                                        ? `"${data.atRiskCustomers} high-value customers show abandoned carts. Recommend initializing VIP re-engagement campaign."`
+                                        : `"Customer retention cycle healthy. High-value member activity within nominal range."`}
                                 </p>
                             </div>
                         </div>

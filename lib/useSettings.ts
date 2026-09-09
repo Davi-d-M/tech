@@ -37,7 +37,7 @@ export interface StoreSettings {
     };
     logistics: {
         dispatch_zones: string[];
-        warehouses: { id: string; name: string; city: string }[];
+        warehouses: { id: string; name: string; city: string; lat: number; lng: number; health: number }[];
     };
     theme_config: {
         primary: string;
@@ -142,10 +142,9 @@ const DEFAULT_SETTINGS: StoreSettings = {
     logistics: {
         dispatch_zones: ["CBD", "Westlands", "Kilimani", "Lavington", "Kileleshwa", "Karen", "Langata", "South C", "South B", "Embakasi", "Roysambu", "Kasarani", "Kahawa", "Githurai", "Zimmerman", "Utawala", "Syokimau", "Kitengela", "Rongai", "Ngong", "Kikuyu", "Thika Road", "Mombasa Road"],
         warehouses: [
-            { id: 'all', name: 'Global Network', city: 'All' },
-            { id: 'nairobi', name: 'Nairobi Central Hub', city: 'Nairobi' },
-            { id: 'mombasa', name: 'Mombasa Port Node', city: 'Mombasa' },
-            { id: 'kisumu', name: 'Kisumu Tech Base', city: 'Kisumu' }
+            { id: 'nairobi', name: 'Nairobi Central Hub', city: 'Nairobi', lat: -1.286389, lng: 36.817223, health: 92 },
+            { id: 'mombasa', name: 'Mombasa Port Node', city: 'Mombasa', lat: -4.043477, lng: 39.668206, health: 85 },
+            { id: 'kisumu', name: 'Kisumu Tech Base', city: 'Kisumu', lat: -0.102213, lng: 34.761714, health: 78 }
         ]
     },
     theme_config: {

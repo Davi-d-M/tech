@@ -104,7 +104,7 @@ export default function AdminDispatchPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRider, setSelectedRider] = useState<Rider | null>(null);
-    const [demandZones, setDemandZones] = useState<{ lat: number, lng: number, intensity: number }[]>([]);
+    const [demandZones, setDemandZones] = useState<{ lat: number, lng: number, intensity: number, label?: string }[]>([]);
     const [assigning, setAssigning] = useState<number | null>(null);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -126,7 +126,7 @@ export default function AdminDispatchPage() {
 
             const { data: signalsData } = await supabase
                 .from('user_signals')
-                .select('metadata')
+                .select('metadata, url')
                 .not('metadata->geo_hint', 'is', null)
                 .gte('created_at', new Date(Date.now() - 3600000).toISOString()); // Last hour
 
@@ -146,12 +146,19 @@ export default function AdminDispatchPage() {
             });
 
             // Extract geo_hints for Heatmap
-            const zones: Record<string, { lat: number, lng: number, intensity: number }> = {};
+            const zones: Record<string, { lat: number, lng: number, intensity: number, label?: string }> = {};
             signalsData?.forEach(s => {
                 const hint = (s.metadata as { geo_hint?: { lat: number, lng: number } })?.geo_hint;
                 if (hint) {
                     const key = `${hint.lat.toFixed(3)},${hint.lng.toFixed(3)}`;
-                    if (!zones[key]) zones[key] = { lat: hint.lat, lng: hint.lng, intensity: 0 };
+                    if (!zones[key]) {
+                        zones[key] = {
+                            lat: hint.lat,
+                            lng: hint.lng,
+                            intensity: 0,
+                            label: s.url?.includes('product') ? 'Shopping Focus' : 'Browsing'
+                        };
+                    }
                     zones[key].intensity += 1;
                 }
             });
@@ -571,17 +578,25 @@ export default function AdminDispatchPage() {
                             <h3 className="text-xl font-black uppercase tracking-tighter text-foreground">Warehouse Intel</h3>
                         </div>
                         <div className="space-y-4">
-                            <p className="text-[10px] text-muted-foreground font-medium italic">
-                                &quot;Analyzing heat-map density... Nairobi North shows 40% higher browsing activity. I recommend diverting 20% of Mombasa stocks to Nairobi Central to optimize extraction speed.&quot;
+                            <p className="text-[10px] text-muted-foreground font-medium italic leading-relaxed">
+                                {demandZones.length > 0 ? (
+                                    `"Intelligence Node: ${demandZones.length} demand clusters detected. Total fleet health at ${stats.avgHealth}%. Optimize standby positions to minimize extraction lag."`
+                                ) : (
+                                    `"Logistics Grid stable. Zero critical hotspots detected in the last hour. Maintaining current orbital fleet configuration."`
+                                )}
                             </p>
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="p-4 bg-white rounded-2xl border border-border">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase">Top Demand</p>
-                                    <p className="text-xs font-black text-foreground">Nairobi West</p>
+                                    <p className="text-[8px] font-black text-slate-400 uppercase">Top Intensity</p>
+                                    <p className="text-xs font-black text-foreground">
+                                        {demandZones.sort((a,b) => b.intensity - a.intensity)[0]?.label || 'Standard'}
+                                    </p>
                                 </div>
                                 <div className="p-4 bg-white rounded-2xl border border-border">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase">Stock Health</p>
-                                    <p className="text-xs font-black text-emerald-500">92% Balanced</p>
+                                    <p className="text-[8px] font-black text-slate-400 uppercase">Fleet Health</p>
+                                    <p className={cn("text-xs font-black", stats.avgHealth > 80 ? "text-emerald-500" : "text-amber-500")}>
+                                        {stats.avgHealth}% Nominal
+                                    </p>
                                 </div>
                             </div>
                         </div>

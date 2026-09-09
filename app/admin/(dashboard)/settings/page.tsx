@@ -172,6 +172,8 @@ export default function AdminSettingsPage() {
     const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
     const [heroPreview, setHeroPreview] = useState<string | null>(null);
 
+    const [systemPulse, setSystemPulse] = useState({ products: 0, orders: 0, lastUpdate: '' });
+
     const logoInputRef = useRef<HTMLInputElement>(null);
     const faviconInputRef = useRef<HTMLInputElement>(null);
     const heroInputRef = useRef<HTMLInputElement>(null);
@@ -182,7 +184,9 @@ export default function AdminSettingsPage() {
         try {
             const { data } = await supabase.from('settings').select('*');
             if (data && data.length > 0) {
-                data.forEach((item: { key: string; value: unknown }) => {
+                let newestTimestamp = '';
+                data.forEach((item: { key: string; value: unknown; updated_at?: string }) => {
+                    if (item.updated_at && (!newestTimestamp || item.updated_at > newestTimestamp)) newestTimestamp = item.updated_at;
                     if (item.key === 'contact') setContact(item.value as typeof DEFAULTS.contact);
                     if (item.key === 'branding') {
                         setBranding(item.value as typeof DEFAULTS.branding);
@@ -211,6 +215,17 @@ export default function AdminSettingsPage() {
                     if (item.key === 'content') setContent(item.value as typeof DEFAULTS.content);
                     if (item.key === 'social_apis') setSocialApis(item.value as SocialApis);
                     if (item.key === 'features') setFeatures(item.value as FeatureToggles);
+                });
+
+                // Fetch Counts for Pulse
+                const [prodCount, ordCount] = await Promise.all([
+                    supabase.from('products').select('*', { count: 'exact', head: true }),
+                    supabase.from('orders').select('*', { count: 'exact', head: true })
+                ]);
+                setSystemPulse({
+                    products: prodCount.count || 0,
+                    orders: ordCount.count || 0,
+                    lastUpdate: newestTimestamp ? new Date(newestTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Never'
                 });
             }
         } catch (err) {
@@ -1499,22 +1514,22 @@ export default function AdminSettingsPage() {
 
                             <div className="space-y-6 text-left">
                                 <div className="flex justify-between items-center border-b border-border pb-4 text-left">
-                                    <span className="text-[9px] font-black uppercase text-muted-foreground">Version</span>
-                                    <span className="text-xs font-black text-foreground">v2.5.0</span>
+                                    <span className="text-[9px] font-black uppercase text-muted-foreground">Catalog Depth</span>
+                                    <span className="text-xs font-black text-foreground">{systemPulse.products} SKUs</span>
                                 </div>
                                 <div className="flex justify-between items-center border-b border-border pb-4 text-left">
-                                    <span className="text-[9px] font-black uppercase text-muted-foreground">Cloud Storage</span>
-                                    <span className="text-xs font-black text-foreground">68% Capacity</span>
+                                    <span className="text-[9px] font-black uppercase text-muted-foreground">Global Volume</span>
+                                    <span className="text-xs font-black text-foreground">{systemPulse.orders} Extraction Units</span>
                                 </div>
                                 <div className="flex justify-between items-center pb-2 text-left">
-                                    <span className="text-[9px] font-black uppercase text-muted-foreground">Active Themes</span>
-                                    <span className="text-xs font-black text-primary">Platinum Light</span>
+                                    <span className="text-[9px] font-black uppercase text-muted-foreground">Cloud Node</span>
+                                    <span className="text-xs font-black text-primary">Supabase • Production</span>
                                 </div>
                             </div>
 
                             <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 flex items-center gap-3 text-left">
                                 <Clock className="h-4 w-4 text-primary" />
-                                <p className="text-[8px] font-black uppercase text-muted-foreground">Last Published: Just now</p>
+                                <p className="text-[8px] font-black uppercase text-muted-foreground">Last Protocol Sync: {systemPulse.lastUpdate}</p>
                             </div>
                         </div>
                     </Card>

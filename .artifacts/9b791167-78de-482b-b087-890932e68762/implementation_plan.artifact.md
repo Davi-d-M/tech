@@ -1,32 +1,45 @@
-# Implementation Plan - Master Access & Stealth Refinement 🛡️👑✨
+# Implementation Plan - Data Precision & Accuracy Refinement 🛡️⚖️📉
 
-I will fix the 404 issues David is experiencing by refining the Middleware logic. We will ensure the secret link works reliably and that authorized users are guided to the login portal instead of seeing a 404 on administrative pages.
+This plan removes all hardcoded mock data (placeholders) and ensures that all administrative metrics, logistics dashboards, and system statuses reflect real-time database intelligence.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Secret Link Change**: To ensure the link works every time, visiting `/apex-portal/davidmaganga130` will now **redirect** you to the login page and "unlock" the system for 24 hours.
-> **Smart Stealth**: If a stranger tries to go to `/admin`, they will see a **404**. But if YOU (who know the secret) go to `/admin`, you will be redirected to the login page instead of seeing a 404, as long as you've unlocked the system recently.
+> **Warehouse Migration**: I am removing the hardcoded warehouse markers. From now on, only the warehouses you configure in **Admin Settings > Operations** will appear on your map. I've initialized your 3 existing hubs (Nairobi, Mombasa, Kisumu) into the settings database for you.
+> **AI Fluff Removal**: Hardcoded "Warehouse Intel" and "System Status" percentages are being replaced with real mathematical calculations based on your actual orders and system connectivity.
 
 ## Proposed Changes
 
-### 1. Security Middleware (`middleware.ts`) 🛡️
-- [MODIFY] **Unlock Logic**: Change the secret link handler from `rewrite` to `redirect`. This is more reliable across different hosting environments (like Render) and ensures cookies are set correctly.
-- [MODIFY] **Smart Routing**:
-    - If a user visits `/admin` (or other protected paths) and is **NOT** authorized via the "Ghost Protocol", show a **404**.
-    - If they **ARE** authorized (visited the secret link) but not logged in, redirect them to the **Login Portal** instead of showing a 404.
+### 1. Global Settings Expansion (`lib/useSettings.ts` & `AdminSettingsPage`) ⚙️
+- [MODIFY] **Logistics Schema**: Add `lat`, `lng`, and `health` fields to the `warehouses` configuration.
+- [NEW] **Warehouse Manager**: Add a UI in Admin Settings to allow you to move warehouses on the map or update their health levels manually.
 
-### 2. Administrative Portal (`app/apex-portal/page.tsx`) 🚪
-- [MODIFY] Ensure the "Admin" view remains visible if the `ghost_access` cookie is present, even if the `secret=true` flag is missing from the URL.
+### 2. Logistics Center Accuracy (`app/admin/(dashboard)/dispatch/page.tsx`) 🧠
+- [MODIFY] **Rider Precision**: Only render units on the map if they have transmitted real GPS coordinates. No more "ghost" riders sitting at Nairobi CBD by default.
+- [MODIFY] **Dynamic Intel**: Replace the hardcoded advice with a real-time demand analyzer.
+    - e.g., "Critical Demand detected in [Zone]. Nearest Warehouse health is [X%]. Deploying additional units recommended."
+
+### 3. Dashboard Integrity (`app/admin/(dashboard)/page.tsx`) 📊
+- [MODIFY] **System Health**: Calculate health based on:
+    - Supabase connectivity (50%)
+    - Success rate of last 10 orders (50%)
+- [MODIFY] **AI Brief**: Update `ApexIntelligence2` to use real variable names in its logic strings instead of static placeholders.
+
+### 4. Settings Sidebar Cleanup (`app/admin/(dashboard)/settings/page.tsx`) ⚙️
+- [MODIFY] Remove hardcoded "v2.5.0" and "68% Capacity" strings.
+- [NEW] Replace with **System Metadata**:
+    - Total Product Rows in Database.
+    - Total Order Volume.
+    - Real "Last Published" timestamp from the `settings` table.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to verify no breaking changes in the build pipeline.
+- Run `npm run build` to verify all dynamic data fetching is error-free.
 
 ### Manual Verification
-1. **Unlocking**: Visit `yourdomain.com/apex-portal/davidmaganga130`. It should redirect to `/apex-portal` and show the Admin PIN / Staff Login tabs.
-2. **Persistence**: After unlocking, visit `yourdomain.com/admin`. It should show the Login Portal (since you're not signed into the management session yet) instead of a 404.
-3. **Stealth**: Open an incognito tab and visit `yourdomain.com/admin`. It should show a 404.
+1. **Settings Verification**: Change a Warehouse Health Score in Settings -> Verify it updates on the Dispatch Map instantly.
+2. **Dashboard Accuracy**: Check the "Apex Daily Brief". It should now mention the actual number of "Inventory Risk" items you have.
+3. **Ghost Rider Check**: Log in as a rider without GPS permissions -> Verify they do NOT appear on the Admin map.

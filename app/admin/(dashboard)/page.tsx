@@ -203,6 +203,14 @@ export default function AdminDashboard() {
       });
   }, [orders]);
 
+  const systemHealth = React.useMemo(() => {
+    if (!supabase) return 0;
+    const recentOrders = orders.slice(0, 10);
+    if (recentOrders.length === 0) return 98; // Nominal startup health
+    const successCount = recentOrders.filter(o => o.status !== 'Cancelled' && o.status !== 'Payment Failed').length;
+    return 50 + (successCount / recentOrders.length) * 50;
+  }, [orders]);
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50dvh] gap-4">
@@ -224,9 +232,9 @@ export default function AdminDashboard() {
                   <div className="flex items-center gap-2">
                       <span className="text-[9px] font-black uppercase text-slate-400">System Status</span>
                       <div className="h-1.5 w-32 bg-slate-200 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-500 w-[91%]"></div>
+                          <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${systemHealth}%` }}></div>
                       </div>
-                      <span className="text-[10px] font-black text-emerald-500">91%</span>
+                      <span className="text-[10px] font-black text-emerald-500">{Math.round(systemHealth)}%</span>
                   </div>
               </div>
           </div>
