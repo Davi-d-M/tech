@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Tooltip, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { BatteryMedium, ChevronRight } from 'lucide-react';
+import { BatteryMedium, ChevronRight, Warehouse } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Circle } from 'react-leaflet';
 
 interface Rider {
     id: number | string;
@@ -61,13 +60,34 @@ const createRiderIcon = (status: string) => {
     });
 };
 
+interface Rider {
+    id: number | string;
+    lat?: number;
+    lng?: number;
+    status: string;
+    rider_name: string;
+    battery_level: number;
+    current_speed?: number;
+    target_lat?: number;
+    target_lng?: number;
+}
+
+interface Warehouse {
+    id: string;
+    name: string;
+    lat: number;
+    lng: number;
+    health: number;
+}
+
 interface LiveDispatchMapProps {
     riders: Rider[];
     demandZones?: DemandZone[];
+    warehouses?: Warehouse[];
     onSelectRider?: (rider: Rider) => void;
 }
 
-export default function LiveDispatchMap({ riders, demandZones = [], onSelectRider }: LiveDispatchMapProps) {
+export default function LiveDispatchMap({ riders, demandZones = [], warehouses = [], onSelectRider }: LiveDispatchMapProps) {
   useEffect(() => {
     fixLeafletIcons();
   }, []);
@@ -106,48 +126,80 @@ export default function LiveDispatchMap({ riders, demandZones = [], onSelectRide
             />
         ))}
 
-        {riders.map((rider) => (
-          <Marker
-            key={rider.id}
-            position={[
-                rider.lat || -1.286389,
-                rider.lng || 36.817223
-            ]}
-            icon={createRiderIcon(rider.status)}
-            eventHandlers={{
-                click: () => onSelectRider?.(rider)
-            }}
-          >
-            <Popup className="custom-leaflet-popup">
-              <div className="p-4 min-w-[200px] text-left space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-foreground text-xs font-black shadow-inner">
-                        {rider.rider_name.substring(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                        <h4 className="font-black text-foreground uppercase text-xs leading-none">{rider.rider_name}</h4>
-                        <p className={cn(
-                            "text-[9px] font-black uppercase mt-1",
-                            rider.status === 'Delivering' ? "text-primary" : "text-emerald-500"
-                        )}>{rider.status}</p>
-                    </div>
-                </div>
+        {/* 🏢 Warehouse Pulse Hubs */}
+        {warehouses.map((w) => (
+            <Marker
+                key={w.id}
+                position={[w.lat, w.lng]}
+                icon={L.divIcon({
+                    className: 'warehouse-icon',
+                    html: `<div style="background: white; border: 3px solid #5B5BFF; border-radius: 12px; padding: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5BFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M13 21V11l8-4v14"/></svg></div>`,
+                    iconSize: [32, 32]
+                })}
+            >
+                <Tooltip direction="top" offset={[0, -20]} opacity={1} permanent>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-indigo-600">{w.name} • {w.health}%</span>
+                </Tooltip>
+            </Marker>
+        ))}
 
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
-                    <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase">Battery</p>
-                        <p className="text-xs font-black text-foreground flex items-center gap-1">
-                            <BatteryMedium className="h-3 w-3 text-emerald-500" /> {rider.battery_level}%
-                        </p>
+        {riders.map((rider) => (
+          <React.Fragment key={rider.id}>
+            {/* 🏎️ Animated Route Pathing (Delivering Only) */}
+            {rider.status === 'Delivering' && rider.lat && rider.lng && rider.target_lat && rider.target_lng && (
+                <Polyline
+                    positions={[[rider.lat, rider.lng], [rider.target_lat, rider.target_lng]]}
+                    pathOptions={{
+                        color: '#F5A000',
+                        weight: 4,
+                        dashArray: '10, 15',
+                        lineCap: 'round',
+                        className: 'animate-pulse'
+                    }}
+                />
+            )}
+
+            <Marker
+                position={[
+                    rider.lat || -1.286389,
+                    rider.lng || 36.817223
+                ]}
+                icon={createRiderIcon(rider.status)}
+                eventHandlers={{
+                    click: () => onSelectRider?.(rider)
+                }}
+            >
+                <Popup className="custom-leaflet-popup">
+                <div className="p-4 min-w-[200px] text-left space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-foreground text-xs font-black shadow-inner">
+                            {rider.rider_name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                            <h4 className="font-black text-foreground uppercase text-xs leading-none">{rider.rider_name}</h4>
+                            <p className={cn(
+                                "text-[9px] font-black uppercase mt-1",
+                                rider.status === 'Delivering' ? "text-primary" : "text-emerald-500"
+                            )}>{rider.status}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-[8px] font-black text-slate-400 uppercase">Speed</p>
-                        <p className="text-xs font-black text-foreground">{rider.current_speed || 0} km/h</p>
+
+                    <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                        <div>
+                            <p className="text-[8px] font-black text-slate-400 uppercase">Battery</p>
+                            <p className="text-xs font-black text-foreground flex items-center gap-1">
+                                <BatteryMedium className="h-3 w-3 text-emerald-500" /> {rider.battery_level}%
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-[8px] font-black text-slate-400 uppercase">Speed</p>
+                            <p className="text-xs font-black text-foreground">{rider.current_speed || 0} km/h</p>
+                        </div>
                     </div>
                 </div>
-              </div>
-            </Popup>
-          </Marker>
+                </Popup>
+            </Marker>
+          </React.Fragment>
         ))}
       </MapContainer>
 

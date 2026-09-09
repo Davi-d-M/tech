@@ -119,12 +119,17 @@ class SignalService {
     public track(signal: UserSignal) {
         if (typeof window === 'undefined') return;
 
+        // Capture approximate location hints if available in sessionStorage/localStorage
+        const lat = localStorage.getItem('apex_lat');
+        const lng = localStorage.getItem('apex_lng');
+
         this.queue.push({
             ...signal,
             url: window.location.pathname,
             metadata: {
                 ...signal.metadata,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                geo_hint: lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined
             }
         });
 

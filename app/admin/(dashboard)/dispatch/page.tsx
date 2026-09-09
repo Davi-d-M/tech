@@ -59,6 +59,10 @@ interface Rider {
     verification_status?: 'Pending' | 'Verified' | 'Rejected';
     pin: string;
     current_location: string;
+    lat?: number;
+    lng?: number;
+    target_lat?: number;
+    target_lng?: number;
     status: 'Idle' | 'Delivering' | 'Offline' | 'Delayed' | 'Break';
     battery_level: number;
     total_deliveries: number;
@@ -74,18 +78,29 @@ interface Rider {
     can_view_earnings: boolean;
 }
 
+interface Order {
+    id: number;
+    status: string;
+    customer_name: string;
+    customer_email?: string;
+    rider_name?: string;
+    warehouse_location?: string;
+    latitude?: number;
+    longitude?: number;
+    created_at: string;
+}
+
 const DEFAULT_WAREHOUSES = [
-    { id: 'all', name: 'Standard Network', city: 'All' },
-    { id: 'nairobi', name: 'Nairobi Central', city: 'Nairobi' },
-    { id: 'mombasa', name: 'Mombasa Port', city: 'Mombasa' },
-    { id: 'kisumu', name: 'Kisumu Base', city: 'Kisumu' }
+    { id: 'nairobi', name: 'Nairobi Central', lat: -1.286389, lng: 36.817223, health: 92 },
+    { id: 'mombasa', name: 'Mombasa Port', lat: -4.043477, lng: 39.668206, health: 85 },
+    { id: 'kisumu', name: 'Kisumu Base', lat: -0.102213, lng: 34.761714, health: 78 }
 ];
 
 export default function AdminDispatchPage() {
     const { role, permissions } = useAdmin();
     const { settings } = useSettings();
     const [riders, setRiders] = useState<Rider[]>([]);
-    const [orders, setOrders] = useState<{ id: number; status: string; customer_name: string; customer_email?: string; rider_name?: string, warehouse_location?: string }[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRider, setSelectedRider] = useState<Rider | null>(null);
@@ -109,33 +124,43 @@ export default function AdminDispatchPage() {
 
             const { data: ordersData } = await supabase.from('orders').select('*').neq('status', 'Delivered');
 
-            const { data: visitorsData } = await supabase
-                .from('active_visitors')
-                .select('latitude, longitude')
-                .not('latitude', 'is', null);
+            const { data: signalsData } = await supabase
+                .from('user_signals')
+                .select('metadata')
+                .not('metadata->geo_hint', 'is', null)
+                .gte('created_at', new Date(Date.now() - 3600000).toISOString()); // Last hour
 
             // Handle wallet array from Supabase join and align with Rider interface
             const processedRiders = (ridersData || []).map((r) => {
                 const rider = r as Rider & { wallet?: { balance: number; total_earned: number } | { balance: number; total_earned: number }[] };
+
+                // If the rider is delivering, find their active order for target pathing
+                const activeOrder = (ordersData || []).find(o => o.rider_phone === rider.rider_phone && o.status === 'Dispatched');
+
                 return {
                     ...rider,
-                    wallet: Array.isArray(rider.wallet) ? rider.wallet[0] : rider.wallet
+                    wallet: Array.isArray(rider.wallet) ? rider.wallet[0] : rider.wallet,
+                    target_lat: activeOrder?.latitude,
+                    target_lng: activeOrder?.longitude
                 };
             });
 
-            // Cluster Visitors into Demand Zones (Simple implementation)
+            // Extract geo_hints for Heatmap
             const zones: Record<string, { lat: number, lng: number, intensity: number }> = {};
-            visitorsData?.forEach(v => {
-                const key = `${v.latitude.toFixed(3)},${v.longitude.toFixed(3)}`;
-                if (!zones[key]) zones[key] = { lat: v.latitude, lng: v.longitude, intensity: 0 };
-                zones[key].intensity += 1;
+            signalsData?.forEach(s => {
+                const hint = (s.metadata as { geo_hint?: { lat: number, lng: number } })?.geo_hint;
+                if (hint) {
+                    const key = `${hint.lat.toFixed(3)},${hint.lng.toFixed(3)}`;
+                    if (!zones[key]) zones[key] = { lat: hint.lat, lng: hint.lng, intensity: 0 };
+                    zones[key].intensity += 1;
+                }
             });
 
             setRiders(processedRiders as Rider[]);
             setOrders(ordersData || []);
             setDemandZones(Object.values(zones));
-        } catch {
-            console.error("Pipeline link unstable.");
+        } catch (err) {
+            console.error("Pipeline link unstable.", err);
         } finally {
             setLoading(false);
         }
@@ -380,7 +405,8 @@ export default function AdminDispatchPage() {
                     <div className="h-[650px] w-full relative">
                         <LiveDispatchMap
                             riders={riders}
-                            demandZones={demandZones}
+                            demandZones={showHeatmap ? demandZones : []}
+                            warehouses={DEFAULT_WAREHOUSES}
                             onSelectRider={(r) => setSelectedRider(r as Rider)}
                         />
                     </div>
