@@ -284,7 +284,6 @@ export default function AdminGamificationPage() {
                                 </div>
                                 <div className="space-y-6">
                                     {config.tiers.map((t, i) => {
-                                        const Icon = IconMap[t.icon] || Star;
                                         return (
                                             <div key={i} className="p-6 rounded-3xl bg-slate-50 border border-slate-100 grid sm:grid-cols-4 gap-6 items-end group relative">
                                                 <div className="space-y-2">
@@ -319,7 +318,7 @@ export default function AdminGamificationPage() {
                                                 </div>
                                                 <div className="flex items-center justify-center">
                                                     <div className="h-12 w-12 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm">
-                                                        <Icon className="h-6 w-6" />
+                                                        {React.createElement(IconMap[t.icon] || Star, { className: "h-6 w-6" })}
                                                     </div>
                                                 </div>
                                                 <button onClick={() => setConfig({...config, tiers: config.tiers.filter((_, idx) => idx !== i)})} className="absolute top-2 right-2 h-8 w-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all shadow-sm">
@@ -339,12 +338,11 @@ export default function AdminGamificationPage() {
                                 </div>
                                 <div className="grid sm:grid-cols-2 gap-6">
                                     {config.badges.map((b, i) => {
-                                        const Icon = IconMap[b.icon] || Rocket;
                                         return (
                                             <div key={i} className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 space-y-6 group relative overflow-hidden">
                                                 <div className="flex gap-4 items-start">
                                                     <div className="h-16 w-16 rounded-2xl bg-white flex items-center justify-center text-primary shadow-sm shrink-0">
-                                                        <Icon className="h-8 w-8" />
+                                                        {React.createElement(IconMap[b.icon] || Rocket, { className: "h-8 w-8" })}
                                                     </div>
                                                     <div className="flex-1 space-y-4">
                                                         <div className="space-y-1">

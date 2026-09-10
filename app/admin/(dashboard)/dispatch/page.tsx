@@ -32,6 +32,7 @@ import { useAdmin } from '@/context/AdminContext';
 import { useSettings } from '@/lib/useSettings';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { calculateDispatchScores, DispatchScore } from '@/lib/apex-os/dispatch-engine';
 
 const LiveDispatchMap = dynamic(() => import('@/components/admin/dispatch/LiveDispatchMap'), {
     ssr: false,
@@ -101,8 +102,10 @@ export default function AdminDispatchPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRider, setSelectedRider] = useState<Rider | null>(null);
+    const [dispatchScores, setDispatchScores] = useState<Record<number, DispatchScore[]>>({});
     const [demandZones, setDemandZones] = useState<{ lat: number, lng: number, intensity: number, label?: string }[]>([]);
     const [assigning, setAssigning] = useState<number | null>(null);
+    const [exceptions, setExceptions] = useState<{ id: number; type: string; severity: string; rider_phone: string; description: string }[]>([]);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const [showHeatmap, setShowHeatmap] = useState(false);
@@ -160,9 +163,27 @@ export default function AdminDispatchPage() {
                 }
             });
 
+            const { data: exceptionsData } = await supabase.from('fleet_exceptions').select('*').eq('is_resolved', false).limit(5);
+
             setRiders(processedRiders as Rider[]);
             setOrders(ordersData || []);
             setDemandZones(Object.values(zones));
+            setExceptions(exceptionsData || []);
+
+            // 3. Pre-calculate Dispatch Scores for Pending Orders
+            const pending = (ordersData || []).filter(o => o.status === 'Pending');
+            const scores: Record<number, DispatchScore[]> = {};
+            for (const order of pending) {
+                if (order.latitude && order.longitude) {
+                    scores[order.id] = await calculateDispatchScores(
+                        order.latitude,
+                        order.longitude,
+                        -1.286389, // Default warehouse lat
+                        36.817223  // Default warehouse lng
+                    );
+                }
+            }
+            setDispatchScores(scores);
         } catch (err) {
             console.error("Pipeline link unstable.", err);
         } finally {
@@ -406,11 +427,42 @@ export default function AdminDispatchPage() {
 
             <div className="grid lg:grid-cols-12 gap-10">
                 <div className="lg:col-span-8 space-y-10">
+                    {/* Exception Center HUD */}
+                    {exceptions.length > 0 && (
+                        <section className="space-y-4 animate-in slide-in-from-top-4 duration-500">
+                            <div className="flex items-center gap-3 px-2">
+                                <ShieldCheck className="h-5 w-5 text-rose-500 animate-pulse" />
+                                <h2 className="text-sm font-black uppercase tracking-widest text-rose-500">Fleet Exception Center</h2>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {exceptions.map(ex => (
+                                    <div key={ex.id} className="p-5 rounded-3xl bg-rose-50 border border-rose-100 flex items-center justify-between group hover:bg-white transition-all shadow-sm">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-10 w-10 rounded-xl bg-rose-500 flex items-center justify-center text-white">
+                                                <XCircle size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase text-rose-900 leading-none">{ex.type}</p>
+                                                <p className="text-[9px] font-medium text-rose-600 italic mt-1">{ex.description}</p>
+                                            </div>
+                                        </div>
+                                        <Button variant="ghost" size="sm" className="text-[8px] font-black uppercase text-rose-400 hover:text-rose-600">Resolve</Button>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    )}
+
                     <div className="h-[650px] w-full relative">
                         <LiveDispatchMap
                             riders={riders}
                             demandZones={showHeatmap ? demandZones : []}
                             warehouses={settings.logistics.warehouses}
+                            exceptions={exceptions.map(ex => ({
+                                ...ex,
+                                lat: riders.find(r => r.rider_phone === ex.rider_phone)?.lat,
+                                lng: riders.find(r => r.rider_phone === ex.rider_phone)?.lng
+                            }))}
                             onSelectRider={(r) => setSelectedRider(r as Rider)}
                         />
                     </div>
@@ -430,8 +482,9 @@ export default function AdminDispatchPage() {
                                     <p className="text-sm font-black text-muted-foreground uppercase italic">Pipeline clear.</p>
                                 </div>
                             ) : orders.filter(o => o.status === 'Pending').slice(0, 3).map(order => {
-                                const candidates = riders.filter(r => r.status === 'Idle').sort((a, b) => b.health_score - a.health_score);
-                                const recommendation = candidates[0];
+                                const recommendations = dispatchScores[order.id] || [];
+                                const bestMatch = recommendations[0];
+                                const bestRider = bestMatch ? riders.find(r => r.rider_phone === bestMatch.rider_phone) : null;
 
                                 return (
                                     <Card key={order.id} className="p-8 rounded-[3rem] border border-border bg-card shadow-sm flex flex-col lg:flex-row justify-between items-center gap-8 group hover:shadow-2xl transition-all">
@@ -440,7 +493,12 @@ export default function AdminDispatchPage() {
                                                 <Package className="h-7 w-7" />
                                             </div>
                                             <div>
-                                                <h3 className="font-black text-foreground uppercase text-lg tracking-tighter">Order #{order.id}</h3>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <h3 className="font-black text-foreground uppercase text-lg tracking-tighter">Order #{order.id}</h3>
+                                                    {bestMatch && (
+                                                        <span className="bg-emerald-500 text-white text-[7px] font-black uppercase px-2 py-0.5 rounded animate-pulse">Smart Match {bestMatch.score}%</span>
+                                                    )}
+                                                </div>
                                                 <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1 flex items-center gap-2">
                                                     <MapPin className="h-3 w-3" /> {order.customer_name}
                                                 </p>
@@ -448,18 +506,23 @@ export default function AdminDispatchPage() {
                                         </div>
 
                                         <div className="flex items-center gap-10">
-                                            {recommendation && (
-                                                <div className="text-right hidden sm:block">
-                                                    <p className="text-[8px] font-black uppercase text-primary mb-1 animate-pulse">Smart Match</p>
-                                                    <p className="text-sm font-black text-foreground uppercase">{recommendation.rider_name}</p>
+                                            {bestMatch && (
+                                                <div className="text-right hidden sm:block space-y-1">
+                                                    <p className="text-[8px] font-black uppercase text-primary">Best Resource</p>
+                                                    <p className="text-sm font-black text-foreground uppercase">{bestMatch.rider_name}</p>
+                                                    <div className="flex gap-1 justify-end">
+                                                        {[...Array(3)].map((_, i) => (
+                                                            <div key={i} className={cn("h-1 w-3 rounded-full", i < 2 ? "bg-emerald-500" : "bg-slate-200")} />
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             )}
                                             <Button
-                                                onClick={() => recommendation && handleAssignRider(order.id, recommendation)}
-                                                disabled={!recommendation || assigning === order.id}
-                                                className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest active:scale-95 group-hover:scale-105"
+                                                onClick={() => bestRider && handleAssignRider(order.id, bestRider)}
+                                                disabled={!bestRider || assigning === order.id}
+                                                className="h-14 px-10 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest active:scale-95 group-hover:scale-105 shadow-lg shadow-primary/20"
                                             >
-                                                {assigning === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Assign'}
+                                                {assigning === order.id ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Launch Mission'}
                                             </Button>
                                         </div>
                                     </Card>

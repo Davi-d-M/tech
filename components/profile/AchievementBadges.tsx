@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { ShoppingBag, Smartphone, MessageSquare, Users, Rocket, Gem, Lock, Star, ShieldCheck, Crown, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -65,7 +65,6 @@ export default function AchievementBadges({ userId }: { userId: string }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {badges.map((badge) => {
                 const isUnlocked = unlocked.has(badge.key);
-                const Icon = IconMap[badge.icon] || Star;
                 return (
                     <div
                         key={badge.key}
@@ -78,7 +77,7 @@ export default function AchievementBadges({ userId }: { userId: string }) {
                             "h-16 w-16 rounded-[1.8rem] flex items-center justify-center transition-all duration-700",
                             isUnlocked ? "bg-primary/10 text-primary shadow-lg shadow-primary/10 scale-110 rotate-3" : "bg-white text-slate-200"
                         )}>
-                            <Icon className="h-8 w-8" />
+                            {React.createElement(IconMap[badge.icon] || Star, { className: "h-8 w-8" })}
                         </div>
 
                         <div className="space-y-1">

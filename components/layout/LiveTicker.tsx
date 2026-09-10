@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useEffect, useState, useMemo } from 'react';
 import { Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -46,7 +47,7 @@ export default function LiveTicker() {
                                 : "opacity-0 translate-y-4 pointer-events-none"
                         )}
                     >
-                        <item.icon className="h-3.5 w-3.5 text-primary" />
+                        {React.createElement(item.icon, { className: "h-3.5 w-3.5 text-primary" })}
                         <span className="text-[10px] font-black uppercase tracking-widest">
                             {item.text}
                         </span>

@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { formatPrice, cn } from "@/lib/utils";
 import { validateCoupon } from "@/lib/couponService";
 import { runPostCheckoutAudit } from "@/lib/achievementService";
+import { logOrderAttribution } from "@/lib/attributionService";
 import { ArrowLeft, CreditCard, Shield, Truck, Smartphone, Loader2, MapPin, Tag, CheckCircle2, Zap, UserPlus, PartyPopper, Link2, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -503,6 +504,11 @@ function CheckoutContent() {
             content_ids: cart.map(item => item.id),
             content_type: 'product'
         });
+    }
+
+    // Apex OS Intelligence: Attribution
+    if (finalId) {
+        logOrderAttribution(finalId, total);
     }
 
     // 1. Update Loyalty Points & Referral Bonuses

@@ -11,7 +11,9 @@ export type SignalType =
     | 'HEARTBEAT'
     | 'CHECKOUT_START'
     | 'PAYMENT_FAIL'
-    | 'IDENTITY_BRIDGE';
+    | 'IDENTITY_BRIDGE'
+    | '3D_VIEW_START'
+    | '3D_INTERACT';
 
 interface UserSignal {
     event_type: SignalType;
@@ -64,10 +66,17 @@ class SignalService {
             utm_source: params.get('utm_source'),
             utm_medium: params.get('utm_medium'),
             utm_campaign: params.get('utm_campaign'),
-            utm_content: params.get('utm_content')
+            utm_content: params.get('utm_content'),
+            ref: params.get('ref') || params.get('affiliate')
         };
-        if (utms.utm_source) {
+
+        if (utms.utm_source || utms.ref) {
             sessionStorage.setItem('apex_utms', JSON.stringify(utms));
+
+            // ELITE ATTRIBUTION: Link to affiliate in cookie for long-term tracking
+            if (utms.ref) {
+                document.cookie = `apex_affiliate_id=${utms.ref}; path=/; max-age=${60 * 60 * 24 * 30}; sameSite=lax`;
+            }
         }
     }
 
@@ -77,12 +86,14 @@ class SignalService {
         const utms = JSON.parse(sessionStorage.getItem('apex_utms') || '{}');
         const { data: { session } } = await supabase.auth.getSession();
 
-        // 1. Ensure Visitor Identity exists
+        // 1. Ensure Visitor Identity exists with extended attribution
         await supabase.from('visitor_identity').upsert({
             visitor_id: this.visitorId,
             user_id: session?.user?.id || null,
             acquisition_source: utms.utm_source,
             acquisition_campaign: utms.utm_campaign,
+            acquisition_medium: utms.utm_medium,
+            acquisition_content: utms.utm_content,
             last_seen: new Date().toISOString()
         }, { onConflict: 'visitor_id' });
 
@@ -95,6 +106,7 @@ class SignalService {
             utm_medium: utms.utm_medium,
             utm_campaign: utms.utm_campaign,
             utm_content: utms.utm_content,
+            affiliate_id: utms.ref,
             entry_url: window.location.pathname,
             device_type: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
             browser: navigator.userAgent.substring(0, 50)

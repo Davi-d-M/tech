@@ -84,10 +84,11 @@ interface LiveDispatchMapProps {
     riders: Rider[];
     demandZones?: DemandZone[];
     warehouses?: Warehouse[];
+    exceptions?: { id: number; type: string; rider_phone: string; lat?: number; lng?: number }[];
     onSelectRider?: (rider: Rider) => void;
 }
 
-export default function LiveDispatchMap({ riders, demandZones = [], warehouses = [], onSelectRider }: LiveDispatchMapProps) {
+export default function LiveDispatchMap({ riders, demandZones = [], warehouses = [], exceptions = [], onSelectRider }: LiveDispatchMapProps) {
   useEffect(() => {
     fixLeafletIcons();
   }, []);
@@ -133,13 +134,33 @@ export default function LiveDispatchMap({ riders, demandZones = [], warehouses =
                 position={[w.lat, w.lng]}
                 icon={L.divIcon({
                     className: 'warehouse-icon',
-                    html: `<div style="background: white; border: 3px solid #5B5BFF; border-radius: 12px; padding: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5BFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M13 21V11l8-4v14"/></svg></div>`,
+                    html: `<div style="background: white; border: 3px solid #5B5BFF; border-radius: 12px; padding: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.5s ease;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5BFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M13 21V11l8-4v14"/></svg></div>`,
                     iconSize: [32, 32]
                 })}
             >
                 <Tooltip direction="top" offset={[0, -20]} opacity={1} permanent>
                     <span className="text-[8px] font-black uppercase tracking-widest text-indigo-600">{w.name} • {w.health}%</span>
                 </Tooltip>
+            </Marker>
+        ))}
+
+        {/* 🚨 Exception Markers */}
+        {exceptions.filter(ex => ex.lat && ex.lng).map((ex) => (
+            <Marker
+                key={`ex-${ex.id}`}
+                position={[ex.lat!, ex.lng!]}
+                icon={L.divIcon({
+                    className: 'exception-icon',
+                    html: `<div style="background: #f43f5e; border-radius: 50%; width: 30px; height: 30px; border: 4px solid white; display: flex; align-items: center; justify-content: center; color: white; animation: pulse 2s infinite;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>`,
+                    iconSize: [30, 30]
+                })}
+            >
+                <Popup>
+                    <div className="p-2 text-center">
+                        <p className="text-[10px] font-black text-rose-500 uppercase">{ex.type}</p>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase mt-1">Rider: {ex.rider_phone}</p>
+                    </div>
+                </Popup>
             </Marker>
         ))}
 

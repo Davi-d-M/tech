@@ -139,7 +139,7 @@ export default function SocialHubPage() {
                         <Card key={p} className="p-6 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all h-full">
                             <div className="flex justify-between items-start mb-6">
                                 <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110", config.bg, config.color)}>
-                                    <config.icon className="h-6 w-6" />
+                                    {React.createElement(config.icon, { className: "h-6 w-6" })}
                                 </div>
                                 <div className={cn(
                                     "h-2 w-2 rounded-full",

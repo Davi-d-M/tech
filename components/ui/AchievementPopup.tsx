@@ -57,7 +57,7 @@ export default function AchievementPopup() {
                             "h-16 w-16 rounded-[1.5rem] bg-white shadow-xl flex items-center justify-center shrink-0 border border-slate-50",
                             config.color
                         )}>
-                            <config.icon className="h-8 w-8 animate-bounce" />
+                            {React.createElement(config.icon, { className: "h-8 w-8 animate-bounce" })}
                         </div>
 
                         <div className="flex-1 text-left">

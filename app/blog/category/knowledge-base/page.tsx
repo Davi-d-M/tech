@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, HelpCircle, Zap, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -40,7 +41,9 @@ export default function KnowledgeBase() {
               {categories.length > 0 ? categories.map((cat) => (
                   <div key={cat.title} className="space-y-8">
                       <div className="flex items-center gap-4">
-                          <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-primary shadow-inner"><cat.icon className="h-6 w-6" /></div>
+                          <div className="h-12 w-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-primary shadow-inner">
+                              {React.createElement(cat.icon, { className: "h-6 w-6" })}
+                          </div>
                           <div>
                               <h2 className="text-xl font-black text-foreground uppercase tracking-tight">{cat.title}</h2>
                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{cat.count} Artifacts Found</p>

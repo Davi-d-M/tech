@@ -57,21 +57,29 @@ export async function scanForExceptions(): Promise<ApexException[]> {
     const fortyFiveMinsAgo = new Date(nairobiTime.getTime() - 45 * 60 * 1000).toISOString();
     const { data: stalledRiders } = await supabase
         .from('rider_status')
-        .select('rider_name, updated_at')
+        .select('rider_name, rider_phone, updated_at')
         .eq('status', 'Delivering')
         .lt('updated_at', fortyFiveMinsAgo);
 
-    stalledRiders?.forEach(rider => {
+    for (const rider of stalledRiders || []) {
         exceptions.push({
             id: `rider-${rider.rider_name}`,
             code: 'LD_RIDER_STALL',
             type: 'LOGISTICS',
             severity: 'Warning',
-            title: 'Rider Inactivity',
-            description: `Unit ${rider.rider_name} is in "Delivering" mode but no pulse for 45m.`,
+            title: 'Rider Stalled',
+            description: `Unit ${rider.rider_name} hasn't transmitted telemetry for 45m. Possible stall.`,
             time: 'Stalled'
         });
-    });
+
+        // Log to fleet_exceptions table
+        await supabase.from('fleet_exceptions').upsert({
+            type: 'STALL',
+            rider_phone: rider.rider_phone,
+            severity: 'Warning',
+            description: `Unit ${rider.rider_name} inactive for 45m.`
+        }, { onConflict: 'rider_phone, type', where: 'is_resolved = false' } as any);
+    }
 
     // --- 2. INVENTORY RISK ---
     const { data: criticalStock } = await supabase

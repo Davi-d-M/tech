@@ -31,8 +31,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import RestockRadar from "@/components/product/RestockRadar";
 import { useSettings } from "@/lib/useSettings";
+
+const Product3DViewer = dynamic(() => import("@/components/product/3d/Product3DViewer"), {
+    ssr: false,
+    loading: () => <div className="w-full aspect-square bg-slate-900 rounded-[2.5rem] animate-pulse" />
+});
 
 interface Tutorial {
     title: string;
@@ -224,15 +230,23 @@ export default function Product() {
       <div className="grid lg:grid-cols-2 gap-12 mb-16 text-left">
         <div className="space-y-4">
           <div className="w-full max-w-[500px] mx-auto flex flex-col items-center">
-            <div className="rounded-3xl shadow-sm overflow-hidden mb-4 w-full bg-slate-50 border border-slate-100 p-8 flex items-center justify-center aspect-square text-left relative">
-              <Image
-                src={product.image_url || product.image || '/placeholder.jpg'}
-                alt={product.name}
-                fill
-                className="object-contain transform hover:scale-105 transition-transform duration-500 p-8"
-                priority
-              />
-            </div>
+            {product.model_url ? (
+                <Product3DViewer
+                    modelUrl={product.model_url}
+                    autoRotate={product.auto_rotate ?? true}
+                    rotationSpeed={product.rotation_speed ?? 1.3}
+                />
+            ) : (
+                <div className="rounded-3xl shadow-sm overflow-hidden mb-4 w-full bg-slate-50 border border-slate-100 p-8 flex items-center justify-center aspect-square text-left relative">
+                    <Image
+                        src={product.image_url || product.image || '/placeholder.jpg'}
+                        alt={product.name}
+                        fill
+                        className="object-contain transform hover:scale-105 transition-transform duration-500 p-8"
+                        priority
+                    />
+                </div>
+            )}
           </div>
         </div>
 

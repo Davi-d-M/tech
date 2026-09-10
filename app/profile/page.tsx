@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { type User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabaseClient';
@@ -670,7 +671,7 @@ export default function ProfilePage() {
                             <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar pb-2">
                                 {([] as { id: string; icon: React.ElementType; color: string; label: string }[]).map((badge) => (
                                     <div key={badge.id} className="flex items-center gap-2 px-3 py-2 bg-white rounded-2xl border border-slate-100 shadow-sm shrink-0 hover:border-primary/20 transition-all cursor-default group/badge">
-                                        <badge.icon className={cn("h-3 w-3", badge.color === 'primary' ? 'text-primary' : 'text-slate-400')} />
+                                        {React.createElement(badge.icon, { className: cn("h-3 w-3", badge.color === 'primary' ? 'text-primary' : 'text-slate-400') })}
                                         <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 group-hover/badge:text-primary transition-colors">{badge.label}</span>
                                     </div>
                                 ))}
@@ -704,7 +705,7 @@ export default function ProfilePage() {
                             className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all text-left group"
                         >
                             <div className={`h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4 transition-transform group-hover:scale-110`}>
-                                <item.icon className="h-4 w-4 fill-current" />
+                                {React.createElement(item.icon, { className: "h-4 w-4 fill-current" })}
                             </div>
                             <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mb-0.5">{item.label}</p>
                             <p className="text-lg font-black text-foreground uppercase tracking-tighter">{item.val}</p>
@@ -855,7 +856,7 @@ export default function ProfilePage() {
                         {devices.length > 0 ? devices.map((device: Device) => (
                             <div key={device.name} className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 text-center space-y-4 group hover:bg-white hover:shadow-xl transition-all">
                                 <div className="h-12 w-12 rounded-2xl bg-white mx-auto flex items-center justify-center text-slate-300 group-hover:text-primary group-hover:scale-110 transition-all shadow-sm">
-                                    <device.icon className="h-6 w-6" />
+                                    {React.createElement(device.icon, { className: "h-6 w-6" })}
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-black text-foreground uppercase tracking-tight">{device.name}</p>
@@ -890,7 +891,7 @@ export default function ProfilePage() {
                                             "h-12 w-12 rounded-full border-4 border-white flex items-center justify-center shadow-lg transition-all",
                                             stats.level === label ? "bg-primary scale-125 ring-4 ring-primary/20" : "bg-slate-50 text-slate-200"
                                         )}>
-                                            <Icon className={cn("h-5 w-5", stats.level === label ? "text-white" : "text-slate-300")} />
+                                            {React.createElement(Icon, { className: cn("h-5 w-5", stats.level === label ? "text-white" : "text-slate-300") })}
                                         </div>
                                         <p className={cn("text-[8px] font-black uppercase tracking-widest", stats.level === label ? "text-primary" : "text-slate-300")}>{label}</p>
                                     </div>

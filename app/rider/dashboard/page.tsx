@@ -23,6 +23,13 @@ import { useRouter } from 'next/navigation';
 import { useAdmin } from '@/context/AdminContext';
 import { Input } from '@/components/ui/input';
 
+import dynamic from 'next/dynamic';
+
+const MissionMap = dynamic(() => import('@/components/rider/MissionMap'), {
+    ssr: false,
+    loading: () => <div className="w-full h-64 bg-slate-100 rounded-3xl animate-pulse" />
+});
+
 interface Mission {
     id: string;
     customer_name: string;
@@ -30,6 +37,12 @@ interface Mission {
     total_price: number;
     status: string;
     address: string;
+    latitude?: number;
+    longitude?: number;
+    pickup_lat?: number;
+    pickup_lng?: number;
+    route_geometry?: string;
+    estimated_arrival?: string;
     created_at: string;
 }
 
@@ -42,8 +55,9 @@ export default function RiderDashboard() {
     const { email: riderPhone, tenant_id } = useAdmin();
     const [loading, setLoading] = React.useState(true);
     const [tasks, setTasks] = React.useState<Mission[]>([]);
+    const [activeMission, setActiveMission] = React.useState<Mission | null>(null);
     const [stats, setStats] = React.useState({ completed: 0, earnings: 0 });
-    const [activeTab, setActiveTab] = React.useState<'tasks' | 'stats' | 'profile'>('tasks');
+    const [activeTab, setActiveTab] = React.useState<'tasks' | 'mission' | 'stats' | 'profile'>('tasks');
 
     // PIN Change State
     const [isPinModalOpen, setIsPinModalOpen] = React.useState(false);
@@ -65,7 +79,17 @@ export default function RiderDashboard() {
 
             const { data } = await query.limit(10);
 
-            setTasks((data as Mission[]) || []);
+            const fetchedTasks = (data as Mission[]) || [];
+            setTasks(fetchedTasks);
+
+            // Find Active Mission
+            const active = fetchedTasks.find(m => m.status === 'Dispatched' || m.status === 'Processing');
+            if (active) {
+                setActiveMission(active);
+                setActiveTab('mission');
+            } else {
+                setActiveMission(null);
+            }
 
             const completed = (data || []).filter(m => m.status === 'Delivered').length;
             const earnings = (data || []).filter(m => m.status === 'Delivered').reduce((s) => s + 450, 0); // Flat KSh 450/drop
@@ -76,8 +100,39 @@ export default function RiderDashboard() {
         }
     }, [riderPhone, tenant_id]);
 
+    const transmitTelemetry = React.useCallback(async (lat: number, lng: number) => {
+        if (!supabase || !riderPhone) return;
+        try {
+            await supabase.from('rider_status').update({
+                lat,
+                lng,
+                updated_at: new Date().toISOString()
+            }).eq('rider_phone', riderPhone);
+
+            // High-frequency log
+            await supabase.from('rider_telemetry_log').insert({
+                rider_phone: riderPhone,
+                lat,
+                lng,
+                order_id: activeMission?.id
+            });
+        } catch (err) {
+            console.warn("Telemetry blackout.", err);
+        }
+    }, [riderPhone, activeMission]);
+
     React.useEffect(() => {
         fetchTasks();
+
+        // 📡 High-Velocity Location Pulsing
+        let watchId: number;
+        if ("geolocation" in navigator && riderPhone) {
+            watchId = navigator.geolocation.watchPosition(
+                (pos) => transmitTelemetry(pos.coords.latitude, pos.coords.longitude),
+                (err) => console.warn("GPS Failure", err),
+                { enableHighAccuracy: true }
+            );
+        }
 
         // 🛰️ Real-time Mission Intelligence
         const channel = supabase
@@ -100,8 +155,9 @@ export default function RiderDashboard() {
 
         return () => {
             if (supabase) supabase.removeChannel(channel!);
+            if (watchId) navigator.geolocation.clearWatch(watchId);
         };
-    }, [fetchTasks, riderPhone]);
+    }, [fetchTasks, riderPhone, transmitTelemetry]);
 
     const handleLogout = () => {
         document.cookie = 'admin_session=; path=/; max-age=0';
@@ -227,6 +283,103 @@ export default function RiderDashboard() {
                     </div>
                 )}
 
+                {activeTab === 'mission' && (
+                    <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                        {activeMission ? (
+                            <>
+                                <div className="flex items-center justify-between px-2">
+                                    <h3 className="text-xl font-black uppercase tracking-tighter">Active Mission</h3>
+                                    <span className="px-3 py-1 bg-rose-500 text-white text-[8px] font-black rounded-full animate-pulse uppercase tracking-widest">Live Extraction</span>
+                                </div>
+
+                                <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-2xl space-y-10 relative overflow-hidden">
+                                    <div className="flex items-center justify-between relative z-10">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Order Identifier</p>
+                                            <h4 className="text-2xl font-black text-foreground uppercase tracking-tight">#{activeMission.id.toString().substring(0,8)}</h4>
+                                        </div>
+                                        <div className="text-right space-y-1">
+                                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Time Assigned</p>
+                                            <p className="text-xs font-bold text-foreground uppercase">{new Date(activeMission.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-8 relative z-10">
+                                        <div className="flex items-start gap-6">
+                                            <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0 shadow-sm border border-indigo-100">
+                                                <Zap size={24} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">Pickup Node</p>
+                                                <p className="font-black text-foreground uppercase text-sm">Nairobi Central Hub</p>
+                                                <p className="text-[10px] font-medium text-slate-400 italic leading-tight">Protocol: Approach via loading zone B. Present Order ID for verification.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-6">
+                                            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 shadow-sm border border-primary/20">
+                                                <MapPin size={24} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[9px] font-black text-primary uppercase tracking-widest">Customer Drop Point</p>
+                                                <p className="font-black text-foreground uppercase text-sm">{activeMission.customer_name}</p>
+                                                <p className="text-[10px] font-medium text-slate-500 leading-relaxed italic">{activeMission.address}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="h-72 w-full rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-inner relative z-10">
+                                        <MissionMap mission={activeMission} />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4 relative z-10">
+                                        <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-1 text-center">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Distance</p>
+                                            <p className="text-xl font-black text-foreground">7.4 KM</p>
+                                        </div>
+                                        <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 space-y-1 text-center">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Est. Yield</p>
+                                            <p className="text-xl font-black text-emerald-600">KSh 450</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-4 relative z-10 pt-4">
+                                        <Button className="flex-1 h-18 rounded-2xl bg-emerald-500 text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-emerald-500/20 active:scale-95 transition-all">
+                                            Confirm Arrival
+                                        </Button>
+                                        <Button variant="outline" className="h-18 w-18 rounded-2xl border-slate-200 text-slate-400 hover:text-primary transition-all">
+                                            <Phone size={24} />
+                                        </Button>
+                                    </div>
+
+                                    <Truck className="absolute -bottom-10 -right-10 h-64 w-64 text-slate-50 rotate-12 -z-0" />
+                                </Card>
+
+                                <div className="p-6 rounded-[2.5rem] bg-indigo-50 border border-indigo-100 flex items-start gap-4 mx-2">
+                                    <Activity className="h-6 w-6 text-indigo-500 shrink-0 mt-0.5 animate-pulse" />
+                                    <div className="space-y-1">
+                                        <p className="text-xs font-black uppercase text-indigo-700">Intelligence Brief</p>
+                                        <p className="text-[10px] text-indigo-600 font-medium leading-relaxed italic">
+                                            &quot;Traffic detected on Uhuru Highway. Rerouting via Valley Road to save 8 minutes. Proceed with caution.&quot;
+                                        </p>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="h-[70dvh] flex flex-col items-center justify-center text-center p-10 space-y-8">
+                                <div className="h-24 w-24 rounded-full bg-slate-100 flex items-center justify-center text-slate-200">
+                                    <Zap size={48} />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-2xl font-black uppercase text-foreground">Zero Active Missions</h3>
+                                    <p className="text-sm font-medium text-slate-400 italic">Standby for next extraction protocol.</p>
+                                </div>
+                                <Button onClick={fetchTasks} variant="outline" className="rounded-xl h-12 px-8">Check for Tasks</Button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {activeTab === 'stats' && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
                          <h3 className="text-xs font-black uppercase tracking-[0.4em] text-slate-400 ml-4">Earnings Insights</h3>
@@ -300,6 +453,17 @@ export default function RiderDashboard() {
                 >
                     <Truck size={24} />
                     <span className="text-[8px] font-black uppercase tracking-widest">Tasks</span>
+                </button>
+                <button
+                    onClick={() => setActiveTab('mission')}
+                    className={cn(
+                        "flex flex-col items-center gap-1 transition-all relative",
+                        activeTab === 'mission' ? "text-primary" : "text-slate-300 hover:text-foreground"
+                    )}
+                >
+                    <Zap size={24} />
+                    {activeMission && <div className="absolute top-0 right-0 h-2 w-2 bg-rose-500 rounded-full animate-ping" />}
+                    <span className="text-[8px] font-black uppercase tracking-widest">Mission</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('stats')}
