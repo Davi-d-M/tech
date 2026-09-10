@@ -90,11 +90,8 @@ interface Order {
     created_at: string;
 }
 
-const DEFAULT_WAREHOUSES = [
-    { id: 'nairobi', name: 'Nairobi Central', lat: -1.286389, lng: 36.817223, health: 92 },
-    { id: 'mombasa', name: 'Mombasa Port', lat: -4.043477, lng: 39.668206, health: 85 },
-    { id: 'kisumu', name: 'Kisumu Base', lat: -0.102213, lng: 34.761714, health: 78 }
-];
+// DEFAULT_WAREHOUSES removed, using settings directly
+
 
 export default function AdminDispatchPage() {
     const { role, permissions } = useAdmin();
@@ -332,7 +329,7 @@ export default function AdminDispatchPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <div className="bg-white p-1 rounded-2xl border border-slate-100 shadow-sm flex overflow-x-auto no-scrollbar max-w-sm sm:max-w-none mr-2">
-                        {(settings.logistics.warehouses || DEFAULT_WAREHOUSES).map(w => (
+                        {settings.logistics.warehouses.map(w => (
                             <button
                                 key={w.id}
                                 onClick={() => setSelectedWarehouse(w.id)}
@@ -365,9 +362,9 @@ export default function AdminDispatchPage() {
                     >
                         <Zap className="h-4 w-4 mr-2" /> Heatmap {showHeatmap ? 'On' : 'Off'}
                     </Button>
-                    <Link href="/rider/dashboard">
+                    <Link href="/rider/login">
                         <Button variant="outline" className="rounded-xl h-12 px-6 border-primary/20 bg-primary text-white font-black uppercase text-[10px] tracking-widest hover:bg-primary/90 transition-all active:scale-95 shadow-lg shadow-primary/20">
-                            <Truck className="h-4 w-4 mr-2" /> Rider View
+                            <Truck className="h-4 w-4 mr-2" /> Fleet Login
                         </Button>
                     </Link>
                     <Button onClick={fetchData} variant="outline" className="rounded-xl h-12 px-6 border-border bg-card text-foreground font-black uppercase text-[10px] tracking-widest transition-all hover:shadow-lg active:scale-95">
@@ -413,7 +410,7 @@ export default function AdminDispatchPage() {
                         <LiveDispatchMap
                             riders={riders}
                             demandZones={showHeatmap ? demandZones : []}
-                            warehouses={DEFAULT_WAREHOUSES}
+                            warehouses={settings.logistics.warehouses}
                             onSelectRider={(r) => setSelectedRider(r as Rider)}
                         />
                     </div>
