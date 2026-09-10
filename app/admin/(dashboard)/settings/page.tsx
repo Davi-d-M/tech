@@ -47,7 +47,14 @@ const DEFAULTS = {
     branding: { owner_name: "Apex Master", portfolio_url: "https://apexstores.co.ke", hero_title: "Future Sound. Total Power.", hero_subtitle: "Experience authentic tech engineered for excellence.", logo_url: "", favicon_url: "" },
     homepage: { hero_image_url: "", hero_starting_price: 4500, hero_badge_text: "The New Era of Tech is Here", hero_visual_label: "Apex Premium Series" },
     shipping: { nairobi_cbd_label: "Nairobi CBD / Local", nairobi_cbd: 0, nairobi_outskirts_label: "Nairobi Outskirts", nairobi_outskirts: 300, upcountry_label: "Upcountry / Major Towns", upcountry: 500, free_shipping_message: "Free shipping over KSh 10,000" },
-    logistics: { dispatch_zones: ["CBD", "Westlands", "Kilimani", "Lavington", "Kileleshwa", "Karen", "Langata", "South C", "South B", "Embakasi", "Roysambu", "Kasarani", "Kahawa", "Githurai", "Zimmerman", "Utawala", "Syokimau", "Kitengela", "Rongai", "Ngong", "Kikuyu", "Thika Road", "Mombasa Road"] },
+    logistics: {
+        dispatch_zones: ["CBD", "Westlands", "Kilimani", "Lavington", "Kileleshwa", "Karen", "Langata", "South C", "South B", "Embakasi", "Roysambu", "Kasarani", "Kahawa", "Githurai", "Zimmerman", "Utawala", "Syokimau", "Kitengela", "Rongai", "Ngong", "Kikuyu", "Thika Road", "Mombasa Road"],
+        warehouses: [
+            { id: 'nairobi', name: 'Nairobi Central Hub', city: 'Nairobi', lat: -1.286389, lng: 36.817223, health: 92 },
+            { id: 'mombasa', name: 'Mombasa Port Node', city: 'Mombasa', lat: -4.043477, lng: 39.668206, health: 85 },
+            { id: 'kisumu', name: 'Kisumu Tech Base', city: 'Kisumu', lat: -0.102213, lng: 34.761714, health: 78 }
+        ]
+    },
     catalog: { categories: [{ id: 'airpods', label: 'Premium Audio' }, { id: 'chargers', label: 'Super Chargers' }, { id: 'cases', label: 'Cases' }, { id: 'watches', label: 'Watches' }, { id: 'accessories', label: 'Others' }] },
     promotions: { flash_sale_text: 'Flash Sale: 20% OFF All Tech!', discount_percent: 20, is_active: true, flash_sale_end: '' },
     theme_config: { primary: "#F5A000", secondary: "#0F172A", accent: "#F5A000", custom_css: "" },
@@ -847,6 +854,58 @@ export default function AdminSettingsPage() {
                                     </div>
                                 </div>
                             </div>
+
+                            <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 mt-8">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3"><Truck className="h-5 w-5 text-primary" /> Extraction Hubs (Warehouses)</h2>
+                                    <Button onClick={() => setLogistics({ ...logistics, warehouses: [...logistics.warehouses, { id: `wh-${Date.now()}`, name: 'New Hub', city: 'Nairobi', lat: -1.28, lng: 36.82, health: 100 }] })} variant="outline" className="h-10 rounded-xl text-[8px] font-black uppercase"><Plus className="h-3 w-3 mr-2" /> Add Hub</Button>
+                                </div>
+                                <div className="space-y-4">
+                                    {logistics.warehouses.map((wh, idx) => (
+                                        <div key={idx} className="p-6 bg-secondary rounded-3xl border border-border grid sm:grid-cols-4 gap-4 relative group/wh">
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-black uppercase text-muted-foreground ml-1">Hub Name</label>
+                                                <Input value={wh.name} onChange={e => {
+                                                    const newWH = [...logistics.warehouses];
+                                                    newWH[idx].name = e.target.value;
+                                                    setLogistics({...logistics, warehouses: newWH});
+                                                }} className="h-10 rounded-xl bg-card border-none font-bold text-[10px]" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-black uppercase text-muted-foreground ml-1">Location (Lat, Lng)</label>
+                                                <div className="flex gap-2">
+                                                    <Input type="number" step="0.000001" value={wh.lat} onChange={e => {
+                                                        const newWH = [...logistics.warehouses];
+                                                        newWH[idx].lat = parseFloat(e.target.value);
+                                                        setLogistics({...logistics, warehouses: newWH});
+                                                    }} className="h-10 rounded-xl bg-card border-none font-mono text-[9px] px-2" />
+                                                    <Input type="number" step="0.000001" value={wh.lng} onChange={e => {
+                                                        const newWH = [...logistics.warehouses];
+                                                        newWH[idx].lng = parseFloat(e.target.value);
+                                                        setLogistics({...logistics, warehouses: newWH});
+                                                    }} className="h-10 rounded-xl bg-card border-none font-mono text-[9px] px-2" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[8px] font-black uppercase text-muted-foreground ml-1">Stock Health (%)</label>
+                                                <Input type="number" value={wh.health} onChange={e => {
+                                                    const newWH = [...logistics.warehouses];
+                                                    newWH[idx].health = parseInt(e.target.value);
+                                                    setLogistics({...logistics, warehouses: newWH});
+                                                }} className="h-10 rounded-xl bg-card border-none font-black text-[10px]" />
+                                            </div>
+                                            <div className="flex items-end pb-1 justify-end">
+                                                <button
+                                                    onClick={() => setLogistics({ ...logistics, warehouses: logistics.warehouses.filter((_, i) => i !== idx) })}
+                                                    className="h-10 w-10 rounded-xl bg-white border border-border flex items-center justify-center text-muted-foreground hover:text-rose-500 opacity-0 group-hover/wh:opacity-100 transition-all"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </Card>
 
                             <Card className="rounded-[3rem] border border-border p-10 bg-card shadow-sm space-y-8 mt-8">
                                 <div className="flex justify-between items-center">

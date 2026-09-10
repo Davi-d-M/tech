@@ -577,22 +577,22 @@ export default function AdminDispatchPage() {
                         <div className="space-y-4">
                             <p className="text-[10px] text-muted-foreground font-medium italic leading-relaxed">
                                 {demandZones.length > 0 ? (
-                                    `"Intelligence Node: ${demandZones.length} demand clusters detected. Total fleet health at ${stats.avgHealth}%. Optimize standby positions to minimize extraction lag."`
+                                    `"Intelligence Node: ${demandZones.length} demand clusters detected. Total fleet health at ${stats.avgHealth}%. recommend positioning units in ${demandZones.sort((a,b) => b.intensity - a.intensity)[0]?.label || 'active'} zones."`
                                 ) : (
-                                    `"Logistics Grid stable. Zero critical hotspots detected in the last hour. Maintaining current orbital fleet configuration."`
+                                    `"Logistics Grid stable. Zero hotspots detected in the last hour. Maintaining nominal fleet distribution across configured hubs."`
                                 )}
                             </p>
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="p-4 bg-white rounded-2xl border border-border">
-                                    <p className="text-[8px] font-black text-slate-400 uppercase">Top Intensity</p>
+                                    <p className="text-[8px] font-black text-slate-400 uppercase">Hot Zone</p>
                                     <p className="text-xs font-black text-foreground">
-                                        {demandZones.sort((a,b) => b.intensity - a.intensity)[0]?.label || 'Standard'}
+                                        {demandZones.sort((a,b) => b.intensity - a.intensity)[0]?.label || 'Nominal'}
                                     </p>
                                 </div>
                                 <div className="p-4 bg-white rounded-2xl border border-border">
                                     <p className="text-[8px] font-black text-slate-400 uppercase">Fleet Health</p>
                                     <p className={cn("text-xs font-black", stats.avgHealth > 80 ? "text-emerald-500" : "text-amber-500")}>
-                                        {stats.avgHealth}% Nominal
+                                        {stats.avgHealth}% Healthy
                                     </p>
                                 </div>
                             </div>

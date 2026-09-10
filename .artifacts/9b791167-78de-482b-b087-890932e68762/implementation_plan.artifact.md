@@ -1,45 +1,42 @@
-# Implementation Plan - Data Precision & Accuracy Refinement 🛡️⚖️📉
+# Implementation Plan - Data Precision & Accuracy Overhaul 🛡️⚖️📉
 
-This plan removes all hardcoded mock data (placeholders) and ensures that all administrative metrics, logistics dashboards, and system statuses reflect real-time database intelligence.
+This plan removes all remaining hardcoded "fake" data and placeholders, ensuring every metric in the Admin Panel reflects real-time database intelligence.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Warehouse Migration**: I am removing the hardcoded warehouse markers. From now on, only the warehouses you configure in **Admin Settings > Operations** will appear on your map. I've initialized your 3 existing hubs (Nairobi, Mombasa, Kisumu) into the settings database for you.
-> **AI Fluff Removal**: Hardcoded "Warehouse Intel" and "System Status" percentages are being replaced with real mathematical calculations based on your actual orders and system connectivity.
+> **Dynamic System Health**: The "System Status" percentage on your dashboard will now fluctuate based on real connectivity and order success rates.
+> **Warehouse Control**: I am removing hardcoded warehouse fallbacks. Only the hubs you configure in **Admin Settings > Operations** will be used for logistics calculations.
+> **Real Metadata**: Hardcoded version numbers and storage stats in the settings sidebar are being replaced with real database SKU counts and sync timestamps.
 
 ## Proposed Changes
 
-### 1. Global Settings Expansion (`lib/useSettings.ts` & `AdminSettingsPage`) ⚙️
-- [MODIFY] **Logistics Schema**: Add `lat`, `lng`, and `health` fields to the `warehouses` configuration.
-- [NEW] **Warehouse Manager**: Add a UI in Admin Settings to allow you to move warehouses on the map or update their health levels manually.
+### 1. Logistics Center Precision (`app/admin/(dashboard)/dispatch/page.tsx`) 🧠
+- [MODIFY] Remove `DEFAULT_WAREHOUSES`. Use `settings.logistics.warehouses` exclusively.
+- [MODIFY] **Dynamic Intel**: Replace the hardcoded "divert 20% of stock" advice with real logic based on `demandZones` and `rider.health_score`.
+- [MODIFY] **Rider Filtering**: Ensure riders only appear on the map if they are transmitting a valid GPS signal (`lat` & `lng`).
 
-### 2. Logistics Center Accuracy (`app/admin/(dashboard)/dispatch/page.tsx`) 🧠
-- [MODIFY] **Rider Precision**: Only render units on the map if they have transmitted real GPS coordinates. No more "ghost" riders sitting at Nairobi CBD by default.
-- [MODIFY] **Dynamic Intel**: Replace the hardcoded advice with a real-time demand analyzer.
-    - e.g., "Critical Demand detected in [Zone]. Nearest Warehouse health is [X%]. Deploying additional units recommended."
+### 2. High-Integrity Dashboard (`app/admin/(dashboard)/page.tsx`) 📊
+- [MODIFY] **Health Metric**: Calculate a real "System Status" percentage:
+    - 50% based on active Supabase connection.
+    - 50% based on the success rate (Delivered vs Cancelled) of the last 10 orders.
 
-### 3. Dashboard Integrity (`app/admin/(dashboard)/page.tsx`) 📊
-- [MODIFY] **System Health**: Calculate health based on:
-    - Supabase connectivity (50%)
-    - Success rate of last 10 orders (50%)
-- [MODIFY] **AI Brief**: Update `ApexIntelligence2` to use real variable names in its logic strings instead of static placeholders.
+### 3. AI Intelligence Modernization (`components/admin/ApexIntelligence2.tsx`) 🤖
+- [MODIFY] Replace static advice strings with dynamic templates that use the actual `data.growth`, `data.atRiskCustomers`, and `data.inventoryRisk` variables.
 
 ### 4. Settings Sidebar Cleanup (`app/admin/(dashboard)/settings/page.tsx`) ⚙️
-- [MODIFY] Remove hardcoded "v2.5.0" and "68% Capacity" strings.
-- [NEW] Replace with **System Metadata**:
-    - Total Product Rows in Database.
-    - Total Order Volume.
-    - Real "Last Published" timestamp from the `settings` table.
+- [MODIFY] Remove hardcoded "v2.5.0" and "68% Capacity".
+- [NEW] **System Pulse**: Display real counts for "Catalog Depth" (Product rows) and "Global Volume" (Order rows).
+- [NEW] **Sync Timestamp**: Display the actual `updated_at` time from the settings table as "Last Protocol Sync".
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to verify all dynamic data fetching is error-free.
+- Run `npm run build` to verify all dynamic data-fetching components are stable.
 
 ### Manual Verification
-1. **Settings Verification**: Change a Warehouse Health Score in Settings -> Verify it updates on the Dispatch Map instantly.
-2. **Dashboard Accuracy**: Check the "Apex Daily Brief". It should now mention the actual number of "Inventory Risk" items you have.
-3. **Ghost Rider Check**: Log in as a rider without GPS permissions -> Verify they do NOT appear on the Admin map.
+1. **Logistics Test**: Delete a Warehouse in Settings -> Verify it disappears from the Dispatch Map immediately.
+2. **Health Test**: Cancel 5 orders in a row -> Verify the "System Status" percentage on the dashboard drops accordingly.
+3. **Accuracy Test**: Check the "Warehouse Intel" card; it should now correctly mention the number of active demand clusters.
