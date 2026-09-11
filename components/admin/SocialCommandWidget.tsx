@@ -26,7 +26,7 @@ interface SocialStats {
     platforms: {
         id: string;
         name: string;
-        icon: any;
+        icon: React.ElementType;
         status: 'connected' | 'expired' | 'error';
         color: string;
     }[];
@@ -63,20 +63,21 @@ export default function SocialCommandWidget() {
                     supabase.from('social_accounts').select('platform, status')
                 ]);
 
-                // 2. Map Account Statuses
-                const updatedPlatforms = stats.platforms.map(p => {
-                    const acc = accountsRes.data?.find(a => a.platform === p.id);
-                    return { ...p, status: acc?.status || 'expired' } as any;
+                setStats(prev => {
+                    const updatedPlatforms = prev.platforms.map(p => {
+                        const acc = (accountsRes.data as { platform: string; status: string }[] | null)?.find(a => a.platform === p.id);
+                        return { ...p, status: (acc?.status as 'connected' | 'expired' | 'error') || 'expired' };
+                    });
+
+                    const revValue = (attributionRes.data as { revenue: number }[] | null)?.reduce((s, a) => s + (Number(a.revenue) || 0), 0) || 0;
+
+                    return {
+                        ...prev,
+                        total_posts: postsRes.count || 0,
+                        attributed_revenue: revValue,
+                        platforms: updatedPlatforms
+                    };
                 });
-
-                const rev = attributionRes.data?.reduce((s, a) => s + (a.revenue || 0), 0) || 0;
-
-                setStats(prev => ({
-                    ...prev,
-                    total_posts: postsRes.count || 0,
-                    attributed_revenue: rev,
-                    platforms: updatedPlatforms
-                }));
             } catch (err) {
                 console.error("Social Link Failure:", err);
             } finally {
@@ -112,7 +113,7 @@ export default function SocialCommandWidget() {
                                 "h-10 w-10 rounded-full border-4 border-white flex items-center justify-center bg-slate-50 shadow-sm relative",
                                 p.color
                             )}>
-                                <p.icon className="h-4 w-4" />
+                                {React.createElement(p.icon, { className: "h-4 w-4" })}
                                 <div className={cn(
                                     "absolute top-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white",
                                     p.status === 'connected' ? "bg-emerald-500" : "bg-rose-500"

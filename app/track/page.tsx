@@ -5,11 +5,10 @@ import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, Package, Truck, CheckCircle, Clock, AlertCircle, MapPin, ShieldCheck, Zap } from 'lucide-react';
+import { Search, Clock, AlertCircle, MapPin, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useSettings } from '@/lib/useSettings';
 import LiveOrderTracker from '@/components/order/LiveOrderTracker';
 
 interface OrderDetails {
@@ -24,14 +23,6 @@ interface OrderDetails {
   rider_phone?: string | null;
 }
 
-const STEPS = [
-    { id: 'Pending', label: 'Order Received', icon: Clock, detail: 'Securing your items in our warehouse...' },
-    { id: 'Paid', label: 'Payment Verified', icon: ShieldCheck, detail: 'M-Pesa sync complete. Funds verified.' },
-    { id: 'Processing', label: 'Quality Check', icon: Package, detail: 'Quality inspection in progress.' },
-    { id: 'Dispatched', label: 'Out for Delivery', icon: Truck, detail: 'Fast dispatch active. Rider approaching.' },
-    { id: 'Delivered', label: 'Handed Over', icon: CheckCircle, detail: 'Tech secured. Welcome to the Apex Club.' },
-];
-
 function TrackingContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [order, setOrder] = useState<OrderDetails | null>(null);
@@ -39,7 +30,6 @@ function TrackingContent() {
   const [error, setError] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
-  const { settings } = useSettings();
 
   const fetchOrder = async (query: string) => {
     if (!supabase) return;
@@ -144,11 +134,6 @@ function TrackingContent() {
         }
     };
   }, [order]);
-
-  const getStatusIndex = (status: string) => {
-    const idx = STEPS.findIndex(s => s.id.toLowerCase() === status.toLowerCase());
-    return idx === -1 ? 0 : idx;
-  };
 
   return (
     <div className="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-8 text-left">

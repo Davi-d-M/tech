@@ -78,7 +78,7 @@ export async function scanForExceptions(): Promise<ApexException[]> {
             rider_phone: rider.rider_phone,
             severity: 'Warning',
             description: `Unit ${rider.rider_name} inactive for 45m.`
-        }, { onConflict: 'rider_phone, type', where: 'is_resolved = false' } as any);
+        }, { onConflict: 'rider_phone, type' });
     }
 
     // --- 2. INVENTORY RISK ---

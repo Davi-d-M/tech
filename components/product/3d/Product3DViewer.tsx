@@ -11,6 +11,7 @@ import {
 } from "@react-three/drei";
 import ProductModel from "./ProductModel";
 import { Loader2 } from "lucide-react";
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
 interface Product3DViewerProps {
   modelUrl: string;
@@ -23,7 +24,7 @@ export default function Product3DViewer({
   autoRotate = true,
   rotationSpeed = 1.3
 }: Product3DViewerProps) {
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
 
   return (
     <div className="relative h-[520px] w-full overflow-hidden rounded-[2.5rem] bg-slate-950 border border-white/10 shadow-2xl group">
