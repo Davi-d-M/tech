@@ -24,10 +24,28 @@ export default function Product3DViewer({
   autoRotate = true,
   rotationSpeed = 1.3
 }: Product3DViewerProps) {
+  const hasTrackedStart = useRef(false);
   const controlsRef = useRef<OrbitControlsImpl>(null);
 
+  const trackInteraction = async (type: '3D_VIEW_START' | '3D_INTERACT') => {
+      const { signalService } = await import('@/lib/signalService');
+      signalService.track({
+          event_type: type,
+          target: modelUrl,
+          metadata: { timestamp: Date.now() }
+      });
+  };
+
   return (
-    <div className="relative h-[520px] w-full overflow-hidden rounded-[2.5rem] bg-slate-950 border border-white/10 shadow-2xl group">
+    <div
+        className="relative h-[520px] w-full overflow-hidden rounded-[2.5rem] bg-slate-50 border border-slate-100 shadow-sm group"
+        onMouseEnter={() => {
+            if (!hasTrackedStart.current) {
+                trackInteraction('3D_VIEW_START');
+                hasTrackedStart.current = true;
+            }
+        }}
+    >
       <Canvas
         shadows
         camera={{
@@ -42,7 +60,7 @@ export default function Product3DViewer({
         <Suspense
           fallback={
             <Html center>
-                <div className="flex flex-col items-center gap-4 text-white/50">
+                <div className="flex flex-col items-center gap-4 text-slate-400">
                     <Loader2 className="h-8 w-8 animate-spin" />
                     <p className="text-[10px] font-black uppercase tracking-widest italic animate-pulse">Initializing 3D Unit...</p>
                 </div>
@@ -78,6 +96,14 @@ export default function Product3DViewer({
             autoRotateSpeed={rotationSpeed}
             minPolarAngle={Math.PI / 4}
             maxPolarAngle={(Math.PI * 3) / 4}
+            onChange={() => {
+                // Throttle interaction tracking
+                const now = Date.now();
+                if (!(window as any).last3DTrack || now - (window as any).last3DTrack > 2000) {
+                    trackInteraction('3D_INTERACT');
+                    (window as any).last3DTrack = now;
+                }
+            }}
           />
 
           <Environment preset="city" />
@@ -85,12 +111,12 @@ export default function Product3DViewer({
       </Canvas>
 
       {/* Control Hint */}
-      <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-white/10 border border-white/20 px-6 py-2.5 text-[8px] font-black uppercase tracking-[0.2em] text-white backdrop-blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 shadow-2xl">
+      <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-white/80 border border-slate-200 px-6 py-2.5 text-[8px] font-black uppercase tracking-[0.2em] text-slate-900 backdrop-blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 shadow-xl">
         Swipe to Rotate • Pinch to Zoom
       </div>
 
       {/* Quality Badge */}
-      <div className="absolute top-6 right-6 h-10 w-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white/50 backdrop-blur-md">
+      <div className="absolute top-6 right-6 h-10 w-10 rounded-xl bg-white/80 border border-slate-200 flex items-center justify-center text-slate-400 backdrop-blur-md shadow-sm">
           <span className="text-[9px] font-black">4K</span>
       </div>
     </div>

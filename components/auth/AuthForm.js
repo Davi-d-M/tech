@@ -92,11 +92,22 @@ export default function AuthForm({ initialMode = 'signin' }) {
           const { signalService } = await import('@/lib/signalService');
           const { data: { user: newUser } } = await supabase.auth.getUser();
           if (newUser) {
+              const visitorId = localStorage.getItem('apex_visitor_id');
+
+              // 1. Record the bridge event
               signalService.track({
                   event_type: 'IDENTITY_BRIDGE',
                   target: newUser.id,
-                  metadata: { method: 'email_password' }
+                  metadata: { method: 'email_password', visitor_id: visitorId }
               });
+
+              // 2. Reconcile past signals in DB
+              if (visitorId) {
+                  await supabase.rpc('reconcile_identity_bridge', {
+                      p_visitor_id: visitorId,
+                      p_user_id: newUser.id
+                  });
+              }
           }
       } catch (e) { console.warn("Signal bridge failed", e); }
 

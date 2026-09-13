@@ -19,6 +19,14 @@ import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 import Link from 'next/link';
 
+import dynamic from 'next/dynamic';
+import GrowthCopilot from '@/components/admin/GrowthCopilot';
+
+const DemandRadarMap = dynamic(() => import('@/components/admin/DemandRadarMap'), {
+    ssr: false,
+    loading: () => <div className="w-full h-full bg-slate-50 rounded-[3rem] animate-pulse" />
+});
+
 interface SearchIntelRecord {
     query: string;
     is_success: boolean;
@@ -190,6 +198,11 @@ export default function IntelligenceHub() {
             <div className="grid lg:grid-cols-12 gap-10">
                 {/* Visual Conversion Funnel */}
                 <Card className="lg:col-span-8 p-10 rounded-[3.5rem] bg-white border border-slate-100 shadow-sm">
+                    <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground mb-12">Demand Distribution (City Pulse)</h2>
+                    <div className="h-[500px] w-full relative mb-12">
+                        <DemandRadarMap />
+                    </div>
+
                     <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground mb-12">Intent Pipeline (Funnel)</h2>
                     <div className="space-y-4">
                         {data?.funnel.map((step, idx) => (
@@ -234,6 +247,10 @@ export default function IntelligenceHub() {
                     </div>
                     <p className="text-[8px] font-medium text-slate-400 italic mt-6 text-center">* Customers searching for products you don&apos;t stock.</p>
                 </Card>
+
+                <div className="lg:col-span-8">
+                    <GrowthCopilot />
+                </div>
             </div>
 
             {/* Live Activity Log */}

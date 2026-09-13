@@ -57,6 +57,7 @@ export const metadata: Metadata = {
 import PublicLayoutShield from "@/components/layout/PublicLayoutShield";
 import JsonLd from "@/components/seo/JsonLd";
 import SignalTracker from "@/components/analytics/SignalTracker";
+import AgeVerificationModal from "@/components/auth/AgeVerificationModal";
 import { type StoreSettings } from "@/lib/useSettings";
 import { getCachedSettings } from "@/lib/cachedData";
 
@@ -78,6 +79,7 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}
       >
+        <AgeVerificationModal />
         <JsonLd />
         <SignalTracker />
         {/* Enterprise Marketing Scripts */}

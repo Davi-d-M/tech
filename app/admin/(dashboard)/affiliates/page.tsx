@@ -17,7 +17,8 @@ import {
     Zap,
     AlertCircle,
     Camera,
-    DollarSign
+    DollarSign,
+    X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +34,7 @@ import {
     Area
 } from 'recharts';
 import Link from 'next/link';
+import Affiliate360 from '@/components/admin/Affiliate360';
 
 interface Affiliate {
     id: string;
@@ -71,6 +73,7 @@ export default function AdminAffiliates() {
     const [loading, setLoading] = React.useState(true);
     const [activeTab, setActiveTab] = React.useState<'overview' | 'applications'>('overview');
     const [searchQuery, setSearchQuery] = React.useState('');
+    const [selectedAffiliateId, setSelectedAffiliateId] = React.useState<string | null>(null);
     const [filterRange, setFilterRange] = React.useState<'7d' | '30d' | 'all'>('30d');
     const [message, setMessage] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -346,7 +349,11 @@ export default function AdminAffiliates() {
                                 </div>
                                 <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
                                     {affiliates.slice(0, 5).map((aff, i) => (
-                                        <div key={aff.id} className="flex items-center justify-between p-5 bg-secondary rounded-[2rem] group hover:bg-white hover:shadow-xl transition-all border border-transparent hover:border-primary/10">
+                                        <div
+                                            key={aff.id}
+                                            onClick={() => setSelectedAffiliateId(aff.id)}
+                                            className="flex items-center justify-between p-5 bg-secondary rounded-[2rem] group hover:bg-white hover:shadow-xl transition-all border border-transparent hover:border-primary/10 cursor-pointer"
+                                        >
                                             <div className="flex items-center gap-4">
                                                 <div className="relative shrink-0">
                                                     <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-white font-black text-[10px] uppercase shadow-lg shadow-primary/10 transition-transform group-hover:rotate-6">
@@ -463,13 +470,13 @@ export default function AdminAffiliates() {
                                     <tbody className="divide-y divide-border">
                                         {filteredAffiliates.map(aff => (
                                             <tr key={aff.id} className="hover:bg-primary/5 transition-all group">
-                                                <td className="px-10 py-8">
-                                                    <div className="flex items-center gap-4 text-left">
+                                                <td className="px-10 py-8" onClick={() => setSelectedAffiliateId(aff.id)}>
+                                                    <div className="flex items-center gap-4 text-left cursor-pointer">
                                                         <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center text-white font-black uppercase text-[10px] shadow-lg shadow-primary/10 transition-transform group-hover:scale-110 shrink-0">
                                                             {aff.full_name?.substring(0, 2) || '??'}
                                                         </div>
                                                         <div className="min-w-0">
-                                                            <span className="font-black text-foreground uppercase text-xs tracking-tight block truncate">{aff.full_name || 'Anonymous'}</span>
+                                                            <span className="font-black text-foreground uppercase text-xs tracking-tight block truncate group-hover:text-primary transition-colors">{aff.full_name || 'Anonymous'}</span>
                                                             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5 block truncate">{aff.email}</span>
                                                         </div>
                                                     </div>
@@ -534,6 +541,24 @@ export default function AdminAffiliates() {
                         </Card>
                     </div>
                 </>
+            )}
+
+            {/* AFFILIATE 360 INTELLIGENCE MODAL */}
+            {selectedAffiliateId && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/20 backdrop-blur-md p-4 animate-in fade-in duration-300">
+                    <Card className="max-w-6xl w-full h-[90vh] bg-white rounded-[3.5rem] shadow-2xl overflow-hidden border-none animate-in zoom-in-95 duration-500 flex flex-col">
+                        <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em]">Autonomous Channel Audit</p>
+                            <button onClick={() => setSelectedAffiliateId(null)} className="h-10 w-10 rounded-full hover:bg-white flex items-center justify-center text-slate-300 hover:text-foreground transition-all"><X size={24} /></button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-10 no-scrollbar">
+                            <Affiliate360 affiliateId={selectedAffiliateId} />
+                        </div>
+                        <div className="p-8 border-t border-slate-50 bg-slate-50/30 text-center">
+                            <p className="text-[8px] font-black uppercase text-slate-300 tracking-[0.6em]">Partner Grid Accuracy • Verified via Multi-touch Attribution</p>
+                        </div>
+                    </Card>
+                </div>
             )}
         </div>
     );

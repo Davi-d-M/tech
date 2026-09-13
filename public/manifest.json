@@ -1,16 +1,18 @@
 {
-  "name": "Apexstores Tech",
+  "name": "Apexstores Kenya",
   "short_name": "Apexstores",
-  "description": "Premium Electronics & Mobile Accessories Kenya",
+  "description": "Premium Electronics & Mobile Accessories Marketplace",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ff6b00",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
       "src": "/favicon.svg",
@@ -20,18 +22,14 @@
   ],
   "shortcuts": [
     {
-      "name": "Admin Dashboard",
-      "short_name": "Admin",
-      "description": "View sales and orders",
-      "url": "/admin",
-      "icons": [{ "src": "/images/NoImage.jpg", "sizes": "192x192" }]
+      "name": "Shop Latest",
+      "url": "/shop",
+      "icons": [{ "src": "/favicon.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Add Product",
-      "short_name": "Stock",
-      "description": "Upload new gadgets",
-      "url": "/admin/upload",
-      "icons": [{ "src": "/images/NoImage.jpg", "sizes": "192x192" }]
+      "name": "Track Order",
+      "url": "/track",
+      "icons": [{ "src": "/favicon.svg", "sizes": "192x192" }]
     }
   ]
 }

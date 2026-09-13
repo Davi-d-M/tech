@@ -22,6 +22,7 @@ import {
     PackageCheck,
     Sparkles,
     Loader2,
+    Zap,
     FileText,
     Download,
     DollarSign,
@@ -38,6 +39,8 @@ import { cn, formatPrice } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 import { logAuditAction } from '@/lib/auditService';
 import { useSettings } from '@/lib/useSettings';
+
+import Product360 from '@/components/admin/Product360';
 
 const initialForm = {
   name: '',
@@ -148,6 +151,7 @@ function UploadContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [intelId, setIntelId] = useState<number | null>(null);
   const [formSession, setFormSession] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -1201,6 +1205,13 @@ function UploadContent() {
                                   </div>
                                   <div className="flex items-center gap-2">
                                       <button
+                                        onClick={(e) => { e.stopPropagation(); setIntelId(p.id); }}
+                                        className="h-10 w-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-primary shadow-sm hover:shadow-lg transition-all"
+                                        title="Product 360 Intel"
+                                      >
+                                          <Zap className="h-4 w-4 fill-current" />
+                                      </button>
+                                      <button
                                         onClick={(e) => { e.stopPropagation(); handleDeleteProduct(p.id, p.name); }}
                                         className="h-10 w-10 rounded-xl flex items-center justify-center text-slate-200 hover:text-rose-500 hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all"
                                       >
@@ -1216,6 +1227,24 @@ function UploadContent() {
           </div>
         </div>
       </div>
+
+      {/* PRODUCT 360 INTELLIGENCE MODAL */}
+      {intelId && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/20 backdrop-blur-md p-4 animate-in fade-in duration-300">
+              <Card className="max-w-6xl w-full h-[90vh] bg-white rounded-[3.5rem] shadow-2xl overflow-hidden border-none animate-in zoom-in-95 duration-500 flex flex-col">
+                  <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em]">Autonomous SKU Audit</p>
+                      <button onClick={() => setIntelId(null)} className="h-10 w-10 rounded-full hover:bg-white flex items-center justify-center text-slate-300 hover:text-foreground transition-all"><X size={24} /></button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-10 no-scrollbar">
+                      <Product360 productId={intelId} />
+                  </div>
+                  <div className="p-8 border-t border-slate-50 bg-slate-50/30 text-center">
+                      <p className="text-[8px] font-black uppercase text-slate-300 tracking-[0.6em]">Apex Grid Precision Data • Verified Today</p>
+                  </div>
+              </Card>
+          </div>
+      )}
     </div>
   );
 }

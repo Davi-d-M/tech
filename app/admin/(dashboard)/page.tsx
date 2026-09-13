@@ -44,6 +44,7 @@ import SentimentSentinel from '@/components/admin/SentimentSentinel';
 import ActiveAdmins from '@/components/admin/ActiveAdmins';
 import OracleNode from '@/components/admin/OracleNode';
 import SocialCommandWidget from '@/components/admin/SocialCommandWidget';
+import DecisionDashboard from '@/components/admin/DecisionDashboard';
 import { runSecurityScan } from '@/lib/apex-os/security-shield';
 
 interface OrderRecord {
@@ -318,6 +319,8 @@ export default function AdminDashboard() {
         </Card>
 
       </div>
+
+      <DecisionDashboard />
 
       <TodayCommandCenter />
 

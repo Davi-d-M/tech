@@ -155,20 +155,20 @@ export default function AdminProfilePage() {
                         </div>
                     </Card>
 
-                    <Card className="p-10 rounded-[3rem] bg-slate-900 text-white relative overflow-hidden group">
-                        <div className="relative z-10 space-y-6">
-                            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-primary"><Zap size={24} /></div>
-                            <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Security Status</h3>
-                            <p className="text-[11px] text-slate-400 font-medium leading-relaxed italic opacity-80">
+                    <Card className="p-10 rounded-[3rem] bg-primary/5 border border-primary/10 relative overflow-hidden group">
+                        <div className="relative z-10 space-y-6 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm"><Zap size={24} /></div>
+                            <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-foreground">Security Status</h3>
+                            <p className="text-[11px] text-slate-500 font-medium leading-relaxed italic">
                                 &quot;Your session is currently protected by a signed JWT cookie with high-entropy encryption.&quot;
                             </p>
                             {role === 'owner' && (
-                                <Button onClick={copyMagicLink} className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl h-12 text-[9px] font-black uppercase tracking-widest mt-4">
+                                <Button onClick={copyMagicLink} className="w-full bg-primary text-white rounded-xl h-12 text-[9px] font-black uppercase tracking-widest mt-4 shadow-lg shadow-primary/20 hover:bg-primary/90">
                                     <Share2 size={14} className="mr-2" /> Copy Magic Link
                                 </Button>
                             )}
                         </div>
-                        <ShieldCheck className="absolute -bottom-10 -right-10 h-48 w-48 text-white/5 rotate-12" />
+                        <ShieldCheck className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/5 rotate-12" />
                     </Card>
                 </div>
 

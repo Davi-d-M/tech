@@ -93,7 +93,7 @@ export default function MultiVendorHub() {
             </header>
 
             {isOnboarding && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/10 backdrop-blur-md p-4">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-primary/5 backdrop-blur-md p-4">
                     <Card className="max-w-md w-full p-10 rounded-[3rem] bg-white border border-slate-100 shadow-2xl space-y-8 animate-in zoom-in-95 duration-500">
                         <h3 className="text-xl font-black uppercase tracking-tighter">Partner Onboarding</h3>
                         <div className="space-y-6">
@@ -245,18 +245,18 @@ export default function MultiVendorHub() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 text-left">
-                <Card className="p-10 rounded-[3rem] bg-indigo-600 text-white border-none shadow-2xl relative overflow-hidden group">
+                <Card className="p-10 rounded-[3rem] bg-indigo-50 border border-indigo-100 shadow-sm relative overflow-hidden group">
                     <div className="relative z-10 space-y-6">
                         <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/20"><ShieldCheck size={24} /></div>
-                            <h3 className="text-xl font-black uppercase tracking-tighter">Settlement Process</h3>
+                            <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center text-indigo-600 shadow-sm"><ShieldCheck size={24} /></div>
+                            <h3 className="text-xl font-black uppercase tracking-tighter text-indigo-900">Settlement Process</h3>
                         </div>
-                        <p className="text-xs font-medium leading-relaxed opacity-70 italic">
+                        <p className="text-xs font-medium leading-relaxed text-indigo-700 italic">
                             &quot;All partner payouts are calculated every Monday. Commission is deducted at the time of successful delivery.&quot;
                         </p>
-                        <div className="pt-4 border-t border-white/10 flex justify-between items-center">
-                            <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-60">Status</span>
-                            <span className="text-xs font-black uppercase tracking-widest">Active System</span>
+                        <div className="pt-4 border-t border-indigo-100 flex justify-between items-center">
+                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-indigo-400">Status</span>
+                            <span className="text-xs font-black uppercase tracking-widest text-indigo-600">Active System</span>
                         </div>
                     </div>
                 </Card>

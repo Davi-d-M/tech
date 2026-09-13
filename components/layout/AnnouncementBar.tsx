@@ -26,7 +26,7 @@ export default function AnnouncementBar() {
             )}
             <button
                 onClick={() => setIsVisible(false)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-black/10 rounded-full transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/20 rounded-full transition-colors"
                 aria-label="Dismiss announcement"
             >
                 <X className="h-3.5 w-3.5" />

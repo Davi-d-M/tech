@@ -1,57 +1,45 @@
-# Implementation Plan - Intelligent Rider Dispatch & Mission Tracking 🏍️🛰️🧠
+# Implementation Plan - Phase 4: Apex OS Market Domination & Elite Personalization 🚀👑💎
 
-This plan transforms the current logistics module into a high-fidelity "Fleet Command" system. It introduces intelligent rider scoring, real-time route optimization, and proactive exception detection tailored for the Kenyan market.
+This plan executes the remaining items from the "Giant Brain" blueprint to ensure Apex OS isn't just a website, but an elite commerce + hospitality operating system. We are focusing on first-party intelligence, personalization, and operational moats.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> **Routing Engine**: I recommend using the **Google Maps Routes API** for precise Nairobi traffic data and estate-level navigation. You will need a valid Google Cloud API Key.
-> **Battery Impact**: The foreground location service in the Rider App will be optimized to balance GPS accuracy with battery consumption.
-> **Privacy**: Precise GPS tracking is restricted to authorized Admins and the specific Customer waiting for that delivery.
+> **Age Verification**: I will implement a mandatory legal compliance modal for first-time visitors (Alcoholic Drinks Control Act).
+> **Gifting**: I will add "Gift Message" and "Premium Wrapping" options to the Checkout and Cart.
+> **Search**: Upgrading the search to "Serious Intelligence" with synonyms and brand discovery.
 
 ## Proposed Changes
 
-### 1. Database Intelligence Expansion (`supabase/migrations/`) 🗄️
-- [MODIFY] `rider_status`: Add telemetry fields (`lat`, `lng`, `speed`, `heading`) and reliability metrics.
-- [MODIFY] `orders`: Add routing data (`route_geometry`, `estimated_arrival`, `pickup_coords`).
-- [NEW] `rider_telemetry_log`: High-frequency storage for route history and deviation detection.
-- [NEW] `fleet_exceptions`: Record system alerts (e.g., "Rider Stopped", "ETA Breach").
+### 1. The Customer Brain (Personalization & Gifting) 🎁🧠
+- [NEW] **Personalized Homepage**: "Because you liked [Category]" and "Continue Shopping" sections based on Customer 360 data.
+- [NEW] **Gifting Protocol**: Message, wrapping, and recipient info options in `CartDrawer` and `Checkout`.
+- [NEW] **Smart Cart**: Relevant cross-sell recommendations (e.g., "Add Whiskey Glasses") within the cart flow.
 
-### 2. Dispatch Scoring Engine (`lib/apex-os/dispatch-engine.ts`) 🧠
-- [NEW] Implement a multi-factor scoring algorithm:
-    - **Proximity**: Physical distance to pickup.
-    - **Workload**: Current number of assigned orders.
-    - **Reliability**: Historical rating + completion speed.
-    - **Suitability**: Vehicle type vs. product weight (e.g., Bike for AirPods vs. Van for Large Orders).
-- [NEW] Smart Match: Automatically suggest the top 3 riders for any pending extraction.
+### 2. Serious Search & Discovery 🔎✨
+- [MODIFY] **Search Intelligence**: Upgrade `Header.tsx` to handle synonyms, misspells, and brand discovery.
+- [NEW] **Bar Goods Section**: A dedicated catalog for Tot glasses, Shakers, and Corkscrews to create a second revenue stream.
+- [MODIFY] **Product Schema**: Add JSON-LD structured data for Google Discovery (price, availability, reviews).
 
-### 3. Rider "Mission Hub" UI (`app/rider/dashboard/page.tsx`) 🎮
-- [NEW] **Mission Screen**: A full-screen tactical view for active deliveries.
-    - Live Map with route polyline.
-    - "Start Mission" and "Arrived" interaction buttons.
-    - Real-time traffic alerts and automatic re-routing suggestions.
-    - "Difficult Destination" tips (e.g., mall loading zones, gate protocols).
+### 3. Operational Moats (Accounting & Inventory) 💰📦
+- [NEW] **Finance Center**: Admin view for Revenue vs. Contribution Profit (Subtracting COGS, payment fees, and CAC).
+- [NEW] **Granular Inventory**: SKU details including Reorder level, Supplier cost, and Multi-location status (Westlands vs. CBD).
+- [NEW] **Predictive Alerts**: Admin "Attention HUD" for projected stockouts and payment failure spikes.
 
-### 4. Admin "Fleet Command" Dashboard (`app/admin/(dashboard)/dispatch/page.tsx`) 🛡️
-- [MODIFY] **Map Overhaul**: High-fidelity map showing animated rider movements and route paths.
-- [NEW] **Exception Center**: A dedicated HUD for alerts (Stalled Riders, GPS Loss, High-Value Order Shield).
-- [NEW] **Fleet Stats**: Real-time counts for `ONLINE`, `ON DELIVERY`, `AT PICKUP`, and `IDLE`.
-
-### 5. Customer "Live Tracker" (`components/order/LiveOrderTracker.tsx`) 📦
-- [NEW] A premium tracking experience for the buyer:
-    - "Rider is X km away" (masked for privacy).
-    - Status progress bar (Confirmed -> Preparing -> Dispatched -> Arriving).
-    - Map showing the rider approaching the drop point.
+### 4. Legal Moat & Performance 🛡️⚡
+- [NEW] **Age Verification Modal**: Strict responsible-drinking gate for first-time visitors.
+- [NEW] **PWA (Installable)**: Configure `manifest.json` and service workers for an "App-Like" web experience.
+- [NEW] **Growth Memory**: A dedicated table to log A/B tests and results (e.g., "Free delivery vs. 10% discount").
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure new mapping libraries are optimized.
-- Test the Scoring Engine with mock data to verify "Best Rider" selection.
+- Run `npm run build` to verify performance optimization (3D lazy loading).
+- Verify SQL idempotency: Run the fixed migration twice to ensure no policy conflicts.
 
 ### Manual Verification
-1. **Mission Flow**: Assign an order -> Log in as Rider -> Start Mission -> Verify GPS updates on Admin Map.
-2. **Exception Test**: Stop a test rider's GPS updates -> Verify "GPS LOST" alert appears in Admin within 3 minutes.
-3. **Routing Test**: Verify the "Route Line" on the map accurately follows the road network provided by the Routing API.
+1. **Personalization Test**: View 3 Whiskey products -> Refresh Home -> Verify "Whiskey Enthusiast" section appears.
+2. **Gifting Test**: Add item -> Select "Gift Wrapping" -> Verify message and fee appear in Order Summary.
+3. **Compliance Test**: Clear cookies -> Visit site -> Verify Age Verification modal blocks entry until confirmed.

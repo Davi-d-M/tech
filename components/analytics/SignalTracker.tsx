@@ -9,6 +9,13 @@ export default function SignalTracker() {
     const dwellTimes = useRef<Map<string, number>>(new Map());
 
     useEffect(() => {
+        // 📱 PWA: Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.warn('SW registration failed:', err));
+            });
+        }
+
         const currentDwellTimes = dwellTimes.current;
         // Track page view
         signalService.track({ event_type: 'VIEW', target: pathname });

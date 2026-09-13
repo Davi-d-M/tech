@@ -127,6 +127,7 @@ const DEFAULT_SETTINGS: StoreSettings = {
             { id: 'chargers', label: 'Super Chargers' },
             { id: 'cases', label: 'Cases' },
             { id: 'watches', label: 'Watches' },
+            { id: 'bar-goods', label: 'Bar Accessories' },
             { id: 'accessories', label: 'Others' }
         ]
     },

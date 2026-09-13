@@ -118,7 +118,7 @@ export default function SupplierLogin() {
 
                     <Button
                         disabled={loading}
-                        className="w-full h-20 rounded-[2rem] bg-slate-900 text-white font-black uppercase text-sm tracking-[0.3em] shadow-xl hover:bg-black transition-all active:scale-95"
+                        className="w-full h-20 rounded-[2rem] bg-primary text-white font-black uppercase text-sm tracking-[0.3em] shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95"
                     >
                         {loading ? <Loader2 className="h-5 w-5 animate-spin mr-3" /> : 'Sign In'}
                     </Button>

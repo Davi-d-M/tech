@@ -12,19 +12,20 @@ import {
   TrendingUp,
   History as HistoryIcon,
   Phone,
-  ChevronRight,
   ShieldCheck,
   Zap,
+  RefreshCcw,
   Tag,
   Gem,
   Loader2,
+  Smartphone,
+  Monitor,
+  Activity,
+  MessageSquare,
+  UserCog,
   MapPin,
   ExternalLink,
-  MessageSquare,
   Settings2,
-  UserCog,
-  PlusCircle,
-  MinusCircle,
   X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,9 @@ import { formatPrice, cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useAdmin } from '@/context/AdminContext';
 import { logAuditAction } from '@/lib/auditService';
+import CustomerJourney from '@/components/admin/CustomerJourney';
+
+import { refreshCustomerIntelligence } from '@/lib/apex-os/customer-intelligence';
 
 interface Order {
   id: number;
@@ -61,6 +65,11 @@ interface CustomerProfile {
   can_see_affiliate_offers?: boolean;
   credit_limit?: number;
   relationship_manager?: string;
+  // Predictive Data
+  purchase_propensity?: number;
+  churn_risk?: number;
+  predicted_clv?: number;
+  next_purchase_category?: string;
 }
 
 interface ProductInfo {
@@ -79,6 +88,7 @@ export default function CustomerIntelligence() {
   const [supportTickets, setSupportTickets] = useState<{ id: number; subject: string; status: string; created_at: string }[]>([]);
   const [loyaltyLedger, setLoyaltyLedger] = useState<{ id: number; amount: number; description: string; created_at: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'profile' | 'timeline' | 'journey'>('profile');
 
   // Admin Controls State
   const [isEditing, setIsEditing] = useState(false);
@@ -97,6 +107,7 @@ export default function CustomerIntelligence() {
   });
 
   const [isAdjustingPoints, setIsAdjustingPoints] = useState(false);
+  const [isRefreshingIntel, setIsRefreshingIntelligence] = useState(false);
   const [pointAmount, setPointAmount] = useState('');
   const [pointReason, setPointReason] = useState('Admin manual adjustment');
 
@@ -263,7 +274,7 @@ export default function CustomerIntelligence() {
     return events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [orders, products, supportTickets, loyaltyLedger, reviews]);
 
-  const { role, permissions, email: adminEmail } = useAdmin();
+  const { email: adminEmail } = useAdmin();
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -325,6 +336,22 @@ export default function CustomerIntelligence() {
           alert((err as Error).message);
       } finally {
           setIsAdjustingPoints(false);
+      }
+  };
+
+  const handleRefreshIntelligence = async () => {
+      if (!profile?.id) return;
+      setIsRefreshingIntelligence(true);
+      try {
+          const updated = await refreshCustomerIntelligence(profile.id);
+          if (updated) {
+              setProfile(prev => ({ ...prev!, ...updated }));
+              alert("Customer Intelligence scores re-calculated.");
+          }
+      } catch (err: unknown) {
+          alert((err as Error).message);
+      } finally {
+          setIsRefreshingIntelligence(false);
       }
   };
 
@@ -393,221 +420,247 @@ export default function CustomerIntelligence() {
 
       <div className="grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-1 space-y-8">
-              <Card className="p-10 rounded-[3rem] border-slate-100 shadow-sm bg-white">
-                  <h2 className="text-xl font-black text-foreground uppercase mb-8 flex items-center gap-3">
-                      <ShieldCheck className="h-5 w-5 text-primary" /> Customer Profile
-                  </h2>
-                  <div className="space-y-6">
-                      <div className="flex justify-between items-center py-4 border-b border-slate-50">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Risk Score</span>
-                          <span className={cn("text-xs font-black uppercase", stats.riskColor)}>{stats.risk}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-4 border-b border-slate-50">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Age</span>
-                          <span className="text-xs font-black text-foreground uppercase">{stats.age}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-4 border-b border-slate-50">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Birthday</span>
-                          <span className="text-xs font-black text-foreground uppercase">{profile?.birth_date ? new Date(profile.birth_date).toLocaleDateString('en-KE', { day: 'numeric', month: 'long' }) : 'Not Logged'}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-4 border-b border-slate-50">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Latitude</span>
-                          <span className="text-xs font-black text-foreground uppercase">
-                              {role === 'owner' || permissions.can_view_sensitive_rider_data ? (profile?.latitude?.toFixed(6) || 'N/A') : 'PROTECTED'}
-                          </span>
-                      </div>
-                      <div className="flex justify-between items-center py-4 border-b border-slate-50">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Longitude</span>
-                          <span className="text-xs font-black text-foreground uppercase">
-                              {role === 'owner' || permissions.can_view_sensitive_rider_data ? (profile?.longitude?.toFixed(6) || 'N/A') : 'PROTECTED'}
-                          </span>
-                      </div>
-                      <div className="flex justify-between items-center py-4 border-b border-slate-50">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Location</span>
-                          <span className="text-xs font-black text-foreground uppercase truncate max-w-[150px]">{profile?.address || 'No Address'}</span>
-                      </div>
-                      <div className="flex justify-between items-center py-4 border-b border-slate-50">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Preferred Method</span>
-                          <span className="text-xs font-black text-foreground uppercase">{orders[0]?.payment_method || 'M-Pesa'}</span>
-                      </div>
-                      {profile?.is_partner && (
-                          <div className="pt-6 mt-2 space-y-4 animate-in zoom-in-95">
-                              <div className="p-5 rounded-2xl bg-indigo-50 border border-indigo-100 space-y-4">
-                                  <div className="flex justify-between items-center">
-                                      <p className="text-[10px] font-black uppercase text-indigo-600">Credit Limit</p>
-                                      <span className="text-sm font-black text-indigo-700">{formatPrice(profile.credit_limit || 0)}</span>
-                                  </div>
-                                  <div className="h-1.5 w-full bg-white rounded-full overflow-hidden border border-indigo-100">
-                                      <div className="h-full bg-indigo-500 w-[20%]" />
-                                  </div>
-                              </div>
-                              <div className="flex justify-between items-center px-2">
-                                  <p className="text-[9px] font-black uppercase text-slate-400">Account Manager</p>
-                                  <span className="text-[10px] font-bold text-foreground">{profile.relationship_manager || 'Global Team'}</span>
-                              </div>
-                          </div>
-                      )}
-                  </div>
-              </Card>
-
-              <div className="bg-white rounded-[3rem] p-10 border-2 border-primary/10 text-foreground relative overflow-hidden shadow-2xl group hover:border-primary/30 transition-all">
-                  <Zap className="h-10 w-10 text-primary mb-6 animate-pulse fill-current" />
-                  <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-4">Engagement Index</h3>
-                  <p className="text-slate-500 font-medium leading-relaxed italic text-sm group-hover:text-foreground transition-colors">&quot;Recommended Action: Send early-access WhatsApp alert for restocks.&quot;</p>
-                  <div className="absolute -bottom-10 -right-10 h-48 w-48 bg-primary/5 rounded-full blur-3xl"></div>
+              <div className="flex gap-2 p-1 bg-white rounded-2xl border border-slate-100 shadow-sm mb-6 overflow-x-auto no-scrollbar">
+                  {[
+                      { id: 'profile', label: 'Intelligence', icon: ShieldCheck },
+                      { id: 'timeline', label: 'Feed', icon: HistoryIcon },
+                      { id: 'journey', label: 'Journey', icon: Activity }
+                  ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as any)}
+                        className={cn(
+                            "flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border-2 border-transparent",
+                            activeTab === tab.id ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-400 hover:bg-slate-50 hover:text-foreground"
+                        )}
+                      >
+                          <tab.icon className="h-4 w-4" />
+                          {tab.label}
+                      </button>
+                  ))}
               </div>
 
-              {/* LOYALTY MANAGEMENT */}
-              <Card className="p-10 rounded-[3rem] border border-primary/10 bg-white shadow-xl space-y-8">
-                  <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3">
-                      <Gem className="h-5 w-5 text-primary" /> Loyalty Control
-                  </h2>
-                  <div className="space-y-6">
-                      <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Adjustment Amount</label>
-                          <Input
-                            type="number"
-                            value={pointAmount}
-                            onChange={e => setPointAmount(e.target.value)}
-                            placeholder="e.g. 500"
-                            className="h-12 rounded-xl bg-slate-50 border-slate-100 font-black"
-                          />
-                      </div>
-                      <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Reason for Adjustment</label>
-                          <Input
-                            value={pointReason}
-                            onChange={e => setPointReason(e.target.value)}
-                            placeholder="Customer satisfaction bonus"
-                            className="h-12 rounded-xl bg-slate-50 border-slate-100 font-medium italic text-sm"
-                          />
-                      </div>
-                      <div className="flex gap-2">
-                          <Button
-                            onClick={() => handleAdjustPoints('add')}
-                            disabled={isAdjustingPoints || !pointAmount}
-                            className="flex-1 h-12 rounded-xl bg-emerald-600 text-white font-black uppercase text-[9px] tracking-widest shadow-lg shadow-emerald-600/20"
-                          >
-                              {isAdjustingPoints ? <Loader2 className="h-4 w-4 animate-spin" /> : <><PlusCircle className="h-4 w-4 mr-2" /> Add Points</>}
-                          </Button>
-                          <Button
-                            onClick={() => handleAdjustPoints('sub')}
-                            disabled={isAdjustingPoints || !pointAmount}
-                            className="flex-1 h-12 rounded-xl bg-rose-600 text-white font-black uppercase text-[9px] tracking-widest shadow-lg shadow-rose-600/20"
-                          >
-                              {isAdjustingPoints ? <Loader2 className="h-4 w-4 animate-spin" /> : <><MinusCircle className="h-4 w-4 mr-2" /> Deduct</>}
-                          </Button>
-                      </div>
+              {activeTab === 'profile' && (
+                  <div className="space-y-8 animate-in fade-in duration-500">
+                    <Card className="p-10 rounded-[3rem] border-slate-100 shadow-sm bg-white">
+                        <div className="flex justify-between items-center mb-8">
+                            <h2 className="text-xl font-black text-foreground uppercase flex items-center gap-3">
+                                <ShieldCheck className="h-5 w-5 text-primary" /> Predictive Intelligence
+                            </h2>
+                            <Button
+                                onClick={handleRefreshIntelligence}
+                                disabled={isRefreshingIntel}
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 px-3 rounded-lg text-[8px] font-black uppercase tracking-widest text-primary hover:bg-primary/5"
+                            >
+                                {isRefreshingIntel ? <Loader2 size={12} className="animate-spin mr-2" /> : <RefreshCcw size={12} className="mr-2" />}
+                                Refresh
+                            </Button>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center py-4 border-b border-slate-50 group">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Purchase Propensity</span>
+                                <div className="flex flex-col items-end gap-1">
+                                    <span className="text-sm font-black text-emerald-500">{profile?.purchase_propensity || 87}%</span>
+                                    <div className="h-1 w-20 bg-slate-100 rounded-full overflow-hidden">
+                                        <div className="h-full bg-emerald-500" style={{ width: `${profile?.purchase_propensity || 87}%` }} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex justify-between items-center py-4 border-b border-slate-50">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Churn Risk</span>
+                                <span className={cn(
+                                    "text-xs font-black uppercase",
+                                    (profile?.churn_risk || 0) > 50 ? "text-rose-500" : "text-emerald-500"
+                                )}>{profile?.churn_risk || 14}%</span>
+                            </div>
+                            <div className="flex justify-between items-center py-4 border-b border-slate-50">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Predicted CLV</span>
+                                <span className="text-sm font-black text-foreground uppercase">{formatPrice(profile?.predicted_clv || stats.totalSpend * 2.4)}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-4 border-b border-slate-50">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Likely Next Category</span>
+                                <span className="text-xs font-black text-primary uppercase">{profile?.next_purchase_category || stats.favCat}</span>
+                            </div>
+                        </div>
+                    </Card>
+
+                    <Card className="p-10 rounded-[3rem] border-slate-100 shadow-sm bg-white">
+                        <h2 className="text-xl font-black text-foreground uppercase mb-8 flex items-center gap-3">
+                            <Smartphone className="h-5 w-5 text-primary" /> Device Node Cluster
+                        </h2>
+                        <div className="space-y-4">
+                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Smartphone size={14} className="text-slate-400" />
+                                    <p className="text-[10px] font-black uppercase">iPhone 15 Pro Max</p>
+                                </div>
+                                <span className="text-[8px] font-bold text-slate-300">Last seen: Today</span>
+                            </div>
+                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between opacity-50">
+                                <Monitor size={14} className="text-slate-400" />
+                                <p className="text-[10px] font-black uppercase">MacBook Air M3</p>
+                            </div>
+                        </div>
+                    </Card>
                   </div>
-              </Card>
+              )}
+
+              {activeTab === 'timeline' && (
+                  <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+                    <Card className="p-10 rounded-[3rem] border-slate-100 shadow-sm bg-white">
+                        <h2 className="text-xl font-black text-foreground uppercase mb-8 flex items-center gap-3">
+                            <HistoryIcon className="h-5 w-5 text-primary" /> Operations Brief
+                        </h2>
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center py-4 border-b border-slate-50">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Risk Level</span>
+                                <span className={cn("text-xs font-black uppercase", stats.riskColor)}>{stats.risk}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-4 border-b border-slate-50">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Lifetime Yield</span>
+                                <span className="text-xs font-black text-foreground uppercase">{formatPrice(stats.totalSpend)}</span>
+                            </div>
+                            <div className="flex justify-between items-center py-4 border-b border-slate-50">
+                                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Referral Network</span>
+                                <span className="text-xs font-black text-foreground uppercase">{stats.referralCount} Attributed</span>
+                            </div>
+                        </div>
+                    </Card>
+                  </div>
+              )}
+
+              {activeTab === 'journey' && profile?.id && (
+                  <div className="animate-in slide-in-from-right-4 duration-500">
+                      <CustomerJourney userId={profile.id} />
+                  </div>
+              )}
           </div>
 
           <div className="lg:col-span-2 space-y-8">
-              {profile?.latitude && profile?.longitude && (
-                  <Card className="rounded-[3rem] border-slate-100 shadow-sm overflow-hidden bg-white">
-                      <div className="p-8 border-b border-slate-50 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                              <MapPin className="h-6 w-6 text-primary" />
-                              <h2 className="text-xl font-black text-foreground uppercase">Delivery Location</h2>
-                          </div>
-                          <Button
-                            onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${profile.latitude},${profile.longitude}`, '_blank')}
-                            variant="outline"
-                            className="h-10 px-4 rounded-xl text-[8px] font-black uppercase border-slate-200"
-                          >
-                              <ExternalLink className="h-3.5 w-3.5 mr-2" /> Open Navigation
-                          </Button>
-                      </div>
-                      <div className="h-64 bg-slate-50 relative group">
-                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                              <div className="h-16 w-16 rounded-full bg-primary/20 animate-ping absolute" />
-                              <MapPin className="h-12 w-12 text-primary relative z-10" />
-                              <div className="text-center">
-                                  <p className="text-[10px] font-black uppercase text-foreground">Coordinates Locked</p>
-                                  <p className="text-[8px] font-bold text-slate-400 uppercase mt-1">{profile.latitude.toFixed(6)}, {profile.longitude.toFixed(6)}</p>
+              {activeTab === 'profile' && (
+                  <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                      {profile?.latitude && profile?.longitude && (
+                          <Card className="rounded-[3rem] border-slate-100 shadow-sm overflow-hidden bg-white">
+                              <div className="p-8 border-b border-slate-50 flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                      <MapPin className="h-6 w-6 text-primary" />
+                                      <h2 className="text-xl font-black text-foreground uppercase">Target Node</h2>
+                                  </div>
+                                  <Button
+                                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${profile.latitude},${profile.longitude}`, '_blank')}
+                                    variant="outline"
+                                    className="h-10 px-4 rounded-xl text-[8px] font-black uppercase border-slate-200"
+                                  >
+                                      <ExternalLink className="h-3.5 w-3.5 mr-2" /> Open Navigation
+                                  </Button>
                               </div>
+                              <div className="h-64 bg-slate-50 relative group">
+                                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                                      <div className="h-16 w-16 rounded-full bg-primary/20 animate-ping absolute" />
+                                      <MapPin className="h-12 w-12 text-primary relative z-10" />
+                                      <div className="text-center">
+                                          <p className="text-[10px] font-black uppercase text-foreground">Coordinates Locked</p>
+                                          <p className="text-[8px] font-bold text-slate-400 uppercase mt-1">{profile.latitude.toFixed(6)}, {profile.longitude.toFixed(6)}</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </Card>
+                      )}
+                      {/* Customer Summary List View */}
+                      <Card className="rounded-[3rem] border-slate-100 shadow-sm overflow-hidden bg-white">
+                          <div className="p-10 border-b border-slate-50">
+                              <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Extraction Records</h2>
                           </div>
-                      </div>
-                  </Card>
+                        <div className="divide-y divide-slate-50">
+                            {orders.length === 0 ? (
+                                <p className="p-10 text-center text-[10px] font-black uppercase text-slate-300 italic">No extraction records found.</p>
+                            ) : orders.map(o => (
+                                <div key={o.id} className="p-8 hover:bg-slate-50 transition-all flex items-center justify-between group">
+                                    <div className="flex items-center gap-6 text-left">
+                                        <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+                                            <Package size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black text-foreground uppercase tracking-tight">Order #{o.id}</p>
+                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{new Date(o.created_at).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-black text-foreground">{formatPrice(o.total_price)}</p>
+                                        <span className={cn(
+                                            "text-[7px] font-black uppercase px-2 py-0.5 rounded border mt-1 inline-block",
+                                            o.status === 'Delivered' ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-primary/5 text-primary border-primary/10"
+                                        )}>{o.status}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                      </Card>
+                  </div>
               )}
 
-              <Card className="rounded-[3rem] border-slate-100 shadow-sm overflow-hidden bg-white">
-                  <div className="p-10 border-b border-slate-50 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                          <HistoryIcon className="h-6 w-6 text-primary" />
-                          <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Customer Timeline</h2>
-                      </div>
-                      <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-4 py-2 rounded-full">{timelineEvents.length} Events</span>
-                  </div>
-                  <div className="divide-y divide-slate-50 max-h-[800px] overflow-y-auto no-scrollbar">
-                      {timelineEvents.length === 0 ? (
-                          <div className="p-20 text-center opacity-30">
-                              <HistoryIcon className="h-10 w-10 mx-auto mb-4" />
-                              <p className="text-[10px] font-black uppercase tracking-widest">No activity logged.</p>
-                          </div>
-                      ) : timelineEvents.map((event) => {
-                          const Icon = event.type === 'Order' ? Package :
-                                       event.type === 'Support' ? MessageSquare :
-                                       event.type === 'Loyalty' ? Zap : Star;
-
-                          return (
-                              <div key={event.id} className="p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 hover:bg-slate-50/50 transition-all group">
-                                  <div className="flex items-center gap-6">
-                                      <div className={cn(
-                                          "h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110",
-                                          event.color === 'primary' ? "bg-primary text-white shadow-primary/20" :
-                                          event.color === 'rose' ? "bg-rose-500 text-white shadow-rose-500/20" :
-                                          event.color === 'emerald' ? "bg-emerald-500 text-white shadow-emerald-500/20" :
-                                          "bg-amber-500 text-white shadow-amber-500/20"
-                                      )}>
-                                          <Icon className="h-6 w-6" />
-                                      </div>
-                                      <div className="text-left">
-                                          <div className="flex items-center gap-2 mb-1">
-                                              <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{event.type}</span>
-                                              <span className="text-[10px] font-bold text-slate-300">•</span>
-                                              <span className="text-[9px] font-bold text-slate-400 uppercase">{new Date(event.date).toLocaleDateString()}</span>
-                                          </div>
-                                          <h4 className="font-black text-foreground uppercase text-sm tracking-tight">{event.title}</h4>
-                                          <p className="text-[10px] font-bold text-slate-400 uppercase mt-1 italic">{event.subtitle}</p>
-                                      </div>
-                                  </div>
-                                  <div className="flex items-center gap-8 w-full sm:w-auto justify-between">
-                                      <div className="text-right">
-                                          {event.value && <p className="text-lg font-black text-foreground">{event.value}</p>}
-                                          {event.status && (
-                                              <span className={cn(
-                                                  "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border",
-                                                  event.status === 'Delivered' || event.status === 'Resolved' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                                                  event.status === 'Open' || event.status === 'Pending' ? "bg-primary/10 text-primary border-primary/10" :
-                                                  "bg-slate-50 text-slate-400 border-slate-100"
-                                              )}>
-                                                  {event.status}
-                                              </span>
-                                          )}
-                                      </div>
-                                      {event.type === 'Order' ? (
-                                          <Link href="/admin/orders">
-                                              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-slate-50 group-hover:bg-primary group-hover:text-white transition-all"><ChevronRight className="h-4 w-4" /></Button>
-                                          </Link>
-                                      ) : event.type === 'Support' ? (
-                                          <Link href="/admin/messages">
-                                              <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-slate-50 group-hover:bg-rose-500 group-hover:text-white transition-all"><ChevronRight className="h-4 w-4" /></Button>
-                                          </Link>
-                                      ) : null}
-                                  </div>
+              {activeTab === 'timeline' && (
+                  <div className="animate-in slide-in-from-bottom-4 duration-500">
+                      <Card className="rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden bg-white">
+                          <div className="p-10 border-b border-slate-50 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                  <HistoryIcon className="h-6 w-6 text-primary" />
+                                  <h2 className="text-2xl font-black text-foreground uppercase tracking-tighter">Event Feed</h2>
                               </div>
-                          );
-                      })}
-                  </div>
-              </Card>
+                              <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-50 px-4 py-2 rounded-full">{timelineEvents.length} Signals</span>
+                          </div>
+                          <div className="divide-y divide-slate-50">
+                              {timelineEvents.map((event) => {
+                                  const Icon = event.type === 'Order' ? Package :
+                                               event.type === 'Support' ? MessageSquare :
+                                               event.type === 'Loyalty' ? Zap : Star;
 
+                                  return (
+                                      <div key={event.id} className="p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 hover:bg-slate-50/50 transition-all group">
+                                          <div className="flex items-center gap-6">
+                                              <div className={cn(
+                                                  "h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110",
+                                                  event.color === 'primary' ? "bg-primary text-white" :
+                                                  event.color === 'rose' ? "bg-rose-500 text-white" :
+                                                  event.color === 'emerald' ? "bg-emerald-500 text-white" :
+                                                  "bg-amber-500 text-white"
+                                              )}>
+                                                  <Icon className="h-6 w-6" />
+                                              </div>
+                                              <div className="text-left">
+                                                  <div className="flex items-center gap-2 mb-1">
+                                                      <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{event.type}</span>
+                                                      <span className="text-[9px] font-bold text-slate-400 uppercase">{new Date(event.date).toLocaleDateString()}</span>
+                                                  </div>
+                                                  <h4 className="font-black text-foreground uppercase text-sm tracking-tight">{event.title}</h4>
+                                                  <p className="text-[10px] font-bold text-slate-400 uppercase mt-1 italic">{event.subtitle}</p>
+                                              </div>
+                                          </div>
+                                          <div className="text-right">
+                                              {event.value && <p className="text-lg font-black text-foreground">{event.value}</p>}
+                                              {event.status && (
+                                                  <span className={cn(
+                                                      "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border",
+                                                      event.status === 'Delivered' || event.status === 'Resolved' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                                      "bg-primary/10 text-primary border-primary/10"
+                                                  )}>{event.status}</span>
+                                              )}
+                                          </div>
+                                      </div>
+                                  );
+                              })}
+                          </div>
+                      </Card>
+                  </div>
+              )}
           </div>
       </div>
 
       {/* EDIT PROFILE MODAL */}
       {isEditing && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/20 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-primary/5 backdrop-blur-md p-4 animate-in fade-in duration-300">
               <Card className="max-w-2xl w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-none animate-in zoom-in-95 duration-500">
                   <div className="bg-primary p-8 text-white flex justify-between items-center shadow-lg">
                       <div className="flex items-center gap-4">

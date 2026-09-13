@@ -11,19 +11,27 @@ import {
     CheckCircle2,
     Zap,
     Rocket,
-    Globe
+    Globe,
+    ShieldAlert,
+    AlertCircle,
+    ArrowRight
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+import { socialManager } from '@/lib/social/social-manager';
+import { SocialPlatform } from '@/lib/social/types';
+
 export default function ContentStudio() {
-    const [selectedPlatforms, setSelectedPlatforms] = React.useState<string[]>(['instagram', 'tiktok']);
+    const [selectedPlatforms, setSelectedPlatforms] = React.useState<SocialPlatform[]>(['instagram', 'tiktok']);
     const [caption, setCaption] = React.useState('');
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [status, setStatus] = React.useState<'idle' | 'success'>('idle');
+    const [complianceStatus, setComplianceStatus] = React.useState<'idle' | 'checking' | 'flagged' | 'passed'>('idle');
+    const [complianceReason, setComplianceStatusReason] = React.useState('');
 
-    const togglePlatform = (p: string) => {
+    const togglePlatform = (p: SocialPlatform) => {
         setSelectedPlatforms(prev =>
             prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]
         );
@@ -35,15 +43,48 @@ export default function ContentStudio() {
         await new Promise(r => setTimeout(r, 2000));
         setCaption("Elevate your sound with the new AMAYA AM-05. Crystal clear audio, 20-hour battery, and a sleek mirror finish. 🎧✨ #Apexstores #EliteAudio #GadgetLover");
         setIsGenerating(false);
+        checkCompliance("Elevate your sound with the new AMAYA AM-05...");
+    };
+
+    const checkCompliance = async (text: string) => {
+        setComplianceStatus('checking');
+        await new Promise(r => setTimeout(r, 1500));
+
+        // Mock alcohol compliance logic
+        const alcoholRules = ['win', 'free', 'drink', 'success', 'sexy', 'child', 'under 18'];
+        const flagged = alcoholRules.filter(r => text.toLowerCase().includes(r));
+
+        if (flagged.length > 0) {
+            setComplianceStatus('flagged');
+            setComplianceStatusReason(`Potential breach: ${flagged.join(', ')}. Kenya law restricts alcohol promotion associated with success or underage themes.`);
+        } else {
+            setComplianceStatus('passed');
+        }
     };
 
     const handlePublish = async () => {
         setIsGenerating(true);
-        // Simulate Multi-Channel Publishing
-        await new Promise(r => setTimeout(r, 3000));
-        setStatus('success');
-        setIsGenerating(false);
-        setTimeout(() => setStatus('idle'), 5000);
+        try {
+            // Execute Multi-Channel Distribution
+            const broadcastResults = await socialManager.broadcastContent(
+                caption,
+                undefined, // mediaUrl (could be added to form)
+                selectedPlatforms
+            );
+
+            const allSuccess = broadcastResults.every(r => r.status === 'SUCCESS');
+            if (allSuccess) {
+                setStatus('success');
+            } else {
+                alert("Partial deployment failed. Check account status.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Publish Protocol failed. Database uplink unstable.");
+        } finally {
+            setIsGenerating(false);
+            setTimeout(() => setStatus('idle'), 5000);
+        }
     };
 
     return (
@@ -68,10 +109,10 @@ export default function ContentStudio() {
                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest px-1">1. Distribution Channels</p>
                             <div className="flex flex-wrap gap-3">
                                 {[
-                                    { id: 'instagram', icon: Camera, color: 'rose' },
-                                    { id: 'tiktok', icon: Music, color: 'slate' },
-                                    { id: 'facebook', icon: Globe, color: 'blue' },
-                                    { id: 'whatsapp', icon: Share2, color: 'emerald' }
+                                    { id: 'instagram' as SocialPlatform, icon: Camera, color: 'rose' },
+                                    { id: 'tiktok' as SocialPlatform, icon: Music, color: 'slate' },
+                                    { id: 'facebook' as SocialPlatform, icon: Globe, color: 'blue' },
+                                    { id: 'whatsapp' as SocialPlatform, icon: Share2, color: 'emerald' }
                                 ].map(p => (
                                     <button
                                         key={p.id}
@@ -102,16 +143,33 @@ export default function ContentStudio() {
                             </div>
                             <textarea
                                 value={caption}
-                                onChange={e => setCaption(e.target.value)}
+                                onChange={e => { setCaption(e.target.value); checkCompliance(e.target.value); }}
                                 className="w-full h-40 p-6 rounded-[2.5rem] bg-slate-50 border border-slate-100 text-xs font-medium leading-relaxed resize-none outline-none focus:ring-4 focus:ring-primary/5 transition-all"
                                 placeholder="Enter post caption or trigger AI..."
                             />
+
+                            {complianceStatus !== 'idle' && (
+                                <div className={cn(
+                                    "p-4 rounded-2xl border flex items-start gap-4 animate-in zoom-in-95",
+                                    complianceStatus === 'passed' ? "bg-emerald-50 border-emerald-100 text-emerald-600" :
+                                    complianceStatus === 'flagged' ? "bg-rose-50 border-rose-100 text-rose-600" :
+                                    "bg-slate-50 border-slate-100 text-slate-400"
+                                )}>
+                                    {complianceStatus === 'checking' ? <Loader2 size={16} className="animate-spin mt-0.5" /> :
+                                     complianceStatus === 'passed' ? <CheckCircle2 size={16} className="mt-0.5" /> :
+                                     <ShieldAlert size={16} className="mt-0.5" />}
+                                    <div>
+                                        <p className="text-[9px] font-black uppercase tracking-widest">Compliance Node: {complianceStatus}</p>
+                                        {complianceReason && <p className="text-[8px] font-medium italic mt-1">{complianceReason}</p>}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <Button
                             onClick={handlePublish}
-                            disabled={isGenerating || !caption}
-                            className="w-full h-16 rounded-[1.8rem] bg-slate-900 text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl hover:bg-black active:scale-95 transition-all"
+                            disabled={isGenerating || !caption || complianceStatus === 'flagged'}
+                            className="w-full h-16 rounded-[1.8rem] bg-primary text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all"
                         >
                             {isGenerating ? <Loader2 className="animate-spin mr-3" /> : <Rocket size={18} className="mr-3" />}
                             Execute Distribution

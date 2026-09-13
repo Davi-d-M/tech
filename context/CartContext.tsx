@@ -17,12 +17,20 @@ export interface CartItem {
 interface CartContextProps {
   cart: CartItem[];
   compareList: any[];
+  gifting: {
+    isGift: boolean;
+    message: string;
+    wrapping: 'Standard' | 'Premium' | 'Elite';
+    recipientName: string;
+    recipientPhone: string;
+  };
   addToCart: (item: CartItem) => void;
   addBundleToCart: (items: CartItem[]) => void;
   toggleCompare: (item: any) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
   updateQuantity: (id: number, quantity: number) => void;
+  updateGifting: (data: Partial<CartContextProps['gifting']>) => void;
 }
 
 const CartContext = createContext<CartContextProps | undefined>(undefined);
@@ -30,17 +38,32 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [compareList, setCompareList] = useState<any[]>([]);
+  const [gifting, setGifting] = useState<CartContextProps['gifting']>({
+      isGift: false,
+      message: '',
+      wrapping: 'Standard',
+      recipientName: '',
+      recipientPhone: ''
+  });
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
+    const savedGifting = localStorage.getItem("apex_gifting");
+    if (savedGifting) {
+        setGifting(JSON.parse(savedGifting));
+    }
   }, []);
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+      localStorage.setItem("apex_gifting", JSON.stringify(gifting));
+  }, [gifting]);
 
   const addToCart = (item: CartItem) => {
     // Meta Tracking
@@ -134,9 +157,24 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       });
   };
 
+  const updateGifting = (data: Partial<CartContextProps['gifting']>) => {
+      setGifting(prev => ({ ...prev, ...data }));
+  };
+
   return (
     <CartContext.Provider
-      value={{ cart, compareList, addToCart, addBundleToCart, toggleCompare, removeFromCart, clearCart, updateQuantity }}
+      value={{
+          cart,
+          compareList,
+          gifting,
+          addToCart,
+          addBundleToCart,
+          toggleCompare,
+          removeFromCart,
+          clearCart,
+          updateQuantity,
+          updateGifting
+      }}
     >
       {children}
     </CartContext.Provider>

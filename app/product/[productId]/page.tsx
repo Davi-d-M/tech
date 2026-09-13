@@ -37,7 +37,7 @@ import { useSettings } from "@/lib/useSettings";
 
 const Product3DViewer = dynamic(() => import("@/components/product/3d/Product3DViewer"), {
     ssr: false,
-    loading: () => <div className="w-full aspect-square bg-slate-900 rounded-[2.5rem] animate-pulse" />
+    loading: () => <div className="w-full aspect-square bg-slate-50 rounded-[2.5rem] animate-pulse border border-slate-100" />
 });
 
 interface Tutorial {
@@ -140,6 +140,19 @@ export default function Product() {
         views = views.filter((v: Record<string, unknown>) => v.id !== liveProduct.id);
         views.unshift({ id: liveProduct.id, name: liveProduct.name, image: liveProduct.image_url || liveProduct.image });
         localStorage.setItem('apex_recent_views', JSON.stringify(views.slice(0, 10)));
+
+        // 🧠 Signal Intelligence: Log Product View
+        import('@/lib/signalService').then(({ signalService }) => {
+            signalService.track({
+                event_type: 'PRODUCT_VIEW',
+                target: liveProduct.id.toString(),
+                metadata: {
+                    name: liveProduct.name,
+                    category: liveProduct.category,
+                    price: liveProduct.price
+                }
+            });
+        });
     }
   }, [liveProduct]);
 

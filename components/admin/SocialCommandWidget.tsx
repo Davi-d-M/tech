@@ -17,6 +17,8 @@ import {
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
 
+import { socialManager } from '@/lib/social/social-manager';
+
 interface SocialStats {
     total_posts: number;
     total_reach: number;
@@ -56,24 +58,34 @@ export default function SocialCommandWidget() {
                 const now = new Date();
                 const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString();
 
-                // 1. Fetch Real Stats
-                const [postsRes, attributionRes, accountsRes] = await Promise.all([
+                // 1. Fetch Real Stats & Metrics
+                const [postsRes, attributionRes, accountsRes, metrics] = await Promise.all([
                     supabase.from('social_posts').select('id', { count: 'exact' }).gte('published_at', todayStart),
                     supabase.from('order_attribution').select('revenue, commission_earned').gte('created_at', todayStart),
-                    supabase.from('social_accounts').select('platform, status')
+                    supabase.from('social_accounts').select('platform, status'),
+                    socialManager.syncGlobalMetrics()
                 ]);
 
                 setStats(prev => {
                     const updatedPlatforms = prev.platforms.map(p => {
                         const acc = (accountsRes.data as { platform: string; status: string }[] | null)?.find(a => a.platform === p.id);
-                        return { ...p, status: (acc?.status as 'connected' | 'expired' | 'error') || 'expired' };
+                        const platformMetric = metrics.find(m => m.platform === p.id);
+                        return {
+                            ...p,
+                            status: (acc?.status as 'connected' | 'expired' | 'error') || 'expired',
+                            metrics: platformMetric
+                        };
                     });
 
                     const revValue = (attributionRes.data as { revenue: number }[] | null)?.reduce((s, a) => s + (Number(a.revenue) || 0), 0) || 0;
+                    const totalReach = metrics.reduce((s, m) => s + m.reach, 0);
+                    const totalClicks = metrics.reduce((s, m) => s + m.clicks, 0);
 
                     return {
                         ...prev,
                         total_posts: postsRes.count || 0,
+                        total_reach: totalReach,
+                        total_clicks: totalClicks,
                         attributed_revenue: revValue,
                         platforms: updatedPlatforms
                     };
@@ -126,8 +138,8 @@ export default function SocialCommandWidget() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {[
                         { label: 'Posts Today', val: stats.total_posts, icon: Target, color: 'primary' },
-                        { label: 'Total Reach', val: '48.3K', icon: TrendingUp, color: 'indigo' },
-                        { label: 'Network Clicks', val: '2,431', icon: MousePointer2, color: 'emerald' },
+                        { label: 'Total Reach', val: (stats.total_reach / 1000).toFixed(1) + 'K', icon: TrendingUp, color: 'indigo' },
+                        { label: 'Network Clicks', val: stats.total_clicks.toLocaleString(), icon: MousePointer2, color: 'emerald' },
                         { label: 'Attributed Rev', val: formatPrice(stats.attributed_revenue), icon: Zap, color: 'amber' }
                     ].map(item => (
                         <div key={item.label} className="space-y-2">
@@ -144,7 +156,7 @@ export default function SocialCommandWidget() {
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic leading-relaxed max-w-[300px]">
                         &quot;Cross-platform reach is up 12% following the AMAYA launch. TikTok conversion at 4.8%.&quot;
                     </p>
-                    <button className="h-10 px-6 rounded-xl bg-slate-900 text-white font-black uppercase text-[8px] tracking-widest shadow-xl hover:bg-black transition-all">
+                    <button className="h-10 px-6 rounded-xl bg-primary text-white font-black uppercase text-[8px] tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
                         Content Studio &rarr;
                     </button>
                 </div>

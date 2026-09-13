@@ -194,6 +194,49 @@ export default function RiderDashboard() {
         }
     };
 
+    const handleArrival = async () => {
+        if (!supabase || !activeMission || !riderPhone) return;
+        setLoading(true);
+        try {
+            // 1. Update Order Status
+            const { error: orderError } = await supabase
+                .from('orders')
+                .update({
+                    status: 'Delivered',
+                    actual_arrival: new Date().toISOString()
+                })
+                .eq('id', activeMission.id);
+
+            if (orderError) throw orderError;
+
+            // 2. Update Rider Status
+            const { error: riderError } = await supabase
+                .from('rider_status')
+                .update({
+                    status: 'Idle',
+                    total_deliveries: (stats.completed + 1)
+                })
+                .eq('rider_phone', riderPhone);
+
+            if (riderError) throw riderError;
+
+            // 3. Credit Rider Wallet (via RPC for security)
+            await supabase.rpc('credit_rider_wallet', {
+                phone_input: riderPhone,
+                amount_input: 450 // Standard Drop Fee
+            });
+
+            // Refresh UI
+            await fetchTasks();
+            alert("Mission Complete! Yield extracted and credited to your wallet. 🦾");
+        } catch (err) {
+            console.error("Arrival protocol failure:", err);
+            alert("Error: Verification failed. Signal unstable.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loading && tasks.length === 0) {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -224,9 +267,9 @@ export default function RiderDashboard() {
                         <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Total Earnings</p>
                         <p className="text-2xl font-black">{formatPrice(stats.earnings)}</p>
                     </div>
-                    <div className="p-5 rounded-3xl bg-slate-900 text-white space-y-1">
-                        <p className="text-[9px] font-black uppercase tracking-widest opacity-40">Tasks</p>
-                        <p className="text-2xl font-black">{stats.completed} Done</p>
+                    <div className="p-5 rounded-3xl bg-white border border-slate-100 space-y-1 shadow-sm">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Tasks</p>
+                        <p className="text-2xl font-black text-foreground">{stats.completed} Done</p>
                     </div>
                 </div>
             </header>
@@ -235,16 +278,16 @@ export default function RiderDashboard() {
                 {activeTab === 'tasks' && (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         {/* Active Task Alert */}
-                        <Card className="p-6 rounded-[2.5rem] bg-indigo-600 text-white relative overflow-hidden border-none">
-                            <div className="relative z-10 space-y-4">
+                        <Card className="p-6 rounded-[2.5rem] bg-primary/5 text-primary relative overflow-hidden border border-primary/20">
+                            <div className="relative z-10 space-y-4 text-left">
                                 <div className="flex items-center gap-3">
                                     <Activity size={18} className="animate-pulse" />
                                     <h3 className="text-sm font-black uppercase tracking-widest">Active Task</h3>
                                 </div>
-                                <p className="text-lg font-bold leading-tight">Proceed to Westlands Central for pickup of Order #10291</p>
-                                <Button className="w-full h-14 rounded-2xl bg-white text-indigo-600 font-black uppercase text-xs tracking-widest shadow-xl">Start Navigation</Button>
+                                <p className="text-lg font-bold leading-tight text-slate-700">Proceed to Westlands Central for pickup of Order #10291</p>
+                                <Button className="w-full h-14 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20">Start Navigation</Button>
                             </div>
-                            <Truck className="absolute -bottom-6 -right-6 h-32 w-32 text-white/10 rotate-12" />
+                            <Truck className="absolute -bottom-6 -right-6 h-32 w-32 text-primary/5 rotate-12" />
                         </Card>
 
                         {/* Task Stream */}
@@ -344,10 +387,18 @@ export default function RiderDashboard() {
                                     </div>
 
                                     <div className="flex gap-4 relative z-10 pt-4">
-                                        <Button className="flex-1 h-18 rounded-2xl bg-emerald-500 text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-emerald-500/20 active:scale-95 transition-all">
-                                            Confirm Arrival
+                                        <Button
+                                            onClick={handleArrival}
+                                            disabled={loading}
+                                            className="flex-1 h-18 rounded-2xl bg-emerald-500 text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-emerald-500/20 active:scale-95 transition-all"
+                                        >
+                                            {loading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Confirm Arrival'}
                                         </Button>
-                                        <Button variant="outline" className="h-18 w-18 rounded-2xl border-slate-200 text-slate-400 hover:text-primary transition-all">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => window.open(`tel:${activeMission.customer_phone}`, '_self')}
+                                            className="h-18 w-18 rounded-2xl border-slate-200 text-slate-400 hover:text-primary transition-all"
+                                        >
                                             <Phone size={24} />
                                         </Button>
                                     </div>
@@ -489,7 +540,7 @@ export default function RiderDashboard() {
 
             {/* PIN CHANGE MODAL */}
             {isPinModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/20 backdrop-blur-md p-6">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-primary/5 backdrop-blur-md p-6">
                     <Card className="max-w-sm w-full bg-white rounded-[2.5rem] shadow-2xl p-10 space-y-8 animate-in zoom-in-95">
                         <div className="text-center">
                             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4 shadow-sm"><Key size={24} /></div>

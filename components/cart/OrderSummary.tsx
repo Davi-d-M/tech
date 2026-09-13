@@ -8,17 +8,23 @@ import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/utils";
 import { CreditCard, Heart, Shield, Truck } from "lucide-react";
 import Link from "next/link";
+import GiftingOptions from "./GiftingOptions";
 
 export default function OrderSummary() {
-  const { cart } = useCart();
+  const { cart, gifting } = useCart();
 
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const wrappingFee = gifting.isGift ? (
+      gifting.wrapping === 'Elite' ? 1200 : gifting.wrapping === 'Premium' ? 500 : 0
+  ) : 0;
+
   const shipping = 0;
   const tax = 0;
-  const total = subtotal + shipping + tax;
+  const total = subtotal + shipping + tax + wrappingFee;
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -27,7 +33,7 @@ export default function OrderSummary() {
         <CardTitle className="text-lg font-semibold">Order Summary</CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">
@@ -35,6 +41,13 @@ export default function OrderSummary() {
             </span>
             <span className="font-medium">{formatPrice(subtotal)}</span>
           </div>
+
+          {gifting.isGift && (
+              <div className="flex justify-between text-sm animate-in fade-in">
+                <span className="text-muted-foreground">Gifting ({gifting.wrapping})</span>
+                <span className="font-medium">{formatPrice(wrappingFee)}</span>
+              </div>
+          )}
 
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Shipping</span>
@@ -54,6 +67,8 @@ export default function OrderSummary() {
             </span>
           </div>
         </div>
+
+        <GiftingOptions />
 
         <Button
           size="lg"

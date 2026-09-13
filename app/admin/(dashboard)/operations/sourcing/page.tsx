@@ -85,7 +85,7 @@ export default function GlobalSourcingBridge() {
             </header>
 
             {isCalcOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/10 backdrop-blur-md p-4">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-primary/5 backdrop-blur-md p-4">
                     <Card className="max-w-md w-full p-10 rounded-[3rem] bg-white border border-slate-100 shadow-2xl space-y-8 animate-in zoom-in-95 duration-500">
                         <div className="flex justify-between items-center">
                             <h3 className="text-xl font-black uppercase tracking-tighter">Landing Calculator</h3>

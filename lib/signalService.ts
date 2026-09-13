@@ -1,19 +1,41 @@
 import { supabase } from './supabaseClient';
 
 export type SignalType =
+    | 'SESSION_START'
+    | 'SESSION_END'
     | 'VIEW'
     | 'CLICK'
     | 'SCROLL'
     | 'DWELL'
     | 'QUICK_VIEW'
-    | 'ADD_TO_BAG'
-    | 'SEARCH'
-    | 'HEARTBEAT'
-    | 'CHECKOUT_START'
-    | 'PAYMENT_FAIL'
-    | 'IDENTITY_BRIDGE'
+    | 'CATEGORY_VIEW'
+    | 'PRODUCT_VIEW'
+    | 'PRODUCT_IMAGE_VIEW'
+    | 'PRODUCT_ZOOM'
     | '3D_VIEW_START'
-    | '3D_INTERACT';
+    | '3D_INTERACT'
+    | 'SEARCH'
+    | 'FILTER_APPLY'
+    | 'SORT_APPLY'
+    | 'ADD_TO_BAG'
+    | 'REMOVE_FROM_BAG'
+    | 'WISHLIST_ADD'
+    | 'WISHLIST_REMOVE'
+    | 'CHECKOUT_START'
+    | 'CHECKOUT_STEP_COMPLETE'
+    | 'CHECKOUT_ABANDON'
+    | 'PAYMENT_START'
+    | 'PAYMENT_FAIL'
+    | 'PAYMENT_SUCCESS'
+    | 'ORDER_CREATE'
+    | 'ORDER_CANCEL'
+    | 'ORDER_REFUND'
+    | 'DELIVERY_START'
+    | 'DELIVERY_COMPLETE'
+    | 'REVIEW_CREATE'
+    | 'SUPPORT_START'
+    | 'IDENTITY_BRIDGE'
+    | 'HEARTBEAT';
 
 interface UserSignal {
     event_type: SignalType;

@@ -563,21 +563,21 @@ export default function RiderOnboarding() {
                                     <p className="text-sm text-slate-500 font-medium italic">&quot;Professional connection established. Welcome to the Fleet.&quot;</p>
                                 </div>
 
-                                <Card className="p-6 bg-slate-900 border-none rounded-[2rem] shadow-2xl space-y-6 relative overflow-hidden">
+                                <Card className="p-6 bg-primary/5 border border-primary/10 rounded-[2rem] shadow-xl space-y-6 relative overflow-hidden">
                                     <div className="relative z-10 space-y-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-8 w-8 rounded-xl bg-primary/20 flex items-center justify-center text-primary shadow-inner"><ShieldCheck size={16} /></div>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Access Credentials</p>
+                                            <div className="h-8 w-8 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm"><ShieldCheck size={16} /></div>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Access Credentials</p>
                                         </div>
-                                        <div className="bg-white/5 p-5 rounded-2xl border border-white/10 flex justify-between items-center">
+                                        <div className="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
                                             <span className="text-[10px] font-black uppercase text-slate-400">Authorization PIN</span>
                                             <span className="text-2xl font-black text-primary tracking-[0.3em] font-mono">{pin}</span>
                                         </div>
-                                        <p className="text-[8px] font-bold text-slate-500 uppercase italic text-center px-4 leading-relaxed">
+                                        <p className="text-[8px] font-bold text-slate-400 uppercase italic text-center px-4 leading-relaxed">
                                             * Use this PIN for future command access. Do not share your node credentials.
                                         </p>
                                     </div>
-                                    <Zap className="absolute -bottom-6 -right-6 h-24 w-24 text-white/5 rotate-12" />
+                                    <Zap className="absolute -bottom-6 -right-6 h-24 w-24 text-primary/5 rotate-12" />
                                 </Card>
 
                                 <Link href="/rider/dashboard" className="block">

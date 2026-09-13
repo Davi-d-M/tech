@@ -238,37 +238,54 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
       const finalTerm = term || searchQuery;
       if (!finalTerm.trim()) return;
 
+      // 🧠 Search Intelligence Protocol
+      const { detectSearchIntent } = await import('@/lib/apex-os/search-intelligence');
+      const intent = detectSearchIntent(finalTerm);
+
       // 🧠 Signal Intelligence: Log Search
       const { signalService } = await import('@/lib/signalService');
 
       let resultsCount = 0;
       if (supabase) {
-          const { count } = await supabase
-            .from('products')
-            .select('*', { count: 'exact', head: true })
-            .ilike('name', `%${finalTerm}%`);
+          let query = supabase.from('products').select('*', { count: 'exact', head: true });
+
+          // Apply intelligent filters
+          if (intent.brands.length > 0) query = query.in('brand', intent.brands);
+          if (intent.categories.length > 0) query = query.in('category', intent.categories);
+          if (intent.priceMax) query = query.lte('price', intent.priceMax);
+
+          // Fallback fuzzy match
+          query = query.or(`name.ilike.%${intent.query}%,description.ilike.%${intent.query}%`);
+
+          const { count } = await query;
           resultsCount = count || 0;
       }
 
       signalService.track({
           event_type: 'SEARCH',
           target: finalTerm,
-          metadata: { results_count: resultsCount }
+          metadata: {
+              results_count: resultsCount,
+              intent: intent
+          }
       });
 
-      // Log to dedicated Search Intelligence table if zero results
-      if (resultsCount === 0 && supabase) {
+      // Log to dedicated Search Intelligence table
+      if (supabase) {
           const sid = sessionStorage.getItem('apex_signal_session');
-          await supabase.from('search_intelligence').insert([{
-              session_id: sid,
-              query: finalTerm,
-              results_count: 0,
-              is_success: false
-          }]);
+          const vid = localStorage.getItem('apex_visitor_id');
+
+          await supabase.rpc('log_search_event', {
+              p_session_id: sid,
+              p_visitor_id: vid,
+              p_query: finalTerm,
+              p_results_count: resultsCount,
+              p_is_success: resultsCount > 0
+          });
       }
 
       // Dispatch custom event to filter the ProductList component
-      const event = new CustomEvent('apex-search', { detail: { query: finalTerm } });
+      const event = new CustomEvent('apex-search', { detail: { query: finalTerm, intent } });
       window.dispatchEvent(event);
 
       // Scroll to products

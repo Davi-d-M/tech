@@ -15,7 +15,15 @@ export async function logOrderAttribution(orderId: number, totalRevenue: number)
         const utms = utmsString ? JSON.parse(utmsString) : {};
         const affiliateId = affiliateIdCookie || utms.ref;
 
-        // 1. Fetch Affiliate Profile for UUID link
+        // 1. Fetch First Touch from Visitor Identity
+        const visitorId = localStorage.getItem('apex_visitor_id');
+        const { data: identity } = await supabase
+            .from('visitor_identity')
+            .select('acquisition_source, acquisition_campaign')
+            .eq('visitor_id', visitorId)
+            .single();
+
+        // 2. Fetch Affiliate Profile for UUID link
         let affiliateUuid = null;
         if (affiliateId) {
             const { data } = await supabase
@@ -27,17 +35,19 @@ export async function logOrderAttribution(orderId: number, totalRevenue: number)
             affiliateUuid = data?.user_id;
         }
 
-        // 2. Log Attribution Payload
+        // 3. Log Attribution Payload with Multi-Touch
         const { error } = await supabase.rpc('log_order_attribution', {
             p_order_id: orderId,
             p_affiliate_id: affiliateUuid,
             p_session_id: sessionId,
-            p_source: utms.utm_source || 'direct',
-            p_campaign: utms.utm_campaign || null,
+            p_first_touch_source: identity?.acquisition_source || utms.utm_source || 'direct',
+            p_first_touch_campaign: identity?.acquisition_campaign || utms.utm_campaign || null,
+            p_last_touch_source: utms.utm_source || 'direct',
+            p_last_touch_campaign: utms.utm_campaign || null,
             p_medium: utms.utm_medium || null,
             p_content: utms.utm_content || null,
             p_revenue: totalRevenue,
-            p_commission: affiliateUuid ? Math.floor(totalRevenue * 0.1) : 0 // 10% Standard
+            p_commission: affiliateUuid ? Math.floor(totalRevenue * 0.1) : 0
         });
 
         if (error) throw error;
