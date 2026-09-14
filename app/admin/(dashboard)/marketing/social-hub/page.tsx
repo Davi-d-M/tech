@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import {
     Zap,
     CheckCircle2,
@@ -25,7 +26,7 @@ import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
 
 import { socialManager } from '@/lib/social/social-manager';
-import { SocialPlatform } from '@/lib/social/types';
+import { SocialPlatform, MasterContent } from '@/lib/social/types';
 import SocialAccountManager from '@/components/admin/marketing/SocialAccountManager';
 import ContentCalendar from '@/components/admin/marketing/ContentCalendar';
 
@@ -36,12 +37,29 @@ export default function SocialHubPage() {
     // Composer State
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
+    const [suggestedMissions, setSuggestedMissions] = React.useState<MasterContent[]>([]);
     const [isPublishing, setIsPublishing] = React.useState(false);
     const [complianceStatus, setComplianceStatus] = React.useState<'idle' | 'checking' | 'flagged' | 'passed'>('idle');
     const [complianceReason, setComplianceReason] = React.useState('');
 
     const [selectedPlatforms, setSelectedPlatforms] = React.useState<SocialPlatform[]>(['instagram', 'tiktok']);
     const [previewPlatform, setPreviewPlatform] = React.useState<SocialPlatform>('instagram');
+
+    React.useEffect(() => {
+        async function fetchDrafts() {
+            if (!supabase) return;
+            const { data } = await supabase.from('content_library').select('*').eq('status', 'draft').limit(2);
+            if (data) setSuggestedMissions(data.map(d => ({
+                id: d.id,
+                title: d.title,
+                description: d.description,
+                contentType: d.content_type as any,
+                masterMediaUrl: d.master_media_url,
+                productIds: d.product_ids
+            })));
+        }
+        fetchDrafts();
+    }, []);
 
     const togglePlatform = (p: SocialPlatform) => {
         setSelectedPlatforms(prev =>
@@ -145,6 +163,19 @@ export default function SocialHubPage() {
                             <h2 className="text-2xl font-black uppercase tracking-tighter text-foreground">Mission Brief</h2>
                             <span className="text-[10px] font-black uppercase text-slate-300">Omni-Channel Variant Generator</span>
                         </div>
+
+                        {suggestedMissions.length > 0 && !title && (
+                            <div className="p-6 rounded-[2rem] bg-indigo-50 border border-indigo-100 space-y-4">
+                                <p className="text-[9px] font-black uppercase text-indigo-400 tracking-widest flex items-center gap-2"><Rocket size={12} /> Suggested Protocol</p>
+                                <div className="flex justify-between items-center">
+                                    <h4 className="text-sm font-black text-indigo-900 uppercase">{suggestedMissions[0].title}</h4>
+                                    <button
+                                        onClick={() => { setTitle(suggestedMissions[0].title); setDescription(suggestedMissions[0].description); }}
+                                        className="text-[9px] font-black text-indigo-600 underline uppercase tracking-widest"
+                                    >Load Mission</button>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="space-y-6">
                             <div className="space-y-2">

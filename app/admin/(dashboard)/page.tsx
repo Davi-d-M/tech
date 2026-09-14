@@ -227,22 +227,22 @@ export default function AdminDashboard() {
 
       {/* EXECUTIVE HEADER */}
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 border-b border-slate-200 pb-10">
-          <div className="text-left">
+          <div className="text-left w-full">
               <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-2">Management Console</p>
-              <h1 className="text-5xl font-black text-foreground uppercase tracking-tighter leading-none">Good Morning, <span className="text-primary">{email?.split('@')[0]}</span> 👋</h1>
-              <div className="flex items-center gap-4 mt-4">
+              <h1 className="text-3xl sm:text-5xl font-black text-foreground uppercase tracking-tighter leading-tight sm:leading-none">Good Morning, <span className="text-primary">{email?.split('@')[0]}</span> 👋</h1>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-6 sm:mt-4">
                   <div className="flex items-center gap-2">
                       <span className="text-[9px] font-black uppercase text-slate-400">System Status</span>
-                      <div className="h-1.5 w-32 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-24 sm:w-32 bg-slate-200 rounded-full overflow-hidden">
                           <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${systemHealth}%` }}></div>
                       </div>
                       <span className="text-[10px] font-black text-emerald-500">{Math.round(systemHealth)}%</span>
                   </div>
               </div>
           </div>
-          <div className="flex gap-2">
-              <Link href="/admin/marketing/create">
-                  <Button className="h-14 px-8 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+          <div className="flex gap-2 w-full sm:w-auto">
+              <Link href="/admin/marketing/create" className="w-full">
+                  <Button className="h-14 w-full sm:w-auto px-8 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                       <Send className="h-4 w-4 mr-2" /> Launch Campaign
                   </Button>
               </Link>
@@ -251,13 +251,13 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
 
-        <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+        <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                        <TrendingUp className="h-6 w-6" />
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                    <div className="h-12 w-24">
+                    <div className="h-10 w-20 sm:h-12 sm:w-24">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={sparklineData}>
                                 <Line type="monotone" dataKey="revenue" stroke="#ff6b00" strokeWidth={2} dot={false} />
@@ -265,9 +265,9 @@ export default function AdminDashboard() {
                         </ResponsiveContainer>
                     </div>
                 </div>
-                <div className="mt-8">
+                <div className="mt-6 sm:mt-8">
                     <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Gross Revenue</p>
-                    <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.totalRevenue)}</h3>
+                    <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.totalRevenue)}</h3>
                     <div className={cn(
                         "flex items-center gap-2 mt-3",
                         stats.growth >= 0 ? "text-emerald-500" : "text-rose-500"
@@ -277,32 +277,32 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
-            <Zap className="absolute -bottom-6 -right-6 h-32 w-32 text-primary/5 rotate-12 -z-0" />
+            <Zap className="absolute -bottom-6 -right-6 h-24 w-24 sm:h-32 sm:w-32 text-primary/5 rotate-12 -z-0" />
         </Card>
 
-        <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+        <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
-                        <DollarSign className="h-6 w-6" />
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
+                        <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
                     <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest">Growth Locked</div>
                 </div>
-                <div className="mt-8">
+                <div className="mt-6 sm:mt-8">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Net Profit</p>
-                    <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.netProfit)}</h3>
+                    <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.netProfit)}</h3>
                     <p className="text-[9px] font-black text-primary uppercase mt-3">{stats.profitMargin.toFixed(1)}% Margin Efficiency</p>
                 </div>
             </div>
         </Card>
 
-        <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+        <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
             <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
-                        <ShoppingCart className="h-6 w-6" />
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
+                        <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                    <div className="h-12 w-24">
+                    <div className="h-10 w-20 sm:h-12 sm:w-24">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={sparklineData}>
                                 <Bar dataKey="count" fill="#ff6b00" radius={[4, 4, 4, 4]} />
@@ -310,9 +310,9 @@ export default function AdminDashboard() {
                         </ResponsiveContainer>
                     </div>
                 </div>
-                <div className="mt-8">
+                <div className="mt-6 sm:mt-8">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Fulfillment Pipeline</p>
-                    <h3 className="text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{orders.length}</h3>
+                    <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{orders.length}</h3>
                     <p className="text-[9px] font-black text-primary uppercase mt-3">{orders.filter(o => o.status === 'Pending').length} Pending Orders</p>
                 </div>
             </div>

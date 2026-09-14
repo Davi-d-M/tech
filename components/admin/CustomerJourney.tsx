@@ -113,26 +113,26 @@ export default function CustomerJourney({ userId }: { userId: string }) {
                                 <Icon size={24} />
                             </div>
 
-                            <Card className="flex-1 p-6 rounded-[2rem] border border-slate-50 group-hover:border-primary/10 transition-all group-hover:shadow-xl bg-white/50 backdrop-blur-md">
-                                <div className="flex justify-between items-start">
-                                    <div>
+                            <Card className="flex-1 p-5 sm:p-6 rounded-[2rem] border border-slate-50 group-hover:border-primary/10 transition-all group-hover:shadow-xl bg-white/50 backdrop-blur-md min-w-0">
+                                <div className="flex justify-between items-start gap-4 min-w-0">
+                                    <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-3 mb-1">
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-primary">{s.event_type}</span>
+                                            <span className="text-[8px] font-black uppercase tracking-widest text-primary shrink-0">{s.event_type}</span>
                                             <span className="text-[10px] font-bold text-slate-300">•</span>
-                                            <span className="text-[9px] font-bold text-slate-400 uppercase">{new Date(s.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase shrink-0">{new Date(s.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
                                         </div>
-                                        <h4 className="font-black text-foreground uppercase tracking-tight text-sm">
+                                        <h4 className="font-black text-foreground uppercase tracking-tight text-xs sm:text-sm truncate">
                                             {s.target || s.url}
                                         </h4>
-                                        <p className="text-[10px] font-medium text-slate-400 mt-1 italic truncate max-w-md">
+                                        <p className="text-[10px] font-medium text-slate-400 mt-1 italic truncate">
                                             Path: {s.url}
                                         </p>
                                     </div>
-                                    <div className="text-right flex flex-col items-end gap-2">
+                                    <div className="text-right flex flex-col items-end gap-2 shrink-0">
                                         {(s.metadata?.device_type === 'Mobile' || s.metadata?.device_type === 'Desktop') && (
                                             <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 rounded text-[7px] font-black text-slate-400 uppercase">
                                                 {s.metadata.device_type === 'Mobile' ? <Smartphone size={10} /> : <Monitor size={10} />}
-                                                {s.metadata.device_type}
+                                                {s.metadata.device_type as string}
                                             </div>
                                         )}
                                         <ChevronRight size={14} className="text-slate-200 group-hover:text-primary transition-all opacity-0 group-hover:opacity-100" />

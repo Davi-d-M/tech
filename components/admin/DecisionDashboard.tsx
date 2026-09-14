@@ -85,17 +85,25 @@ export default function DecisionDashboard() {
                 });
             }
 
-            // HEURISTIC D: Campaign Opportunity
-            newInsights.push({
-                id: 'opp-campaign',
-                type: 'OPPORTUNITY',
-                title: 'Viral Velocity Spike',
-                desc: 'Whiskey related traffic from TikTok up 31% in the Karen region.',
-                impact: 'Scaling Recommended',
-                severity: 'Low',
-                actionLabel: 'Push Ad',
-                actionHref: '/admin/marketing/ai-agency'
-            });
+            // HEURISTIC D: Campaign Opportunity (Signal Density)
+            const { data: signalDensity } = await supabase
+                .from('user_signals')
+                .select('target', { count: 'exact' })
+                .eq('event_type', 'PRODUCT_VIEW')
+                .gte('created_at', new Date(Date.now() - 86400000).toISOString()); // Last 24h
+
+            if (signalDensity && signalDensity.length > 50) {
+                newInsights.push({
+                    id: 'opp-traffic',
+                    type: 'OPPORTUNITY',
+                    title: 'Organic Velocity Spike',
+                    desc: `Detected ${signalDensity.length} high-intent signals in the last 24h. Audience engagement is accelerating.`,
+                    impact: 'Optimize Ad Spend',
+                    severity: 'Low',
+                    actionLabel: 'Boost Ads',
+                    actionHref: '/admin/marketing/ai-agency'
+                });
+            }
 
             setInsights(newInsights);
         } catch (err) {

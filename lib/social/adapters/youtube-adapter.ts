@@ -14,8 +14,6 @@ export class YouTubeAdapter implements SocialAdapter {
         // - multipart upload for binary
         // - snippet (title, description, tags, categoryId)
 
-        await new Promise(r => setTimeout(r, 2500));
-
         return { externalId: `yt_video_${Date.now()}` };
     }
 

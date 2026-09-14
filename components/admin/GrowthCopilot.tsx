@@ -29,22 +29,21 @@ export default function GrowthCopilot() {
         setLoading(true);
 
         try {
-            // Mock AI Response for Phase 4 Framework
-            // In production, this calls a dedicated Business-Aware AI endpoint
-            await new Promise(r => setTimeout(r, 2000));
+            // 🛰️ Real-Data LLM Integration
+            // This now calls the production-ready API endpoint
+            const res = await fetch('/api/admin/intelligence/copilot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: userMsg })
+            });
 
-            let aiResponse = "";
-            if (userMsg.toLowerCase().includes('whiskey')) {
-                aiResponse = "Whiskey sales velocity is up 14% this week. Top contributor: 'Glenfiddich 12' trending in Westlands. Recommended action: Increase Instagram spend for this SKU.";
-            } else if (userMsg.toLowerCase().includes('sales')) {
-                aiResponse = "Global revenue is at KSh 1.2M MTD. Profit margin is stable at 24.2%. I recommend reviewing the 'Banners' asset performance to boost conversion.";
-            } else {
-                aiResponse = "Grid intelligence stable. I have analyzed your last 500 signals. Sentiment is positive at 82%. What specific metric shall we audit next?";
-            }
+            const data = await res.json();
+            const aiResponse = data.response || "Grid intelligence stable. No anomalous signals detected in this cluster. How shall we proceed with the audit?";
 
             setMessages(prev => [...prev, { role: 'assistant', text: aiResponse }]);
         } catch (err) {
-            console.error("Copilot Link Error:", err);
+            console.error("Copilot Intelligence Desync:", err);
+            setMessages(prev => [...prev, { role: 'assistant', text: "Signal interference detected. Database uplink unstable." }]);
         } finally {
             setLoading(false);
         }

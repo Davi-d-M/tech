@@ -14,8 +14,6 @@ export class TikTokAdapter implements SocialAdapter {
         // - multipart/form-data with video binary or URL
         // - 100 character caption limit
 
-        await new Promise(r => setTimeout(r, 2000));
-
         return { externalId: `tiktok_post_${Date.now()}` };
     }
 

@@ -323,16 +323,16 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8 lg:space-x-12">
             <Link
-              className="text-xl sm:text-2xl tracking-tighter font-black text-foreground hover:text-primary transition-colors flex items-center gap-2 uppercase"
+              className="text-lg sm:text-2xl tracking-tighter font-black text-foreground hover:text-primary transition-colors flex items-center gap-2 uppercase shrink-0"
               href="/"
               aria-label="Apexstores Home"
             >
               {settings?.branding?.logo_url ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={settings.branding.logo_url} alt="Logo" className="h-6 sm:h-8 w-auto" />
+                  <img src={settings.branding.logo_url} alt="Logo" className="h-5 sm:h-8 w-auto" />
               ) : (
                   <>
-                    <Smartphone className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                    <Smartphone className="h-4 w-4 sm:h-6 sm:w-6 text-primary" />
                     <span>Apex<span className="text-primary">stores</span></span>
                   </>
               )}
@@ -465,10 +465,10 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
             )}
           </div>
 
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-4">
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="md:hidden p-2 rounded-full hover:bg-slate-50 transition-all active:scale-95"
+              className="md:hidden p-2.5 rounded-full hover:bg-slate-50 transition-all active:scale-95 shrink-0"
               aria-label="Toggle Menu"
             >
               {isMobileOpen ? <X className="h-5 w-5 text-slate-600" /> : <Menu className="h-5 w-5 text-slate-600" />}
@@ -476,7 +476,7 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
 
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="lg:hidden p-2 rounded-full hover:bg-slate-50 transition-all active:scale-95"
+              className="lg:hidden p-2.5 rounded-full hover:bg-slate-50 transition-all active:scale-95 shrink-0"
               aria-label="Search"
             >
               <Search className="h-5 w-5 text-slate-600" />

@@ -13,8 +13,6 @@ export class XAdapter implements SocialAdapter {
         // - POST /2/tweets
         // - Media upload v1.1 endpoint (media_ids)
 
-        await new Promise(r => setTimeout(r, 1000));
-
         return { externalId: `x_tweet_${Date.now()}` };
     }
 

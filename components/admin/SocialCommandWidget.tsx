@@ -16,8 +16,6 @@ import {
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
 
-import { socialManager } from '@/lib/social/social-manager';
-
 interface SocialStats {
     total_posts: number;
     total_reach: number;
@@ -58,33 +56,31 @@ export default function SocialCommandWidget() {
                 const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString();
 
                 // 1. Fetch Real Stats & Metrics
-                const [postsRes, attributionRes, accountsRes] = await Promise.all([
+                const [postsRes, attributionRes, accountsRes, metricsHistory] = await Promise.all([
                     supabase.from('social_posts').select('id', { count: 'exact' }).gte('published_at', todayStart),
                     supabase.from('order_attribution').select('revenue, commission_earned').gte('created_at', todayStart),
                     supabase.from('social_accounts').select('platform, status'),
-                    socialManager.syncAllMetrics()
+                    supabase.from('social_metrics_history').select('*').gte('captured_at', todayStart)
                 ]);
-
-                // Map results for Phase 2 Framework (since syncAllMetrics returns void for now)
-                const mockMetrics = [
-                    { platform: 'instagram', impressions: 12400, reach: 8900, views: 0, likes: 450, comments: 32, shares: 12, clicks: 145 },
-                    { platform: 'tiktok', impressions: 45000, reach: 32000, views: 12000, likes: 2300, comments: 145, shares: 890, clicks: 840 }
-                ];
 
                 setStats(prev => {
                     const updatedPlatforms = prev.platforms.map(p => {
                         const acc = (accountsRes.data as { platform: string; status: string }[] | null)?.find(a => a.platform === p.id);
-                        const platformMetric = mockMetrics.find(m => m.platform === p.id);
+                        const platformMetric = metricsHistory.data?.filter(m => m.platform === p.id).pop();
                         return {
                             ...p,
                             status: (acc?.status as 'connected' | 'expired' | 'error') || 'expired',
-                            metrics: platformMetric
+                            metrics: platformMetric ? {
+                                reach: platformMetric.reach,
+                                impressions: platformMetric.impressions,
+                                clicks: platformMetric.engagement // fallback
+                            } : undefined
                         };
                     });
 
                     const revValue = (attributionRes.data as { revenue: number }[] | null)?.reduce((s, a) => s + (Number(a.revenue) || 0), 0) || 0;
-                    const totalReach = mockMetrics.reduce((s, m) => s + m.reach, 0);
-                    const totalClicks = mockMetrics.reduce((s, m) => s + m.clicks, 0);
+                    const totalReach = metricsHistory.data?.reduce((s, m) => s + (m.reach || 0), 0) || 0;
+                    const totalClicks = metricsHistory.data?.reduce((s, m) => s + (m.engagement || 0), 0) || 0;
 
                     return {
                         ...prev,

@@ -17,8 +17,7 @@ export class MetaAdapter implements SocialAdapter {
         // e.g. Instagram requires media_type, image_url/video_url, caption
 
         // 2. Execute POST request to Meta Graph API
-        // For Phase 2 Framework, we simulate the success
-        await new Promise(r => setTimeout(r, 1500));
+        // Real-Data API Implementation Required Here
 
         return { externalId: `meta_post_${Date.now()}` };
     }

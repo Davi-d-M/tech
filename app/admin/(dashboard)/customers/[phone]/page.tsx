@@ -398,19 +398,19 @@ export default function CustomerIntelligence() {
         </div>
       </header>
 
-      <div className="grid lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
           {[
-              { label: 'Lifetime Spend', val: formatPrice(stats.totalSpend), icon: DollarSign, color: 'primary' },
-              { label: 'Total Orders', val: `${orders.length} Purchases`, icon: Package, color: 'primary' },
-              { label: 'Average Order', val: formatPrice(stats.avgOrder), icon: TrendingUp, color: 'primary' },
-              { label: 'Favorite Category', val: stats.favCat, icon: Tag, color: 'primary' },
+              { label: 'Lifetime Spend', val: formatPrice(stats.totalSpend), icon: DollarSign },
+              { label: 'Total Orders', val: `${orders.length}`, icon: Package },
+              { label: 'Avg Order', val: formatPrice(stats.avgOrder), icon: TrendingUp },
+              { label: 'Fav Category', val: stats.favCat, icon: Tag },
           ].map((item) => (
-              <Card key={item.label} className="p-8 rounded-[2.5rem] border-slate-100 shadow-sm relative overflow-hidden group">
-                  <div className={`h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform`}>
-                      <item.icon className="h-6 w-6" />
+              <Card key={item.label} className="p-4 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] border-slate-100 shadow-sm relative overflow-hidden group">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary/5 flex items-center justify-center text-primary mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
+                      <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{item.label}</p>
-                  <h3 className="text-2xl font-black text-foreground uppercase tracking-tighter truncate">{item.val}</h3>
+                  <p className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
+                  <h3 className="text-sm sm:text-2xl font-black text-foreground uppercase tracking-tighter truncate">{item.val}</h3>
               </Card>
           ))}
       </div>
@@ -615,31 +615,31 @@ export default function CustomerIntelligence() {
                                                event.type === 'Loyalty' ? Zap : Star;
 
                                   return (
-                                      <div key={event.id} className="p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 hover:bg-slate-50/50 transition-all group">
-                                          <div className="flex items-center gap-6">
+                                      <div key={event.id} className="p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 hover:bg-slate-50/50 transition-all group min-w-0">
+                                          <div className="flex items-center gap-4 sm:gap-6 min-w-0 w-full sm:w-auto">
                                               <div className={cn(
-                                                  "h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110",
+                                                  "h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 shrink-0",
                                                   event.color === 'primary' ? "bg-primary text-white" :
                                                   event.color === 'rose' ? "bg-rose-500 text-white" :
                                                   event.color === 'emerald' ? "bg-emerald-500 text-white" :
                                                   "bg-amber-500 text-white"
                                               )}>
-                                                  <Icon className="h-6 w-6" />
+                                                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                                               </div>
-                                              <div className="text-left">
+                                              <div className="text-left min-w-0 flex-1">
                                                   <div className="flex items-center gap-2 mb-1">
-                                                      <span className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{event.type}</span>
-                                                      <span className="text-[9px] font-bold text-slate-400 uppercase">{new Date(event.date).toLocaleDateString()}</span>
+                                                      <span className="text-[7px] sm:text-[8px] font-black uppercase text-slate-400 tracking-widest">{event.type}</span>
+                                                      <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase">{new Date(event.date).toLocaleDateString()}</span>
                                                   </div>
-                                                  <h4 className="font-black text-foreground uppercase text-sm tracking-tight">{event.title}</h4>
-                                                  <p className="text-[10px] font-bold text-slate-400 uppercase mt-1 italic">{event.subtitle}</p>
+                                                  <h4 className="font-black text-foreground uppercase text-xs sm:text-sm tracking-tight truncate">{event.title}</h4>
+                                                  <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase mt-1 italic truncate">{event.subtitle}</p>
                                               </div>
                                           </div>
-                                          <div className="text-right">
-                                              {event.value && <p className="text-lg font-black text-foreground">{event.value}</p>}
+                                          <div className="text-right w-full sm:w-auto flex sm:flex-col items-center sm:items-end justify-between sm:justify-center">
+                                              {event.value && <p className="text-sm sm:text-lg font-black text-foreground">{event.value}</p>}
                                               {event.status && (
                                                   <span className={cn(
-                                                      "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border",
+                                                      "px-2 py-0.5 rounded text-[7px] sm:text-[8px] font-black uppercase tracking-widest border",
                                                       event.status === 'Delivered' || event.status === 'Resolved' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                                                       "bg-primary/10 text-primary border-primary/10"
                                                   )}>{event.status}</span>

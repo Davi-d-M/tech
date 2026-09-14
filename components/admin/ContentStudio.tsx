@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import {
     Image as ImageIcon,
     Camera,
@@ -37,26 +38,43 @@ export default function ContentStudio() {
 
     const handleGenerate = async () => {
         setIsGenerating(true);
-        // Simulate AI Caption Generation
-        await new Promise(r => setTimeout(r, 2000));
-        setCaption("Elevate your sound with the new AMAYA AM-05. Crystal clear audio, 20-hour battery, and a sleek mirror finish. 🎧✨ #Apexstores #EliteAudio #GadgetLover");
-        setIsGenerating(false);
-        checkCompliance("Elevate your sound with the new AMAYA AM-05...");
+        try {
+            // 🛰️ Real-Data AI Agent Call
+            const res = await fetch('/api/admin/content/generate-caption', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ context: caption || "Latest tech essentials" })
+            });
+            const data = await res.json();
+            setCaption(data.caption);
+            checkCompliance(data.caption);
+        } catch (err) {
+            console.warn("AI Generation Interrupted:", err);
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     const checkCompliance = async (text: string) => {
         setComplianceStatus('checking');
-        await new Promise(r => setTimeout(r, 1500));
+        try {
+            if (!supabase) return;
+            const { data: rules } = await supabase.from('compliance_rules').select('*').eq('is_active', true);
 
-        // Mock alcohol compliance logic
-        const alcoholRules = ['win', 'free', 'drink', 'success', 'sexy', 'child', 'under 18'];
-        const flagged = alcoholRules.filter(r => text.toLowerCase().includes(r));
+            const flagged = rules?.filter(rule => {
+                const regex = new RegExp(rule.pattern, 'i');
+                return regex.test(text);
+            });
 
-        if (flagged.length > 0) {
-            setComplianceStatus('flagged');
-            setComplianceStatusReason(`Potential breach: ${flagged.join(', ')}. Kenya law restricts alcohol promotion associated with success or underage themes.`);
-        } else {
-            setComplianceStatus('passed');
+            if (flagged && flagged.length > 0) {
+                setComplianceStatus('flagged');
+                setComplianceStatusReason(`Potential breach: ${flagged[0].name}. ${flagged[0].action.toUpperCase()} required.`);
+            } else {
+                setComplianceStatus('passed');
+            }
+        } catch (err) {
+            console.error("Compliance Error:", err);
+            setComplianceStatus('idle');
         }
     };
 

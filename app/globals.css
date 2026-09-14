@@ -67,11 +67,29 @@
   * {
     @apply border-border;
   }
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    @apply scroll-smooth;
+  }
   body {
     @apply bg-background text-foreground;
     background-color: #ffffff !important;
     color: #334155 !important;
   }
+  h1, h2, h3, h4, h5, h6, p {
+    @apply break-words;
+    overflow-wrap: break-word;
+  }
+  img, video, canvas, svg {
+    @apply max-w-full h-auto;
+  }
+}
+
+.min-width-zero {
+  min-width: 0;
 }
 
 .no-scrollbar::-webkit-scrollbar {

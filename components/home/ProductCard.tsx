@@ -265,24 +265,24 @@ export default function ProductCard({ product }: { product: Product }) {
         </Link>
       </div>
 
-      <CardContent className="p-3 sm:p-6 space-y-3 sm:space-y-4 text-left">
-        <Link href={`/shop/${product.id}`}>
-          <h2 className="font-black text-foreground text-[10px] sm:text-sm uppercase tracking-tight line-clamp-1 group-hover:text-primary transition-colors">
+      <CardContent className="p-3 sm:p-6 space-y-3 sm:space-y-4 text-left min-w-0">
+        <Link href={`/shop/${product.id}`} className="block min-w-0">
+          <h2 className="font-black text-foreground text-[10px] sm:text-sm uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words">
             {product.name}
           </h2>
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-50 pb-3 sm:pb-4">
-          <div className="flex flex-col">
-              {isSale && <span className="text-[8px] sm:text-[10px] font-bold text-slate-400 line-through leading-none mb-1">{formatPrice(Number(product.old_price))}</span>}
-              <span className="text-sm sm:text-xl font-black text-foreground leading-none">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-50 pb-3 sm:pb-4 min-w-0">
+          <div className="flex flex-col min-w-0">
+              {isSale && <span className="text-[8px] sm:text-[10px] font-bold text-slate-400 line-through leading-none mb-1 truncate">{formatPrice(Number(product.old_price))}</span>}
+              <span className="text-sm sm:text-xl font-black text-foreground leading-none truncate">
                 {formatPrice(product.price)}
               </span>
           </div>
           {product.stock !== undefined && (
             <span
               className={cn(
-                "text-[7px] sm:text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg w-fit",
+                "text-[7px] sm:text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg w-fit shrink-0",
                 product.stock > 0 ? 'bg-primary/10 text-primary' : 'bg-rose-50 text-rose-600'
               )}
             >
