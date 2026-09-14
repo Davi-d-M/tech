@@ -1,26 +1,26 @@
 /**
- * Apex OS: Search Intelligence Engine
- * Handles synonyms, brand mapping, and intent detection.
+ * Apex OS: Search Intelligence Engine (Electronics Specialization)
+ * Handles synonyms, brand mapping, and intent detection for premium tech.
  */
 
 const SYNONYMS: Record<string, string[]> = {
-    'smooth': ['whiskey', 'wine', 'bourbon'],
-    'cold': ['beer', 'cider', 'white wine'],
-    'gift': ['premium', 'limited edition', 'box set'],
+    'fast': ['charger', 'cable', 'power bank'],
+    'sound': ['airpods', 'headphones', 'speakers'],
+    'gift': ['premium', 'bundle', 'box set'],
     'cheap': ['budget', 'under 2000', 'sale'],
-    'elite': ['exclusive', 'premium', 'high end'],
-    'pod': ['airpod', 'earbud', 'headphone'],
-    'charge': ['charger', 'cable', 'power bank']
+    'elite': ['exclusive', 'premium', 'flagship'],
+    'pod': ['airpods', 'earbuds', 'wireless'],
+    'watch': ['apple watch', 'smartwatch', 'straps']
 };
 
 const BRAND_MAPPING: Record<string, string> = {
     'iphone': 'Apple',
     'samsung': 'Samsung',
     'airpod': 'Apple',
-    'watch': 'Apple', // default intent
-    'glen': 'Glenfiddich',
-    'jack': 'Jack Daniels',
-    'henny': 'Hennessy'
+    'pixel': 'Google',
+    'watch': 'Apple',
+    'mac': 'Apple',
+    'ipad': 'Apple'
 };
 
 export interface SearchIntent {
@@ -50,7 +50,7 @@ export function detectSearchIntent(rawQuery: string): SearchIntent {
     });
 
     // 2. Detect Categories (Standard mapping)
-    const commonCats = ['whiskey', 'wine', 'gin', 'vodka', 'beer', 'charger', 'case', 'audio'];
+    const commonCats = ['audio', 'charger', 'case', 'watch', 'accessories', 'laptop', 'tablet'];
     commonCats.forEach(cat => {
         if (query.includes(cat)) intent.categories.push(cat);
     });

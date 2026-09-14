@@ -52,10 +52,10 @@ export default function SocialHubPage() {
             if (data) setSuggestedMissions(data.map(d => ({
                 id: d.id,
                 title: d.title,
-                description: d.description,
-                contentType: d.content_type as any,
-                masterMediaUrl: d.master_media_url,
-                productIds: d.product_ids
+                description: d.description || '',
+                contentType: d.content_type as MasterContent['contentType'],
+                masterMediaUrl: d.master_media_url || '',
+                productIds: d.product_ids || []
             })));
         }
         fetchDrafts();
@@ -69,17 +69,25 @@ export default function SocialHubPage() {
 
     const handleCheckCompliance = async () => {
         setComplianceStatus('checking');
-        // In production, this calls the Compliance Engine logic
-        await new Promise(r => setTimeout(r, 1500));
+        // 🛰️ Real-Data Compliance Scanning
+        try {
+            if (!supabase) return;
+            const { data: rules } = await supabase.from('compliance_rules').select('*').eq('is_active', true);
 
-        const restrictedKeywords = ['win', 'prize', 'free', 'bottoms up', 'kids'];
-        const found = restrictedKeywords.filter(k => (title + description).toLowerCase().includes(k));
+            const found = rules?.filter(rule => {
+                const regex = new RegExp(rule.pattern, 'i');
+                return regex.test(title + description);
+            });
 
-        if (found.length > 0) {
-            setComplianceStatus('flagged');
-            setComplianceReason(`Restricted keywords detected: ${found.join(', ')}. Audit required.`);
-        } else {
-            setComplianceStatus('passed');
+            if (found && found.length > 0) {
+                setComplianceStatus('flagged');
+                setComplianceReason(`Potential breach: ${found[0].name}. Audit required.`);
+            } else {
+                setComplianceStatus('passed');
+            }
+        } catch (err) {
+            console.error("Compliance Sync Error:", err);
+            setComplianceStatus('idle');
         }
     };
 
@@ -183,7 +191,7 @@ export default function SocialHubPage() {
                                 <Input
                                     value={title}
                                     onChange={e => setTitle(e.target.value)}
-                                    placeholder="e.g. Weekend Extraction Protocol 🔥"
+                                    placeholder="e.g. Next-Gen Tech Upgrade Mission 🔥"
                                     className="h-14 rounded-2xl bg-slate-50 border-slate-100 font-bold text-lg text-foreground"
                                 />
                             </div>

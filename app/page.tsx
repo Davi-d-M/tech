@@ -2,7 +2,6 @@ import ProductList from "@/components/home/ProductList";
 import DynamicHero from "@/components/home/DynamicHero";
 import PromotionalBanner from "@/components/home/PromotionalBanner";
 import PersonalizedFeed from "@/components/home/PersonalizedFeed";
-import BarGoodsCollection from "@/components/home/BarGoodsCollection";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
@@ -52,7 +51,6 @@ export default async function Home() {
       { id: 'hero', visible: true },
       { id: 'promotions', visible: true },
       { id: 'products', visible: true },
-      { id: 'bar-goods', visible: true },
       { id: 'personalized-feed', visible: true },
       { id: 'blog', visible: true },
       { id: 'cta', visible: true },
@@ -92,12 +90,6 @@ export default async function Home() {
                           </div>
                         </div>
                         <ProductList initialProducts={initialProducts} />
-                      </div>
-                  );
-              case 'bar-goods':
-                  return (
-                      <div key="bar-goods" id="bar-goods-section" data-signal-section="bar-goods">
-                        <BarGoodsCollection />
                       </div>
                   );
               case 'personalized-feed':

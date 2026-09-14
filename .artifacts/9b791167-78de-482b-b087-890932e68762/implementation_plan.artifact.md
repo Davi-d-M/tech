@@ -1,46 +1,39 @@
-# Implementation Plan - Responsive UI Overhaul & Mobile Professionalism 📱💎🚀
+# Implementation Plan - Total Tech Specialization 🛡️📱⚡
 
-This plan fixes the "squeezed" mobile layout by implementing a fluid, responsive design system across all major interfaces. We are moving away from shrinking desktop layouts to building proper mobile compositions.
+This plan finalizes the removal of all legacy "Online Bar" references and pivots every intelligence node to be strictly focused on **Premium Electronics and Tech Accessories**. We are cleaning the "Giant Brain" to think only in Gadgets.
 
 ## Proposed Changes
 
-### 1. Global Responsive Safety Net 🛡️
-- [MODIFY] [globals.css](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/globals.css):
-    - Add global word-breaking and overflow-x prevention.
-    - Standardize responsive typography using `clamp()` or Tailwind scales.
+### 1. Global UI & Components 🎨
+- [DELETE] [BarGoodsCollection.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/BarGoodsCollection.tsx): This is redundant for an electronics store.
+- [MODIFY] [app/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/page.tsx): Remove the `bar-goods` section from the homepage rendering cycle.
+- [MODIFY] [HomeHero.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/HomeHero.tsx) & [DynamicHero.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/DynamicHero.tsx): Ensure all subtitles focus on "Elite Sound" and "Fast Charging" instead of "Rituals" or "Bottles."
 
-### 2. Admin Command Center (Admin Dashboard) 📊
-- [MODIFY] [app/admin/(dashboard)/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/admin/(dashboard)/page.tsx):
-    - Make the "Good Morning" header responsive (`text-3xl sm:text-5xl`).
-    - Adjust card padding for mobile (`p-6 sm:p-10`).
-    - Fix chart responsiveness to ensure they don't overflow small screens.
+### 2. Intelligence & Heuristics 🧠
+- [MODIFY] [DecisionDashboard.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/admin/DecisionDashboard.tsx): Replace "Whiskey traffic spikes" with "Tech velocity alerts."
+- [MODIFY] [GrowthCopilot.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/admin/GrowthCopilot.tsx): Finalize the tech-aware response logic.
+- [MODIFY] [intelligence.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/apex-os/intelligence.ts): Update anomaly detection to ignore legacy categories and focus on SKU performance.
 
-### 3. Customer Intelligence (Individual Profiles) 🧠
-- [MODIFY] [app/admin/(dashboard)/customers/[phone]/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/admin/(dashboard)/customers/[phone]/page.tsx):
-    - Refactor the stats grid to `grid-cols-2 lg:grid-cols-4` to avoid long single-column lists.
-    - Implement `min-w-0` on flex containers to prevent text butchering in the event feed.
-    - Optimize the "Modify Identity" modal for small phone heights.
+### 3. Marketing & Compliance 📢
+- [MODIFY] [social-hub/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/admin/(dashboard)/marketing/social-hub/page.tsx):
+    - Update the "Compliance Node" to flag tech-related risks (e.g., "fake", "replica", "no warranty") instead of alcohol keywords.
+    - Update placeholder missions to be 100% tech-focused.
+- [MODIFY] [socialService.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/socialService.ts): Remove any legacy "Experience authentic drinks" signatures from automated post templates.
 
-### 4. Product discovery (Product Cards & Lists) 🛍️
-- [MODIFY] [components/home/ProductCard.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/ProductCard.tsx):
-    - Ensure product names use `line-clamp-2` and `break-words`.
-    - Make the "Quick Look" button more accessible on touch devices.
-- [MODIFY] [components/home/ProductList.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/ProductList.tsx):
-    - Optimize the grid for the "awkward middle" (tablets) using `grid-cols-2 md:grid-cols-3 lg:grid-cols-4`.
-
-### 5. Header & Navigation (Elite Access) ☰
-- [MODIFY] [components/layout/Header.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/layout/Header.tsx):
-    - Ensure the search bar doesn't squeeze the logo on small iPhones.
-    - Optimize mobile menu triggers for thumb-reachability.
+### 4. Search & Discovery 🔎
+- [MODIFY] [search-intelligence.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/apex-os/search-intelligence.ts):
+    - Purge "smooth", "cold", "gin", "vodka" from the synonym engine.
+    - Map all generic "premium" intents to high-end tech categories.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure zero regressions in code splitting.
+- Run `npm run build` to ensure no dead imports remain after deleting the BarGoods component.
+- Execute a global `grep` for "whiskey" and "wine" — the result count must be **Zero** in all `/app`, `/components`, and `/lib` files.
 
 ### Manual Verification
-1. **Torture Test**: Inject an extremely long product name (e.g. "X-Series Ultra Premium Pro Max Limited Edition 2026") and verify it wraps gracefully on a 320px screen.
-2. **Breakpoint Check**: Resize browser from 1920px to 320px and ensure no horizontal scrollbars appear.
-3. **Touch Test**: Verify all buttons in the Cart and Checkout are at least 44px height for professional mobile interaction.
+1. **Search Test**: Type "gift" in the search bar -> Verify it suggests "Premium Bundles" or "Audio Sets" instead of wine.
+2. **Dashboard Test**: Open the Admin Console -> Verify the "Mission Priorities" HUD shows only tech-relevant alerts.
+3. **Copilot Test**: Ask "What's trending?" -> Verify it discusses AirPods or Chargers.

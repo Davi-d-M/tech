@@ -96,8 +96,8 @@ export default function DecisionDashboard() {
                 newInsights.push({
                     id: 'opp-traffic',
                     type: 'OPPORTUNITY',
-                    title: 'Organic Velocity Spike',
-                    desc: `Detected ${signalDensity.length} high-intent signals in the last 24h. Audience engagement is accelerating.`,
+                    title: 'Tech Velocity Spike',
+                    desc: `Detected ${signalDensity.length} high-intent gadget signals in the last 24h. Audio engagement is accelerating.`,
                     impact: 'Optimize Ad Spend',
                     severity: 'Low',
                     actionLabel: 'Boost Ads',

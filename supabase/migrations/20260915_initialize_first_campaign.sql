@@ -1,14 +1,14 @@
--- APEX OS: MISSION INITIALIZATION
--- Sets up the first automated growth campaign template.
+-- APEX OS: ELECTRONICS MISSION INITIALIZATION
+-- Sets up the first automated tech growth campaign template.
 
 -- 1. ENSURE COMPLIANCE REGS ARE LATEST
 INSERT INTO public.compliance_rules (name, category, pattern, action) VALUES
-('Alcohol Promotion: Success/Wealth', 'ALCOHOL', 'billionaire|rich|success|money|luxury', 'flag'),
-('Minors Guard', 'MINORS', 'child|kids|under 18|school', 'block'),
-('Irresponsible consumption', 'ALCOHOL', 'bottoms up|drink till you drop|non-stop', 'block')
+('Counterfeit Prevention', 'TECH', 'fake|replica|copy|knockoff|replica', 'block'),
+('Minors Guard', 'SAFETY', 'child|kids|under 18|school', 'block'),
+('Unverified Power Claims', 'TECH', 'infinite battery|0 to 100 in 1 second|perpetual energy', 'flag')
 ON CONFLICT DO NOTHING;
 
--- 2. CREATE FIRST CAMPAIGN (Weekend Extraction)
+-- 2. CREATE FIRST CAMPAIGN (Elite Tech Upgrade)
 INSERT INTO public.content_library (
     title,
     description,
@@ -17,15 +17,15 @@ INSERT INTO public.content_library (
     status,
     metadata
 ) VALUES (
-    'The Weekend Extraction Protocol 🚀',
-    'Elevate your weekend setup with the latest tech essentials. From elite audio to high-speed power delivery, we have the gear to keep you running. #Apexstores #WeekendVibes #NairobiTech',
+    'The 2026 Elite Tech Upgrade Mission 🚀',
+    'Stop compromising on quality. Experience authentic sound and lightning-fast charging with the latest Apex verified essentials. Engineered for the modern professional. #Apexstores #TechUpgrade #NairobiTech #AuthenticGadgets',
     'product_story',
-    'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&q=80', -- Temporary placeholder
+    'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&q=80',
     'draft',
     '{"aspect_ratio": "4:5", "platforms": ["instagram", "tiktok"]}'
 );
 
--- 3. ENSURE A SYSTEM ACCOUNT EXISTS (For Simulation/Demo)
+-- 3. ENSURE A SYSTEM ACCOUNT EXISTS
 INSERT INTO public.social_accounts (
     platform,
     account_name,
@@ -34,7 +34,7 @@ INSERT INTO public.social_accounts (
     metadata
 ) VALUES (
     'instagram',
-    'Apex stores Kenya (Official)',
+    'Apexstores Kenya (Official)',
     'system_node_01',
     'connected',
     '{"is_system": true}'
