@@ -6,11 +6,9 @@ import {
     ChevronLeft,
     ChevronRight,
     Calendar,
-    Zap,
     Clock,
     CheckCircle2,
     AlertTriangle,
-    Loader2,
     Target
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,12 +25,10 @@ interface ScheduledPost {
 
 export default function ContentCalendar() {
     const [posts, setPosts] = React.useState<ScheduledPost[]>([]);
-    const [loading, setLoading] = React.useState(true);
     const [viewDate, setViewDate] = React.useState(new Date());
 
     const fetchScheduled = React.useCallback(async () => {
         if (!supabase) return;
-        setLoading(true);
         try {
             const { data } = await supabase
                 .from('publishing_jobs')
@@ -40,7 +36,7 @@ export default function ContentCalendar() {
                 .order('scheduled_at', { ascending: true });
             setPosts(data || []);
         } finally {
-            setLoading(false);
+            // Logic handled
         }
     }, []);
 

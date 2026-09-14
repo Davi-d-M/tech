@@ -19,6 +19,7 @@ export class XAdapter implements SocialAdapter {
     }
 
     async getMetrics(externalId: string, account: SocialAccount): Promise<Partial<SocialMetric>> {
+        console.log(`[X] Fetching metrics for ${externalId} (${account.accountName})`);
         return { impressions: 1500, reach: 900 };
     }
 }

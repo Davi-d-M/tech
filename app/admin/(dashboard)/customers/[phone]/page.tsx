@@ -109,7 +109,7 @@ export default function CustomerIntelligence() {
   const [isAdjustingPoints, setIsAdjustingPoints] = useState(false);
   const [isRefreshingIntel, setIsRefreshingIntelligence] = useState(false);
   const [pointAmount, setPointAmount] = useState('');
-  const [pointReason, setPointReason] = useState('Admin manual adjustment');
+  const [pointReason] = useState('Admin manual adjustment');
 
   const loadData = useCallback(async () => {
     if (!supabase || !phone) return;
@@ -428,7 +428,7 @@ export default function CustomerIntelligence() {
                   ].map(tab => (
                       <button
                         key={tab.id}
-                        onClick={() => setActiveTab(tab.id as any)}
+                        onClick={() => setActiveTab(tab.id as 'profile' | 'timeline' | 'journey')}
                         className={cn(
                             "flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 border-2 border-transparent",
                             activeTab === tab.id ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "text-slate-400 hover:bg-slate-50 hover:text-foreground"

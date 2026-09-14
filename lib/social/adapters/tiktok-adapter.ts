@@ -20,6 +20,7 @@ export class TikTokAdapter implements SocialAdapter {
     }
 
     async getMetrics(externalId: string, account: SocialAccount): Promise<Partial<SocialMetric>> {
+        console.log(`[TIKTOK] Fetching metrics for ${externalId} (${account.accountName})`);
         return { views: 4500, reach: 3000 };
     }
 }

@@ -1,20 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import {
     Bot,
     Send,
-    X,
-    Sparkles,
     Loader2,
-    TrendingUp,
-    AlertCircle,
-    ChevronRight,
-    Zap,
     Target
 } from 'lucide-react';
-import { cn, formatPrice } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

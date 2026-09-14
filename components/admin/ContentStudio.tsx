@@ -2,19 +2,17 @@
 
 import * as React from 'react';
 import {
-    Layout,
     Image as ImageIcon,
-    Share2,
     Camera,
     Music,
     Loader2,
     CheckCircle2,
     Zap,
     Rocket,
-    Globe,
     ShieldAlert,
-    AlertCircle,
-    ArrowRight
+    Layout,
+    Globe,
+    Share2
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -77,7 +75,7 @@ export default function ContentStudio() {
 
             const broadcastResults = await socialManager.broadcastMasterContent(
                 masterContent,
-                selectedPlatforms as any
+                selectedPlatforms
             );
 
             const allSuccess = broadcastResults.every(r => r.status === 'SUCCESS');

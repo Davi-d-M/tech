@@ -99,9 +99,10 @@ export default function Product3DViewer({
             onChange={() => {
                 // Throttle interaction tracking
                 const now = Date.now();
-                if (!(window as any).last3DTrack || now - (window as any).last3DTrack > 2000) {
+                const lastTrack = (window as unknown as { last3DTrack?: number }).last3DTrack;
+                if (!lastTrack || now - lastTrack > 2000) {
                     trackInteraction('3D_INTERACT');
-                    (window as any).last3DTrack = now;
+                    (window as unknown as { last3DTrack: number }).last3DTrack = now;
                 }
             }}
           />

@@ -37,9 +37,12 @@ export default function PersonalizedFeed() {
 
                 // 1. GET RECENTLY VIEWED (Continue Shopping)
                 if (typeof window !== 'undefined') {
-                    const localHistory = JSON.parse(localStorage.getItem('apex_recent_views') || '[]');
-                    if (Array.isArray(localHistory)) {
-                        viewedIds = localHistory.map((item: any) => item.id).filter(Boolean);
+                    const localHistoryStr = localStorage.getItem('apex_recent_views');
+                    if (localHistoryStr) {
+                        const localHistory = JSON.parse(localHistoryStr);
+                        if (Array.isArray(localHistory)) {
+                            viewedIds = localHistory.map((item: { id: number }) => item.id).filter(Boolean);
+                        }
                     }
                 }
 
@@ -90,7 +93,7 @@ export default function PersonalizedFeed() {
         }
 
         loadFeed();
-    }, []);
+    }, [recommendedProducts.length]);
 
     if (loading) return null;
 

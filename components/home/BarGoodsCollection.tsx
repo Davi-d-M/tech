@@ -3,12 +3,13 @@
 import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from './ProductCard';
-import { Wine, Sparkles, ChevronRight, Package } from 'lucide-react';
+import { Product } from '@/types/product';
+import { Wine, ChevronRight, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 export default function BarGoodsCollection() {
-    const [items, setItems] = React.useState<any[]>([]);
+    const [items, setItems] = React.useState<Product[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {

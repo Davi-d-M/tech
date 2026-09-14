@@ -8,16 +8,11 @@ import {
     AlertTriangle,
     Package,
     Truck,
-    User,
     CheckCircle2,
     Zap,
-    History,
-    ChevronRight,
-    Search,
-    Loader2,
     Lock
 } from 'lucide-react';
-import { cn, formatPrice } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 
@@ -63,11 +58,11 @@ export default function AuthenticityVerifier() {
             if (data) {
                 setRecord({
                     id: serialId as string,
-                    product_name: (data.products as any)?.name || 'Unknown Gadget',
+                    product_name: (data.products as unknown as { name: string } | null)?.name || 'Unknown Gadget',
                     serial_number: data.serial_number,
                     imei: data.imei,
                     status: data.status,
-                    supplier_name: (data.suppliers as any)?.name || 'Verified Apex Supplier',
+                    supplier_name: (data.suppliers as unknown as { name: string } | null)?.name || 'Verified Apex Supplier',
                     received_at: data.received_at
                 });
             }

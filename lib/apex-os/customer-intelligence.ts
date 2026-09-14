@@ -9,10 +9,9 @@ export async function refreshCustomerIntelligence(userId: string) {
 
     try {
         // 1. Fetch historical data
-        const [ordersRes, signalsRes, profileRes] = await Promise.all([
+        const [ordersRes, signalsRes] = await Promise.all([
             supabase.from('orders').select('total_price, status, created_at').eq('user_id', userId),
-            supabase.from('user_signals').select('event_type, created_at').eq('user_id', userId),
-            supabase.from('profiles').select('created_at').eq('id', userId).single()
+            supabase.from('user_signals').select('event_type, created_at').eq('user_id', userId)
         ]);
 
         const orders = ordersRes.data || [];

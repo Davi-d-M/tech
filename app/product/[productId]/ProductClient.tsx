@@ -2,7 +2,6 @@
 
 import Features from "@/components/product/Features";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
-import ProductNotFound from "@/components/product/ProductNotFound";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import ReviewSection from "@/components/product/ReviewSection";
 import { Button } from "@/components/ui/button";

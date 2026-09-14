@@ -24,9 +24,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
-import { socialService, Platform, PlatformResponse } from '@/lib/socialService';
-import WhatsAppPreview from '@/components/admin/marketing/WhatsAppPreview';
-import EmailPreview from '@/components/admin/marketing/EmailPreview';
 
 import { socialManager } from '@/lib/social/social-manager';
 import { SocialPlatform } from '@/lib/social/types';
@@ -127,7 +124,7 @@ export default function SocialHubPage() {
                     ].map(tab => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
+                            onClick={() => setActiveTab(tab.id as 'composer' | 'calendar' | 'accounts')}
                             className={cn(
                                 "flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                                 activeTab === tab.id ? "bg-primary text-white shadow-lg" : "text-slate-400 hover:text-foreground"

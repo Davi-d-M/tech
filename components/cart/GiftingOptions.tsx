@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Gift, MessageSquare, User, Smartphone, Sparkles, X } from 'lucide-react';
+import { Gift, User, Smartphone, Sparkles, X } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -51,7 +51,7 @@ export default function GiftingOptions() {
                 {WRAPPING_OPTIONS.map((opt) => (
                     <button
                         key={opt.id}
-                        onClick={() => updateGifting({ isGift: true, wrapping: opt.id as any })}
+                        onClick={() => updateGifting({ isGift: true, wrapping: opt.id as 'Standard' | 'Premium' | 'Elite' })}
                         className={cn(
                             "p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden group",
                             gifting.wrapping === opt.id

@@ -20,6 +20,7 @@ export class YouTubeAdapter implements SocialAdapter {
     }
 
     async getMetrics(externalId: string, account: SocialAccount): Promise<Partial<SocialMetric>> {
+        console.log(`[YOUTUBE] Fetching metrics for ${externalId} (${account.accountName})`);
         return { views: 800, impressions: 2000 };
     }
 }

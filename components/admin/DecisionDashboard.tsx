@@ -8,12 +8,8 @@ import {
     Zap,
     Loader2,
     AlertCircle,
-    CheckCircle2,
-    ChevronRight,
-    Target,
-    BarChart3
+    Target
 } from 'lucide-react';
-import { cn, formatPrice } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';

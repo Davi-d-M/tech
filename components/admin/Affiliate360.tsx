@@ -10,11 +10,9 @@ import {
     ShieldCheck,
     AlertTriangle,
     CheckCircle2,
-    ChevronRight,
     Loader2,
     Zap,
-    Rocket,
-    Clock
+    Rocket
 } from 'lucide-react';
 import { cn, formatPrice } from '@/lib/utils';
 import { Card } from '@/components/ui/card';

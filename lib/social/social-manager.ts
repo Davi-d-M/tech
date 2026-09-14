@@ -2,7 +2,8 @@ import { supabase } from "@/lib/supabaseClient";
 import {
     SocialPlatform,
     SocialAdapter,
-    MasterContent
+    MasterContent,
+    PlatformPayload
 } from "./types";
 import { MetaAdapter } from "./adapters/meta-adapter";
 import { TikTokAdapter } from "./adapters/tiktok-adapter";
@@ -25,7 +26,7 @@ class SocialManager {
     /**
      * Creates a background publishing job for a specific node
      */
-    async enqueueJob(content: MasterContent, platform: SocialPlatform, accountId: string, payload: any) {
+    async enqueueJob(content: MasterContent, platform: SocialPlatform, accountId: string, payload: PlatformPayload) {
         if (!supabase) return null;
 
         const { data, error } = await supabase

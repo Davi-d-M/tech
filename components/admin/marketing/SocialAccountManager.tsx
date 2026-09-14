@@ -6,11 +6,8 @@ import {
     RefreshCcw,
     Plus,
     ShieldCheck,
-    ShieldAlert,
     MoreVertical,
     Loader2,
-    X,
-    CheckCircle2,
     Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';

@@ -24,6 +24,7 @@ export class MetaAdapter implements SocialAdapter {
     }
 
     async getMetrics(externalId: string, account: SocialAccount): Promise<Partial<SocialMetric>> {
+        console.log(`[META] Fetching metrics for ${externalId} (${account.accountName})`);
         // Fetch from Meta Graph API Insights
         return { reach: 1200, impressions: 2400 };
     }

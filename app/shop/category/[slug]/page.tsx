@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from '@/components/home/ProductCard';
 import { Product } from '@/types/product';
@@ -10,8 +10,7 @@ interface CategoryPageProps {
 }
 
 export async function generateMetadata(
-  { params }: CategoryPageProps,
-  parent: ResolvingMetadata
+  { params }: CategoryPageProps
 ): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
