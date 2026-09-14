@@ -1,9 +1,10 @@
 "use client";
 
 import { useSettings } from "@/lib/useSettings";
+import { Product } from "@/types/product";
 
 interface JsonLdProps {
-    product?: any;
+    product?: Product;
     breadcrumbs?: { name: string; item: string }[];
     hideOrganization?: boolean;
 }
@@ -44,7 +45,7 @@ export default function JsonLd({ product, breadcrumbs, hideOrganization }: JsonL
           "url": `${baseUrl}/product/${product.id}`,
           "priceCurrency": "KES",
           "price": product.price,
-          "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "availability": (product.stock || 0) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
           "itemCondition": "https://schema.org/NewCondition"
       }
   } : null;

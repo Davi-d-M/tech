@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import {
     Zap,
     CheckCircle2,
@@ -88,7 +87,8 @@ export default function SocialHubPage() {
             setTitle('');
             setDescription('');
             setComplianceStatus('idle');
-        } catch (err) {
+        } catch (error) {
+            console.error("Broadcast Failure:", error);
             alert("Broadcast sequence failed. Database link unstable.");
         } finally {
             setIsPublishing(false);

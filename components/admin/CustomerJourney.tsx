@@ -26,7 +26,7 @@ interface Signal {
     target: string;
     url: string;
     created_at: string;
-    metadata: any;
+    metadata: Record<string, unknown>;
 }
 
 export default function CustomerJourney({ userId }: { userId: string }) {
@@ -129,7 +129,7 @@ export default function CustomerJourney({ userId }: { userId: string }) {
                                         </p>
                                     </div>
                                     <div className="text-right flex flex-col items-end gap-2">
-                                        {s.metadata?.device_type && (
+                                        {(s.metadata?.device_type === 'Mobile' || s.metadata?.device_type === 'Desktop') && (
                                             <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-50 rounded text-[7px] font-black text-slate-400 uppercase">
                                                 {s.metadata.device_type === 'Mobile' ? <Smartphone size={10} /> : <Monitor size={10} />}
                                                 {s.metadata.device_type}

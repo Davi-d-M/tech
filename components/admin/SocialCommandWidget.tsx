@@ -58,7 +58,7 @@ export default function SocialCommandWidget() {
                 const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString();
 
                 // 1. Fetch Real Stats & Metrics
-                const [postsRes, attributionRes, accountsRes, metrics] = await Promise.all([
+                const [postsRes, attributionRes, accountsRes] = await Promise.all([
                     supabase.from('social_posts').select('id', { count: 'exact' }).gte('published_at', todayStart),
                     supabase.from('order_attribution').select('revenue, commission_earned').gte('created_at', todayStart),
                     supabase.from('social_accounts').select('platform, status'),

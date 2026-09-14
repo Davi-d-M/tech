@@ -22,4 +22,6 @@ export interface Product {
   seo_keywords?: string[];
   canonical_url?: string;
   short_description?: string;
+  sku?: string;
+  brand?: string;
 }

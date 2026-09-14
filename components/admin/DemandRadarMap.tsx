@@ -13,6 +13,16 @@ interface IntensityZone {
     label: string;
 }
 
+interface UserSignalWithMetadata {
+    metadata: {
+        geo_hint?: {
+            lat: number;
+            lng: number;
+        };
+    };
+    event_type: string;
+}
+
 export default function DemandRadarMap() {
     const [zones, setZones] = useState<IntensityZone[]>([]);
     const [loading, setLoading] = useState(true);
@@ -30,8 +40,8 @@ export default function DemandRadarMap() {
 
             const demandMap: Record<string, IntensityZone> = {};
 
-            signals?.forEach(s => {
-                const hint = (s.metadata as any)?.geo_hint;
+            (signals as unknown as UserSignalWithMetadata[])?.forEach(s => {
+                const hint = s.metadata?.geo_hint;
                 if (hint) {
                     const key = `${hint.lat.toFixed(3)},${hint.lng.toFixed(3)}`;
                     if (!demandMap[key]) {

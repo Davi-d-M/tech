@@ -3,7 +3,9 @@ import {
     SocialPlatform,
     SocialAdapter,
     MasterContent,
-    PlatformPayload
+    PlatformPayload,
+    PublishingJob,
+    SocialAccount
 } from "./types";
 import { MetaAdapter } from "./adapters/meta-adapter";
 import { TikTokAdapter } from "./adapters/tiktok-adapter";
@@ -68,7 +70,7 @@ class SocialManager {
             await supabase.from('publishing_jobs').update({ status: 'processing', started_at: new Date().toISOString() }).eq('id', jobId);
 
             // 3. Publish via Adapter
-            const result = await adapter.publish(job as any, job.social_accounts as any);
+            const result = await adapter.publish(job as unknown as PublishingJob, (job as unknown as { social_accounts: SocialAccount }).social_accounts);
 
             // 4. Record Success
             await supabase.from('publishing_jobs').update({
@@ -148,13 +150,15 @@ class SocialManager {
         for (const post of posts) {
             const adapter = this.adapters[post.platform];
             if (adapter && post.external_post_id) {
-                const metrics = await adapter.getMetrics(post.external_post_id, post.social_accounts as any);
+                const metrics = await adapter.getMetrics(post.external_post_id, post.social_accounts as unknown as SocialAccount);
 
                 // Record snapshot
                 await supabase.from('social_metrics_history').insert({
-                    post_id: post.id, // This needs to link to social_posts table, but for now we link to job id as placeholder
+                    post_id: post.id,
                     platform: post.platform,
-                    ...metrics
+                    impressions: metrics.impressions || 0,
+                    reach: metrics.reach || 0,
+                    engagement: metrics.likes || 0 // engagement fallback
                 });
             }
         }

@@ -106,10 +106,7 @@ export default function CustomerIntelligence() {
     relationship_manager: ''
   });
 
-  const [isAdjustingPoints, setIsAdjustingPoints] = useState(false);
   const [isRefreshingIntel, setIsRefreshingIntelligence] = useState(false);
-  const [pointAmount, setPointAmount] = useState('');
-  const [pointReason] = useState('Admin manual adjustment');
 
   const loadData = useCallback(async () => {
     if (!supabase || !phone) return;
@@ -309,10 +306,11 @@ export default function CustomerIntelligence() {
       }
   };
 
+  // Loyalty adjustment removed for build cleanup - add back when UI is ready
+  /*
   const handleAdjustPoints = async (type: 'add' | 'sub') => {
       if (!supabase || !profile || !pointAmount) return;
       const amount = parseInt(pointAmount) * (type === 'add' ? 1 : -1);
-      setIsAdjustingPoints(true);
       try {
           // 1. Update points
           const { error: pError } = await supabase.rpc('adjust_loyalty_points', {
@@ -328,16 +326,15 @@ export default function CustomerIntelligence() {
               description: pointReason
           }]);
 
-          await logAuditAction(adminEmail, 'ADMIN_ADJUST_POINTS', { phone, amount, reason: pointReason });
+          await logAuditAction(adminEmail, 'ADMIN_ADJUST_POINTS', { phone: Array.isArray(phone) ? phone[0] : phone, amount, reason: pointReason });
           setPointAmount('');
           loadData();
           alert(`Loyalty points ${type === 'add' ? 'added' : 'deducted'} successfully.`);
       } catch (err: unknown) {
           alert((err as Error).message);
-      } finally {
-          setIsAdjustingPoints(false);
       }
   };
+  */
 
   const handleRefreshIntelligence = async () => {
       if (!profile?.id) return;
