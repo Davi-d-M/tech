@@ -1,11 +1,29 @@
 import React from 'react';
 import Link from 'next/link';
+import { Metadata, ResolvingMetadata } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from '@/components/home/ProductCard';
 import { Product } from '@/types/product';
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata(
+  { params }: CategoryPageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+  const displayTitle = (slug || '').split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+  return {
+    title: `${displayTitle} in Kenya | Buy ${displayTitle} Online | Apexstores`,
+    description: `Shop premium ${displayTitle.toLowerCase()} in Kenya with Apexstores. Discover high-quality gadgets, check availability, and order online for fast Nairobi dispatch.`,
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/shop/category/${slug}`,
+    },
+  };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {

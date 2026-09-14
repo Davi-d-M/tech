@@ -45,7 +45,7 @@ export async function logOrderAttribution(orderId: number, totalRevenue: number)
             p_last_touch_source: utms.utm_source || 'direct',
             p_last_touch_campaign: utms.utm_campaign || null,
             p_medium: utms.utm_medium || null,
-            p_content: utms.utm_content || null,
+            p_content: utms.utm_content || utms.post_id || null, // Capture post_id from Content Studio
             p_revenue: totalRevenue,
             p_commission: affiliateUuid ? Math.floor(totalRevenue * 0.1) : 0
         });

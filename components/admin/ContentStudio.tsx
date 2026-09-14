@@ -66,10 +66,18 @@ export default function ContentStudio() {
         setIsGenerating(true);
         try {
             // Execute Multi-Channel Distribution
-            const broadcastResults = await socialManager.broadcastContent(
-                caption,
-                undefined, // mediaUrl (could be added to form)
-                selectedPlatforms
+            const masterContent = {
+                id: `studio_${Date.now()}`,
+                title: "Studio Upload",
+                description: caption,
+                contentType: 'product_story' as const,
+                masterMediaUrl: '',
+                productIds: []
+            };
+
+            const broadcastResults = await socialManager.broadcastMasterContent(
+                masterContent,
+                selectedPlatforms as any
             );
 
             const allSuccess = broadcastResults.every(r => r.status === 'SUCCESS');

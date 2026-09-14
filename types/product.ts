@@ -18,4 +18,8 @@ export interface Product {
   auto_rotate?: boolean;
   rotation_speed?: number;
   hotspots?: { id: string; position: [number, number, number]; title: string; description: string }[];
+  seo_description?: string;
+  seo_keywords?: string[];
+  canonical_url?: string;
+  short_description?: string;
 }

@@ -2,12 +2,18 @@
 
 import { useSettings } from "@/lib/useSettings";
 
-export default function JsonLd() {
+interface JsonLdProps {
+    product?: any;
+    breadcrumbs?: { name: string; item: string }[];
+    hideOrganization?: boolean;
+}
+
+export default function JsonLd({ product, breadcrumbs, hideOrganization }: JsonLdProps) {
   const { settings } = useSettings();
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com';
 
-  const organizationSchema = {
+  const organizationSchema = !hideOrganization ? {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": settings.store_info.name || "Apexstores Tech",
@@ -16,51 +22,43 @@ export default function JsonLd() {
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": `+${settings.contact.whatsapp}`,
-      "contactType": "customer service",
+      "customerService": "customer service",
       "areaServed": "KE",
       "availableLanguage": "English"
-    },
-    "sameAs": [
-      settings.social_links.instagram,
-      settings.social_links.tiktok,
-      settings.social_links.facebook
-    ].filter(Boolean)
-  };
+    }
+  } : null;
 
-  const localBusinessSchema = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": settings.store_info.name || "Apexstores Tech",
-    "image": `${baseUrl}/favicon.svg`,
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": settings.contact.address || "Tom Mboya Street",
-      "addressLocality": "Nairobi",
-      "addressRegion": "Nairobi County",
-      "addressCountry": "KE"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": -1.286389,
-      "longitude": 36.817223
-    },
-    "url": baseUrl,
-    "telephone": `+${settings.contact.whatsapp}`,
-    "openingHoursSpecification": [
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        "opens": "09:00",
-        "closes": "18:00"
+  const productSchema = product ? {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": product.name,
+      "image": [product.image_url || product.image],
+      "description": product.description,
+      "sku": product.sku || product.id,
+      "brand": {
+          "@type": "Brand",
+          "name": product.brand || settings.store_info.name
       },
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": "Saturday",
-        "opens": "10:00",
-        "closes": "16:00"
+      "offers": {
+          "@type": "Offer",
+          "url": `${baseUrl}/product/${product.id}`,
+          "priceCurrency": "KES",
+          "price": product.price,
+          "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          "itemCondition": "https://schema.org/NewCondition"
       }
-    ]
-  };
+  } : null;
+
+  const breadcrumbSchema = breadcrumbs ? {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": breadcrumbs.map((b, i) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "name": b.name,
+          "item": b.item.startsWith('http') ? b.item : `${baseUrl}${b.item}`
+      }))
+  } : null;
 
   return (
     <>
@@ -68,10 +66,18 @@ export default function JsonLd() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
-      />
+      {productSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+          />
+      )}
+      {breadcrumbSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+          />
+      )}
     </>
   );
 }
