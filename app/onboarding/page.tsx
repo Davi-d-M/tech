@@ -6,7 +6,9 @@ import { onboardingEngine, OnboardingState, OnboardingRole } from '@/lib/apex-os
 import SetupCenter from '@/components/onboarding/SetupCenter';
 import CustomerOnboarding from '@/components/onboarding/role-flows/CustomerOnboarding';
 import RiderAcademy from '@/components/onboarding/role-flows/RiderAcademy';
+import RiderTestMission from '@/components/onboarding/role-flows/RiderTestMission';
 import MerchantDiscovery from '@/components/onboarding/role-flows/MerchantDiscovery';
+import TeamProvisioning from '@/components/onboarding/role-flows/TeamProvisioning';
 import AffiliateBootcamp from '@/components/onboarding/role-flows/AffiliateBootcamp';
 import {
     Loader2,
@@ -152,13 +154,41 @@ export default function OnboardingRouter() {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
                 {onboardingState.role === 'CUSTOMER' && (
-                    <CustomerOnboarding onComplete={(data) => handleStepComplete('complete', data)} />
+                    <CustomerOnboarding onComplete={(data) => handleStepComplete('preferences', data)} />
                 )}
                 {onboardingState.role === 'RIDER' && (
-                    <RiderAcademy onComplete={() => handleStepComplete('identity')} />
+                    <>
+                        {onboardingState.currentStep === 'welcome' && (
+                            <RiderAcademy onComplete={() => handleStepComplete('welcome')} />
+                        )}
+                        {onboardingState.currentStep === 'test-mission' && (
+                            <RiderTestMission onComplete={() => handleStepComplete('test-mission')} />
+                        )}
+                        {['phone', 'identity', 'vehicle', 'verification', 'agreement', 'biometrics', 'pending'].includes(onboardingState.currentStep) && (
+                            <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 text-center space-y-6">
+                                <h3 className="text-xl font-black uppercase">Switching to Device Node...</h3>
+                                <p className="text-sm text-slate-500 italic">Please complete your identity verification in the Fleet Dashboard.</p>
+                                <Button onClick={() => router.push('/rider/onboarding')} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase">Open Fleet Setup</Button>
+                            </Card>
+                        )}
+                    </>
                 )}
                 {onboardingState.role === 'MERCHANT' && (
-                    <MerchantDiscovery onComplete={(data) => handleStepComplete('business-setup', data)} />
+                    <>
+                        {onboardingState.currentStep === 'welcome' && (
+                            <MerchantDiscovery onComplete={(data) => handleStepComplete('discovery', data)} />
+                        )}
+                        {onboardingState.currentStep === 'team' && (
+                            <TeamProvisioning tenantId={user?.id || 'master'} onComplete={() => handleStepComplete('team')} />
+                        )}
+                        {['business', 'categories', 'payout', 'agreement', 'pending'].includes(onboardingState.currentStep) && (
+                            <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 text-center space-y-6">
+                                <h3 className="text-xl font-black uppercase">Initializing Merchant Node...</h3>
+                                <p className="text-sm text-slate-500 italic">Please finalize your business profile to activate the dashboard.</p>
+                                <Button onClick={() => router.push('/supplier/onboarding')} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase">Open Partner Setup</Button>
+                            </Card>
+                        )}
+                    </>
                 )}
                 {onboardingState.role === 'AFFILIATE' && (
                     <AffiliateBootcamp onComplete={() => handleStepComplete('complete')} />

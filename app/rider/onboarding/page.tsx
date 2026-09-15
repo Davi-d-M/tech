@@ -9,7 +9,12 @@ import {
     CheckCircle2,
     Loader2,
     Camera,
-    CreditCard
+    CreditCard,
+    Zap,
+    Bike,
+    Car,
+    Navigation,
+    ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

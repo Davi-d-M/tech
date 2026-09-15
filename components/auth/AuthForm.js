@@ -76,7 +76,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
 
         if (data?.session) {
             setMessage('Account created! Welcome to Apex stores. 🚀')
-            router.push('/')
+            router.push('/onboarding')
         } else {
             setMessage('Account created! Please check your email to verify your identity.')
             setCooldownSeconds(COOLDOWN_DURATION)
@@ -116,7 +116,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
       } catch (e) { console.warn("Signal bridge failed", e); }
 
       setMessage('Logged in successfully!')
-      router.push('/')
+      router.push('/onboarding')
       return
     } catch (error) {
       console.error('Auth error:', error)

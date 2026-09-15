@@ -22,14 +22,34 @@ interface SetupCenterProps {
 }
 
 export default function SetupCenter({ state, onContinue }: SetupCenterProps) {
-    const isRider = state.role === 'RIDER';
-    const isMerchant = state.role === 'MERCHANT';
+    const getTasks = () => {
+        switch (state.role) {
+            case 'RIDER':
+                return [
+                    { id: 'welcome', label: 'Rider Academy', done: state.completedSteps.includes('welcome') },
+                    { id: 'phone', label: 'Identity Verification', done: state.completedSteps.includes('phone') },
+                    { id: 'test-mission', label: 'First Test Mission', done: state.completedSteps.includes('test-mission') },
+                ];
+            case 'MERCHANT':
+                return [
+                    { id: 'discovery', label: 'Operational Scoping', done: state.completedSteps.includes('discovery') },
+                    { id: 'business-setup', label: 'Business Profile', done: state.completedSteps.includes('business-setup') },
+                    { id: 'team', label: 'Team Provisioning', done: state.completedSteps.includes('team') },
+                ];
+            case 'AFFILIATE':
+                return [
+                    { id: 'bootcamp', label: 'Bootcamp Principle', done: state.completedSteps.includes('bootcamp') },
+                    { id: 'first-link', label: 'Generate Link', done: state.completedSteps.includes('first-link') },
+                ];
+            default:
+                return [
+                    { id: 'preferences', label: 'Personalize Feed', done: state.completedSteps.includes('preferences') },
+                    { id: 'first-order', label: 'Initial Tech Discovery', done: state.completedSteps.includes('first-order') },
+                ];
+        }
+    };
 
-    const remainingTasks = [
-        { id: 'identity', label: 'Verify Identity', done: state.completedSteps.includes('identity') },
-        { id: 'training', label: 'Complete Training', done: state.completedSteps.includes('training') },
-        { id: 'first-action', label: 'First Mission', done: state.completedSteps.includes('first-action') },
-    ];
+    const remainingTasks = getTasks();
 
     return (
         <div className="max-w-2xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">

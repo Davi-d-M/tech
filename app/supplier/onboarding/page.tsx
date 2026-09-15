@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     ShieldCheck,
@@ -21,13 +21,22 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { onboardingEngine } from '@/lib/apex-os/onboarding-engine';
+import MerchantDiscovery from '@/components/onboarding/role-flows/MerchantDiscovery';
+import TeamProvisioning from '@/components/onboarding/role-flows/TeamProvisioning';
 
-type Step = 'welcome' | 'business' | 'categories' | 'payout' | 'agreement' | 'pending';
+type Step = 'welcome' | 'discovery' | 'business' | 'categories' | 'payout' | 'team' | 'pending';
 
 export default function SupplierOnboarding() {
-    const [step, setStep] = useState<Step>('welcome');
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const initialStep = (searchParams.get('step') as Step) || 'welcome';
+
+    const [step, setStep] = useState<Step>(initialStep);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [user, setUser] = useState<any>(null);
 
     // Form Data
     const [businessName, setBusinessName] = useState('');
@@ -40,6 +49,21 @@ export default function SupplierOnboarding() {
     const [bankAccName, setBankAccName] = useState('');
     const [bankAccNo, setBankAccNo] = useState('');
     const [termsAccepted, setTermsAccepted] = useState(false);
+
+    useEffect(() => {
+        if (supabase) {
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) setUser(session.user);
+            });
+        }
+    }, []);
+
+    const advance = async (nextStep: Step, metadata = {}) => {
+        if (user) {
+            await onboardingEngine.completeStep(user.id, 'MERCHANT', step, nextStep, metadata);
+        }
+        setStep(nextStep);
+    };
 
     const availableCategories = [
         'Elite Audio',
@@ -74,14 +98,14 @@ export default function SupplierOnboarding() {
                     bank_name: bankName,
                     bank_account_name: bankAccName,
                     bank_account_no: bankAccNo,
-                    terms_accepted: termsAccepted,
+                    terms_accepted: true,
                     verification_status: 'UnderReview',
                     is_active: false
                 }]);
 
             if (insertError) throw insertError;
 
-            setStep('pending');
+            await advance('team', { business: businessName, regNo });
         } catch (err: unknown) {
             const error = err as Error;
             setError(error.message || 'Onboarding failed. Please try again.');
@@ -100,47 +124,31 @@ export default function SupplierOnboarding() {
                         <Briefcase className="h-10 w-10" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground leading-none">Apex <span className="text-primary italic">Partner</span></h1>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Scale • Supply • Settle</p>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground leading-none">Partner <span className="text-primary italic">Activation</span></h1>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-2">Node Enrollment Flow</p>
                     </div>
                 </div>
 
-                <Card className="p-8 lg:p-12 rounded-[3.5rem] bg-white border-2 border-slate-50 shadow-2xl relative overflow-hidden">
-                    <div className="relative z-10">
+                <Card className="p-8 lg:p-12 rounded-[3.5rem] bg-white border-2 border-slate-50 shadow-2xl relative overflow-hidden min-h-[500px] flex flex-col">
+                    <div className="relative z-10 flex-1 flex flex-col">
 
                         {step === 'welcome' && (
                             <div className="space-y-10 text-center animate-in slide-in-from-bottom-4 duration-500">
-                                <div className="space-y-4">
-                                    <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">Expand Your <br/> Business Horizon</h2>
-                                    <p className="text-slate-500 font-medium text-lg italic leading-relaxed">
-                                        Join the most elite tech logistics network in Kenya. Gain access to thousands of verified customers.
-                                    </p>
+                                <div className="space-y-4 text-left px-2">
+                                    <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">Operational <br/> Scoping</h2>
+                                    <p className="text-slate-500 font-medium italic">Determine your tactical requirements for the Apex OS environment.</p>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-left">
-                                        <Zap className="text-primary h-6 w-6 mb-3" />
-                                        <p className="text-[10px] font-black uppercase text-foreground">Fast Settlements</p>
-                                        <p className="text-[9px] text-slate-400 font-bold mt-1">48hr Payout Cycle</p>
-                                    </div>
-                                    <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-left">
-                                        <ShieldCheck className="text-emerald-500 h-6 w-6 mb-3" />
-                                        <p className="text-[10px] font-black uppercase text-foreground">Verified Only</p>
-                                        <p className="text-[9px] text-slate-400 font-bold mt-1">Fraud Protected</p>
-                                    </div>
-                                </div>
-                                <Button onClick={() => setStep('business')} className="w-full h-20 rounded-[2rem] bg-primary text-white font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-                                    Initialize Partner Application <ArrowRight className="ml-2 h-5 w-5" />
-                                </Button>
+                                <MerchantDiscovery onComplete={(data) => advance('business', data)} />
                             </div>
                         )}
 
                         {step === 'business' && (
-                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 flex-1">
                                 <div className="space-y-2">
                                     <h3 className="text-xl font-black text-foreground uppercase tracking-tight">Business Profile</h3>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Company Identification</p>
                                 </div>
-                                <div className="space-y-4">
+                                <div className="space-y-4 flex-1">
                                     <div className="relative">
                                         <Input value={businessName} onChange={e => setBusinessName(e.target.value)} placeholder="Registered Business Name" className="h-16 rounded-2xl bg-slate-50 border-slate-100 pl-14 font-bold text-sm" />
                                         <Store className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
@@ -164,9 +172,9 @@ export default function SupplierOnboarding() {
                                         <User className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                                     </div>
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 pt-6 mt-auto">
                                     <Button onClick={() => setStep('welcome')} variant="outline" className="h-16 rounded-2xl border-slate-200 text-slate-400 font-black uppercase text-[10px] tracking-widest"><ArrowLeft size={16} /></Button>
-                                    <Button onClick={() => setStep('categories')} disabled={!businessName || !regNo} className="flex-1 h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95">
+                                    <Button onClick={() => advance('categories')} disabled={!businessName || !regNo} className="flex-1 h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95">
                                         Next Component
                                     </Button>
                                 </div>
@@ -174,12 +182,12 @@ export default function SupplierOnboarding() {
                         )}
 
                         {step === 'categories' && (
-                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 flex-1">
                                 <div className="space-y-2">
                                     <h3 className="text-xl font-black text-foreground uppercase tracking-tight">Supply Category</h3>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Niche Specialization</p>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-2 gap-3 flex-1">
                                     {availableCategories.map(cat => (
                                         <button
                                             key={cat}
@@ -193,9 +201,9 @@ export default function SupplierOnboarding() {
                                         </button>
                                     ))}
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 pt-6 mt-auto">
                                     <Button onClick={() => setStep('business')} variant="outline" className="h-16 rounded-2xl border-slate-200 text-slate-400 font-black uppercase text-[10px] tracking-widest"><ArrowLeft size={16} /></Button>
-                                    <Button onClick={() => setStep('payout')} disabled={categories.length === 0} className="flex-1 h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95">
+                                    <Button onClick={() => advance('payout', { categories })} disabled={categories.length === 0} className="flex-1 h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95">
                                         Financial Setup
                                     </Button>
                                 </div>
@@ -203,12 +211,12 @@ export default function SupplierOnboarding() {
                         )}
 
                         {step === 'payout' && (
-                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500 flex-1">
                                 <div className="space-y-2">
                                     <h3 className="text-xl font-black text-foreground uppercase tracking-tight">Settlement Node</h3>
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bank or Paybill Details</p>
                                 </div>
-                                <div className="space-y-4">
+                                <div className="space-y-4 flex-1">
                                     <div className="relative">
                                         <Input value={bankName} onChange={e => setBankName(e.target.value)} placeholder="Bank Name / M-Pesa Provider" className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-bold text-xs" />
                                         <Banknote className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
@@ -222,46 +230,19 @@ export default function SupplierOnboarding() {
                                         <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
                                     </div>
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 pt-6 mt-auto">
                                     <Button onClick={() => setStep('categories')} variant="outline" className="h-16 rounded-2xl border-slate-200 text-slate-400 font-black uppercase text-[10px] tracking-widest"><ArrowLeft size={16} /></Button>
-                                    <Button onClick={() => setStep('agreement')} disabled={!bankAccNo} className="flex-1 h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95">
-                                        Final Verification
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
-
-                        {step === 'agreement' && (
-                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-                                <div className="space-y-2">
-                                    <h3 className="text-xl font-black text-foreground uppercase tracking-tight">Partner Agreement</h3>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Operational Protocol</p>
-                                </div>
-                                <div className="h-64 overflow-y-auto p-6 bg-slate-50 rounded-3xl border border-slate-100 text-[10px] font-medium leading-relaxed text-slate-600 space-y-4">
-                                    <p className="font-black text-foreground uppercase">TECHPAX MERCHANT SUPPLY AGREEMENT</p>
-                                    <p>1. AUTHENTICITY: Supplier guarantees that all products supplied are 100% genuine and original.</p>
-                                    <p>2. FULFILLMENT: Supplier must maintain accurate stock levels in the dashboard.</p>
-                                    <p>3. COMMISSION: A standard 5% commission applies to all sales processed through the platform.</p>
-                                    <p>4. PAYOUTS: Settlements are processed every Tuesday and Friday.</p>
-                                    <p>5. QUALITY: Any defective product must be replaced within 24 hours of notification.</p>
-                                </div>
-                                <label className="flex items-start gap-3 cursor-pointer group">
-                                    <input type="checkbox" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)} className="mt-1 h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary/20" />
-                                    <span className="text-[10px] font-bold text-slate-500 group-hover:text-foreground transition-colors uppercase italic leading-tight">
-                                        I certify that all business information provided is accurate and I agree to the Merchant Supply Protocol.
-                                    </span>
-                                </label>
-                                <div className="flex gap-4">
-                                    <Button onClick={() => setStep('payout')} variant="outline" className="h-16 rounded-2xl border-slate-200 text-slate-400 font-black uppercase text-[10px] tracking-widest"><ArrowLeft size={16} /></Button>
-                                    <Button
-                                        onClick={handleSubmit}
-                                        disabled={loading || !termsAccepted}
-                                        className="flex-1 h-20 rounded-[1.8rem] bg-primary text-white font-black uppercase text-xs tracking-widest shadow-2xl shadow-primary/20 active:scale-95 transition-all"
-                                    >
-                                        {loading ? <Loader2 className="animate-spin" /> : "Deploy Partner Link"}
+                                    <Button onClick={handleSubmit} disabled={!bankAccNo || loading} className="flex-1 h-16 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-95">
+                                        {loading ? <Loader2 className="animate-spin" /> : "Authorize Settlement Link"}
                                     </Button>
                                 </div>
                                 {error && <p className="text-[9px] font-black uppercase text-rose-500 text-center animate-pulse">{error}</p>}
+                            </div>
+                        )}
+
+                        {step === 'team' && (
+                            <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                                <TeamProvisioning tenantId={user?.id || 'master'} onComplete={() => advance('pending')} />
                             </div>
                         )}
 
@@ -271,22 +252,14 @@ export default function SupplierOnboarding() {
                                     <ShieldCheck className="h-12 w-12" />
                                 </div>
                                 <div className="space-y-4">
-                                    <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">Application Logged</h2>
-                                    <p className="text-slate-500 font-medium text-lg italic leading-relaxed">
-                                        &quot;Your business credentials have been established on the grid. Our verification unit will contact you within **24 hours** to activate your partner dashboard.&quot;
+                                    <h2 className="text-3xl font-black text-foreground uppercase tracking-tighter leading-none">Organization Active</h2>
+                                    <p className="text-slate-500 font-medium text-lg italic leading-relaxed px-6">
+                                        &quot;Professional environment synchronized. Your organization node is live on the grid.&quot;
                                     </p>
                                 </div>
-                                <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-left space-y-4">
-                                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Next Phase</p>
-                                    <div className="space-y-2">
-                                        <p className="text-xs font-black text-foreground">1. Identity Verification (In Progress)</p>
-                                        <p className="text-xs font-black text-slate-400">2. Dashboard Activation Link (Pending)</p>
-                                        <p className="text-xs font-black text-slate-400">3. Stock Initialization (Pending)</p>
-                                    </div>
-                                </div>
-                                <Link href="/">
+                                <Link href="/onboarding" className="block w-full">
                                     <Button className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95">
-                                        Return to Base
+                                        Enter Setup Center
                                     </Button>
                                 </Link>
                             </div>
