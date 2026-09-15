@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
+import Link from 'next/link';
 
 interface SocialStats {
     total_posts: number;
@@ -157,9 +158,11 @@ export default function SocialCommandWidget() {
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic leading-relaxed max-w-[300px]">
                         &quot;Cross-platform reach is up 12% following the AMAYA launch. TikTok conversion at 4.8%.&quot;
                     </p>
-                    <button className="h-10 px-6 rounded-xl bg-primary text-white font-black uppercase text-[8px] tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
-                        Content Studio &rarr;
-                    </button>
+                    <Link href="/admin/marketing/social-hub">
+                        <button className="h-10 px-6 rounded-xl bg-primary text-white font-black uppercase text-[8px] tracking-widest shadow-xl shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95">
+                            Content Studio &rarr;
+                        </button>
+                    </Link>
                 </div>
             </div>
             <Share2 className="absolute -bottom-10 -right-10 h-64 w-64 text-indigo-500/5 rotate-12 -z-0" />

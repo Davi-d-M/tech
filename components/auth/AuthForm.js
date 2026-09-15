@@ -61,7 +61,7 @@ export default function AuthForm({ initialMode = 'signin' }) {
       }
 
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -74,9 +74,13 @@ export default function AuthForm({ initialMode = 'signin' }) {
 
         if (error) throw error
 
-        setMessage('Check your email for the confirmation link!')
-        setCooldownSeconds(COOLDOWN_DURATION)
-        router.push('/')
+        if (data?.session) {
+            setMessage('Account created! Welcome to Apex stores. 🚀')
+            router.push('/')
+        } else {
+            setMessage('Account created! Please check your email to verify your identity.')
+            setCooldownSeconds(COOLDOWN_DURATION)
+        }
         return
       }
 

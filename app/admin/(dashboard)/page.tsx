@@ -251,72 +251,78 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
 
-        <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
-            <div className="relative z-10 flex flex-col h-full justify-between">
-                <div className="flex justify-between items-start">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                        <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6" />
+        <Link href="/admin/finance" className="block h-full">
+            <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div className="flex justify-between items-start">
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6" />
+                        </div>
+                        <div className="h-10 w-20 sm:h-12 sm:w-24">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={sparklineData}>
+                                    <Line type="monotone" dataKey="revenue" stroke="#ff6b00" strokeWidth={2} dot={false} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
-                    <div className="h-10 w-20 sm:h-12 sm:w-24">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={sparklineData}>
-                                <Line type="monotone" dataKey="revenue" stroke="#ff6b00" strokeWidth={2} dot={false} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                    <div className="mt-6 sm:mt-8 text-left">
+                        <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Gross Revenue</p>
+                        <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.totalRevenue)}</h3>
+                        <div className={cn(
+                            "flex items-center gap-2 mt-3",
+                            stats.growth >= 0 ? "text-emerald-500" : "text-rose-500"
+                        )}>
+                            <ArrowUpRight className={cn("h-3 w-3", stats.growth < 0 && "rotate-90")} />
+                            <span className="text-[9px] font-black uppercase">{stats.growth === 0 ? 'Stable' : `${Math.abs(stats.growth).toFixed(1)}% vs Last Period`}</span>
+                        </div>
                     </div>
                 </div>
-                <div className="mt-6 sm:mt-8">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Gross Revenue</p>
-                    <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.totalRevenue)}</h3>
-                    <div className={cn(
-                        "flex items-center gap-2 mt-3",
-                        stats.growth >= 0 ? "text-emerald-500" : "text-rose-500"
-                    )}>
-                        <ArrowUpRight className={cn("h-3 w-3", stats.growth < 0 && "rotate-90")} />
-                        <span className="text-[9px] font-black uppercase">{stats.growth === 0 ? 'Stable' : `${Math.abs(stats.growth).toFixed(1)}% vs Last Period`}</span>
-                    </div>
-                </div>
-            </div>
-            <Zap className="absolute -bottom-6 -right-6 h-24 w-24 sm:h-32 sm:w-32 text-primary/5 rotate-12 -z-0" />
-        </Card>
+                <Zap className="absolute -bottom-6 -right-6 h-24 w-24 sm:h-32 sm:w-32 text-primary/5 rotate-12 -z-0" />
+            </Card>
+        </Link>
 
-        <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
-            <div className="relative z-10 flex flex-col h-full justify-between">
-                <div className="flex justify-between items-start">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
-                        <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
+        <Link href="/admin/finance" className="block h-full">
+            <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div className="flex justify-between items-start">
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
+                            <DollarSign className="h-5 w-5 sm:h-6 sm:w-6" />
+                        </div>
+                        <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest">Growth Locked</div>
                     </div>
-                    <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[8px] font-black uppercase tracking-widest">Growth Locked</div>
+                    <div className="mt-6 sm:mt-8 text-left">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Net Profit</p>
+                        <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.netProfit)}</h3>
+                        <p className="text-[9px] font-black text-primary uppercase mt-3">{stats.profitMargin.toFixed(1)}% Margin Efficiency</p>
+                    </div>
                 </div>
-                <div className="mt-6 sm:mt-8">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Net Profit</p>
-                    <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{formatPrice(stats.netProfit)}</h3>
-                    <p className="text-[9px] font-black text-primary uppercase mt-3">{stats.profitMargin.toFixed(1)}% Margin Efficiency</p>
-                </div>
-            </div>
-        </Card>
+            </Card>
+        </Link>
 
-        <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
-            <div className="relative z-10 flex flex-col h-full justify-between">
-                <div className="flex justify-between items-start">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
-                        <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
+        <Link href="/admin/orders" className="block h-full">
+            <Card className="p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all h-full">
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div className="flex justify-between items-start">
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
+                            <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
+                        </div>
+                        <div className="h-10 w-20 sm:h-12 sm:w-24">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={sparklineData}>
+                                    <Bar dataKey="count" fill="#ff6b00" radius={[4, 4, 4, 4]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
-                    <div className="h-10 w-20 sm:h-12 sm:w-24">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={sparklineData}>
-                                <Bar dataKey="count" fill="#ff6b00" radius={[4, 4, 4, 4]} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                    <div className="mt-6 sm:mt-8 text-left">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Fulfillment Pipeline</p>
+                        <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{orders.length}</h3>
+                        <p className="text-[9px] font-black text-primary uppercase mt-3">{orders.filter(o => o.status === 'Pending').length} Pending Orders</p>
                     </div>
                 </div>
-                <div className="mt-6 sm:mt-8">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Fulfillment Pipeline</p>
-                    <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter uppercase leading-none">{orders.length}</h3>
-                    <p className="text-[9px] font-black text-primary uppercase mt-3">{orders.filter(o => o.status === 'Pending').length} Pending Orders</p>
-                </div>
-            </div>
-        </Card>
+            </Card>
+        </Link>
 
       </div>
 
