@@ -199,7 +199,7 @@ export default function GlobalSourcingBridge() {
                             <h4 className="text-lg font-black uppercase text-indigo-700 tracking-tighter">Inventory Buffer</h4>
                         </div>
                         <p className="text-[10px] text-indigo-600 font-medium leading-relaxed italic">
-                            &quot;Current sea shipment (S105) contains 500+ units. I recommend pausing the &apos;Audio Pro&apos; discount once stock hits 50 units to preserve margin until clearing.&quot;
+                            &quot;Current sea shipment (S105) contains 500+ tech units. I recommend pausing the &apos;Elite Audio&apos; discount once local stock hits 50 units to preserve margin until clearing.&quot;
                         </p>
                     </div>
                 </div>

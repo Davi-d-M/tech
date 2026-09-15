@@ -129,7 +129,7 @@ export default function AdminBlogPage() {
   const applyTemplate = (type: string) => {
       const templates: Record<string, string> = {
           faq: "# Frequently Asked Questions\n\n### Q: [Your Question Here]?\nA: [Your Answer Here]\n\n### Q: How do I track my order?\nA: You can track your order via the Track Package hub.",
-          update: "# Product Update: [Product Name]\n\nWe are excited to announce a major restock of [Product]. \n\n## Key Improvements\n- Better battery life\n- New color variants\n- Improved packaging",
+          update: "# Technical Insight: [Gadget Name]\n\nWe are excited to announce a major restock of [Gadget]. \n\n## Key Improvements\n- Better battery life\n- New color variants\n- Improved packaging",
           guide: "# Ultimate Troubleshooting Guide\n\nFollow these steps to get your tech back in action.\n\n1. Check the power source\n2. Hold the reset button\n3. Contact Apex Support"
       };
       setForm(prev => ({ ...prev, content: templates[type] || prev.content }));
