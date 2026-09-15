@@ -18,11 +18,13 @@ import {
   CheckSquare,
   Square,
   XCircle,
-  Trash2
+  Trash2,
+  Loader2
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { supabase } from '@/lib/supabaseClient';
 import { formatPrice, cn } from '@/lib/utils';
 import { generateReceiptPDF, getWhatsAppReceiptLink } from '@/lib/receiptService';
@@ -124,6 +126,12 @@ export default function AdminOrdersPage() {
 
   const [editingPriceId, setEditingPriceId] = React.useState<number | null>(null);
   const [newPrice, setNewPrice] = React.useState<string>('');
+
+  // Vault Tracking State
+  const [isVaultOpen, setIsVaultOpen] = React.useState(false);
+  const [vaultOrderId, setVaultOrderId] = React.useState<number | null>(null);
+  const [serialInputs, setSerialInputs] = React.useState<Record<number, string>>({});
+  const [isVaultSyncing, setIsVaultSyncing] = React.useState(false);
 
   const canManageOrders = role === 'staff' || role === 'admin' || role === 'owner';
   const canSeeMoney = role === 'staff' || role === 'admin' || role === 'owner';
@@ -229,6 +237,13 @@ export default function AdminOrdersPage() {
             type: 'error',
             text: `Invalid Transition: Cannot move from ${orderToUpdate.status} to ${status}.`
         });
+        return;
+    }
+
+    // 🛡️ Apex OS Vault: Intercept Dispatched status for Serial Tracking
+    if (status === 'Dispatched' && orderToUpdate.order_items?.some(i => !i.serial_number)) {
+        setVaultOrderId(orderId);
+        setIsVaultOpen(true);
         return;
     }
 
@@ -528,6 +543,40 @@ export default function AdminOrdersPage() {
           const error = err as Error;
           setStatusMessage({ type: 'error', text: error.message });
       }
+  };
+
+  const handleVaultCommit = async () => {
+    if (!supabase || !vaultOrderId) return;
+    setIsVaultSyncing(true);
+    try {
+        const items = orders.find(o => o.id === vaultOrderId)?.order_items || [];
+
+        for (const item of items) {
+            const serial = serialInputs[item.id];
+            if (!serial) throw new Error(`Serial required for item #${item.id}`);
+
+            // 1. Log to inventory_units
+            await supabase.from('inventory_units').insert([{
+                product_id: item.product_id,
+                order_id: vaultOrderId,
+                serial_number: serial,
+                status: 'Reserved',
+                cost_price: item.unit_cost
+            }]);
+
+            // 2. Update order_items with serial (for history)
+            await supabase.from('order_items').update({ serial_number: serial }).eq('id', item.id);
+        }
+
+        // 3. Move Order to Dispatched
+        setIsVaultOpen(false);
+        await updateOrderStatus(vaultOrderId, 'Dispatched');
+        setSerialInputs({});
+    } catch (err: any) {
+        alert(err.message);
+    } finally {
+        setIsVaultSyncing(false);
+    }
   };
 
   if (role !== 'owner' && role !== 'admin' && role !== 'staff') {
@@ -1020,6 +1069,50 @@ export default function AdminOrdersPage() {
                       </div>
                   </div>
               </div>
+          </div>
+      )}
+
+      {/* 🛡️ INVENTORY VAULT MODAL */}
+      {isVaultOpen && vaultOrderId && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-background/20 backdrop-blur-md p-6">
+              <Card className="max-w-md w-full bg-white rounded-[3rem] border border-border shadow-2xl p-10 space-y-8 animate-in zoom-in-95">
+                  <div className="text-center space-y-2">
+                      <div className="h-16 w-16 rounded-[1.8rem] bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4 shadow-sm border border-primary/20"><Package className="h-8 w-8" /></div>
+                      <h3 className="text-2xl font-black uppercase tracking-tighter">Vault Verification</h3>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">&quot;Authorized release of premium tech units.&quot;</p>
+                  </div>
+
+                  <div className="space-y-6">
+                      <p className="text-[10px] font-black uppercase text-slate-400 px-1 tracking-widest border-b border-slate-50 pb-2">Unit Serialization</p>
+                      {orders.find(o => o.id === vaultOrderId)?.order_items?.map(item => (
+                          <div key={item.id} className="space-y-2">
+                              <label className="text-[9px] font-black uppercase text-foreground ml-1">
+                                  {productNameMap.get(item.product_id) || 'Item'} (x{item.quantity})
+                              </label>
+                              <div className="relative">
+                                  <Input
+                                    value={serialInputs[item.id] || ''}
+                                    onChange={e => setSerialInputs({ ...serialInputs, [item.id]: e.target.value.toUpperCase() })}
+                                    placeholder="Entry IMEI / Serial"
+                                    className="h-14 rounded-2xl bg-slate-50 border-slate-100 pl-12 font-mono text-xs font-black"
+                                  />
+                                  <ShieldAlert className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                      <Button
+                        onClick={handleVaultCommit}
+                        disabled={isVaultSyncing}
+                        className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
+                      >
+                          {isVaultSyncing ? <Loader2 className="animate-spin" /> : 'Authorize Release'}
+                      </Button>
+                      <Button onClick={() => setIsVaultOpen(false)} variant="ghost" className="w-full text-slate-400 font-black uppercase text-[10px]">Cancel Release</Button>
+                  </div>
+              </Card>
           </div>
       )}
     </div>

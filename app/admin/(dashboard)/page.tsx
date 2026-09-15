@@ -40,6 +40,7 @@ import TodayCommandCenter from '@/components/admin/TodayCommandCenter';
 import ExceptionCenter from '@/components/admin/ExceptionCenter';
 import SystemPulseWidget from '@/components/admin/SystemPulseWidget';
 import ApexIntelligence from '@/components/admin/ApexIntelligence2';
+import ProfitDeepDive from '@/components/admin/ProfitDeepDive';
 import AskApex from '@/components/admin/AskApex';
 import SentimentSentinel from '@/components/admin/SentimentSentinel';
 import ActiveAdmins from '@/components/admin/ActiveAdmins';
@@ -334,6 +335,8 @@ export default function AdminDashboard() {
       <DecisionDashboard />
 
       <TodayCommandCenter />
+
+      <ProfitDeepDive />
 
       <SocialCommandWidget />
 

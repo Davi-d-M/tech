@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formatPrice, cn } from '@/lib/utils';
+import ProfitDeepDive from '@/components/admin/ProfitDeepDive';
 
 interface LedgerEntry {
     id: number;
@@ -272,25 +273,7 @@ export default function AdminFinancePage() {
                 </div>
 
                 <div className="lg:col-span-4 flex flex-col gap-8 h-full">
-                    <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm relative overflow-hidden group flex-1 flex flex-col justify-between">
-                        <div className="relative z-10 space-y-10">
-                            <h3 className="text-lg font-black uppercase tracking-tighter text-foreground">Unit Economics ({currency})</h3>
-                            <div className="space-y-6">
-                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                    <span>Contribution Margin</span>
-                                    <span className="text-primary">{stats.margin.toFixed(1)}%</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                    <div className="h-full bg-primary" style={{ width: `${stats.margin}%` }}></div>
-                                </div>
-                                <div className="flex justify-between items-center text-xs font-black text-foreground">
-                                    <p>Avg Order Value</p>
-                                    <p>{formatVal(convert(stats.revenue / (ledger.filter(l => l.entry_type === 'REVENUE').length || 1)))}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <DollarSign className="absolute -bottom-10 -left-10 h-48 w-48 text-primary/5 rotate-12 -z-0" />
-                    </Card>
+                    <ProfitDeepDive />
 
                     <div className="p-8 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-6 text-left">
                         <div className="flex items-center gap-3">

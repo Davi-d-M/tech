@@ -1,44 +1,47 @@
-# Implementation Plan - Deletion Control & Global Connectivity Audit 🛡️🧹🔗
+# Implementation Plan - Apex Financial Command OS 💰🛡️📈
 
-This plan establishes full deletion control across all administrative hubs and ensures every button is perfectly linked and responsive, as requested by the user.
+This plan establishes the **Apex Financial Command**, a production-hardened system for automated M-Pesa reconciliation, partner payouts (Riders/Merchants), and real-time margin intelligence.
 
 ## Proposed Changes
 
-### 1. Deletion Control Expansion 🧹
-- **Rider Hub (`riders/page.tsx`)**:
-    - [MODIFY] Add `handleDeleteRider` to purge a rider from the grid with a confirmation prompt.
-    - [MODIFY] Add a Trash icon in the table actions.
-- **Campaign Hub (`marketing/list/page.tsx`)**:
-    - [MODIFY] Add `handleDeleteCampaign` to remove old marketing missions.
-    - [MODIFY] Add a Delete option in the action menu.
-- **Widget Hub (`marketing/widget-hub/page.tsx`)**:
-    - [MODIFY] Add `handleDeleteWidget` to remove custom home-screen widgets.
-    - [MODIFY] Add a Trash icon next to the widget name in the mission list.
-- **Supplier Hub (`operations/suppliers/page.tsx`)**:
-    - [MODIFY] Add `handleDeleteSupplier` to decommission a supply partner.
-- **Affiliate Hub (`affiliates/page.tsx`)**:
-    - [MODIFY] Implement `handleRejectApp` to purge pending applications.
+### 1. Database Foundation (`supabase/migrations/`) 🗄️
+- [NEW] `20260916_financial_command.sql`:
+    - `merchant_wallets`: Tracks earnings and withdrawals for supply partners.
+    - `payout_requests`: Centralized queue for all withdrawals (Rider, Merchant, Affiliate).
+    - `payout_audit_log`: immutable trail of every shilling leaving the system.
+    - `transaction_reconciliation_logic`: RPCs to match Transaction IDs to Orders.
 
-### 2. Connectivity Audit 🔗
-- **Dashboard (`admin/(dashboard)/page.tsx`)**:
-    - [VERIFY] Ensure all "Sync" and "Sync Status" buttons are wired to real fetch handlers.
-- **Intelligence HUDs**:
-    - [VERIFY] Ensure "View Details" buttons in `ApexIntelligence` and `ExceptionCenter` lead to relevant sub-pages.
-- **Command Center (`TodayCommandCenter.tsx`)**:
-    - [VERIFY] Ensure "Subscribers" and "Low Stock" tiles route to the correct hubs.
+### 2. M-Pesa Reconciliation HUD (`app/admin/(dashboard)/finance/reconciliation/`) ⚡
+- [NEW] `page.tsx`: A "Live Radar" of `payment_logs`.
+    - Automatically highlights un-matched M-Pesa transactions.
+    - "One-Click Match" button to link a transaction to a pending Order and trigger the "Paid" state.
 
-### 3. Responsiveness Polish 📱
-- **Tables**: Ensure all tables use `overflow-x-auto` to prevent layout breaks on small screens.
-- **Modals**: Ensure all modals (Product 360, Affiliate 360) are scrollable on mobile.
+### 3. Partner Payout Hub (`app/admin/(dashboard)/finance/payouts/`) 💰
+- [MODIFY] `page.tsx`: Expand the current payout queue into a unified hub.
+    - Filter by role (Rider, Merchant, Affiliate).
+    - **Bulk Authorization**: Approve multiple payouts and export a formatted file for M-Pesa Business/Bank uploads.
+    - Real-time "Authorized to Extract" stats.
+
+### 4. True-Margin Intelligence (`components/admin/ProfitDeepDive.tsx`) 🧠
+- [NEW] Component for the Finance dashboard.
+    - Calculates **Net Yield**: `Revenue - COGS - Shipping - Commission - Tax (VAT)`.
+    - Visualizes "Profit Bleed" (where the most money is lost).
+
+### 5. Inventory Vault (Serial Tracking) 🛡️
+- [MODIFY] `app/admin/(dashboard)/orders/page.tsx`:
+    - Inject a "Vault" modal into the **Dispatched** transition.
+    - Force staff to entry or scan the **Serial Number / IMEI** for every premium item.
+    - Links the `inventory_unit` to the Order for warranty audit.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to verify integrity.
+- Run `npm run build` to verify the new financial routes.
+- Verify RLS: Ensure only `owner` and `finance` roles can authorize payouts.
 
 ### Manual Verification
-1. **Deletion Test**: Delete a dummy product, rider, and campaign. Verify the database record is purged.
-2. **Navigation Test**: Click every KPI tile on the dashboard. Verify it lands on the correct filtered sub-page.
-3. **Responsive Test**: Shrink the browser window to mobile size. Verify the Admin Hub remains functional.
+1. **Reconciliation Test**: Insert a dummy `payment_log` -> Use the HUD to match it to an order -> Verify order status moves to "Paid".
+2. **Payout Test**: Create a withdrawal request for a Rider -> Approve it in Admin -> Verify the status changes to "Paid" and wallet balance is deducted.
+3. **Vault Test**: Try to move an order to "Dispatched" without a serial number -> Verify the system blocks it and requests "Vault Access".
