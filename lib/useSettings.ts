@@ -110,8 +110,8 @@ const DEFAULT_SETTINGS: StoreSettings = {
         address: "Nairobi, Kenya"
     },
     branding: {
-        owner_name: "The Apex Team",
-        portfolio_url: "",
+        owner_name: "Apex stores",
+        portfolio_url: "https://tech-paxv.onrender.com",
         hero_title: "Future Sound. Total Power.",
         hero_subtitle: "Experience authentic tech engineered for excellence."
     },

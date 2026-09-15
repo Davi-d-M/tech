@@ -5,6 +5,8 @@ import { Gift, Zap, Loader2, Sparkles, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+import { supabase } from '@/lib/supabaseClient';
+
 interface Prize {
     type: string;
     amount: number;
@@ -18,13 +20,19 @@ export default function RewardInteractive({ userId }: { userId: string }) {
     const [error, setError] = useState<string | null>(null);
 
     const handleClaim = async (type: 'spin' | 'box') => {
+        if (!supabase) return;
         setStatus(type === 'spin' ? 'spinning' : 'opening');
         setError(null);
 
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+
             const res = await fetch('/api/member/gamification', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token || ''}`
+                },
                 body: JSON.stringify({ userId, action: 'claim-daily-reward', payload: { type } }),
             });
             const data = await res.json();
@@ -42,10 +50,10 @@ export default function RewardInteractive({ userId }: { userId: string }) {
                     setStatus('won');
                 }, type === 'spin' ? 3000 : 1500);
             } else {
-                throw new Error(data.error);
+                throw new Error(data.error || "Mission data corrupted.");
             }
-        } catch {
-            setError("Connection unavailable. Please try again later.");
+        } catch (err: unknown) {
+            setError((err as Error).message || "Connection unavailable. Please try again later.");
             setStatus('idle');
         }
     };
