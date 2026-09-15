@@ -13,12 +13,15 @@ import {
     AlertCircle,
     MoreVertical,
     Plus,
-    Loader2
+    Loader2,
+    Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useAdmin } from '@/context/AdminContext';
+import { logAuditAction } from '@/lib/auditService';
 
 interface Campaign {
     id: string;
@@ -33,30 +36,45 @@ interface Campaign {
 }
 
 export default function CampaignHistory() {
+    const { email } = useAdmin();
     const [campaigns, setCampaigns] = React.useState<Campaign[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [searchQuery, setSearchQuery] = React.useState('');
 
-    React.useEffect(() => {
-        async function fetchCampaigns() {
-            if (!supabase) return;
-            setLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('marketing_campaigns')
-                    .select('*, products(name)')
-                    .order('created_at', { ascending: false });
+    const fetchCampaigns = React.useCallback(async () => {
+        if (!supabase) return;
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('marketing_campaigns')
+                .select('*, products(name)')
+                .order('created_at', { ascending: false });
 
-                if (error) throw error;
-                setCampaigns(data || []);
-            } catch {
-                console.error("Campaign fetch failed.");
-            } finally {
-                setLoading(false);
-            }
+            if (error) throw error;
+            setCampaigns(data || []);
+        } catch {
+            console.error("Campaign fetch failed.");
+        } finally {
+            setLoading(false);
         }
-        fetchCampaigns();
     }, []);
+
+    const handleDeleteCampaign = async (id: string, name: string) => {
+        if (!supabase || !confirm(`Delete mission ${name} permanently?`)) return;
+        try {
+            const { error } = await supabase.from('marketing_campaigns').delete().eq('id', id);
+            if (error) throw error;
+
+            await logAuditAction(email, 'DELETE_CAMPAIGN', { id, name });
+            setCampaigns(prev => prev.filter(c => c.id !== id));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchCampaigns();
+    }, [fetchCampaigns]);
 
     const filtered = campaigns.filter(c =>
         c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -158,8 +176,13 @@ export default function CampaignHistory() {
                                                 <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-secondary">
                                                     <ChevronRight size={18} className="text-muted-foreground" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-secondary">
-                                                    <MoreVertical size={18} className="text-muted-foreground" />
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleDeleteCampaign(camp.id, camp.name)}
+                                                    className="h-10 w-10 rounded-xl hover:bg-rose-50 hover:text-rose-500"
+                                                >
+                                                    <Trash2 size={18} />
                                                 </Button>
                                             </div>
                                         </td>

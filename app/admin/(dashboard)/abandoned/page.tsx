@@ -19,7 +19,8 @@ import {
   MousePointer2,
   Search,
   XCircle,
-  Flame
+  Flame,
+  Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -87,6 +88,17 @@ export default function AdminAbandonedPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCart, setSelectedCart] = useState<AbandonedCart | null>(null);
   const [ghostStatus] = useState<'idle' | 'running' | 'warning'>('running');
+
+  const handleDeleteAbandoned = async (id: number) => {
+    if (!supabase || !confirm("Purge this abandoned bag from the logs?")) return;
+    try {
+        const { error } = await supabase.from('abandoned_carts').delete().eq('id', id);
+        if (error) throw error;
+        setCarts(prev => prev.filter(c => c.id !== id));
+    } catch (err) {
+        console.error(err);
+    }
+  };
 
   const stats = useMemo(() => {
       const potentialRevenue = carts.filter(c => c.recovery_status === 'Waiting' || c.recovery_status === 'Contacted').reduce((sum, c) => sum + Number(c.total_price || 0), 0);
@@ -308,6 +320,14 @@ export default function AdminAbandonedPage() {
                                       <div className="flex flex-col items-end gap-3 w-full lg:w-auto">
                                           <p className="text-2xl font-black text-foreground tracking-tighter leading-none">{formatPrice(cart.total_price)}</p>
                                           <div className="flex gap-2">
+                                              <Button
+                                                onClick={() => handleDeleteAbandoned(cart.id)}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-10 w-10 rounded-xl text-slate-200 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100"
+                                              >
+                                                  <Trash2 size={16} />
+                                              </Button>
                                               <Button onClick={() => setSelectedCart(cart)} variant="ghost" size="sm" className="h-10 px-4 rounded-xl text-[9px] font-black uppercase text-slate-400 hover:text-primary border border-transparent hover:border-primary/20">Journey</Button>
                                               <Button
                                                 onClick={() => window.open(`https://wa.me/${cart.customer_phone.replace(/\D/g, '')}`, '_blank')}

@@ -257,7 +257,7 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
               <span>All Rights Reserved.</span>
             </div>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-2">
-                Developed by <a href={loading ? "#" : (settings.branding.portfolio_url || "https://apexstores.co.ke")} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{loading ? "..." : (settings.branding.owner_name || "The Apex Team")}</a>
+                Developed by <a href={loading ? "#" : (settings.branding.portfolio_url || "https://tech-paxv.onrender.com")} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{loading ? "..." : (settings.branding.owner_name || "Apex stores")}</a>
             </p>
           </div>
 

@@ -17,7 +17,8 @@ import {
   ShieldAlert,
   CheckSquare,
   Square,
-  XCircle
+  XCircle,
+  Trash2
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -101,6 +102,22 @@ export default function AdminOrdersPage() {
   const [isBulkUpdating, setIsBulkUpdating] = React.useState(false);
   const [assigningRiderId, setAssigningRiderId] = React.useState<number | null>(null);
   const [riderForm, setRiderForm] = React.useState({ name: '', phone: '' });
+
+  const handleDeleteOrder = async (id: number) => {
+    if (!supabase || !confirm(`Delete order #${id} permanently from the grid?`)) return;
+    try {
+        const { error } = await supabase.from('orders').delete().eq('id', id);
+        if (error) throw error;
+
+        await logAuditAction(email, 'DELETE_ORDER', { id });
+        setOrders(prev => prev.filter(o => o.id !== id));
+        setStatusMessage({ type: 'success', text: `Order #${id} expelled.` });
+        setTimeout(() => setStatusMessage({ type: 'idle', text: '' }), 3000);
+    } catch (err: unknown) {
+        const error = err as Error;
+        setStatusMessage({ type: 'error', text: error.message });
+    }
+  };
 
   const [isPending, startTransition] = React.useTransition();
   console.log("State Machine Optimized. Ready for transitions. Pending:", isPending);
@@ -875,6 +892,15 @@ export default function AdminOrdersPage() {
                                 </td>
                                 <td className="px-8 py-8 text-right rounded-r-[1.5rem]">
                                     <div className="flex justify-end gap-2 transition-opacity">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-9 w-9 rounded-xl bg-slate-50 hover:bg-rose-50 hover:shadow-xl text-slate-400 hover:text-rose-500 transition-all active:scale-95 border border-slate-100"
+                                            onClick={() => handleDeleteOrder(order.id)}
+                                            title="Delete Order Permanently"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
                                         <Button
                                             variant="ghost"
                                             size="icon"

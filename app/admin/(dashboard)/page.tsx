@@ -13,7 +13,8 @@ import {
   Package,
   Truck,
   Send,
-  Users
+  Users,
+  RefreshCcw
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { formatPrice, cn } from '@/lib/utils';
@@ -88,43 +89,44 @@ export default function AdminDashboard() {
   const [latency, setLatency] = React.useState(0);
   if (latency) {}
 
+  const loadStats = React.useCallback(async () => {
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
+
+    const start = performance.now();
+    try {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const dateLimit = thirtyDaysAgo.toISOString();
+
+      const [ordersRes, productsRes, auditRes] = await Promise.all([
+        supabase.from('orders')
+          .select('*, order_items(*)')
+          .gte('created_at', dateLimit)
+          .order('created_at', { ascending: false }),
+        supabase.from('products').select('id, stock, name, price, image_url, cost_price'),
+        supabase.from('audit_logs').select('id, action, staff_email, created_at').order('created_at', { ascending: false }).limit(2)
+      ]);
+
+      if (ordersRes.data) setOrders(ordersRes.data as OrderRecord[]);
+      if (productsRes.data) setProducts(productsRes.data as ProductRecord[]);
+      if (auditRes.data) setAuditLogs(auditRes.data);
+
+      setLatency(Math.round(performance.now() - start));
+    } catch (err) {
+      console.error('Error loading dashboard stats:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [email]);
+
   React.useEffect(() => {
       setMounted(true);
   }, []);
 
   React.useEffect(() => {
-    async function loadStats() {
-      if (!supabase) {
-        setIsLoading(false);
-        return;
-      }
-
-      const start = performance.now();
-      try {
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        const dateLimit = thirtyDaysAgo.toISOString();
-
-        const [ordersRes, productsRes, auditRes] = await Promise.all([
-          supabase.from('orders')
-            .select('*, order_items(*)')
-            .gte('created_at', dateLimit)
-            .order('created_at', { ascending: false }),
-          supabase.from('products').select('id, stock, name, price, image_url, cost_price'),
-          supabase.from('audit_logs').select('id, action, staff_email, created_at').order('created_at', { ascending: false }).limit(2)
-        ]);
-
-        if (ordersRes.data) setOrders(ordersRes.data as OrderRecord[]);
-        if (productsRes.data) setProducts(productsRes.data as ProductRecord[]);
-        if (auditRes.data) setAuditLogs(auditRes.data);
-
-        setLatency(Math.round(performance.now() - start));
-      } catch (err) {
-        console.error('Error loading dashboard stats:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
     loadStats();
 
     // 🛰️ Real-time Dashboard Synchronization
@@ -147,7 +149,7 @@ export default function AdminDashboard() {
         if (supabase) supabase.removeChannel(channel!);
         clearInterval(shieldScan);
     };
-  }, []);
+  }, [loadStats]);
 
   const stats = React.useMemo(() => {
     const deliveredOrders = orders.filter(o => o.status === 'Delivered' || o.status === 'Completed');
@@ -241,7 +243,10 @@ export default function AdminDashboard() {
               </div>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
-              <Link href="/admin/marketing/create" className="w-full">
+              <Button onClick={loadStats} variant="outline" className="h-14 px-6 rounded-2xl border-slate-200 bg-white font-black uppercase text-[10px] tracking-widest hover:bg-slate-50">
+                  <RefreshCcw className={cn("h-4 w-4 mr-2", isLoading && "animate-spin")} /> Force Grid Sync
+              </Button>
+              <Link href="/admin/marketing/create" className="w-full sm:w-auto">
                   <Button className="h-14 w-full sm:w-auto px-8 rounded-2xl bg-primary text-white font-black uppercase text-xs tracking-widest shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                       <Send className="h-4 w-4 mr-2" /> Launch Campaign
                   </Button>

@@ -176,6 +176,21 @@ export default function AdminRidersPage() {
         }
     };
 
+    const handleDeleteRider = async (id: number, name: string) => {
+        if (!supabase || !confirm(`Purge unit ${name} from the grid permanently?`)) return;
+        try {
+            const { error } = await supabase.from('rider_status').delete().eq('id', id);
+            if (error) throw error;
+
+            await logAuditAction(email, 'DELETE_RIDER', { id, name });
+            setRiders(prev => prev.filter(r => r.id !== id));
+            if (viewingDetails?.id === id) setViewingDetails(null);
+            setMessage({ type: 'success', text: `Unit ${name} decommissioned.` });
+        } catch (err: unknown) {
+            setMessage({ type: 'error', text: (err as Error).message });
+        }
+    };
+
     const filteredRiders = React.useMemo(() => {
         const query = searchQuery.toLowerCase();
         return riders.filter(r => {
@@ -383,6 +398,14 @@ export default function AdminRidersPage() {
                                                 <XCircle className="h-3.5 w-3.5 mr-2" /> Decommission
                                             </Button>
                                         )}
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => handleDeleteRider(rider.id, rider.rider_name)}
+                                            className="h-10 w-10 rounded-xl text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
                                     </div>
                                 </td>
                             </tr>

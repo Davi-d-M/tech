@@ -11,7 +11,8 @@ import {
     Plus,
     Loader2,
     Target,
-    ImageIcon
+    ImageIcon,
+    Trash2
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useAdmin } from '@/context/AdminContext';
+import { logAuditAction } from '@/lib/auditService';
 
 interface AppWidget {
     id: string;
@@ -34,7 +36,7 @@ interface AppWidget {
 }
 
 export default function WidgetHub() {
-    useAdmin();
+    const { email } = useAdmin();
     const [widgets, setWidgets] = React.useState<AppWidget[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [isSaving, setIsSaving] = React.useState(false);
@@ -69,6 +71,20 @@ export default function WidgetHub() {
             alert(error.message);
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleDeleteWidget = async (id: string, name: string) => {
+        if (!supabase || !confirm(`Delete widget mission ${name}?`)) return;
+        try {
+            const { error } = await supabase.from('app_widgets').delete().eq('id', id);
+            if (error) throw error;
+
+            await logAuditAction(email, 'DELETE_WIDGET_MISSION', { id, name });
+            setWidgets(prev => prev.filter(w => w.id !== id));
+            if (activeWidget?.id === id) setActiveWidget(null);
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -118,7 +134,15 @@ export default function WidgetHub() {
                                         <p className="text-[10px] font-black uppercase text-foreground">{w.name}</p>
                                         <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1">Priority: {w.priority}</p>
                                     </div>
-                                    <div className={cn("h-2 w-2 rounded-full", w.is_enabled ? "bg-emerald-500 animate-pulse" : "bg-slate-300")} />
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteWidget(w.id, w.name); }}
+                                            className="p-2 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                        <div className={cn("h-2 w-2 rounded-full", w.is_enabled ? "bg-emerald-500 animate-pulse" : "bg-slate-300")} />
+                                    </div>
                                 </div>
                             </Card>
                         ))}

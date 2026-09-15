@@ -16,6 +16,9 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
+import { useAdmin } from '@/context/AdminContext';
+import { logAuditAction } from '@/lib/auditService';
+
 interface Coupon {
   id: number;
   code: string;
@@ -31,7 +34,7 @@ const initialForm = {
 };
 
 export default function AdminCouponsPage() {
-  // const { email: adminEmail } = useAdmin();
+  const { email: adminEmail } = useAdmin();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,7 +83,7 @@ export default function AdminCouponsPage() {
 
       if (error) throw error;
 
-      // await logAuditAction(adminEmail, 'CREATE_COUPON', { code: form.code });
+      await logAuditAction(adminEmail, 'CREATE_COUPON', { code: form.code });
       setMessage({ type: 'success', text: `Coupon ${form.code} created!` });
       setForm(initialForm);
       fetchCoupons();
@@ -108,7 +111,7 @@ export default function AdminCouponsPage() {
       try {
           const { error } = await supabase.from('coupons').delete().eq('id', id);
           if (error) throw error;
-          // await logAuditAction(adminEmail, 'DELETE_COUPON', { code });
+          await logAuditAction(adminEmail, 'DELETE_COUPON', { code });
           setCoupons(coupons.filter(c => c.id !== id));
       } catch (err) {
           console.error(err);

@@ -18,7 +18,8 @@ import {
     AlertCircle,
     Camera,
     DollarSign,
-    X
+    X,
+    Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -135,6 +136,36 @@ export default function AdminAffiliates() {
         } catch (err: unknown) {
             const error = err as Error;
             setMessage({ type: 'error', text: error.message });
+        }
+    };
+
+    const handleRejectApp = async (userId: string) => {
+        if (!supabase || !confirm("Reject this affiliate application?")) return;
+        try {
+            const { error } = await supabase.from('affiliate_profiles').delete().eq('user_id', userId);
+            if (error) throw error;
+            setPendingApplications(prev => prev.filter(app => app.user_id !== userId));
+            setMessage({ type: 'success', text: "Application rejected." });
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleDeleteAffiliate = async (id: string, name: string) => {
+        if (!supabase || !confirm(`Remove ${name} from the affiliate network?`)) return;
+        try {
+            // First remove the affiliate profile to stop link tracking
+            const { error: profileError } = await supabase.from('affiliate_profiles').delete().eq('user_id', id);
+            if (profileError) throw profileError;
+
+            // Then clear the referral code from the main profile
+            const { error: userError } = await supabase.from('profiles').update({ referral_code: null }).eq('id', id);
+            if (userError) throw userError;
+
+            setAffiliates(prev => prev.filter(a => a.id !== id));
+            setMessage({ type: 'success', text: `Partner ${name} decommissioned.` });
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -263,7 +294,7 @@ export default function AdminAffiliates() {
                                 </div>
                                 <div className="flex gap-3">
                                     <Button onClick={() => handleApproveApp(app.user_id)} className="h-12 px-8 rounded-xl bg-emerald-500 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">Approve</Button>
-                                    <Button variant="outline" className="h-12 px-8 rounded-xl border-rose-100 text-rose-500 font-black uppercase text-[10px]">Reject</Button>
+                                    <Button variant="outline" onClick={() => handleRejectApp(app.user_id)} className="h-12 px-8 rounded-xl border-rose-100 text-rose-500 font-black uppercase text-[10px]">Reject</Button>
                                 </div>
                             </Card>
                         ))}
@@ -521,6 +552,14 @@ export default function AdminAffiliates() {
                                                             className="h-10 w-10 rounded-xl hover:text-amber-500 hover:bg-white transition-all shadow-sm"
                                                         >
                                                             <ShieldCheck className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            onClick={() => handleDeleteAffiliate(aff.id, aff.full_name)}
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-10 w-10 rounded-xl hover:text-rose-500 hover:bg-rose-50 transition-all shadow-sm"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
                                                         </Button>
                                                         <Link href={`/admin/customers/${aff.phone_number}`}>
                                                             <Button

@@ -8,7 +8,8 @@ import {
     CheckCircle2,
     Search,
     ArrowLeft,
-    Clock
+    Clock,
+    Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -70,6 +71,20 @@ export default function AdminPayoutsPage() {
 
             await logAuditAction(adminEmail, 'UPDATE_PAYOUT_STATUS', { id, status });
             setPayouts(payouts.map(p => p.id === id ? { ...p, status } : p));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const deletePayout = async (id: number) => {
+        if (!supabase || !confirm("Expel this payout request from the records?")) return;
+        try {
+            const { error } = await supabase.from('affiliate_payouts').delete().eq('id', id);
+            if (error) throw error;
+
+            await logAuditAction(adminEmail, 'DELETE_PAYOUT_REQUEST', { id });
+            setPayouts(prev => prev.filter(p => p.id !== id));
+            alert("Payout record purged.");
         } catch (err) {
             console.error(err);
         }
@@ -189,7 +204,7 @@ export default function AdminPayoutsPage() {
                                         </span>
                                     </td>
                                     <td className="px-10 py-8 text-right">
-                                        <div className="flex justify-end gap-2">
+                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             {p.status === 'Pending' && (
                                                 <>
                                                     <Button
@@ -212,6 +227,14 @@ export default function AdminPayoutsPage() {
                                                     <CheckCircle2 className="h-4 w-4 mr-2" /> Authorized
                                                 </Button>
                                             )}
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => deletePayout(p.id)}
+                                                className="h-10 w-10 rounded-xl text-slate-200 hover:text-rose-600 hover:bg-rose-50 transition-all"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>

@@ -10,11 +10,15 @@ import {
     FileDown,
     Loader2,
     ShieldCheck,
-    AlertCircle
+    AlertCircle,
+    Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+
+import { useAdmin } from '@/context/AdminContext';
+import { logAuditAction } from '@/lib/auditService';
 
 interface Supplier {
     id: number;
@@ -30,6 +34,7 @@ interface Supplier {
 }
 
 export default function SupplierScorecards() {
+    const { email } = useAdmin();
     const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
     const [filter, setFilter] = React.useState<'all' | 'pending'>('all');
     const [loading, setLoading] = React.useState(true);
@@ -126,6 +131,20 @@ export default function SupplierScorecards() {
             setMessage({ type: 'error', text: error.message });
         } finally {
             setActionId(null);
+        }
+    };
+
+    const handleDeleteSupplier = async (id: number, name: string) => {
+        if (!supabase || !confirm(`Decommission supplier ${name} and purge from the grid?`)) return;
+        try {
+            const { error } = await supabase.from('suppliers').delete().eq('id', id);
+            if (error) throw error;
+
+            await logAuditAction(email, 'DELETE_SUPPLIER', { id, name });
+            setSuppliers(prev => prev.filter(s => s.id !== id));
+            setMessage({ type: 'success', text: `Partner ${name} removed.` });
+        } catch (err) {
+            console.error(err);
         }
     };
 
@@ -261,7 +280,12 @@ export default function SupplierScorecards() {
                                         <Activity className="h-4 w-4 text-primary" />
                                         <span className="text-[10px] font-black uppercase tracking-widest text-foreground">{s.rating >= 90 ? 'Platinum Tier' : 'Standard'}</span>
                                     </div>
-                                    <Button variant="ghost" size="sm" className="text-[9px] font-black uppercase text-primary tracking-widest">Analytics &rarr;</Button>
+                                    <div className="flex gap-2">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-300 hover:text-rose-500 hover:bg-rose-50 opacity-0 group-hover:opacity-100 transition-all" onClick={() => handleDeleteSupplier(s.id, s.name)}>
+                                            <Trash2 size={14} />
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="text-[9px] font-black uppercase text-primary tracking-widest">Analytics &rarr;</Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
