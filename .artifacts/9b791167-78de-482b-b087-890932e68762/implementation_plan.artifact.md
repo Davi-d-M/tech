@@ -1,39 +1,48 @@
-# Implementation Plan - Total Tech Specialization 🛡️📱⚡
+# Implementation Plan - Apex OS: Android Home Widget OS 📱🏠🚀
 
-This plan finalizes the removal of all legacy "Online Bar" references and pivots every intelligence node to be strictly focused on **Premium Electronics and Tech Accessories**. We are cleaning the "Giant Brain" to think only in Gadgets.
+This plan implements a professional, remotely-controlled Android Home-Screen Widget system for Apexstores. Admins can decide content (Headline, Image, CTA) from the dashboard, and widgets update in real-time across all installed devices without APK releases.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Widget Addition**: Android requires the user to manually add the widget to their home screen. We will include an onboarding step in the app to guide them.
+> **Battery Optimization**: We will follow Android best practices using FCM + WorkManager to minimize background battery drain while ensuring the widget stays fresh.
 
 ## Proposed Changes
 
-### 1. Global UI & Components 🎨
-- [DELETE] [BarGoodsCollection.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/BarGoodsCollection.tsx): This is redundant for an electronics store.
-- [MODIFY] [app/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/page.tsx): Remove the `bar-goods` section from the homepage rendering cycle.
-- [MODIFY] [HomeHero.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/HomeHero.tsx) & [DynamicHero.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/DynamicHero.tsx): Ensure all subtitles focus on "Elite Sound" and "Fast Charging" instead of "Rituals" or "Bottles."
+### 1. Database Infrastructure (`supabase/migrations/`) 🗄️
+- [NEW] `20260916_app_widget_os.sql`:
+    - `app_widgets`: Primary content store with scheduling and segmentation support.
+    - `app_widget_installations`: Device registry for push-triggered updates.
+    - `widget_events`: High-fidelity analytics for impressions and clicks.
 
-### 2. Intelligence & Heuristics 🧠
-- [MODIFY] [DecisionDashboard.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/admin/DecisionDashboard.tsx): Replace "Whiskey traffic spikes" with "Tech velocity alerts."
-- [MODIFY] [GrowthCopilot.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/admin/GrowthCopilot.tsx): Finalize the tech-aware response logic.
-- [MODIFY] [intelligence.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/apex-os/intelligence.ts): Update anomaly detection to ignore legacy categories and focus on SKU performance.
+### 2. Admin Widget Studio (`app/admin/(dashboard)/marketing/widget-hub/`) 🎨
+- [NEW] `page.tsx`: The Command Center for Home Widgets.
+    - **Visual Composer**: Edit Headline, Description, and CTA.
+    - **Live Preview**: Small, Medium, and Large Glance-accurate mockups.
+    - **Scheduling**: Define start/end times for time-sensitive offers (e.g., "The Buzz").
+    - **Audience Targeting**: Select user segments (e.g., "High-Value Customers").
 
-### 3. Marketing & Compliance 📢
-- [MODIFY] [social-hub/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/admin/(dashboard)/marketing/social-hub/page.tsx):
-    - Update the "Compliance Node" to flag tech-related risks (e.g., "fake", "replica", "no warranty") instead of alcohol keywords.
-    - Update placeholder missions to be 100% tech-focused.
-- [MODIFY] [socialService.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/socialService.ts): Remove any legacy "Experience authentic drinks" signatures from automated post templates.
+### 3. Backend Content API (`app/api/widgets/`) 🔌
+- [NEW] `current/route.ts`: Intelligent endpoint that returns the highest-priority widget based on the user's profile and session.
 
-### 4. Search & Discovery 🔎
-- [MODIFY] [search-intelligence.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/apex-os/search-intelligence.ts):
-    - Purge "smooth", "cold", "gin", "vodka" from the synonym engine.
-    - Map all generic "premium" intents to high-end tech categories.
+### 4. Android Engine (`:app_android`) 🤖
+- [MODIFY] `build.gradle`: Add Jetpack Glance 1.2.0 dependencies.
+- [NEW] `WidgetRepository.kt`: Handles remote data fetching and local caching.
+- [NEW] `ApexHomeWidget.kt`: Responsive Glance composition (Small/Medium/Large).
+- [NEW] `WidgetSyncWorker.kt`: WorkManager implementation for reliable background refreshes.
+- [NEW] `FCMService.kt` (Update): Handle `WIDGET_UPDATED` signals to trigger instant refreshes.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure no dead imports remain after deleting the BarGoods component.
-- Execute a global `grep` for "whiskey" and "wine" — the result count must be **Zero** in all `/app`, `/components`, and `/lib` files.
+- Run `npm run build` to verify the Admin UI integrity.
+- Verify SQL RLS policies: Ensure devices can read only allowed widget content.
 
 ### Manual Verification
-1. **Search Test**: Type "gift" in the search bar -> Verify it suggests "Premium Bundles" or "Audio Sets" instead of wine.
-2. **Dashboard Test**: Open the Admin Console -> Verify the "Mission Priorities" HUD shows only tech-relevant alerts.
-3. **Copilot Test**: Ask "What's trending?" -> Verify it discusses AirPods or Chargers.
+1. **Studio Test**: Create a "Weekend Flash Sale" widget in Admin -> Click "Publish".
+2. **Push Test**: Verify that a simulated FCM payload triggers the Android `WidgetSyncWorker`.
+3. **Responsive Test**: Change widget size on the Android home screen and verify the layout adapts (Small -> Medium -> Large).
+4. **Analytics Test**: Click the widget button on Android -> Verify an `open` event appears in the `widget_events` table.

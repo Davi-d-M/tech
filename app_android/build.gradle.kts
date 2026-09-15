@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     // alias(libs.plugins.google.gms.google.services) // Requires google-services.json
 }
 
@@ -45,7 +46,11 @@ dependencies {
     implementation(libs.image.labeling)
     implementation(libs.androidx.security.crypto)
     implementation(libs.okhttp)
-    implementation("com.google.firebase:firebase-messaging:24.1.0")
+    implementation(libs.firebase.messaging)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.glance)
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.work.runtime.ktx)
     
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)

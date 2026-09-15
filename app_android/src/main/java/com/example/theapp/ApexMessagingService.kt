@@ -7,6 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.theapp.worker.WidgetSyncWorker
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -14,6 +17,12 @@ class ApexMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+
+        // 📱 Apex OS: Detect Widget Sync Signal
+        if (remoteMessage.data["type"] == "WIDGET_UPDATED") {
+            val syncRequest = OneTimeWorkRequestBuilder<WidgetSyncWorker>().build()
+            WorkManager.getInstance(this.applicationContext).enqueue(syncRequest)
+        }
 
         remoteMessage.notification?.let {
             sendNotification(it.title ?: "Apex OS Alert", it.body ?: "New Mission Payload Detected.")
@@ -27,8 +36,9 @@ class ApexMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendNotification(title: String, messageBody: String) {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
         val pendingIntent = PendingIntent.getActivity(this, 0, intent,
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
 
