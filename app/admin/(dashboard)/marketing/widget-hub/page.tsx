@@ -172,7 +172,7 @@ export default function WidgetHub() {
                         <div className="space-y-8">
                             <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] px-2 flex items-center gap-2"><Eye className="h-3 w-3" /> Glance Preview (Medium)</h3>
 
-                            <div className="w-full max-w-[400px] mx-auto aspect-[16/9] bg-slate-900 rounded-[2.5rem] p-1 shadow-2xl relative group overflow-hidden border-8 border-slate-800">
+                            <div className="w-full max-w-[400px] mx-auto aspect-[16/9] bg-slate-50 rounded-[2.5rem] p-1 shadow-2xl relative group overflow-hidden border-8 border-slate-100">
                                 <div className="h-full w-full bg-white rounded-[2rem] overflow-hidden flex flex-col p-6 text-left relative">
                                     {activeWidget.image_url && (
                                         <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 blur-xl">

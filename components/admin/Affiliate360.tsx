@@ -110,19 +110,19 @@ export default function Affiliate360({ affiliateId }: { affiliateId: string }) {
                 </div>
                 <div className="text-right">
                     <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Channel Quality</p>
-                    <h4 className="text-3xl font-black text-indigo-600 tracking-tighter">{stats.quality_score}%</h4>
+                    <h4 className="text-3xl font-black text-primary tracking-tighter">{stats.quality_score}%</h4>
                 </div>
             </div>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                     { label: 'Attributed Rev', val: formatPrice(stats.revenue), icon: DollarSign, color: 'primary' },
-                    { label: 'Unique Visitors', val: stats.unique_visitors, icon: Users, color: 'indigo' },
-                    { label: 'Network Clicks', val: stats.total_clicks, icon: MousePointer2, color: 'amber' },
-                    { label: 'Conv Rate', val: `${conversionRate.toFixed(1)}%`, icon: Zap, color: 'emerald' },
+                    { label: 'Unique Visitors', val: stats.unique_visitors, icon: Users, color: 'primary' },
+                    { label: 'Network Clicks', val: stats.total_clicks, icon: MousePointer2, color: 'primary' },
+                    { label: 'Conv Rate', val: `${conversionRate.toFixed(1)}%`, icon: Zap, color: 'primary' },
                 ].map((item) => (
                     <Card key={item.label} className="p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                        <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center mb-6", `bg-${item.color}-50 text-${item.color}-500 shadow-sm border border-${item.color}-100`)}>
+                        <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center mb-6", `bg-primary/5 text-primary shadow-sm border border-primary/10`)}>
                             <item.icon size={24} />
                         </div>
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{item.label}</p>
@@ -132,10 +132,10 @@ export default function Affiliate360({ affiliateId }: { affiliateId: string }) {
             </div>
 
             <div className="grid lg:grid-cols-2 gap-10">
-                <Card className="p-10 rounded-[3rem] border border-slate-100 shadow-sm space-y-10 bg-white">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm"><TrendingUp size={20} /></div>
+                <Card className="p-10 rounded-[3rem] border border-slate-100 shadow-sm space-y-10 bg-white text-left">
+                    <div className="flex items-center justify-between text-left">
+                        <div className="flex items-center gap-4 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary shadow-sm"><TrendingUp size={20} /></div>
                             <h3 className="text-xl font-black uppercase tracking-tight text-foreground">Behavioral Insight</h3>
                         </div>
                         <span className={cn(
@@ -144,12 +144,12 @@ export default function Affiliate360({ affiliateId }: { affiliateId: string }) {
                         )}>Reorder Rate: {stats.reorder_rate}%</span>
                     </div>
 
-                    <div className="space-y-6">
-                        <p className="text-sm font-medium text-slate-600 leading-relaxed italic">
+                    <div className="space-y-6 text-left">
+                        <p className="text-sm font-medium text-slate-500 leading-relaxed italic text-left">
                             &quot;This partner has high customer quality. Users acquired via this channel have a 3.5x higher lifetime value than the platform average.&quot;
                         </p>
-                        <div className="pt-6 border-t border-slate-50">
-                            <div className="flex items-center gap-3">
+                        <div className="pt-6 border-t border-slate-50 text-left">
+                            <div className="flex items-center gap-3 text-left">
                                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                                 <p className="text-[10px] font-black uppercase text-slate-400">Compliance: 100% Passed</p>
                             </div>
@@ -157,15 +157,15 @@ export default function Affiliate360({ affiliateId }: { affiliateId: string }) {
                     </div>
                 </Card>
 
-                <Card className="p-10 rounded-[3rem] border border-slate-100 shadow-sm space-y-10 bg-white">
-                    <div className="flex items-center gap-4">
+                <Card className="p-10 rounded-[3rem] border border-slate-100 shadow-sm space-y-10 bg-white text-left">
+                    <div className="flex items-center gap-4 text-left">
                         <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm"><ShieldCheck size={20} /></div>
                         <h3 className="text-xl font-black uppercase tracking-tight text-foreground">Security Hub</h3>
                     </div>
 
-                    <div className="space-y-8">
-                        <div className="flex justify-between items-center p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                            <div className="flex items-center gap-4">
+                    <div className="space-y-8 text-left">
+                        <div className="flex justify-between items-center p-6 bg-slate-50 rounded-2xl border border-slate-100 text-left">
+                            <div className="flex items-center gap-4 text-left">
                                 <div className={cn(
                                     "h-10 w-10 rounded-xl flex items-center justify-center text-white shadow-sm",
                                     stats.fraud_risk === 'Low' ? "bg-emerald-500" : "bg-amber-500"

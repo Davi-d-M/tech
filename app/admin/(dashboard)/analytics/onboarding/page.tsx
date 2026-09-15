@@ -166,20 +166,20 @@ export default function OnboardingAnalytics() {
             </div>
 
             {/* GHOST INSIGHTS */}
-            <Card className="p-10 rounded-[4rem] bg-indigo-600 text-white border-none shadow-2xl relative overflow-hidden group">
+            <Card className="p-10 rounded-[4rem] bg-indigo-50 border border-indigo-100 relative overflow-hidden group shadow-sm">
                 <div className="relative z-10 space-y-6">
                     <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/20"><Zap size={24} /></div>
-                        <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">Autonomous Insight</h3>
+                        <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg"><Zap size={24} /></div>
+                        <h3 className="text-2xl font-black uppercase tracking-tighter leading-none text-indigo-900">Autonomous Insight</h3>
                     </div>
-                    <p className="text-lg font-bold italic leading-relaxed opacity-90 max-w-3xl">
+                    <p className="text-lg font-bold italic leading-relaxed text-indigo-600/80 max-w-3xl">
                         &quot;Rider onboarding drop-off is highest at the &apos;National ID&apos; upload step. I recommend adding a &apos;Scan ID&apos; OCR feature to reduce manual input friction and increase completion by an estimated 14%.&quot;
                     </p>
-                    <div className="pt-6 border-t border-white/10 flex gap-4">
-                         <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-4 py-2 rounded-full border border-white/20">Decision Ready</span>
+                    <div className="pt-6 border-t border-indigo-100 flex gap-4">
+                         <span className="text-[10px] font-black uppercase tracking-widest bg-indigo-600/10 text-indigo-600 px-4 py-2 rounded-full border border-indigo-100">Decision Ready</span>
                     </div>
                 </div>
-                <Zap className="absolute -bottom-20 -right-20 h-96 w-96 text-white/5 rotate-12" />
+                <Zap className="absolute -bottom-20 -left-20 h-96 w-96 text-indigo-500/5 rotate-12 -z-0" />
             </Card>
         </div>
     );

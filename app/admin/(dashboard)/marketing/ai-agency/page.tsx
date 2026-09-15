@@ -176,19 +176,19 @@ export default function AIAdAgency() {
                 </div>
 
                 <div className="lg:col-span-4 space-y-8 text-left">
-                    <Card className="p-10 rounded-[3rem] bg-indigo-600 text-white border-none shadow-2xl relative overflow-hidden group">
+                    <Card className="p-10 rounded-[3rem] bg-indigo-50 border border-indigo-100 relative overflow-hidden group shadow-sm">
                         <div className="relative z-10 space-y-8">
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/20"><Rocket size={24} /></div>
-                                <h3 className="text-xl font-black uppercase tracking-tighter">Budget Agent</h3>
+                                <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200"><Rocket size={24} /></div>
+                                <h3 className="text-xl font-black uppercase tracking-tighter text-indigo-900">Budget Agent</h3>
                             </div>
-                            <p className="text-xs font-medium leading-relaxed opacity-70 italic">
+                            <p className="text-xs font-medium leading-relaxed text-indigo-600/80 italic">
                                 &quot;Detected high efficiency on top-performing items. Recommended budget shift to maximize ROI.&quot;
                             </p>
                             <Button
                                 onClick={handleAuthorizePivot}
                                 disabled={loading || campaigns.length === 0}
-                                className="w-full h-14 rounded-2xl bg-white text-indigo-600 font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-slate-50 transition-all"
+                                className="w-full h-14 rounded-2xl bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all"
                             >
                                 {loading ? <Loader2 className="animate-spin mr-2" /> : null}
                                 Authorize Re-allocation

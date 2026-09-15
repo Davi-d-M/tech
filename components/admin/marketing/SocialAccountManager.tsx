@@ -18,9 +18,9 @@ import { SocialPlatform, SocialAccount } from '@/lib/social/types';
 const PLATFORM_CONFIG: Record<SocialPlatform, { icon: string; color: string; bg: string }> = {
     'facebook': { icon: 'Facebook', color: 'text-blue-600', bg: 'bg-blue-50' },
     'instagram': { icon: 'Instagram', color: 'text-rose-500', bg: 'bg-rose-50' },
-    'tiktok': { icon: 'Music', color: 'text-slate-900', bg: 'bg-slate-100' },
+    'tiktok': { icon: 'Music', color: 'text-slate-600', bg: 'bg-slate-50' },
     'youtube': { icon: 'Video', color: 'text-rose-600', bg: 'bg-rose-50' },
-    'x': { icon: 'Globe', color: 'text-foreground', bg: 'bg-slate-100' },
+    'x': { icon: 'Globe', color: 'text-slate-600', bg: 'bg-slate-50' },
     'whatsapp': { icon: 'MessageCircle', color: 'text-emerald-500', bg: 'bg-emerald-50' }
 };
 

@@ -146,31 +146,31 @@ export default function Product360({ productId }: { productId: number }) {
 
             {/* Behavioral Demand Analysis */}
             <div className="grid lg:grid-cols-2 gap-10">
-                <Card className="p-10 rounded-[3rem] bg-slate-900 text-white relative overflow-hidden group">
+                <Card className="p-10 rounded-[3rem] bg-primary/5 border border-primary/20 relative overflow-hidden group shadow-sm">
                     <div className="relative z-10 space-y-8">
-                        <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center text-primary backdrop-blur-md border border-white/20"><TrendingUp size={20} /></div>
-                            <h3 className="text-xl font-black uppercase tracking-tight">Demand Radar</h3>
+                        <div className="flex items-center gap-4 text-left">
+                            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm border border-primary/20"><TrendingUp size={20} /></div>
+                            <h3 className="text-xl font-black uppercase tracking-tight text-primary">Demand Radar</h3>
                         </div>
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center py-4 border-b border-white/5">
+                        <div className="space-y-6 text-left">
+                            <div className="flex justify-between items-center py-4 border-b border-primary/5 text-left">
                                 <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Cart Intent</span>
-                                <span className="text-sm font-black text-white">{stats.cart_adds} Adds</span>
+                                <span className="text-sm font-black text-foreground">{stats.cart_adds} Adds</span>
                             </div>
-                            <div className="flex justify-between items-center py-4 border-b border-white/5">
+                            <div className="flex justify-between items-center py-4 border-b border-primary/5 text-left">
                                 <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Wishlist Latency</span>
-                                <span className="text-sm font-black text-white">{stats.wishlist_adds} Saves</span>
+                                <span className="text-sm font-black text-foreground">{stats.wishlist_adds} Saves</span>
                             </div>
-                            <div className="flex justify-between items-center py-4 border-b border-white/5">
+                            <div className="flex justify-between items-center py-4 border-b border-primary/5 text-left">
                                 <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Search Visibility</span>
-                                <span className="text-sm font-black text-white">{stats.search_frequency} Queries</span>
+                                <span className="text-sm font-black text-foreground">{stats.search_frequency} Queries</span>
                             </div>
                         </div>
-                        <p className="text-[10px] text-slate-400 font-medium italic leading-relaxed opacity-80">
+                        <p className="text-[10px] text-slate-400 font-medium italic leading-relaxed text-left">
                             &quot;High search-to-cart ratio detected. Consider creating a targeted TikTok bundle for this SKU.&quot;
                         </p>
                     </div>
-                    <Zap className="absolute -bottom-10 -right-10 h-48 w-48 text-white/5 rotate-12" />
+                    <Zap className="absolute -bottom-10 -right-10 h-48 w-48 text-primary/5 rotate-12" />
                 </Card>
 
                 <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 shadow-sm space-y-10">

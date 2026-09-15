@@ -1,44 +1,44 @@
 @import "tailwindcss";
 
 :root {
-  /* Strictly Light Theme - No Black allowed */
+  /* Strictly Light Theme - Elite Professional */
   --background: #ffffff;
-  --foreground: #334155; /* Slate-700 (Lighter than black) */
+  --foreground: #475569; /* Slate-600 (Softer than 700) */
   --card: #ffffff;
-  --card-foreground: #334155;
+  --card-foreground: #475569;
   --popover: #ffffff;
-  --popover-foreground: #334155;
+  --popover-foreground: #475569;
   --primary: #F5A000;
   --primary-foreground: #ffffff;
   --secondary: #f8fafc;
-  --secondary-foreground: #334155;
+  --secondary-foreground: #475569;
   --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #f8fafc;
+  --accent-foreground: #334155;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
+  --border: #f1f5f9;
+  --input: #f1f5f9;
   --ring: #F5A000;
 
   --sidebar: #ffffff;
-  --sidebar-foreground: #334155;
-  --sidebar-border: #e2e8f0;
+  --sidebar-foreground: #475569;
+  --sidebar-border: #f1f5f9;
 
-  --radius: 1.225rem;
+  --radius: 2rem;
 
   color-scheme: light;
 }
 
-/* 💎 APEX SLATE THEME (Gold/Diamond) */
+/* 💎 APEX SLATE THEME (Platinum/Diamond) */
 [data-theme='titanium'] {
-  --background: #f1f5f9;
-  --foreground: #1e293b;
+  --background: #ffffff;
+  --foreground: #334155;
   --card: #ffffff;
   --primary: #5B5BFF; /* Indigo */
-  --secondary: #e2e8f0;
-  --border: #cbd5e1;
+  --secondary: #f8fafc;
+  --border: #f1f5f9;
 }
 
 @theme inline {

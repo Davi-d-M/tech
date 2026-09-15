@@ -43,7 +43,7 @@ export default function SocialCommandWidget() {
         platforms: [
             { id: 'instagram', name: 'Instagram', icon: Share2, status: 'connected', color: 'text-rose-500' },
             { id: 'facebook', name: 'Facebook', icon: Globe, status: 'connected', color: 'text-blue-600' },
-            { id: 'tiktok', name: 'TikTok', icon: Music, status: 'connected', color: 'text-slate-900' },
+            { id: 'tiktok', name: 'TikTok', icon: Music, status: 'connected', color: 'text-slate-600' },
             { id: 'youtube', name: 'YouTube', icon: Video, status: 'expired', color: 'text-rose-600' },
             { id: 'whatsapp', name: 'WhatsApp', icon: MessageCircle, status: 'connected', color: 'text-emerald-500' }
         ]
