@@ -53,7 +53,7 @@ export default function RiderOnboarding() {
         }
     }, []);
 
-    const advance = async (nextStep: string, metadata = {}) => {
+    const advance = async (nextStep: string, metadata: Record<string, unknown> = {}) => {
         if (user) {
             await onboardingEngine.completeStep(user.id, 'RIDER', step, nextStep, metadata);
         }

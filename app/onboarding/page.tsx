@@ -21,10 +21,15 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 
+interface UserData {
+    id: string;
+    email?: string;
+}
+
 export default function OnboardingRouter() {
     const router = useRouter();
     const [loading, setLoading] = React.useState(true);
-    const [user, setUser] = React.useState<{ id: string, email?: string } | null>(null);
+    const [user, setUser] = React.useState<UserData | null>(null);
     const [onboardingState, setOnboardingState] = React.useState<OnboardingState | null>(null);
     const [needsRoleSelection, setNeedsRoleSelection] = React.useState(false);
     const [view, setView] = React.useState<'ROUTER' | 'SETUP_CENTER' | 'MISSION'>('ROUTER');
@@ -181,7 +186,7 @@ export default function OnboardingRouter() {
                             <MerchantDiscovery onComplete={(data) => handleStepComplete('discovery', data)} />
                         )}
                         {onboardingState.currentStep === 'team' && (
-                            <TeamProvisioning tenantId={user?.id || 'master'} onComplete={() => handleStepComplete('team')} />
+                            <TeamProvisioning onComplete={() => handleStepComplete('team')} />
                         )}
                         {['business', 'categories', 'payout', 'agreement', 'pending'].includes(onboardingState.currentStep) && (
                             <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 text-center space-y-6">

@@ -57,7 +57,7 @@ export default function SupplierOnboarding() {
         }
     }, []);
 
-    const advance = async (nextStep: Step, metadata = {}) => {
+    const advance = async (nextStep: Step, metadata: Record<string, unknown> = {}) => {
         if (user) {
             await onboardingEngine.completeStep(user.id, 'MERCHANT', step, nextStep, metadata);
         }
@@ -241,7 +241,7 @@ export default function SupplierOnboarding() {
 
                         {step === 'team' && (
                             <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-                                <TeamProvisioning tenantId={user?.id || 'master'} onComplete={() => advance('pending')} />
+                                <TeamProvisioning onComplete={() => advance('pending')} />
                             </div>
                         )}
 
