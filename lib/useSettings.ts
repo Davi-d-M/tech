@@ -105,8 +105,8 @@ export interface StoreSettings {
 
 const DEFAULT_SETTINGS: StoreSettings = {
     contact: {
-        whatsapp: "254769345599",
-        email: "support@apexstores.com",
+        whatsapp: "254700000000",
+        email: "support@onlinebar.co.ke",
         address: "Nairobi, Kenya"
     },
     branding: {
@@ -127,7 +127,6 @@ const DEFAULT_SETTINGS: StoreSettings = {
             { id: 'chargers', label: 'Super Chargers' },
             { id: 'cases', label: 'Cases' },
             { id: 'watches', label: 'Watches' },
-            { id: 'bar-goods', label: 'Bar Accessories' },
             { id: 'accessories', label: 'Others' }
         ]
     },
@@ -199,59 +198,7 @@ const DEFAULT_SETTINGS: StoreSettings = {
             { label: 'Warranty', href: '/warranty' },
             { label: 'Track', href: '/track' }
         ],
-        footer_sections: [
-            {
-                title: "Shop",
-                links: [
-                    { href: "/shop", label: "All Products" },
-                    { href: "/shop/category/new-arrivals", label: "New Arrivals" },
-                    { href: "/shop/category/sale", label: "Sale" },
-                    { href: "/shop/category/featured", label: "Featured" },
-                ],
-            },
-            {
-                title: "Customer Care",
-                links: [
-                    { href: "/contact", label: "Contact Us" },
-                    { href: "/track", label: "Track Order" },
-                    { href: "/shipping", label: "Shipping Info" },
-                    { href: "/returns", label: "Returns & Exchanges" },
-                ],
-            },
-            {
-                title: "Company",
-                links: [
-                    { href: "/about", label: "About Us" },
-                    { href: "/blog", label: "Library" },
-                    { href: "/contact", label: "Support" },
-                ],
-            },
-            {
-                title: "Logistics",
-                links: [
-                    { href: "/rider/login", label: "Runner Command" },
-                    { href: "/admin", label: "Control Center" },
-                    { href: "/track", label: "Live Tracking" },
-                ],
-            },
-            {
-                title: "Partners",
-                links: [
-                    { href: "/supplier/onboarding", label: "Become a Merchant" },
-                    { href: "/rider/onboarding", label: "Become a Runner" },
-                    { href: "/supplier/login", label: "Supplier Login" },
-                ],
-            },
-            {
-                title: "Legal",
-                links: [
-                    { href: "/privacy", label: "Privacy Policy" },
-                    { href: "/terms", label: "Terms & Conditions" },
-                    { href: "/cookies", label: "Cookie Policy" },
-                    { href: "/accessibility", label: "Accessibility" },
-                ],
-            }
-        ]
+        footer_sections: [] // Handled by structural code in Footer.tsx or overwritten by DB
     },
     globals: {
         announcement_bar: {
@@ -271,7 +218,7 @@ const DEFAULT_SETTINGS: StoreSettings = {
     content: {
         privacy_policy: "Standard Privacy Policy Content",
         terms_and_conditions: "Standard Terms Content",
-        about_us: "Premium electronics and mobile accessories engineered for excellence.",
+        about_us: "Premium drinks and late night snacks delivered to your doorstep. Chilled and ready for your celebration.",
         cta_title: "Need Fast .Power?",
         cta_subtitle: "Our authentic charging kits deliver 0-100% in record time. Safe, verified, and guaranteed for your device."
     }

@@ -52,6 +52,12 @@ interface ApexDevice {
     toggleTracking: (active: boolean) => void;
 }
 
+interface RiderSessionUser {
+    id: string;
+    email?: string;
+    user_metadata?: Record<string, unknown>;
+}
+
 export default function RiderDashboard() {
     const router = useRouter();
     const { email: riderPhone, tenant_id } = useAdmin();
@@ -60,7 +66,7 @@ export default function RiderDashboard() {
     const [activeMission, setActiveMission] = React.useState<Mission | null>(null);
     const [stats, setStats] = React.useState({ completed: 0, earnings: 0 });
     const [activeTab, setActiveTab] = React.useState<'tasks' | 'mission' | 'stats' | 'profile'>('tasks');
-    const [user, setUser] = React.useState<any>(null);
+    const [user, setUser] = React.useState<RiderSessionUser | null>(null);
 
     // PIN Change State
     const [isPinModalOpen, setIsPinModalOpen] = React.useState(false);

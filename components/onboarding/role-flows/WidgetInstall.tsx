@@ -16,7 +16,7 @@ export default function WidgetInstall({ onComplete }: { onComplete: () => void }
     const handlePin = () => {
         setIsPinning(true);
         // 🛰️ Trigger Native Android Widget Pinning Protocol
-        const win = window as any;
+        const win = window as unknown as Window & { ApexDevice?: { requestWidgetPin: () => void } };
         if (win.ApexDevice?.requestWidgetPin) {
             win.ApexDevice.requestWidgetPin();
         } else {
