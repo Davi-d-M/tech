@@ -52,7 +52,7 @@ function AdminLoginContent() {
       const masterKey = settings?.globals?.portal_security?.master_entry_key || 'davidmaganga130';
       const hasGhostAccess = typeof document !== 'undefined' && document.cookie.includes('ghost_access=authorized');
 
-      if (secretFlag === 'true' || window.location.pathname.endsWith(masterKey) || hasGhostAccess) {
+      if (secretFlag === 'true' || window.location.pathname.includes(masterKey) || hasGhostAccess) {
           setIsUnlocked(true);
       }
 

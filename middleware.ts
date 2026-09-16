@@ -61,10 +61,11 @@ export async function middleware(request: NextRequest) {
       const sessionData = await verifySessionCookie(sessionCookie);
 
       if (!sessionData) {
-        // STEALTH: Admin/Staff stay cloaked (404) unless they have used the secret key
+        // 🛡️ APEX OS: Stealth Protocol Refined
+        // If hitting the root /admin, redirect to portal for convenience.
+        // If hitting sub-paths, 404 to maintain deep system stealth.
         if (isAdminPath) {
-          if (ghostCookie === 'authorized') {
-            // They know the secret, but aren't signed in. Redirect to portal login.
+          if (pathname === '/admin' || ghostCookie === 'authorized') {
             return NextResponse.redirect(new URL('/apex-portal', request.url));
           }
           return NextResponse.rewrite(new URL('/404', request.url));
