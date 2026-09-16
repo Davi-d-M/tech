@@ -121,7 +121,7 @@ export default function AdminDashboard() {
     } finally {
       setIsLoading(false);
     }
-  }, [email]);
+  }, []);
 
   React.useEffect(() => {
       setMounted(true);

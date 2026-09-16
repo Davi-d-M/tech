@@ -10,8 +10,7 @@ import {
   ShieldCheck,
   Loader2,
   Camera as Instagram,
-  Share2 as Facebook,
-  Globe
+  Share2 as Facebook
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";

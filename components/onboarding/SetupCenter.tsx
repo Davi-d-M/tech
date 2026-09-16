@@ -7,7 +7,6 @@ import {
     Rocket,
     Zap,
     ChevronRight,
-    Loader2,
     ShieldCheck,
     Smartphone
 } from 'lucide-react';

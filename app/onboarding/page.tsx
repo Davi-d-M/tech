@@ -24,7 +24,7 @@ import { useRouter } from 'next/navigation';
 export default function OnboardingRouter() {
     const router = useRouter();
     const [loading, setLoading] = React.useState(true);
-    const [user, setUser] = React.useState<any>(null);
+    const [user, setUser] = React.useState<{ id: string, email?: string } | null>(null);
     const [onboardingState, setOnboardingState] = React.useState<OnboardingState | null>(null);
     const [needsRoleSelection, setNeedsRoleSelection] = React.useState(false);
     const [view, setView] = React.useState<'ROUTER' | 'SETUP_CENTER' | 'MISSION'>('ROUTER');
@@ -95,7 +95,9 @@ export default function OnboardingRouter() {
 
     const handleRoleSelect = (role: OnboardingRole) => {
         setNeedsRoleSelection(false);
-        initializeOnboarding(user.id, role);
+        if (user) {
+            initializeOnboarding(user.id, user.email, role);
+        }
     };
 
     if (loading) return (

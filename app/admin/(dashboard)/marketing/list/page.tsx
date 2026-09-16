@@ -11,7 +11,6 @@ import {
     Clock,
     CheckCircle2,
     AlertCircle,
-    MoreVertical,
     Plus,
     Loader2,
     Trash2

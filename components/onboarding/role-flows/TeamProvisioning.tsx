@@ -3,9 +3,7 @@
 import * as React from 'react';
 import {
     Users,
-    Plus,
     Mail,
-    Smartphone,
     ShieldCheck,
     Loader2,
     CheckCircle2,
@@ -14,15 +12,13 @@ import {
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { supabase } from '@/lib/supabaseClient';
 
 interface TeamProvisioningProps {
     tenantId: string;
     onComplete: () => void;
 }
 
-export default function TeamProvisioning({ tenantId, onComplete }: TeamProvisioningProps) {
+export default function TeamProvisioning({ onComplete }: TeamProvisioningProps) {
     const [emails, setEmails] = React.useState<string[]>(['']);
     const [isInviting, setIsInviting] = React.useState(false);
     const [invitedCount, setInvitedCount] = React.useState(0);

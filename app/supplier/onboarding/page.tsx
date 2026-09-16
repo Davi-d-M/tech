@@ -10,9 +10,7 @@ import {
     CreditCard,
     Briefcase,
     Loader2,
-    Zap,
     MapPin,
-    ArrowRight,
     ArrowLeft,
     Banknote
 } from 'lucide-react';
@@ -21,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { onboardingEngine } from '@/lib/apex-os/onboarding-engine';
 import MerchantDiscovery from '@/components/onboarding/role-flows/MerchantDiscovery';
 import TeamProvisioning from '@/components/onboarding/role-flows/TeamProvisioning';
@@ -29,14 +27,13 @@ import TeamProvisioning from '@/components/onboarding/role-flows/TeamProvisionin
 type Step = 'welcome' | 'discovery' | 'business' | 'categories' | 'payout' | 'team' | 'pending';
 
 export default function SupplierOnboarding() {
-    const router = useRouter();
     const searchParams = useSearchParams();
     const initialStep = (searchParams.get('step') as Step) || 'welcome';
 
     const [step, setStep] = useState<Step>(initialStep);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ id: string } | null>(null);
 
     // Form Data
     const [businessName, setBusinessName] = useState('');
@@ -48,12 +45,14 @@ export default function SupplierOnboarding() {
     const [bankName, setBankName] = useState('');
     const [bankAccName, setBankAccName] = useState('');
     const [bankAccNo, setBankAccNo] = useState('');
-    const [termsAccepted, setTermsAccepted] = useState(false);
 
     useEffect(() => {
         if (supabase) {
             supabase.auth.getSession().then(({ data: { session } }) => {
-                if (session) setUser(session.user);
+                if (session) {
+                    const sessionUser = session.user as unknown as { id: string };
+                    setUser(sessionUser);
+                }
             });
         }
     }, []);

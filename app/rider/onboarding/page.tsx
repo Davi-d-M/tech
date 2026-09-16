@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     ShieldCheck,
@@ -9,12 +9,7 @@ import {
     CheckCircle2,
     Loader2,
     Camera,
-    CreditCard,
-    Zap,
-    Bike,
-    Car,
-    Navigation,
-    ArrowRight
+    CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,12 +40,15 @@ export default function RiderOnboarding() {
     const [idBackPhoto, setIdBackPhoto] = useState<File | null>(null);
     const [licensePhoto, setLicensePhoto] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<{ id: string, user_metadata?: { phone_number?: string } } | null>(null);
 
     useEffect(() => {
         if (supabase) {
             supabase.auth.getSession().then(({ data: { session } }) => {
-                if (session) setUser(session.user);
+                if (session) {
+                    const sessionUser = session.user as unknown as { id: string, user_metadata?: { phone_number?: string } };
+                    setUser(sessionUser);
+                }
             });
         }
     }, []);

@@ -8,8 +8,6 @@ import {
     CheckCircle2,
     Search,
     AlertCircle,
-    Link2,
-    DollarSign,
     Loader2,
     ChevronRight,
     ArrowLeft
@@ -82,8 +80,9 @@ export default function ReconciliationHUD() {
             alert("Reconciliation Successful! Order status moved to Paid. ⚡");
             setMatchingOrderId('');
             fetchData();
-        } catch (err: any) {
-            alert(err.message);
+        } catch (err: unknown) {
+            const error = err as Error;
+            alert(error.message);
         } finally {
             setReconcilingId(null);
         }

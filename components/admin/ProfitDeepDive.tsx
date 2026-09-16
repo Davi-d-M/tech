@@ -4,17 +4,12 @@ import * as React from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
     TrendingUp,
-    TrendingDown,
     Zap,
-    DollarSign,
     Loader2,
-    ArrowUpRight,
-    ArrowDownRight,
-    PieChart as PieIcon,
     ShieldCheck
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { formatPrice, cn } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils';
 import dynamic from 'next/dynamic';
 
 const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });

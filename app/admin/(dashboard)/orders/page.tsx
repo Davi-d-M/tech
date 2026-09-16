@@ -572,8 +572,9 @@ export default function AdminOrdersPage() {
         setIsVaultOpen(false);
         await updateOrderStatus(vaultOrderId, 'Dispatched');
         setSerialInputs({});
-    } catch (err: any) {
-        alert(err.message);
+    } catch (err: unknown) {
+        const error = err as Error;
+        alert(error.message);
     } finally {
         setIsVaultSyncing(false);
     }

@@ -7,7 +7,6 @@ import {
     Zap,
     CheckCircle2,
     Camera,
-    ArrowRight,
     Loader2,
     Activity
 } from 'lucide-react';
