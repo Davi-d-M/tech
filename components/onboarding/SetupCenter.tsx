@@ -43,6 +43,7 @@ export default function SetupCenter({ state, onContinue }: SetupCenterProps) {
             default:
                 return [
                     { id: 'preferences', label: 'Personalize Feed', done: state.completedSteps.includes('preferences') },
+                    { id: 'widget-install', label: 'Home Screen Node', done: state.completedSteps.includes('widget-install') },
                     { id: 'first-order', label: 'Initial Tech Discovery', done: state.completedSteps.includes('first-order') },
                 ];
         }

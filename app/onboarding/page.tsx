@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { onboardingEngine, OnboardingState, OnboardingRole } from '@/lib/apex-os/onboarding-engine';
 import SetupCenter from '@/components/onboarding/SetupCenter';
 import CustomerOnboarding from '@/components/onboarding/role-flows/CustomerOnboarding';
+import WidgetInstall from '@/components/onboarding/role-flows/WidgetInstall';
 import RiderAcademy from '@/components/onboarding/role-flows/RiderAcademy';
 import RiderTestMission from '@/components/onboarding/role-flows/RiderTestMission';
 import MerchantDiscovery from '@/components/onboarding/role-flows/MerchantDiscovery';
@@ -161,7 +162,21 @@ export default function OnboardingRouter() {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
                 {onboardingState.role === 'CUSTOMER' && (
-                    <CustomerOnboarding onComplete={(data) => handleStepComplete('preferences', data)} />
+                    <>
+                        {onboardingState.currentStep === 'welcome' && (
+                            <CustomerOnboarding onComplete={(data) => handleStepComplete('preferences', data)} />
+                        )}
+                        {onboardingState.currentStep === 'preferences' && (
+                            <WidgetInstall onComplete={() => handleStepComplete('widget-install')} />
+                        )}
+                        {onboardingState.currentStep === 'widget-install' && (
+                             <Card className="p-10 rounded-[3rem] bg-white border border-slate-100 text-center space-y-6">
+                                <h3 className="text-2xl font-black uppercase">Grid Profile Synchronized</h3>
+                                <p className="text-sm text-slate-500 italic">You are now a verified member of the Apex Grid. Start exploring elite tech.</p>
+                                <Button onClick={() => router.push('/')} className="w-full h-16 rounded-2xl bg-primary text-white font-black uppercase shadow-xl shadow-primary/20">Explore the Shop</Button>
+                             </Card>
+                        )}
+                    </>
                 )}
                 {onboardingState.role === 'RIDER' && (
                     <>

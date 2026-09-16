@@ -1,6 +1,8 @@
 package com.example.theapp
 
 import android.app.Activity
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -42,6 +44,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.example.theapp.ui.theme.TheAppTheme
+import com.example.theapp.widget.ApexHomeWidgetReceiver
 import java.util.concurrent.Executor
 
 import android.graphics.Bitmap
@@ -524,6 +527,25 @@ class ApexBridge(private val activity: MainActivity, private val webView: WebVie
         if (!isTrustedOrigin()) return
         activity.runOnUiThread {
             activity.triggerStepUpAuth()
+        }
+    }
+
+    @JavascriptInterface
+    fun requestWidgetPin() {
+        if (!isTrustedOrigin()) return
+        activity.runOnUiThread {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val appWidgetManager = AppWidgetManager.getInstance(activity)
+                val myProvider = ComponentName(activity, ApexHomeWidgetReceiver::class.java)
+
+                if (appWidgetManager.isRequestPinAppWidgetSupported) {
+                    appWidgetManager.requestPinAppWidget(myProvider, null, null)
+                } else {
+                    Toast.makeText(activity, "Manual widget install required.", Toast.LENGTH_LONG).show()
+                }
+            } else {
+                Toast.makeText(activity, "Automatic widget pin requires Android 8.0+", Toast.LENGTH_LONG).show()
+            }
         }
     }
 

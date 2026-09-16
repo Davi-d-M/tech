@@ -30,6 +30,8 @@ const MissionMap = dynamic(() => import('@/components/rider/MissionMap'), {
     loading: () => <div className="w-full h-64 bg-slate-100 rounded-3xl animate-pulse" />
 });
 
+import { onboardingEngine } from '@/lib/apex-os/onboarding-engine';
+
 interface Mission {
     id: string;
     customer_name: string;
@@ -58,6 +60,7 @@ export default function RiderDashboard() {
     const [activeMission, setActiveMission] = React.useState<Mission | null>(null);
     const [stats, setStats] = React.useState({ completed: 0, earnings: 0 });
     const [activeTab, setActiveTab] = React.useState<'tasks' | 'mission' | 'stats' | 'profile'>('tasks');
+    const [user, setUser] = React.useState<any>(null);
 
     // PIN Change State
     const [isPinModalOpen, setIsPinModalOpen] = React.useState(false);
@@ -123,6 +126,11 @@ export default function RiderDashboard() {
 
     React.useEffect(() => {
         fetchTasks();
+        if (supabase) {
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) setUser(session.user);
+            });
+        }
 
         // 📡 High-Velocity Location Pulsing
         let watchId: number;
@@ -228,6 +236,9 @@ export default function RiderDashboard() {
 
             // Refresh UI
             await fetchTasks();
+            if (user) {
+                await onboardingEngine.recordActivation(user.id, 'RIDER', 'FIRST_MISSION');
+            }
             alert("Mission Complete! Yield extracted and credited to your wallet. 🦾");
         } catch (err) {
             console.error("Arrival protocol failure:", err);

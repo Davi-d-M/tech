@@ -69,7 +69,7 @@ export const onboardingEngine = {
 
         // Logic: Role-specific weights
         const weights: Record<OnboardingRole, number> = {
-            'CUSTOMER': 3,
+            'CUSTOMER': 4, // welcome, preferences, location, widget-install
             'RIDER': 7,
             'MERCHANT': 6,
             'AFFILIATE': 4,
@@ -107,11 +107,17 @@ export const onboardingEngine = {
      */
     async recordActivation(userId: string, role: OnboardingRole, actionType: string) {
         if (!supabase) return;
+
+        // 1. Log Activation
         await supabase.from('activation_triggers').insert([{
             user_id: userId,
             role: role,
             trigger_type: actionType
         }]);
+
+        // 2. Auto-Complete the "first-action" step if it exists
+        const stepId = actionType.toLowerCase().replace('_', '-');
+        await this.completeStep(userId, role, stepId, 'complete');
     }
 };
 

@@ -507,10 +507,12 @@ function CheckoutContent() {
         });
     }
 
-    // Apex OS Intelligence: Attribution
+    // Apex OS Intelligence: Activation
     if (finalId) {
         logOrderAttribution(finalId, total);
         if (user) {
+            onboardingEngine.completeStep(user.id, 'CUSTOMER', 'preferences', 'widget-install');
+            // Better: Record real activation
             onboardingEngine.recordActivation(user.id, 'CUSTOMER', 'FIRST_ORDER');
         }
     }
