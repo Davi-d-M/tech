@@ -28,30 +28,6 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'idle', message: string }>({ type: 'idle', message: "" });
 
-  const [canSeePartners, setCanSeePartners] = useState(false);
-
-  useEffect(() => {
-      async function checkPermissions() {
-          if (!supabase) return;
-          const { data: { session } } = await supabase.auth.getSession();
-          if (!session) {
-              setCanSeePartners(false);
-              return;
-          }
-
-          const { data: profile } = await supabase.from('profiles').select('can_see_partner_offers, can_see_affiliate_offers, phone_number').eq('id', session.user.id).single();
-
-          // Show Partners section if they have ANY partner-related permission or account
-          const [riderRes, supplierRes] = await Promise.all([
-              supabase.from('rider_status').select('rider_phone').eq('rider_phone', profile?.phone_number || '').maybeSingle(),
-              supabase.from('suppliers').select('email').eq('email', session.user.email || '').maybeSingle()
-          ]);
-
-          setCanSeePartners(!!profile?.can_see_partner_offers || !!profile?.can_see_affiliate_offers || !!riderRes.data || !!supplierRes.data);
-      }
-      checkPermissions();
-  }, []);
-
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
@@ -109,14 +85,22 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
         { href: "/contact", label: "Support" },
       ],
     },
-    ...(canSeePartners ? [{
+    {
+      title: "Logistics",
+      links: [
+        { href: "/rider/login", label: "Runner Command" },
+        { href: "/admin", label: "Control Center" },
+        { href: "/track", label: "Live Tracking" },
+      ],
+    },
+    {
       title: "Partners",
       links: [
-        { href: "/rider/login", label: "Fleet Portal" },
-        { href: "/supplier/login", label: "Merchant Portal" },
-        { href: "/supplier/onboarding", label: "Apply to Supply" },
+        { href: "/supplier/onboarding", label: "Become a Merchant" },
+        { href: "/rider/onboarding", label: "Become a Runner" },
+        { href: "/supplier/login", label: "Supplier Login" },
       ],
-    }] : []),
+    },
     {
       title: "Legal",
       links: [
@@ -173,8 +157,8 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
         </div>
 
         <div className="py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 text-left">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-left">
+            <div className="lg:col-span-1">
               <Link
                 className="text-2xl tracking-tighter font-black text-foreground hover:text-primary transition-colors uppercase"
                 href="/"
@@ -183,20 +167,20 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
                 Apex<span className="text-primary">stores</span>
               </Link>
               <p className="text-muted-foreground mt-4 mb-6 max-w-sm font-medium leading-relaxed">
-                {settings?.content?.about_us || 'Premium electronics and mobile accessories engineered for excellence. Performance and design in every gadget.'}
+                {settings?.content?.about_us || 'Premium tech essentials and late night gadgets delivered to your doorstep. Chilled and ready for your operation.'}
               </p>
 
               <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
-                  <MapPin className="h-4 w-4 text-primary" />
+                <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
+                  <MapPin className="h-3 w-3 text-primary" />
                   <span>{loading ? '...' : settings.contact.address}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
-                  <Phone className="h-4 w-4 text-primary" />
+                <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
+                  <Phone className="h-3 w-3 text-primary" />
                   <span>+{loading ? '...' : settings.contact.whatsapp}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
-                  <Mail className="h-4 w-4 text-primary" />
+                <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
+                  <Mail className="h-3 w-3 text-primary" />
                   <span>{loading ? '...' : settings.contact.email}</span>
                 </div>
               </div>
@@ -221,10 +205,10 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
               </div>
             </div>
 
-            {footerSections.map((section, index) => (
+            {footerSections.map((section) => (
               <div
                 key={section.title}
-                className={`${index >= 2 ? "lg:col-span-1" : ""}`}
+                className="lg:col-span-1"
               >
                 <h4 className="text-[10px] font-black text-foreground mb-6 uppercase tracking-[0.2em]">
                   {section.title}

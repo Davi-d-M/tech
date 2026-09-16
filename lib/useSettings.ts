@@ -225,6 +225,31 @@ const DEFAULT_SETTINGS: StoreSettings = {
                     { href: "/blog", label: "Library" },
                     { href: "/contact", label: "Support" },
                 ],
+            },
+            {
+                title: "Logistics",
+                links: [
+                    { href: "/rider/login", label: "Runner Command" },
+                    { href: "/admin", label: "Control Center" },
+                    { href: "/track", label: "Live Tracking" },
+                ],
+            },
+            {
+                title: "Partners",
+                links: [
+                    { href: "/supplier/onboarding", label: "Become a Merchant" },
+                    { href: "/rider/onboarding", label: "Become a Runner" },
+                    { href: "/supplier/login", label: "Supplier Login" },
+                ],
+            },
+            {
+                title: "Legal",
+                links: [
+                    { href: "/privacy", label: "Privacy Policy" },
+                    { href: "/terms", label: "Terms & Conditions" },
+                    { href: "/cookies", label: "Cookie Policy" },
+                    { href: "/accessibility", label: "Accessibility" },
+                ],
             }
         ]
     },
