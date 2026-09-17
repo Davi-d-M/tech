@@ -140,7 +140,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <>
       <Card className="group overflow-hidden bg-white border-slate-100 hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 rounded-[2.5rem] text-left relative">
-      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-6 sm:p-10">
+      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-4 sm:p-10">
 
         {/* Elite Locked Overlay */}
         {isLocked && (
@@ -218,7 +218,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                className="object-contain transition-all duration-1000 group-hover:scale-110"
+                className="object-contain transition-all duration-1000 group-hover:scale-105"
                 onError={() => setImageError(true)}
               />
             ) : (
@@ -262,16 +262,16 @@ export default function ProductCard({ product }: { product: Product }) {
         </Link>
       </div>
 
-      <CardContent className="p-3 sm:p-10 space-y-3 sm:space-y-6 text-left">
-        <Link href={`/shop/${product.id}`} className="block">
-          <h2 className="font-black text-foreground text-[10px] sm:text-lg uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words leading-tight min-h-[2.5em]">
+      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6 text-left min-w-0">
+        <Link href={`/shop/${product.id}`} className="block min-w-0">
+          <h2 className="font-black text-foreground text-[11px] sm:text-lg uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words leading-tight min-h-[2.4em]">
             {product.name}
           </h2>
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-50 pb-3 sm:pb-8">
-          <div className="flex flex-col">
-              {isSale && <span className="text-[7px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-1 opacity-60 tracking-widest whitespace-nowrap">{formatPrice(Number(product.old_price))}</span>}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-50 pb-4 sm:pb-8 min-w-0">
+          <div className="flex flex-col min-w-0">
+              {isSale && <span className="text-[8px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-1.5 opacity-60 tracking-widest">{formatPrice(Number(product.old_price))}</span>}
               <span className="text-sm sm:text-3xl font-black text-foreground leading-none tracking-tighter whitespace-nowrap">
                 {formatPrice(product.price)}
               </span>
@@ -279,7 +279,7 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.stock !== undefined && (
             <span
               className={cn(
-                "text-[7px] sm:text-[10px] font-black uppercase tracking-[0.2em] px-2 py-1 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border mt-1 sm:mt-0",
+                "text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border mt-2 sm:mt-0",
                 product.stock > 0 ? 'bg-primary/5 text-primary border-primary/10' : 'bg-rose-50 text-rose-600 border-rose-100'
               )}
             >
