@@ -11,7 +11,7 @@ export default function HomeHero() {
   const promotions = settings.promotions;
 
   return (
-    <section className="relative pt-12 pb-20 lg:pt-20 lg:pb-32 overflow-hidden bg-white text-left">
+    <section className="relative pt-16 pb-24 lg:pt-28 lg:pb-40 overflow-hidden bg-white text-left">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 rounded-l-[10rem] -z-10 blur-3xl animate-pulse"></div>
       <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-indigo-500/5 rounded-full -z-10 blur-3xl"></div>
@@ -25,7 +25,7 @@ export default function HomeHero() {
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">The New Era of Tech is Here</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter text-foreground uppercase leading-[1.1] sm:leading-[0.9]">
+            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black tracking-tighter text-foreground uppercase leading-[1] sm:leading-[0.85]">
               Future <span className="text-primary italic">Sound.</span><br />
               Total <span className="text-slate-400">Power.</span>
             </h1>
@@ -38,14 +38,14 @@ export default function HomeHero() {
               Experience authentic tech engineered for excellence. From premium AirPods to high-speed charging solutions, we power your digital lifestyle.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-6 pt-6">
               <Link href="/shop" className="w-full sm:w-auto">
-                <Button className="w-full h-16 px-10 rounded-[1.5rem] bg-primary text-white font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all group">
-                  Explore Catalog <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <Button className="w-full h-20 px-12 rounded-[2rem] bg-primary text-white font-black uppercase tracking-[0.2em] text-sm shadow-2xl shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all group">
+                  Explore Catalog <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform" />
                 </Button>
               </Link>
               <Link href="/shop/category/new-arrivals" className="w-full sm:w-auto">
-                <Button variant="outline" className="w-full h-16 px-10 rounded-[1.5rem] border-2 border-slate-100 bg-white font-black uppercase tracking-widest text-xs hover:border-primary hover:text-primary transition-all">
+                <Button variant="outline" className="w-full h-20 px-12 rounded-[2rem] border-2 border-slate-100 bg-white font-black uppercase tracking-[0.2em] text-sm hover:border-primary hover:text-primary transition-all active:scale-95">
                   New Arrivals
                 </Button>
               </Link>

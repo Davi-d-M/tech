@@ -157,27 +157,24 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
 
         {/* Badges */}
-        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 flex flex-col gap-1 sm:gap-2">
+        <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-20 flex flex-col gap-1.5 sm:gap-2.5">
             {isSale && (
-                <span className="bg-rose-500 text-white text-[8px] sm:text-[10px] font-black px-2 py-0.5 sm:px-3 sm:py-1 rounded-full uppercase tracking-widest shadow-lg shadow-rose-500/30">Sale</span>
+                <span className="bg-rose-500 text-white text-[8px] sm:text-[10px] font-black px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-full uppercase tracking-[0.15em] shadow-xl shadow-rose-500/30">Sale</span>
             )}
             {product.is_new && (
-                <span className="bg-primary text-white text-[8px] sm:text-[10px] font-black px-2 py-0.5 sm:px-3 sm:py-1 rounded-full uppercase tracking-widest shadow-lg shadow-primary/30">New</span>
+                <span className="bg-primary text-white text-[8px] sm:text-[10px] font-black px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-full uppercase tracking-[0.15em] shadow-xl shadow-primary/30">New</span>
             )}
             {product.category && (
-                <span className="bg-slate-100 text-slate-400 text-[7px] sm:text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-[0.1em] border border-slate-200">
+                <span className="bg-white/80 backdrop-blur-sm text-slate-500 text-[7px] sm:text-[9px] font-black px-2 py-1 rounded-lg uppercase tracking-[0.2em] border border-slate-100 shadow-sm">
                     {product.category.includes('Audio') ? 'Elite Audio' :
                      product.category.includes('Charger') ? 'Super Charge' :
                      product.category.includes('Case') ? 'Armor Grade' : 'Titan Grade'}
                 </span>
             )}
             {product.order_count !== undefined && product.order_count > 10 && (
-                <span className="bg-amber-500 text-white text-[8px] sm:text-[10px] font-black px-2 py-0.5 sm:px-3 sm:py-1 rounded-full uppercase tracking-widest shadow-lg shadow-amber-500/30 flex items-center gap-1">
+                <span className="bg-amber-500 text-white text-[8px] sm:text-[10px] font-black px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-full uppercase tracking-[0.15em] shadow-xl shadow-amber-500/30 flex items-center gap-1">
                     <TrendingUp className="h-2 w-2 sm:h-3 sm:w-3" /> Trending
                 </span>
-            )}
-            {product.stock !== undefined && product.stock > 0 && product.stock < 5 && (
-                <span className="bg-primary text-white text-[7px] sm:text-[9px] font-black px-2 py-0.5 sm:px-3 sm:py-1 rounded-full uppercase tracking-widest animate-pulse border border-white/20">Limited Stock</span>
             )}
         </div>
 
@@ -186,13 +183,13 @@ export default function ProductCard({ product }: { product: Product }) {
           size="icon"
           disabled={isLocked}
           className={cn(
-            "absolute top-2 right-2 sm:top-4 sm:right-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white shadow-xl hover:bg-white rounded-full h-8 w-8 sm:h-10 sm:w-10",
+            "absolute top-3 right-3 sm:top-6 sm:right-6 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-xl hover:bg-white rounded-full h-9 w-9 sm:h-12 sm:w-12 active:scale-90",
             isInWishlist(product.id) && "opacity-100 text-rose-500",
             isLocked && "hidden"
           )}
           onClick={handleToggleLike}
         >
-          <Heart className={cn("h-3 w-3 sm:h-4 sm:w-4", isInWishlist(product.id) && "fill-current")} />
+          <Heart className={cn("h-4 w-4 sm:h-5 sm:w-5", isInWishlist(product.id) && "fill-current")} />
         </Button>
 
         <Button
@@ -200,8 +197,8 @@ export default function ProductCard({ product }: { product: Product }) {
           size="icon"
           disabled={isLocked}
           className={cn(
-            "absolute top-12 right-2 sm:top-16 sm:right-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white shadow-xl hover:bg-white rounded-full text-slate-400 hover:text-indigo-600 h-8 w-8 sm:h-10 sm:w-10",
-            isComparing && "opacity-100 text-indigo-600 ring-2 ring-indigo-500",
+            "absolute top-14 right-3 sm:top-20 sm:right-6 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-xl hover:bg-white rounded-full text-slate-400 hover:text-primary h-9 w-9 sm:h-12 sm:w-12 active:scale-90",
+            isComparing && "opacity-100 text-primary ring-2 ring-primary/20",
             isLocked && "hidden"
           )}
           onClick={(e) => {
@@ -211,7 +208,7 @@ export default function ProductCard({ product }: { product: Product }) {
           }}
           title="Compare with other gadgets"
         >
-          <ArrowUpDown className="h-3 w-3 sm:h-4 sm:w-4" />
+          <ArrowUpDown className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
 
         <Link href={`/shop/${product.id}`} className="block relative w-full h-full">
@@ -221,20 +218,20 @@ export default function ProductCard({ product }: { product: Product }) {
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                className="object-contain transition-transform duration-700 group-hover:scale-110"
+                className="object-contain transition-all duration-1000 group-hover:scale-110 p-2"
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-300">
-                <X className="h-12 w-12" />
+              <div className="w-full h-full flex items-center justify-center text-slate-200">
+                <X className="h-16 w-16" />
               </div>
             )}
 
-          <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+          <div className="absolute inset-0 bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
             <Button
               size="sm"
               data-track-click="QUICK_LOOK_MODAL"
-              className="bg-white text-foreground hover:bg-slate-50 font-black uppercase text-[10px] tracking-widest px-6 py-5 rounded-2xl shadow-2xl border-none scale-90 group-hover:scale-100 transition-transform duration-300"
+              className="bg-white text-foreground hover:bg-slate-50 font-black uppercase text-[10px] tracking-[0.2em] px-8 py-6 rounded-[1.5rem] shadow-2xl border border-slate-50 scale-90 group-hover:scale-100 transition-all duration-500 active:scale-95"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -258,32 +255,32 @@ export default function ProductCard({ product }: { product: Product }) {
                 }
               }}
             >
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye className="h-4 w-4 mr-3" />
               Quick Look
             </Button>
           </div>
         </Link>
       </div>
 
-      <CardContent className="p-3 sm:p-6 space-y-3 sm:space-y-4 text-left min-w-0">
+      <CardContent className="p-5 sm:p-10 space-y-4 sm:space-y-6 text-left min-w-0">
         <Link href={`/shop/${product.id}`} className="block min-w-0">
-          <h2 className="font-black text-foreground text-[10px] sm:text-sm uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words">
+          <h2 className="font-black text-foreground text-xs sm:text-lg uppercase tracking-tight line-clamp-1 group-hover:text-primary transition-colors break-words leading-none">
             {product.name}
           </h2>
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-50 pb-3 sm:pb-4 min-w-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-50 pb-5 sm:pb-8 min-w-0">
           <div className="flex flex-col min-w-0">
-              {isSale && <span className="text-[8px] sm:text-[10px] font-bold text-slate-400 line-through leading-none mb-1 truncate">{formatPrice(Number(product.old_price))}</span>}
-              <span className="text-sm sm:text-xl font-black text-foreground leading-none truncate">
+              {isSale && <span className="text-[8px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-2 truncate opacity-60 tracking-widest">{formatPrice(Number(product.old_price))}</span>}
+              <span className="text-lg sm:text-3xl font-black text-foreground leading-none tracking-tighter truncate">
                 {formatPrice(product.price)}
               </span>
           </div>
           {product.stock !== undefined && (
             <span
               className={cn(
-                "text-[7px] sm:text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg w-fit shrink-0",
-                product.stock > 0 ? 'bg-primary/10 text-primary' : 'bg-rose-50 text-rose-600'
+                "text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border",
+                product.stock > 0 ? 'bg-primary/5 text-primary border-primary/10' : 'bg-rose-50 text-rose-600 border-rose-100'
               )}
             >
               {product.stock > 0 ? `${product.stock} In Stock` : 'Sold Out'}
@@ -294,11 +291,11 @@ export default function ProductCard({ product }: { product: Product }) {
         {product.stock !== undefined && product.stock === 0 ? (
             <RestockNotifyButton productId={product.id} productName={product.name} />
         ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
                 <Button
                   data-track-click="ADD_TO_BAG_CARD"
                   className={cn(
-                    'w-full h-10 sm:h-14 transition-all duration-300 rounded-xl sm:rounded-2xl font-black uppercase text-[8px] sm:text-[10px] tracking-widest shadow-lg active:scale-95',
+                    'w-full h-14 sm:h-20 transition-all duration-300 rounded-[1.5rem] sm:rounded-[2rem] font-black uppercase text-[10px] sm:text-xs tracking-[0.2em] shadow-xl active:scale-95',
                     isLocked ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100 shadow-none' :
                     justAdded
                       ? 'bg-primary text-white hover:bg-primary/90'
@@ -308,22 +305,22 @@ export default function ProductCard({ product }: { product: Product }) {
                   disabled={isAdding || isLocked}
                 >
                   {isLocked ? (
-                      <div className="flex items-center gap-2">
-                        <Lock className="h-3 w-3 sm:h-4 sm:w-4" /> Locked
+                      <div className="flex items-center gap-3">
+                        <Lock className="h-4 w-4 sm:h-5 sm:w-5" /> Locked
                       </div>
                   ) : isAdding ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 sm:w-6 sm:h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
                       Sync...
                     </div>
                   ) : justAdded ? (
-                    <div className="flex items-center gap-2">
-                      <Check className="h-3 w-3 sm:h-4 sm:h-4" />
+                    <div className="flex items-center gap-3">
+                      <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                       Added!
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
-                      <ShoppingCart className="h-3 w-3 sm:h-4 sm:h-4" />
+                    <div className="flex items-center gap-3">
+                      <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
                       Add to Bag
                     </div>
                   )}

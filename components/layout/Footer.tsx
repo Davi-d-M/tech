@@ -148,7 +148,7 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-6 rounded-xl"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-6 rounded-xl active:scale-95 transition-all"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
                 <span className="sr-only">Subscribe</span>

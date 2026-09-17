@@ -377,49 +377,49 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
 
             {/* Discovery Hub (Focus but no query) - Mega Menu Style */}
             {isSearchFocused && searchQuery.length === 0 && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[800px] bg-white/90 backdrop-blur-2xl rounded-[3rem] shadow-2xl border border-slate-50 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500 p-10 z-[70] ring-1 ring-primary/5">
-                    <div className="grid grid-cols-12 gap-12">
-                        <div className="col-span-7 space-y-8">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[850px] bg-white/95 backdrop-blur-2xl rounded-[3.5rem] shadow-2xl border border-slate-50 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500 p-12 z-[70] ring-1 ring-primary/5">
+                    <div className="grid grid-cols-12 gap-16">
+                        <div className="col-span-7 space-y-10">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6 flex items-center gap-2">
-                                    <Zap className="h-3 w-3 fill-current" /> Popular Categories
+                                <p className="text-[11px] font-black uppercase tracking-[0.5em] text-primary mb-8 flex items-center gap-3">
+                                    <Zap className="h-4 w-4 fill-current" /> Popular Discoveries
                                 </p>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-5">
                                     {['AirPods', 'Fast Charger', 'Samsung', 'iPhone', 'Case', 'Privacy Screen'].map(tag => (
                                         <button
                                             key={tag}
                                             onClick={() => handleGlobalSearch(tag)}
-                                            className="px-6 h-16 rounded-2xl bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-primary hover:text-white transition-all shadow-sm border border-slate-100 flex items-center justify-between group/chip"
+                                            className="px-8 h-20 rounded-3xl bg-slate-50 text-[11px] font-black uppercase tracking-widest text-slate-600 hover:bg-primary hover:text-white transition-all shadow-sm border border-slate-100 flex items-center justify-between group/chip active:scale-95"
                                         >
                                             {tag}
-                                            <ChevronRight className="h-4 w-4 opacity-0 group-hover/chip:opacity-100 group-hover/chip:translate-x-1 transition-all" />
+                                            <ChevronRight className="h-5 w-5 opacity-0 group-hover/chip:opacity-100 group-hover/chip:translate-x-2 transition-all" />
                                         </button>
                                     ))}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="col-span-5 space-y-8 border-l border-slate-100 pl-10">
+                        <div className="col-span-5 space-y-10 border-l border-slate-100 pl-12">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-6 flex items-center gap-2">
-                                    <History className="h-3 w-3" /> Recent Activity
+                                <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-400 mb-8 flex items-center gap-3">
+                                    <History className="h-4 w-4" /> Tactical History
                                 </p>
-                                <div className="space-y-4">
+                                <div className="space-y-5">
                                     {recentlyViewed.length > 0 ? recentlyViewed.slice(0, 3).map(item => (
-                                        <Link key={item.id} href={`/shop/${item.id}`} className="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-2xl transition-all group">
-                                            <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 p-1 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                                        <Link key={item.id} href={`/shop/${item.id}`} className="flex items-center gap-5 p-4 hover:bg-slate-50 rounded-3xl transition-all group active:scale-95">
+                                            <div className="h-14 w-14 rounded-2xl bg-white border border-slate-100 p-1.5 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
                                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                                 <img src={item.image} alt="" className="max-h-full w-auto object-contain" />
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-[10px] font-black uppercase text-foreground truncate group-hover:text-primary transition-colors">{item.name}</p>
-                                                <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5 tracking-tighter">Viewed Just Now</p>
+                                                <p className="text-[11px] font-black uppercase text-foreground truncate group-hover:text-primary transition-colors">{item.name}</p>
+                                                <p className="text-[9px] font-bold text-slate-400 uppercase mt-1 tracking-tighter">Verified Artifact</p>
                                             </div>
                                         </Link>
                                     )) : (
-                                        <div className="p-10 text-center space-y-3 opacity-20">
-                                            <Search className="h-8 w-8 mx-auto" />
-                                            <p className="text-[8px] font-black uppercase tracking-widest">No history found</p>
+                                        <div className="p-12 text-center space-y-4 opacity-20">
+                                            <Search className="h-10 w-10 mx-auto" />
+                                            <p className="text-[9px] font-black uppercase tracking-widest">Awaiting footprints...</p>
                                         </div>
                                     )}
                                 </div>
@@ -427,39 +427,39 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
                         </div>
                     </div>
 
-                    <div className="mt-10 pt-6 border-t border-slate-50 text-center">
-                        <p className="text-[8px] font-black uppercase text-slate-300 tracking-[0.5em]">Apex Hub Real-time Sync Active</p>
+                    <div className="mt-12 pt-8 border-t border-slate-50 text-center">
+                        <p className="text-[9px] font-black uppercase text-slate-300 tracking-[0.6em]">Neural Hub Sync Enabled</p>
                     </div>
                 </div>
             )}
 
             {/* Search Results Dropdown (Wider & Frosted) */}
             {searchResults.length > 0 && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[700px] bg-white/90 backdrop-blur-2xl rounded-[3rem] shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 p-6 z-[70]">
-                    <div className="p-4 border-b border-slate-50 flex items-center justify-between mb-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Payload matches</p>
-                        <span className="text-[9px] font-black uppercase bg-primary/10 text-primary px-3 py-1 rounded-full border border-primary/20">{searchResults.length} Units Found</span>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[750px] bg-white/95 backdrop-blur-2xl rounded-[3.5rem] shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 p-8 z-[70]">
+                    <div className="p-5 border-b border-slate-50 flex items-center justify-between mb-6">
+                        <p className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400">Payload Extraction</p>
+                        <span className="text-[10px] font-black uppercase bg-primary/10 text-primary px-4 py-2 rounded-full border border-primary/20">{searchResults.length} Match Nodes</span>
                     </div>
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 gap-4">
                         {searchResults.map((product) => (
-                            <Link key={product.id} href={`/shop/${product.id}`} className="flex items-center gap-6 p-4 hover:bg-slate-50 transition-all rounded-[2rem] group border border-transparent hover:border-slate-100 hover:shadow-xl" onClick={() => setSearchResults([])}>
-                                <div className="h-16 w-16 rounded-2xl bg-white flex items-center justify-center overflow-hidden shrink-0 border border-slate-100 shadow-inner group-hover:scale-105 transition-transform">
+                            <Link key={product.id} href={`/shop/${product.id}`} className="flex items-center gap-8 p-5 hover:bg-slate-50 transition-all rounded-[2.5rem] group border border-transparent hover:border-slate-100 hover:shadow-xl active:scale-[0.98]" onClick={() => setSearchResults([])}>
+                                <div className="h-20 w-20 rounded-3xl bg-white flex items-center justify-center overflow-hidden shrink-0 border border-slate-100 shadow-sm group-hover:scale-105 transition-transform">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={product.image_url} alt="" className="max-h-full w-auto object-contain" />
+                                    <img src={product.image_url} alt="" className="max-h-full w-auto object-contain p-2" />
                                 </div>
-                                <div className="flex-1 min-w-0 text-left">
-                                    <p className="text-sm font-black uppercase text-foreground truncate tracking-tight">{product.name}</p>
-                                    <p className="text-xs font-bold text-primary mt-1">{formatPrice(product.price)}</p>
+                                <div className="flex-1 min-w-0 text-left space-y-1">
+                                    <p className="text-base font-black uppercase text-foreground truncate tracking-tight">{product.name}</p>
+                                    <p className="text-sm font-bold text-primary">{formatPrice(product.price)}</p>
                                 </div>
-                                <ChevronRight className="h-5 w-5 text-slate-200 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                                <ChevronRight className="h-6 w-6 text-slate-200 group-hover:text-primary group-hover:translate-x-2 transition-all" />
                             </Link>
                         ))}
                     </div>
                     <button
                         onClick={() => handleGlobalSearch()}
-                        className="w-full mt-4 py-6 text-[10px] font-black uppercase tracking-[0.3em] text-primary hover:bg-primary/5 transition-all rounded-b-[2rem] border-t border-slate-50 flex items-center justify-center gap-2 group/btn"
+                        className="w-full mt-6 py-8 text-[11px] font-black uppercase tracking-[0.4em] text-primary hover:bg-primary/5 transition-all rounded-b-[2.5rem] border-t border-slate-50 flex items-center justify-center gap-3 group/btn"
                     >
-                        Initialize Full Search Protocol <ArrowRight className="h-3 w-3 group-hover/btn:translate-x-1 transition-transform" />
+                        Execute Full Extraction <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-2 transition-transform" />
                     </button>
                 </div>
             )}
@@ -600,22 +600,23 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
         )}
 
         {isMobileOpen && (
-          <nav className="md:hidden mt-4 bg-slate-50 rounded-3xl p-4 animate-in zoom-in-95 duration-200" role="navigation">
-            <div className="flex flex-col space-y-2">
+          <nav className="md:hidden mt-6 bg-slate-50 rounded-[2.5rem] p-6 shadow-inner border border-slate-100 animate-in zoom-in-95 duration-300" role="navigation">
+            <div className="flex flex-col space-y-3">
               {navItems.map(({ href, label }) => (
                 <Link
                   key={href}
                   href={href}
                   onClick={() => setIsMobileOpen(false)}
-                  className={`text-[11px] font-black uppercase tracking-widest py-3 px-4 rounded-2xl transition-all ${
-                    pathname === href ? "bg-white shadow-sm text-primary" : "text-slate-500"
+                  className={`text-xs font-black uppercase tracking-[0.2em] py-5 px-6 rounded-2xl transition-all active:scale-95 flex items-center justify-between group ${
+                    pathname === href ? "bg-white shadow-sm text-primary" : "text-slate-500 hover:bg-white/50"
                   }`}
                 >
                   {label}
+                  <ChevronRight size={14} className={cn("transition-transform", pathname === href ? "text-primary translate-x-1" : "text-slate-200 group-hover:translate-x-1")} />
                 </Link>
               ))}
             </div>
-            <div className="mt-4 pt-4 border-t border-slate-200 flex justify-center">
+            <div className="mt-8 pt-8 border-t border-slate-200 flex justify-center">
               <UserMenu isMobileMenu />
             </div>
           </nav>

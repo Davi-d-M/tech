@@ -14,41 +14,41 @@ export default function DynamicHero({ initialSettings }: { initialSettings?: Sto
   const settings = initialSettings || hookSettings;
 
   return (
-    <section className="relative pt-8 pb-12 lg:pt-20 lg:pb-32 overflow-hidden bg-white text-left">
+    <section className="relative pt-12 pb-16 lg:pt-28 lg:pb-40 overflow-hidden bg-white text-left">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 right-0 w-full lg:w-1/2 h-full bg-primary/5 rounded-l-none lg:rounded-l-[10rem] -z-10 blur-3xl animate-pulse"></div>
       <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-indigo-500/5 rounded-full -z-10 blur-3xl"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
 
-          <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
-            <div className="inline-flex items-center gap-2 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full bg-slate-50 border border-slate-100 shadow-sm">
-                <Sparkles className="h-3.5 w-3.5 lg:h-4 w-4 text-primary animate-pulse" />
-                <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <div className="space-y-10 lg:space-y-12 animate-in fade-in slide-in-from-left-8 duration-1000">
+            <div className="inline-flex items-center gap-2 px-4 py-2.5 lg:py-3 rounded-full bg-slate-50 border border-slate-100 shadow-sm">
+                <Sparkles className="h-4 w-4 lg:h-5 w-5 text-primary animate-pulse" />
+                <span className="text-[10px] lg:text-[11px] font-black uppercase tracking-widest text-slate-500">
                     {settings?.homepage?.hero_badge_text || 'Premium Tech Experience'}
                 </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter text-foreground uppercase leading-[0.9]">
+            <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black tracking-tighter text-foreground uppercase leading-[0.85]">
                 <>
                 {(settings?.branding?.hero_title || '').split('.')?.[0] || 'Premium Tech'}. <br />
                 <span className="text-primary italic">{(settings?.branding?.hero_title || '').split('.')?.[1] || ''}</span>
                 </>
             </h1>
 
-            <p className="text-base lg:text-lg text-slate-500 font-medium max-w-lg leading-relaxed">
+            <p className="text-lg lg:text-xl text-slate-500 font-medium max-w-lg leading-relaxed">
               {settings?.branding?.hero_subtitle || 'Experience authentic tech engineered for excellence.'}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-2 lg:pt-4">
-              <Link href="/shop">
-                <Button className="h-14 lg:h-16 px-8 lg:px-10 rounded-2xl lg:rounded-[1.5rem] bg-primary text-white font-black uppercase tracking-widest text-[10px] lg:text-xs shadow-xl hover:bg-primary/90 transition-all active:scale-95 shadow-primary/20 group w-full sm:w-auto">
-                  Explore Catalog <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <div className="flex flex-col sm:flex-row gap-6 pt-4 lg:pt-6">
+              <Link href="/shop" className="w-full sm:w-auto">
+                <Button className="h-16 lg:h-20 px-10 lg:px-12 rounded-[2rem] bg-primary text-white font-black uppercase tracking-[0.2em] text-[11px] lg:text-xs shadow-2xl hover:bg-primary/90 transition-all active:scale-95 shadow-primary/20 group w-full sm:w-auto">
+                  Explore Catalog <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform" />
                 </Button>
               </Link>
-              <Link href="/shop/category/new-arrivals">
-                <Button variant="outline" className="h-14 lg:h-16 px-8 lg:px-10 rounded-2xl lg:rounded-[1.5rem] border-2 border-slate-100 bg-white font-black uppercase tracking-widest text-[10px] lg:text-xs hover:border-primary hover:text-primary transition-all active:scale-95 w-full sm:w-auto">
+              <Link href="/shop/category/new-arrivals" className="w-full sm:w-auto">
+                <Button variant="outline" className="h-16 lg:h-20 px-10 lg:px-12 rounded-[2rem] border-2 border-slate-100 bg-white font-black uppercase tracking-[0.2em] text-[11px] lg:text-xs hover:border-primary hover:text-primary transition-all active:scale-95 w-full sm:w-auto">
                   New Arrivals
                 </Button>
               </Link>
