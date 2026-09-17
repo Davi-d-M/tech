@@ -63,12 +63,13 @@ export async function middleware(request: NextRequest) {
       if (!sessionData) {
         // 🛡️ APEX OS: Stealth Protocol Refined
         // If hitting the root /admin, redirect to portal for convenience.
-        // If hitting sub-paths, 404 to maintain deep system stealth.
+        // If hitting sub-paths, return a rewrite to /404 ONLY IF NOT David
         if (isAdminPath) {
-          if (pathname === '/admin' || ghostCookie === 'authorized') {
+          if (pathname === '/admin' || pathname === '/admin/' || ghostCookie === 'authorized') {
             return NextResponse.redirect(new URL('/apex-portal', request.url));
           }
-          return NextResponse.rewrite(new URL('/404', request.url));
+          // Deep stealth: Rewrite to a non-existent path to trigger a clean 404
+          return NextResponse.rewrite(new URL('/not-found-stealth', request.url));
         }
         // RIDER & SUPPLIER: Easy access redirect
         const loginPath = isRiderPath ? '/rider/login' : '/supplier/login';

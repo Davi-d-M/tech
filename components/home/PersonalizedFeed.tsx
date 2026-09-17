@@ -175,14 +175,14 @@ export default function PersonalizedFeed() {
                         <div className="bg-white/60 backdrop-blur-xl border border-primary/10 rounded-[3rem] p-10 space-y-6 text-left shadow-2xl">
                              <div className="flex items-center gap-3">
                                 <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]"></div>
-                                <span className="text-[10px] font-black uppercase text-slate-400">Decision Engine v4.0</span>
+                                <span className="text-[10px] font-black uppercase text-slate-400">Personalized Configuration</span>
                              </div>
                              <p className="text-sm font-bold text-foreground leading-relaxed">
-                                Our autonomous engine continuously maps your engagement to ensure every recommendation is a high-utility asset for your lifestyle.
+                                Our autonomous engine continuously optimizes your experience to ensure every recommendation is a high-utility asset for your lifestyle.
                              </p>
                              <div className="pt-6 border-t border-primary/5 flex gap-4">
-                                <div className="space-y-1"><p className="text-[8px] font-black uppercase text-slate-400">Match Accuracy</p><p className="text-xl font-black text-primary">98.4%</p></div>
-                                <div className="space-y-1"><p className="text-[8px] font-black uppercase text-slate-400">Latency</p><p className="text-xl font-black text-foreground">12ms</p></div>
+                                <div className="space-y-1"><p className="text-[8px] font-black uppercase text-slate-400">Optimization</p><p className="text-xl font-black text-primary">Active</p></div>
+                                <div className="space-y-1"><p className="text-[8px] font-black uppercase text-slate-400">Status</p><p className="text-xl font-black text-foreground">Elite</p></div>
                              </div>
                         </div>
                     </div>
