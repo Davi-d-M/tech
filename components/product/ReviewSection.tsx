@@ -39,8 +39,8 @@ export default function ReviewSection({ productId, isLive = true }: { productId:
     }
     try {
       // Get User Session
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
+      const { data: sessionData } = await supabase.auth.getSession();
+      setUser(sessionData?.session?.user || null);
 
       const { data, error } = await supabase
         .from('reviews')
@@ -51,8 +51,8 @@ export default function ReviewSection({ productId, isLive = true }: { productId:
 
       if (error) throw error;
       setReviews(data || []);
-    } catch (err) {
-      console.error('Error fetching reviews:', err);
+    } catch (err: unknown) {
+      console.warn('System notice: Unable to sync community feedback at this time.', (err as Error).message);
     } finally {
       setLoading(false);
     }
