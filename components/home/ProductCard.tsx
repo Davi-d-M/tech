@@ -144,14 +144,14 @@ export default function ProductCard({ product }: { product: Product }) {
 
         {/* Elite Locked Overlay */}
         {isLocked && (
-            <div className="absolute inset-0 z-30 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
-                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 shadow-sm animate-bounce">
-                    <Lock size={24} />
+            <div className="absolute inset-0 z-30 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-2 sm:p-6 text-center animate-in fade-in duration-500">
+                <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-2 sm:mb-4 shadow-sm animate-bounce">
+                    <Lock className="h-4 w-4 sm:h-6 sm:w-6" />
                 </div>
-                <p className="text-[10px] font-black uppercase text-foreground tracking-widest leading-none">Apex Club Exclusive</p>
-                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-2">Required: {minTier} Rank</p>
-                <Link href="/rewards" className="mt-4">
-                    <Button size="sm" className="h-8 rounded-lg bg-primary text-white font-black uppercase text-[8px] tracking-widest">Join the Club</Button>
+                <p className="text-[7px] sm:text-[10px] font-black uppercase text-foreground tracking-widest leading-none">Apex Club Exclusive</p>
+                <p className="text-[6px] sm:text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1 sm:mt-2">Required: {minTier} Rank</p>
+                <Link href="/rewards" className="mt-2 sm:mt-4">
+                    <Button size="sm" className="h-6 sm:h-8 px-2 sm:px-4 rounded-lg bg-primary text-white font-black uppercase text-[6px] sm:text-[8px] tracking-widest">Join the Club</Button>
                 </Link>
             </div>
         )}

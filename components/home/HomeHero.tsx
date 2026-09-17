@@ -39,13 +39,13 @@ export default function HomeHero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/shop">
-                <Button className="h-16 px-10 rounded-[1.5rem] bg-primary text-white font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all group">
+              <Link href="/shop" className="w-full sm:w-auto">
+                <Button className="w-full h-16 px-10 rounded-[1.5rem] bg-primary text-white font-black uppercase tracking-widest text-xs shadow-2xl shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all group">
                   Explore Catalog <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link href="/shop/category/new-arrivals">
-                <Button variant="outline" className="h-16 px-10 rounded-[1.5rem] border-2 border-slate-100 bg-white font-black uppercase tracking-widest text-xs hover:border-primary hover:text-primary transition-all">
+              <Link href="/shop/category/new-arrivals" className="w-full sm:w-auto">
+                <Button variant="outline" className="w-full h-16 px-10 rounded-[1.5rem] border-2 border-slate-100 bg-white font-black uppercase tracking-widest text-xs hover:border-primary hover:text-primary transition-all">
                   New Arrivals
                 </Button>
               </Link>

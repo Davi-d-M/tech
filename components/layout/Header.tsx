@@ -556,7 +556,7 @@ export default function Header({ initialSettings }: { initialSettings?: StoreSet
 
         {/* Mobile Search Overlay */}
         {isSearchOpen && (
-          <div className="lg:hidden mt-4 animate-in slide-in-from-top-4 duration-300 relative">
+          <div className="lg:hidden mt-4 animate-in slide-in-from-top-4 duration-300 relative z-[60]">
             <div className="flex gap-2">
                 <div className="relative flex-1">
                 <input
