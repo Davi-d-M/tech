@@ -140,7 +140,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <>
       <Card className="group overflow-hidden bg-white border-slate-100 hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 rounded-[2.5rem] text-left relative">
-      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-4 sm:p-10">
+      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-6 sm:p-10">
 
         {/* Elite Locked Overlay */}
         {isLocked && (
@@ -269,17 +269,17 @@ export default function ProductCard({ product }: { product: Product }) {
           </h2>
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-50 pb-4 sm:pb-8 min-w-0">
-          <div className="flex flex-col min-w-0">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-50 pb-5 sm:pb-8">
+          <div className="flex flex-col min-w-0 shrink-0">
               {isSale && <span className="text-[8px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-1.5 opacity-60 tracking-widest">{formatPrice(Number(product.old_price))}</span>}
-              <span className="text-sm sm:text-3xl font-black text-foreground leading-none tracking-tighter whitespace-nowrap">
+              <span className="text-lg sm:text-3xl font-black text-foreground leading-none tracking-tighter whitespace-nowrap">
                 {formatPrice(product.price)}
               </span>
           </div>
           {product.stock !== undefined && (
             <span
               className={cn(
-                "text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border mt-2 sm:mt-0",
+                "text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border",
                 product.stock > 0 ? 'bg-primary/5 text-primary border-primary/10' : 'bg-rose-50 text-rose-600 border-rose-100'
               )}
             >
