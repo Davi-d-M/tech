@@ -42,19 +42,26 @@ export default async function Home() {
 
   // Process Settings - Start with DEFAULTS to prevent null crashes
   const settingsData = settingsRes.data || [];
-  const settings = { ...DEFAULT_SETTINGS };
+  const settings: StoreSettings = { ...DEFAULT_SETTINGS };
 
   settingsData.forEach(item => {
       const key = item.key as keyof StoreSettings;
-      const val = item.value;
-      if (val && typeof val === 'object' && !Array.isArray(val)) {
-          (settings as any)[key] = {
-              ...(DEFAULT_SETTINGS as any)[key],
-              ...val
-          };
-      } else {
-          (settings as any)[key] = val;
-      }
+      if (key === 'contact') settings.contact = { ...settings.contact, ...item.value };
+      else if (key === 'branding') settings.branding = { ...settings.branding, ...item.value };
+      else if (key === 'homepage') settings.homepage = { ...settings.homepage, ...item.value };
+      else if (key === 'catalog') settings.catalog = { ...settings.catalog, ...item.value };
+      else if (key === 'shipping') settings.shipping = { ...settings.shipping, ...item.value };
+      else if (key === 'logistics') settings.logistics = { ...settings.logistics, ...item.value };
+      else if (key === 'theme_config') settings.theme_config = { ...settings.theme_config, ...item.value };
+      else if (key === 'seo_config') settings.seo_config = { ...settings.seo_config, ...item.value };
+      else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...item.value };
+      else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...item.value };
+      else if (key === 'features') settings.features = { ...settings.features, ...item.value };
+      else if (key === 'promotions') settings.promotions = { ...settings.promotions, ...item.value };
+      else if (key === 'layout') settings.layout = { ...settings.layout, ...item.value };
+      else if (key === 'navigation') settings.navigation = { ...settings.navigation, ...item.value };
+      else if (key === 'globals') settings.globals = { ...settings.globals, ...item.value };
+      else if (key === 'content') settings.content = { ...settings.content, ...item.value };
   });
 
   const sections = settings?.layout?.homepage_sections?.filter(s => s.visible).sort((a, b) => a.order - b.order) || [
