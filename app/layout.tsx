@@ -57,7 +57,7 @@ export const metadata: Metadata = {
 import PublicLayoutShield from "@/components/layout/PublicLayoutShield";
 import JsonLd from "@/components/seo/JsonLd";
 import SignalTracker from "@/components/analytics/SignalTracker";
-import { type StoreSettings } from "@/lib/useSettings";
+import { type StoreSettings, DEFAULT_SETTINGS } from "@/lib/useSettings";
 import { getCachedSettings } from "@/lib/cachedData";
 
 export default async function RootLayout({
@@ -67,10 +67,21 @@ export default async function RootLayout({
 }>) {
   // Fetch settings with shared cache
   const { data: settingsRes } = await getCachedSettings();
-  const settings = {} as StoreSettings;
+
+  // Process Settings - Start with DEFAULTS to prevent null crashes
+  const settings = { ...DEFAULT_SETTINGS };
+
   (settingsRes || []).forEach(item => {
       const key = item.key as keyof StoreSettings;
-      (settings as unknown as Record<string, unknown>)[key] = item.value;
+      const val = item.value;
+      if (val && typeof val === 'object' && !Array.isArray(val)) {
+          (settings as any)[key] = {
+              ...(DEFAULT_SETTINGS as any)[key],
+              ...val
+          };
+      } else {
+          (settings as any)[key] = val;
+      }
   });
 
   return (

@@ -7,7 +7,7 @@ import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getCachedHomeData } from "@/lib/cachedData";
-import { type StoreSettings } from "@/lib/useSettings";
+import { type StoreSettings, DEFAULT_SETTINGS } from "@/lib/useSettings";
 
 export const revalidate = 300; // Shared with cache
 
@@ -40,11 +40,21 @@ export default async function Home() {
   const posts = (postsRes.data || []) as Post[];
   const initialProducts = (productsRes.data || []) as Product[];
 
-  // Process Settings
+  // Process Settings - Start with DEFAULTS to prevent null crashes
   const settingsData = settingsRes.data || [];
-  const settings = {} as StoreSettings;
+  const settings = { ...DEFAULT_SETTINGS };
+
   settingsData.forEach(item => {
-      (settings as unknown as Record<string, unknown>)[item.key] = item.value;
+      const key = item.key as keyof StoreSettings;
+      const val = item.value;
+      if (val && typeof val === 'object' && !Array.isArray(val)) {
+          (settings as any)[key] = {
+              ...(DEFAULT_SETTINGS as any)[key],
+              ...val
+          };
+      } else {
+          (settings as any)[key] = val;
+      }
   });
 
   const sections = settings?.layout?.homepage_sections?.filter(s => s.visible).sort((a, b) => a.order - b.order) || [

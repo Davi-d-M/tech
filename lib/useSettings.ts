@@ -103,7 +103,7 @@ export interface StoreSettings {
     };
 }
 
-const DEFAULT_SETTINGS: StoreSettings = {
+export const DEFAULT_SETTINGS: StoreSettings = {
     contact: {
         whatsapp: "254700000000",
         email: "support@onlinebar.co.ke",

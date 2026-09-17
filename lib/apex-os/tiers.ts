@@ -20,9 +20,9 @@ export const TIER_THEMES = {
         text: 'text-amber-900'
     },
     'Platinum': {
-        primary: '#0F172A',
-        bg: 'bg-slate-50',
-        border: 'border-slate-200',
-        text: 'text-slate-900'
+        primary: '#5B5BFF', // Indigo - Elite Professional
+        bg: 'bg-indigo-50/30',
+        border: 'border-indigo-100',
+        text: 'text-indigo-900'
     }
 };
