@@ -140,7 +140,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <>
       <Card className="group overflow-hidden bg-white border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 rounded-[2rem] text-left relative">
-      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-3 sm:p-6">
+      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-2 sm:p-6">
 
         {/* Elite Locked Overlay */}
         {isLocked && (
@@ -262,24 +262,24 @@ export default function ProductCard({ product }: { product: Product }) {
         </Link>
       </div>
 
-      <CardContent className="p-5 sm:p-10 space-y-4 sm:space-y-6 text-left min-w-0">
+      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6 text-left min-w-0">
         <Link href={`/shop/${product.id}`} className="block min-w-0">
-          <h2 className="font-black text-foreground text-xs sm:text-lg uppercase tracking-tight line-clamp-1 group-hover:text-primary transition-colors break-words leading-none">
+          <h2 className="font-black text-foreground text-[11px] sm:text-lg uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words leading-tight min-h-[2.4em]">
             {product.name}
           </h2>
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-50 pb-5 sm:pb-8 min-w-0">
-          <div className="flex flex-col min-w-0">
-              {isSale && <span className="text-[8px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-2 truncate opacity-60 tracking-widest">{formatPrice(Number(product.old_price))}</span>}
-              <span className="text-lg sm:text-3xl font-black text-foreground leading-none tracking-tighter truncate">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-50 pb-5 sm:pb-8">
+          <div className="flex flex-col">
+              {isSale && <span className="text-[8px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-1.5 opacity-60 tracking-widest">{formatPrice(Number(product.old_price))}</span>}
+              <span className="text-sm sm:text-3xl font-black text-foreground leading-none tracking-tighter whitespace-nowrap">
                 {formatPrice(product.price)}
               </span>
           </div>
           {product.stock !== undefined && (
             <span
               className={cn(
-                "text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border",
+                "text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border mt-2 sm:mt-0",
                 product.stock > 0 ? 'bg-primary/5 text-primary border-primary/10' : 'bg-rose-50 text-rose-600 border-rose-100'
               )}
             >
@@ -291,11 +291,11 @@ export default function ProductCard({ product }: { product: Product }) {
         {product.stock !== undefined && product.stock === 0 ? (
             <RestockNotifyButton productId={product.id} productName={product.name} />
         ) : (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
                 <Button
                   data-track-click="ADD_TO_BAG_CARD"
                   className={cn(
-                    'w-full h-14 sm:h-20 transition-all duration-300 rounded-[1.5rem] sm:rounded-[2rem] font-black uppercase text-[10px] sm:text-xs tracking-[0.2em] shadow-xl active:scale-95',
+                    'w-full h-10 sm:h-14 transition-all duration-300 rounded-xl sm:rounded-2xl font-black uppercase text-[8px] sm:text-[10px] tracking-widest shadow-lg active:scale-95',
                     isLocked ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100 shadow-none' :
                     justAdded
                       ? 'bg-primary text-white hover:bg-primary/90'
@@ -305,22 +305,22 @@ export default function ProductCard({ product }: { product: Product }) {
                   disabled={isAdding || isLocked}
                 >
                   {isLocked ? (
-                      <div className="flex items-center gap-3">
-                        <Lock className="h-4 w-4 sm:h-5 sm:w-5" /> Locked
+                      <div className="flex items-center gap-2">
+                        <Lock className="h-3 w-3 sm:h-4 sm:w-4" /> Locked
                       </div>
                   ) : isAdding ? (
-                    <div className="flex items-center gap-3">
-                      <div className="w-4 h-4 sm:w-6 sm:h-6 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                       Sync...
                     </div>
                   ) : justAdded ? (
-                    <div className="flex items-center gap-3">
-                      <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <div className="flex items-center gap-2">
+                      <Check className="h-3 w-3 sm:h-4 sm:h-4" />
                       Added!
                     </div>
                   ) : (
-                    <div className="flex items-center gap-3">
-                      <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <div className="flex items-center gap-2">
+                      <ShoppingCart className="h-3 w-3 sm:h-4 sm:h-4" />
                       Add to Bag
                     </div>
                   )}
@@ -328,7 +328,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
                 <Button
                     variant="outline"
-                    className="w-full h-9 sm:h-12 rounded-xl sm:rounded-2xl border-primary/10 text-primary hover:bg-primary/5 font-black uppercase text-[7px] sm:text-[9px] tracking-widest"
+                    className="w-full h-9 sm:h-12 rounded-xl sm:rounded-2xl border-primary/10 text-primary hover:bg-primary/5 font-black uppercase text-[7px] sm:text-[9px] tracking-widest active:scale-95 transition-all"
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
