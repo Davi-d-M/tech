@@ -139,19 +139,19 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <>
-      <Card className="group overflow-hidden bg-white border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 rounded-[2rem] text-left relative">
-      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-2 sm:p-6">
+      <Card className="group overflow-hidden bg-white border-slate-100 hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 rounded-[2.5rem] text-left relative">
+      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-6 sm:p-10">
 
         {/* Elite Locked Overlay */}
         {isLocked && (
-            <div className="absolute inset-0 z-30 bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center p-2 sm:p-6 text-center animate-in fade-in duration-500">
-                <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-2 sm:mb-4 shadow-sm animate-bounce">
-                    <Lock className="h-4 w-4 sm:h-6 sm:w-6" />
+            <div className="absolute inset-0 z-30 bg-white/70 backdrop-blur-[3px] flex flex-col items-center justify-center p-4 sm:p-10 text-center animate-in fade-in duration-500">
+                <div className="h-10 w-10 sm:h-16 sm:w-16 rounded-2xl sm:rounded-[1.8rem] bg-primary/10 flex items-center justify-center text-primary mb-3 sm:mb-6 shadow-sm animate-bounce">
+                    <Lock className="h-5 w-5 sm:h-8 sm:w-8" />
                 </div>
-                <p className="text-[7px] sm:text-[10px] font-black uppercase text-foreground tracking-widest leading-none">Apex Club Exclusive</p>
-                <p className="text-[6px] sm:text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-1 sm:mt-2">Required: {minTier} Rank</p>
-                <Link href="/rewards" className="mt-2 sm:mt-4">
-                    <Button size="sm" className="h-6 sm:h-8 px-2 sm:px-4 rounded-lg bg-primary text-white font-black uppercase text-[6px] sm:text-[8px] tracking-widest">Join the Club</Button>
+                <p className="text-[8px] sm:text-xs font-black uppercase text-foreground tracking-[0.2em] leading-none">Apex Club Exclusive</p>
+                <p className="text-[6px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2 sm:mt-3">Required: {minTier} Rank</p>
+                <Link href="/rewards" className="mt-4 sm:mt-6">
+                    <Button size="sm" className="h-8 sm:h-10 px-4 sm:px-6 rounded-xl bg-primary text-white font-black uppercase text-[7px] sm:text-[9px] tracking-[0.2em] shadow-lg shadow-primary/20">Join the Club</Button>
                 </Link>
             </div>
         )}
@@ -218,7 +218,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                className="object-contain transition-all duration-1000 group-hover:scale-110 p-2"
+                className="object-contain transition-all duration-1000 group-hover:scale-110"
                 onError={() => setImageError(true)}
               />
             ) : (
@@ -262,16 +262,16 @@ export default function ProductCard({ product }: { product: Product }) {
         </Link>
       </div>
 
-      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6 text-left min-w-0">
-        <Link href={`/shop/${product.id}`} className="block min-w-0">
-          <h2 className="font-black text-foreground text-[11px] sm:text-lg uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words leading-tight min-h-[2.4em]">
+      <CardContent className="p-3 sm:p-10 space-y-3 sm:space-y-6 text-left">
+        <Link href={`/shop/${product.id}`} className="block">
+          <h2 className="font-black text-foreground text-[10px] sm:text-lg uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words leading-tight min-h-[2.5em]">
             {product.name}
           </h2>
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-50 pb-5 sm:pb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-50 pb-3 sm:pb-8">
           <div className="flex flex-col">
-              {isSale && <span className="text-[8px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-1.5 opacity-60 tracking-widest">{formatPrice(Number(product.old_price))}</span>}
+              {isSale && <span className="text-[7px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-1 opacity-60 tracking-widest whitespace-nowrap">{formatPrice(Number(product.old_price))}</span>}
               <span className="text-sm sm:text-3xl font-black text-foreground leading-none tracking-tighter whitespace-nowrap">
                 {formatPrice(product.price)}
               </span>
@@ -279,7 +279,7 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.stock !== undefined && (
             <span
               className={cn(
-                "text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border mt-2 sm:mt-0",
+                "text-[7px] sm:text-[10px] font-black uppercase tracking-[0.2em] px-2 py-1 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border mt-1 sm:mt-0",
                 product.stock > 0 ? 'bg-primary/5 text-primary border-primary/10' : 'bg-rose-50 text-rose-600 border-rose-100'
               )}
             >

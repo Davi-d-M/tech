@@ -78,19 +78,23 @@ export default function DynamicHero({ initialSettings }: { initialSettings?: Sto
 
           {/* Hero Visual */}
           <div className="relative animate-in zoom-in-95 duration-1000 delay-200">
-              <div className="aspect-square rounded-3xl lg:rounded-[4rem] bg-slate-50 border border-slate-100 flex items-center justify-center p-8 lg:p-12 overflow-hidden shadow-inner group relative">
+              <div className="aspect-square rounded-3xl lg:rounded-[4rem] bg-slate-50 border border-slate-100 shadow-inner group relative overflow-hidden">
                   {settings?.homepage?.hero_image_url ? (
-                      <Image
-                        src={settings.homepage.hero_image_url}
-                        alt="Hero"
-                        fill
-                        priority={true}
-                        fetchPriority="high"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        className="object-contain transform group-hover:scale-110 transition-transform duration-700"
-                      />
+                      <div className="absolute inset-0 p-8 lg:p-16 flex items-center justify-center">
+                          <div className="relative w-full h-full">
+                              <Image
+                                src={settings.homepage.hero_image_url}
+                                alt="Hero"
+                                fill
+                                priority={true}
+                                fetchPriority="high"
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                className="object-contain transform group-hover:scale-110 transition-transform duration-700"
+                              />
+                          </div>
+                      </div>
                   ) : (
-                      <div className="flex flex-col items-center gap-4 text-slate-200">
+                      <div className="flex flex-col items-center justify-center w-full h-full gap-4 text-slate-200">
                           <Smartphone className="h-24 w-24 lg:h-32 lg:w-32 opacity-10 animate-pulse text-primary" />
                           <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">
                               {settings?.homepage?.hero_visual_label || "Apex Premium Series"}
