@@ -71,11 +71,11 @@ export default async function Home() {
       else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...(value as StoreSettings['social_links']) };
       else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...(value as StoreSettings['store_info']) };
       else if (key === 'features') settings.features = { ...settings.features, ...(value as StoreSettings['features']) };
-      else if (key === 'promotions') settings.promotions = { ...settings.promotions, ...(value as StoreSettings['promotions']) };
-      else if (key === 'layout') settings.layout = { ...settings.layout, ...(value as StoreSettings['layout']) };
-      else if (key === 'navigation') settings.navigation = { ...settings.navigation, ...(value as StoreSettings['navigation']) };
-      else if (key === 'globals') settings.globals = { ...settings.globals, ...(value as StoreSettings['globals']) };
-      else if (key === 'content') settings.content = { ...settings.content, ...(value as StoreSettings['content']) };
+      else if (key === 'promotions') settings.promotions = { ...(settings.promotions || {}), ...(value as any) };
+      else if (key === 'layout') settings.layout = { ...(settings.layout || {}), ...(value as any) };
+      else if (key === 'navigation') settings.navigation = { ...(settings.navigation || {}), ...(value as any) };
+      else if (key === 'globals') settings.globals = { ...(settings.globals || {}), ...(value as any) };
+      else if (key === 'content') settings.content = { ...(settings.content || {}), ...(value as any) };
   });
 
   const sections = settings?.layout?.homepage_sections?.filter(s => s.visible).sort((a, b) => a.order - b.order) || [

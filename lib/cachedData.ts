@@ -38,15 +38,16 @@ export const getCachedSettings = unstable_cache(
 );
 
 export const getCachedHomeData = unstable_cache(
-  async (): Promise<[{ data: any[] }, { data: any[] }, { data: SettingsRow[] }]> => {
+  async (): Promise<[{ data: unknown[] }, { data: unknown[] }, { data: SettingsRow[] }]> => {
     if (!supabase) return [ { data: [] }, { data: [] }, { data: [] } ];
 
     try {
-        return await withTimeout(Promise.all([
+        const result = await withTimeout(Promise.all([
             supabase.from('blog_posts').select('*').eq('is_published', true).limit(2),
             supabase.from('products').select('*').order('created_at', { ascending: false }),
             supabase.from('settings').select('*')
-        ])) as any;
+        ]));
+        return result as [{ data: unknown[] }, { data: unknown[] }, { data: SettingsRow[] }];
     } catch (e) {
         console.error("Cached Home Data Timeout/Error:", e);
         return [ { data: [] }, { data: [] }, { data: [] } ];
