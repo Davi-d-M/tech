@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useCart, CompareItem } from '@/context/CartContext';
+import { useCart } from '@/context/CartContext';
+import { Product } from '@/lib/useSettings';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown, X, Zap } from 'lucide-react';
 import CompareModal from './CompareModal';
@@ -26,7 +27,7 @@ export default function CompareBar() {
                 </div>
 
                 <div className="flex gap-2">
-                    {compareList.map((item: CompareItem) => (
+                    {compareList.map((item: Product) => (
                         <div key={item.id} className="relative group">
                             <div className="h-10 w-10 rounded-full bg-slate-100 p-1.5 border border-slate-200 flex items-center justify-center overflow-hidden relative">
                                 <Image src={item.image_url || item.image || '/placeholder.jpg'} alt="" fill className="object-contain p-1" />

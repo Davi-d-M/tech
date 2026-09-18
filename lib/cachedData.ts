@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { supabase } from './supabaseClient';
-import { SettingsRow } from './useSettings';
+import { SettingsRow, Post, Product } from './useSettings';
 
 /**
  * Apex Resilience: Utility to execute a promise with a timeout and clean up timers.
@@ -23,14 +23,14 @@ async function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number = 10000
 
 export const getCachedSettings = unstable_cache(
   async (): Promise<{ data: SettingsRow[] }> => {
-    if (!supabase) return { data: [] };
+    if (!supabase) return { data: [] as SettingsRow[] };
 
     try {
         const result = await withTimeout(supabase.from('settings').select('*'));
         return { data: (result.data as SettingsRow[]) || [] };
     } catch (e) {
         console.error("Cached Settings Timeout/Error:", e);
-        return { data: [] };
+        return { data: [] as SettingsRow[] };
     }
   },
   ['store-settings-v5'],
@@ -38,8 +38,8 @@ export const getCachedSettings = unstable_cache(
 );
 
 export const getCachedHomeData = unstable_cache(
-  async (): Promise<[{ data: unknown[] }, { data: unknown[] }, { data: SettingsRow[] }]> => {
-    if (!supabase) return [ { data: [] }, { data: [] }, { data: [] } ];
+  async (): Promise<[{ data: Post[] }, { data: Product[] }, { data: SettingsRow[] }]> => {
+    if (!supabase) return [ { data: [] as Post[] }, { data: [] as Product[] }, { data: [] as SettingsRow[] } ];
 
     try {
         const result = await withTimeout(Promise.all([
@@ -47,10 +47,10 @@ export const getCachedHomeData = unstable_cache(
             supabase.from('products').select('*').order('created_at', { ascending: false }),
             supabase.from('settings').select('*')
         ]));
-        return result as [{ data: unknown[] }, { data: unknown[] }, { data: SettingsRow[] }];
+        return result as [{ data: Post[] }, { data: Product[] }, { data: SettingsRow[] }];
     } catch (e) {
         console.error("Cached Home Data Timeout/Error:", e);
-        return [ { data: [] }, { data: [] }, { data: [] } ];
+        return [ { data: [] as Post[] }, { data: [] as Product[] }, { data: [] as SettingsRow[] } ];
     }
   },
   ['home-data-v5'],

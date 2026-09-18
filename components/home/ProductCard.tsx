@@ -10,29 +10,15 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import RestockNotifyButton from "@/components/product/RestockNotifyButton";
 import { useWishlist } from "@/context/WishlistContext";
-import { useSettings } from "@/lib/useSettings";
+import { useSettings, Product } from "@/lib/useSettings";
 import { supabase } from "@/lib/supabaseClient";
 import { signalService } from "@/lib/signalService";
 
-interface Product {
-  id: number;
-  image?: string;
-  image_url?: string;
-  name: string;
-  price: number;
-  old_price?: number;
-  category?: string;
-  stock?: number;
-  sizes?: string[];
-  description?: string;
-  is_new?: boolean;
-  order_count?: number;
-  min_loyalty_tier?: string; // e.g. 'Explorer', 'Silver', 'Gold', 'Diamond'
-  wholesale_price?: number;
-  wholesale_min_qty?: number;
-}
-
 declare global {
+  interface Window {
+    fbq?: (action: string, eventName: string, params?: Record<string, unknown>) => void;
+  }
+}
   interface Window {
     fbq?: (action: string, eventName: string, params?: Record<string, unknown>) => void;
   }

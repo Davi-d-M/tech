@@ -5,15 +5,15 @@ import { X, Zap, Trophy, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils';
 import Image from 'next/image';
-import { CompareItem } from '@/context/CartContext';
+import { Product } from '@/lib/useSettings';
 
 export default function CompareModal({
     p1,
     p2,
     onClose
 }: {
-    p1: CompareItem,
-    p2: CompareItem,
+    p1: Product,
+    p2: Product,
     onClose: () => void
 }) {
     const [img1Error, setImg1Error] = useState(false);

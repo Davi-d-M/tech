@@ -108,6 +108,33 @@ export interface SettingsRow {
     value: Record<string, unknown>;
 }
 
+export interface Post {
+    slug: string;
+    image_url: string;
+    title: string;
+    excerpt: string;
+}
+
+export interface Product {
+    id: number;
+    name: string;
+    price: number;
+    old_price?: number;
+    description?: string;
+    image_url?: string;
+    image?: string;
+    rating?: number;
+    category?: string;
+    stock?: number;
+    sizes?: string[];
+    is_new?: boolean;
+    order_count?: number;
+    min_loyalty_tier?: string; // e.g. 'Explorer', 'Silver', 'Gold', 'Diamond'
+    wholesale_price?: number;
+    wholesale_min_qty?: number;
+    tech_specs?: Record<string, string>;
+}
+
 export const DEFAULT_SETTINGS: StoreSettings = {
     contact: {
         whatsapp: "254700000000",

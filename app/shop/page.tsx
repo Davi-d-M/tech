@@ -3,16 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from '@/components/home/ProductCard';
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description?: string;
-  image_url?: string;
-  stock?: number;
-  sizes?: string[];
-}
+import { Product } from '@/lib/useSettings';
 
 export default function AllProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);

@@ -7,31 +7,9 @@ import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getCachedHomeData } from "@/lib/cachedData";
-import { type StoreSettings, DEFAULT_SETTINGS, SettingsRow } from "@/lib/useSettings";
+import { type StoreSettings, DEFAULT_SETTINGS, SettingsRow, Post, Product } from "@/lib/useSettings";
 
 export const revalidate = 300; // Shared with cache
-
-interface Post {
-  slug: string;
-  image_url: string;
-  title: string;
-  excerpt: string;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  old_price?: number;
-  description?: string;
-  image_url?: string;
-  image?: string;
-  rating?: number;
-  category?: string;
-  stock?: number;
-  sizes?: string[];
-  is_new?: boolean;
-}
 
 export default async function Home() {
   // 1. Fetch All Data in Parallel on Server (Shared Cache) with Defensive Try-Catch
