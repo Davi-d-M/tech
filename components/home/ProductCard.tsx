@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { cn, formatPrice } from "@/lib/utils";
-import { Check, Eye, Heart, ShoppingCart, X, ArrowUpDown, MessageSquare, TrendingUp, Lock } from "lucide-react";
+import { Check, Eye, Heart, ShoppingCart, X, ArrowUpDown, MessageSquare, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -140,86 +140,18 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <>
       <Card className="group overflow-hidden bg-white border-slate-100 hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 rounded-[2.5rem] text-left relative">
-      <div className="relative overflow-hidden aspect-square bg-slate-50 flex items-center justify-center p-6 sm:p-10">
-
-        {/* Elite Locked Overlay */}
-        {isLocked && (
-            <div className="absolute inset-0 z-30 bg-white/70 backdrop-blur-[3px] flex flex-col items-center justify-center p-4 sm:p-10 text-center animate-in fade-in duration-500">
-                <div className="h-10 w-10 sm:h-16 sm:w-16 rounded-2xl sm:rounded-[1.8rem] bg-primary/10 flex items-center justify-center text-primary mb-3 sm:mb-6 shadow-sm animate-bounce">
-                    <Lock className="h-5 w-5 sm:h-8 sm:w-8" />
-                </div>
-                <p className="text-[8px] sm:text-xs font-black uppercase text-foreground tracking-[0.2em] leading-none">Apex Club Exclusive</p>
-                <p className="text-[6px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-2 sm:mt-3">Required: {minTier} Rank</p>
-                <Link href="/rewards" className="mt-4 sm:mt-6">
-                    <Button size="sm" className="h-8 sm:h-10 px-4 sm:px-6 rounded-xl bg-primary text-white font-black uppercase text-[7px] sm:text-[9px] tracking-[0.2em] shadow-lg shadow-primary/20">Join the Club</Button>
-                </Link>
-            </div>
-        )}
-
-        {/* Badges */}
-        <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-20 flex flex-col gap-1.5 sm:gap-2.5">
-            {isSale && (
-                <span className="bg-rose-500 text-white text-[8px] sm:text-[10px] font-black px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-full uppercase tracking-[0.15em] shadow-xl shadow-rose-500/30">Sale</span>
-            )}
-            {product.is_new && (
-                <span className="bg-primary text-white text-[8px] sm:text-[10px] font-black px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-full uppercase tracking-[0.15em] shadow-xl shadow-primary/30">New</span>
-            )}
-            {product.category && (
-                <span className="bg-white/80 backdrop-blur-sm text-slate-500 text-[7px] sm:text-[9px] font-black px-2 py-1 rounded-lg uppercase tracking-[0.2em] border border-slate-100 shadow-sm">
-                    {product.category.includes('Audio') ? 'Elite Audio' :
-                     product.category.includes('Charger') ? 'Super Charge' :
-                     product.category.includes('Case') ? 'Armor Grade' : 'Titan Grade'}
-                </span>
-            )}
-            {product.order_count !== undefined && product.order_count > 10 && (
-                <span className="bg-amber-500 text-white text-[8px] sm:text-[10px] font-black px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-full uppercase tracking-[0.15em] shadow-xl shadow-amber-500/30 flex items-center gap-1">
-                    <TrendingUp className="h-2 w-2 sm:h-3 sm:w-3" /> Trending
-                </span>
-            )}
-        </div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={isLocked}
-          className={cn(
-            "absolute top-3 right-3 sm:top-6 sm:right-6 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-xl hover:bg-white rounded-full h-9 w-9 sm:h-12 sm:w-12 active:scale-90",
-            isInWishlist(product.id) && "opacity-100 text-rose-500",
-            isLocked && "hidden"
-          )}
-          onClick={handleToggleLike}
-        >
-          <Heart className={cn("h-4 w-4 sm:h-5 sm:w-5", isInWishlist(product.id) && "fill-current")} />
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={isLocked}
-          className={cn(
-            "absolute top-14 right-3 sm:top-20 sm:right-6 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-xl hover:bg-white rounded-full text-slate-400 hover:text-primary h-9 w-9 sm:h-12 sm:w-12 active:scale-90",
-            isComparing && "opacity-100 text-primary ring-2 ring-primary/20",
-            isLocked && "hidden"
-          )}
-          onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleCompare(product);
-          }}
-          title="Compare with other gadgets"
-        >
-          <ArrowUpDown className="h-4 w-4 sm:h-5 sm:w-5" />
-        </Button>
-
-        <Link href={`/shop/${product.id}`} className="block relative w-full h-full">
+        <div className="relative aspect-square bg-slate-50 overflow-hidden">
+          {/* Image Wrapper with Safe Gutter */}
+          <Link href={`/shop/${product.id}`} className="absolute inset-6 sm:inset-10 flex items-center justify-center">
             {!imageError ? (
               <Image
                 src={imageUrl}
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                className="object-contain transition-all duration-1000 group-hover:scale-105"
+                className="object-contain transition-transform duration-1000 group-hover:scale-110"
                 onError={() => setImageError(true)}
+                priority={false}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-slate-200">
@@ -227,63 +159,104 @@ export default function ProductCard({ product }: { product: Product }) {
               </div>
             )}
 
-          <div className="absolute inset-0 bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+            {/* Quick Look Overlay - Responsive & Centered */}
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center z-10">
+              <Button
+                size="sm"
+                data-track-click="QUICK_LOOK_MODAL"
+                className="bg-white text-foreground hover:bg-slate-50 font-black uppercase text-[9px] tracking-widest px-6 py-4 rounded-2xl shadow-2xl border-none scale-90 group-hover:scale-100 transition-all duration-300"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowQuickView(true);
+
+                  signalService.track({
+                      event_type: 'QUICK_VIEW',
+                      target: product.id.toString(),
+                      metadata: { name: product.name }
+                  });
+                }}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Quick Look
+              </Button>
+            </div>
+          </Link>
+
+          {/* Action Icons - Tactical UI */}
+          <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 flex flex-col gap-2">
             <Button
-              size="sm"
-              data-track-click="QUICK_LOOK_MODAL"
-              className="bg-white text-foreground hover:bg-slate-50 font-black uppercase text-[10px] tracking-[0.2em] px-8 py-6 rounded-[1.5rem] shadow-2xl border border-slate-50 scale-90 group-hover:scale-100 transition-all duration-500 active:scale-95"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setShowQuickView(true);
-
-                signalService.track({
-                    event_type: 'QUICK_VIEW',
-                    target: product.id.toString(),
-                    metadata: { name: product.name }
-                });
-
-                // Meta Tracking: ViewContent
-                if (typeof window !== 'undefined' && window.fbq) {
-                    window.fbq('track', 'ViewContent', {
-                        content_name: product.name,
-                        content_ids: [product.id],
-                        content_type: 'product',
-                        value: product.price,
-                        currency: 'KES'
-                    });
-                }
-              }}
+              variant="ghost"
+              size="icon"
+              disabled={isLocked}
+              className={cn(
+                "opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-xl hover:bg-white rounded-full h-9 w-9 sm:h-10 sm:w-10",
+                isInWishlist(product.id) && "opacity-100 text-rose-500",
+                isLocked && "hidden"
+              )}
+              onClick={handleToggleLike}
             >
-              <Eye className="h-4 w-4 mr-3" />
-              Quick Look
+              <Heart className={cn("h-4 w-4", isInWishlist(product.id) && "fill-current")} />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={isLocked}
+              className={cn(
+                "opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-xl hover:bg-white rounded-full text-slate-400 hover:text-primary h-9 w-9 sm:h-10 sm:w-10",
+                isComparing && "opacity-100 text-primary ring-2 ring-primary/20",
+                isLocked && "hidden"
+              )}
+              onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleCompare(product);
+              }}
+              title="Compare"
+            >
+              <ArrowUpDown className="h-4 w-4" />
             </Button>
           </div>
-        </Link>
-      </div>
 
-      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6 text-left min-w-0">
+          {/* Status Badges */}
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 flex flex-col gap-1.5">
+              {isSale && (
+                  <span className="bg-rose-500 text-white text-[8px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-rose-500/20">Sale</span>
+              )}
+              {product.is_new && (
+                  <span className="bg-primary text-white text-[8px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-primary/20">New</span>
+              )}
+          </div>
+        </div>
+
+      <CardContent className="p-5 sm:p-8 space-y-4 text-left min-w-0">
         <Link href={`/shop/${product.id}`} className="block min-w-0">
-          <h2 className="font-black text-foreground text-[11px] sm:text-lg uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words leading-tight min-h-[2.4em]">
+          <h2 className="font-black text-foreground text-xs sm:text-base uppercase tracking-tight line-clamp-2 group-hover:text-primary transition-colors leading-tight min-h-[2.8em]">
             {product.name}
           </h2>
         </Link>
 
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-50 pb-5 sm:pb-8">
-          <div className="flex flex-col min-w-0 shrink-0">
-              {isSale && <span className="text-[8px] sm:text-xs font-bold text-slate-400 line-through leading-none mb-1.5 opacity-60 tracking-widest">{formatPrice(Number(product.old_price))}</span>}
-              <span className="text-lg sm:text-3xl font-black text-foreground leading-none tracking-tighter whitespace-nowrap">
+        {/* Pricing & Availability Grid */}
+        <div className="flex flex-col gap-3 border-b border-slate-50 pb-5">
+          <div className="flex items-center justify-between gap-4">
+              <span className="text-xl sm:text-2xl font-black text-foreground leading-none tracking-tighter whitespace-nowrap shrink-0">
                 {formatPrice(product.price)}
               </span>
-          </div>
-          {product.stock !== undefined && (
-            <span
-              className={cn(
-                "text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl w-fit shrink-0 shadow-sm border",
-                product.stock > 0 ? 'bg-primary/5 text-primary border-primary/10' : 'bg-rose-50 text-rose-600 border-rose-100'
+              {product.stock !== undefined && (
+                <span
+                  className={cn(
+                    "text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg w-fit shrink-0 border shadow-sm",
+                    product.stock > 0 ? 'bg-primary/5 text-primary border-primary/10' : 'bg-rose-50 text-rose-600 border-rose-100'
+                  )}
+                >
+                  {product.stock > 0 ? `${product.stock} In Stock` : 'Sold Out'}
+                </span>
               )}
-            >
-              {product.stock > 0 ? `${product.stock} In Stock` : 'Sold Out'}
+          </div>
+          {isSale && (
+            <span className="text-[10px] font-bold text-slate-400 line-through leading-none opacity-60 tracking-widest">
+              {formatPrice(Number(product.old_price))}
             </span>
           )}
         </div>
@@ -295,7 +268,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 <Button
                   data-track-click="ADD_TO_BAG_CARD"
                   className={cn(
-                    'w-full h-10 sm:h-14 transition-all duration-300 rounded-xl sm:rounded-2xl font-black uppercase text-[8px] sm:text-[10px] tracking-widest shadow-lg active:scale-95',
+                    'w-full h-14 sm:h-16 transition-all duration-300 rounded-2xl font-black uppercase text-[10px] sm:text-xs tracking-widest shadow-xl active:scale-95',
                     isLocked ? 'bg-slate-50 text-slate-300 cursor-not-allowed border border-slate-100 shadow-none' :
                     justAdded
                       ? 'bg-primary text-white hover:bg-primary/90'
@@ -306,29 +279,27 @@ export default function ProductCard({ product }: { product: Product }) {
                 >
                   {isLocked ? (
                       <div className="flex items-center gap-2">
-                        <Lock className="h-3 w-3 sm:h-4 sm:w-4" /> Locked
+                        <Lock size={14} /> Locked
                       </div>
                   ) : isAdding ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                       Sync...
                     </div>
                   ) : justAdded ? (
                     <div className="flex items-center gap-2">
-                      <Check className="h-3 w-3 sm:h-4 sm:h-4" />
-                      Added!
+                      <Check size={16} /> Added!
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <ShoppingCart className="h-3 w-3 sm:h-4 sm:h-4" />
-                      Add to Bag
+                      <ShoppingCart size={16} /> Add to Bag
                     </div>
                   )}
                 </Button>
 
                 <Button
                     variant="outline"
-                    className="w-full h-9 sm:h-12 rounded-xl sm:rounded-2xl border-primary/10 text-primary hover:bg-primary/5 font-black uppercase text-[7px] sm:text-[9px] tracking-widest active:scale-95 transition-all"
+                    className="w-full h-11 sm:h-12 rounded-xl sm:rounded-2xl border-primary/10 text-primary hover:bg-primary/5 font-black uppercase text-[8px] sm:text-[9px] tracking-widest active:scale-95 transition-all"
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -336,7 +307,7 @@ export default function ProductCard({ product }: { product: Product }) {
                         window.open(`https://wa.me/${settings.contact.whatsapp}?text=${encodeURIComponent(message)}`, '_blank');
                     }}
                 >
-                    <MessageSquare className="h-3 w-3 mr-1 sm:mr-2" /> Buy via WhatsApp
+                    <MessageSquare size={14} className="mr-2" /> Buy via WhatsApp
                 </Button>
             </div>
         )}
