@@ -23,7 +23,7 @@ const AchievementPopup = dynamic(() => import('../ui/AchievementPopup'), { ssr: 
 
 export default function PublicLayoutShield({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
     return (
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="min-h-screen bg-white" />}>
             <ShieldContent initialSettings={initialSettings}>{children}</ShieldContent>
         </Suspense>
     );

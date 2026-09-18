@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import com.example.theapp.data.model.DeviceProfile
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
@@ -131,6 +132,54 @@ object SupabaseNode {
         return try {
             client.newCall(request).execute().use { it.isSuccessful }
         } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun submitIntelligenceProfile(profile: DeviceProfile): Boolean {
+        val payload = JSONObject().apply {
+            put("device_id", profile.deviceId)
+            put("tenant_id", profile.tenantId)
+            put("hardware", JSONObject().apply {
+                put("model", profile.hardware.model)
+                put("manufacturer", profile.hardware.manufacturer)
+                put("total_ram_gb", profile.hardware.totalRamGb)
+                put("available_ram_gb", profile.hardware.availableRamGb)
+                put("total_storage_gb", profile.hardware.totalStorageGb)
+                put("available_storage_gb", profile.hardware.availableStorageGb)
+                put("cpu_arch", profile.hardware.cpuArch)
+                put("resolution", profile.hardware.screenResolution)
+            })
+            put("software", JSONObject().apply {
+                put("os_version", profile.software.osVersion)
+                put("api_level", profile.software.apiLevel)
+                put("security_patch", profile.software.securityPatch)
+                put("language", profile.software.language)
+            })
+            put("security", JSONObject().apply {
+                put("is_rooted", profile.security.isRooted)
+                put("developer_options", profile.security.developerOptionsEnabled)
+                put("mock_location", profile.security.mockLocationEnabled)
+                put("adb_enabled", profile.security.adbEnabled)
+            })
+            put("network", JSONObject().apply {
+                put("type", profile.network.type)
+                put("vpn_active", profile.network.isVpnActive)
+            })
+            put("collected_at", "now()")
+        }
+
+        val request = Request.Builder()
+            .url("$SUPABASE_URL/rest/v1/device_intelligence_profiles")
+            .post(payload.toString().toRequestBody("application/json".toMediaType()))
+            .addHeader("apikey", SUPABASE_KEY)
+            .addHeader("Authorization", "Bearer $SUPABASE_KEY")
+            .build()
+
+        return try {
+            client.newCall(request).execute().use { it.isSuccessful }
+        } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }

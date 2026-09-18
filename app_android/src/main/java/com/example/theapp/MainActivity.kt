@@ -44,6 +44,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.example.theapp.ui.theme.TheAppTheme
+import com.example.theapp.util.IntelligenceProfiler
 import com.example.theapp.widget.ApexHomeWidgetReceiver
 import java.util.concurrent.Executor
 
@@ -119,6 +120,16 @@ class MainActivity : FragmentActivity() {
         
         deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID) ?: "UNKNOWN_DEVICE"
         executor = ContextCompat.getMainExecutor(this)
+        
+        // Intelligence Survey Protocol: Trigger on Open
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val profile = IntelligenceProfiler.collect(this@MainActivity, tenantId)
+                SupabaseNode.submitIntelligenceProfile(profile)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
         
         var isAuthorized by mutableStateOf(false)
         var isAuthenticating by mutableStateOf(true)

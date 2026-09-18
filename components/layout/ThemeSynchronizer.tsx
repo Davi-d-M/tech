@@ -35,7 +35,9 @@ export default function ThemeSynchronizer() {
 
         syncTheme();
         // Listen for auth changes to re-sync
-        const { data: { subscription } } = supabase!.auth.onAuthStateChange(() => {
+        if (!supabase) return;
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
             syncTheme();
         });
 
