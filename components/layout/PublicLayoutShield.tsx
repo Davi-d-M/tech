@@ -30,33 +30,12 @@ function ShieldLoading() {
     );
 }
 
-export default function PublicLayoutShield({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
-    return (
-        <Suspense fallback={<ShieldLoading />}>
-            <ShieldContent initialSettings={initialSettings}>{children}</ShieldContent>
-        </Suspense>
-    );
-}
-
-function ShieldContent({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
-    const pathname = usePathname();
+/**
+ * Isolates useSearchParams to prevent blocking the entire root layout
+ */
+function ReferralTracker() {
     const searchParams = useSearchParams();
-    const { settings: hookSettings } = useSettings();
-    const settings = initialSettings || hookSettings;
-    const isAdmin = pathname?.startsWith('/admin');
-    const isRider = pathname?.startsWith('/rider');
 
-    // 0. Dynamic Favicon
-    useEffect(() => {
-        if (!settings?.branding?.favicon_url || isAdmin || isRider) return;
-        const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement || document.createElement('link');
-        link.type = 'image/x-icon';
-        link.rel = 'shortcut icon';
-        link.href = settings.branding.favicon_url;
-        document.getElementsByTagName('head')[0].appendChild(link);
-    }, [settings, isAdmin, isRider]);
-
-    // 1. Referral & Affiliate Tracking
     useEffect(() => {
         try {
             const ref = searchParams.get('ref');
@@ -82,6 +61,34 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
             console.warn("Referral Tracking Failure:", error);
         }
     }, [searchParams]);
+
+    return null;
+}
+
+export default function PublicLayoutShield({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
+    return (
+        <Suspense fallback={<ShieldLoading />}>
+            <ShieldContent initialSettings={initialSettings}>{children}</ShieldContent>
+        </Suspense>
+    );
+}
+
+function ShieldContent({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
+    const pathname = usePathname();
+    const { settings: hookSettings } = useSettings();
+    const settings = initialSettings || hookSettings;
+    const isAdmin = pathname?.startsWith('/admin');
+    const isRider = pathname?.startsWith('/rider');
+
+    // 0. Dynamic Favicon
+    useEffect(() => {
+        if (!settings?.branding?.favicon_url || isAdmin || isRider) return;
+        const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement || document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        link.href = settings.branding.favicon_url;
+        document.getElementsByTagName('head')[0].appendChild(link);
+    }, [settings, isAdmin, isRider]);
 
     // 2. Live Visitor Heartbeat & Demand Prediction
     useEffect(() => {
@@ -173,6 +180,9 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
     return (
         <>
+            <Suspense fallback={null}>
+                <ReferralTracker />
+            </Suspense>
             <ThemeSynchronizer />
             <TierThemeNode />
             <AchievementPopup />

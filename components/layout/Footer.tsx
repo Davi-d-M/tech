@@ -199,17 +199,17 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
 
               {/* Social Links Restoration */}
               <div className="flex gap-4">
-                  {settings.social_links.instagram && (
+                  {settings?.social_links?.instagram && (
                       <a href={settings.social_links.instagram} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all hover:shadow-lg">
                           <Instagram size={18} />
                       </a>
                   )}
-                  {settings.social_links.facebook && (
+                  {settings?.social_links?.facebook && (
                       <a href={settings.social_links.facebook} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all hover:shadow-lg">
                           <Facebook size={18} />
                       </a>
                   )}
-                  {settings.social_links.tiktok && (
+                  {settings?.social_links?.tiktok && (
                       <a href={settings.social_links.tiktok} target="_blank" rel="noopener noreferrer" className="h-10 w-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-primary transition-all hover:shadow-lg">
                           <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-.99 0-1.49.18-3.4 2.36-6.52 5.56-7.75.49-.14.99-.36 1.5-.42V7.7c-.45.05-.91.24-1.34.42-1.3.52-2.33 1.51-2.91 2.74-.53 1.12-.66 2.34-.41 3.55.19 1.1.75 2.11 1.59 2.89.87.81 2.02 1.3 3.21 1.33.68.04 1.37-.1 1.99-.4.94-.47 1.72-1.28 2.06-2.25.13-.42.23-.84.23-1.28.02-4.17-.02-8.33.02-12.5z"/></svg>
                       </a>
