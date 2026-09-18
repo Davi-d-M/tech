@@ -78,7 +78,10 @@ class SignalService {
                 this.setupAutoFlush();
                 this.setupHeartbeat();
                 this.captureUTMs();
-                this.initializeSession().catch(() => {});
+                // Initialize session in background to not block main thread
+                setTimeout(() => {
+                    this.initializeSession().catch(e => console.warn("SignalService async init failure:", e));
+                }, 100);
             } catch (error) {
                 console.error("SignalService Initialization Failure:", error);
             }
@@ -139,10 +142,10 @@ class SignalService {
         if (!supabase) return;
 
         try {
-            let utms: Record<string, unknown> = {};
+            let utms: Record<string, any> = {};
             try {
                 const stored = sessionStorage.getItem('apex_utms');
-                if (stored) utms = JSON.parse(stored) as Record<string, unknown>;
+                if (stored) utms = JSON.parse(stored) as Record<string, any>;
             } catch {
                 // Ignore parse errors
             }
@@ -172,8 +175,8 @@ class SignalService {
                 utm_content: utms.utm_content || null,
                 affiliate_id: utms.ref || null,
                 entry_url: window.location.pathname,
-                device_type: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
-                browser: navigator.userAgent.substring(0, 50)
+                device_type: typeof navigator !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+                browser: typeof navigator !== 'undefined' ? navigator.userAgent.substring(0, 50) : 'unknown'
             }, { onConflict: 'session_id' });
         } catch (error) {
             console.error("SignalService initializeSession Failure:", error);
