@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
+  LayoutGrid,
   Package,
   ShoppingCart,
   Users,
@@ -38,7 +39,8 @@ import {
   Layout as LayoutIcon,
   Lock,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  Dna
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -156,8 +158,12 @@ export default function AdminLayoutClient({
       { name: 'Payout Requests', href: '/admin/payouts', icon: CreditCard, permission: 'can_view_revenue' },
       { name: 'Secure Vault', href: '/admin/vault', icon: Lock, permission: 'can_view_revenue' },
     ]},
-    { group: 'ANALYTICS', items: [
+    { group: 'INTELLIGENCE', items: [
+      { name: 'User Intelligence', href: '/admin/intelligence', icon: Dna, permission: 'can_view_revenue' },
+      { name: 'Tactical Dashboards', href: '/admin/dashboards', icon: LayoutGrid, permission: 'can_view_revenue' },
       { name: 'Market Insights', href: '/admin/analytics/intelligence', icon: Zap, permission: 'can_view_revenue' },
+    ]},
+    { group: 'ANALYTICS', items: [
       { name: 'Data Analytics', href: '/admin/analytics', icon: Activity, permission: 'can_view_revenue' },
       { name: 'AI Activity Log', href: '/admin/messages?filter=ai', icon: Bot, permission: 'can_manage_customer_care' },
     ]},

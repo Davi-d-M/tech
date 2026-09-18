@@ -39,6 +39,33 @@ export default function SignalTracker() {
 
         window.addEventListener('click', handleGlobalClick);
 
+        // 🛡️ Technical Resilience: Global Error Capture
+        const handleGlobalError = (event: ErrorEvent) => {
+            signalService.track({
+                event_type: 'TECHNICAL_ERROR',
+                target: event.message,
+                metadata: {
+                    filename: event.filename,
+                    lineno: event.lineno,
+                    colno: event.colno,
+                    stack: event.error?.stack?.substring(0, 500)
+                }
+            });
+        };
+
+        const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+            signalService.track({
+                event_type: 'TECHNICAL_ERROR',
+                target: 'Unhandled Promise Rejection',
+                metadata: {
+                    reason: String(event.reason)
+                }
+            });
+        };
+
+        window.addEventListener('error', handleGlobalError);
+        window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
         // Setup observer for sections
         const sections = document.querySelectorAll('[data-signal-section]');
 
@@ -72,6 +99,8 @@ export default function SignalTracker() {
         return () => {
             observer.disconnect();
             window.removeEventListener('click', handleGlobalClick);
+            window.removeEventListener('error', handleGlobalError);
+            window.removeEventListener('unhandledrejection', handleUnhandledRejection);
             // Flush any remaining dwell times
             currentDwellTimes.forEach((startTime, sectionId) => {
                 const duration = Date.now() - startTime;

@@ -35,7 +35,14 @@ export type SignalType =
     | 'REVIEW_CREATE'
     | 'SUPPORT_START'
     | 'IDENTITY_BRIDGE'
-    | 'HEARTBEAT';
+    | 'HEARTBEAT'
+    | 'MODAL_OPEN'
+    | 'MODAL_CLOSE'
+    | 'VARIANT_CHANGE'
+    | 'SPEC_VIEW'
+    | 'SHARE_INITIATED'
+    | 'TECHNICAL_ERROR'
+    | 'LATENCY_EXCEEDED';
 
 interface UserSignal {
     event_type: SignalType;
