@@ -37,12 +37,16 @@ export default function PersonalizedFeed() {
 
                 // 1. GET RECENTLY VIEWED (Continue Shopping)
                 if (typeof window !== 'undefined') {
-                    const localHistoryStr = localStorage.getItem('apex_recent_views');
-                    if (localHistoryStr) {
-                        const localHistory = JSON.parse(localHistoryStr);
-                        if (Array.isArray(localHistory)) {
-                            viewedIds = localHistory.map((item: { id: number }) => item.id).filter(Boolean);
+                    try {
+                        const localHistoryStr = localStorage.getItem('apex_recent_views');
+                        if (localHistoryStr) {
+                            const localHistory = JSON.parse(localHistoryStr);
+                            if (Array.isArray(localHistory)) {
+                                viewedIds = localHistory.map((item: { id: number }) => item.id).filter(Boolean);
+                            }
                         }
+                    } catch (err) {
+                        console.error("Error reading localStorage apex_recent_views:", err);
                     }
                 }
 
@@ -93,7 +97,8 @@ export default function PersonalizedFeed() {
         }
 
         loadFeed();
-    }, [recommendedProducts.length]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     if (loading) return null;
 

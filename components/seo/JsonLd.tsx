@@ -1,7 +1,7 @@
 "use client";
 
 import { useSettings } from "@/lib/useSettings";
-import { Product } from "@/types/product";
+import { Product } from "@/lib/types";
 
 interface JsonLdProps {
     product?: Product;

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPrice, cn } from "@/lib/utils";
-import { Product } from "@/types/product";
+import { Product } from "@/lib/types";
 import Link from "next/link";
 import { Plus, Check, Sparkles } from 'lucide-react';
 import { useCart } from "@/context/CartContext";

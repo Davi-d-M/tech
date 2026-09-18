@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabaseClient';
 import ProductDetailClient from '@/components/product/ProductDetailClient';
 import { Metadata } from 'next';
-import { Product } from '@/types/product';
+import { Product } from '@/lib/types';
 
 interface Props {
   params: Promise<{ id: string }>;

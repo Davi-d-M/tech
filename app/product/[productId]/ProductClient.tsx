@@ -11,7 +11,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { supabase } from "@/lib/supabaseClient";
 import { type User } from "@supabase/supabase-js";
 import { cn, formatPrice } from "@/lib/utils";
-import type { Product as ProductType } from "@/types/product";
+import type { Product as ProductType } from "@/lib/types";
 import {
   Check,
   Heart,

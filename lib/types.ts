@@ -123,9 +123,21 @@ export interface Product {
     stock?: number;
     sizes?: string[];
     is_new?: boolean;
+    is_featured?: boolean;
     order_count?: number;
     min_loyalty_tier?: string;
     wholesale_price?: number;
     wholesale_min_qty?: number;
     tech_specs?: Record<string, string>;
+    variant_stock?: Record<string, number>;
+    model_url?: string;
+    auto_rotate?: boolean;
+    rotation_speed?: number;
+    hotspots?: { id: string; position: [number, number, number]; title: string; description: string }[];
+    seo_description?: string;
+    seo_keywords?: string[];
+    canonical_url?: string;
+    short_description?: string;
+    sku?: string;
+    brand?: string;
 }

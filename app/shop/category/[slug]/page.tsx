@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from '@/components/home/ProductCard';
-import { Product } from '@/types/product';
+import { Product } from '@/lib/types';
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;

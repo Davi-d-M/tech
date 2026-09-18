@@ -2,7 +2,7 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 import ProductClient from './ProductClient';
 import ProductNotFound from '@/components/product/ProductNotFound';
-import { Product as ProductType } from '@/types/product';
+import { Product as ProductType } from '@/lib/types';
 
 interface ProductPageProps {
   params: Promise<{ productId: string }>;
