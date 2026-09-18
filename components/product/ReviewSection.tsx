@@ -274,7 +274,7 @@ export default function ReviewSection({ productId, isLive = true }: { productId:
             <Button
               type="submit"
               disabled={isSubmitting || !isLive}
-              className="w-full rounded-xl py-6 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20"
+              className="w-full rounded-xl py-6 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20 active:scale-95 transition-all"
             >
               {isSubmitting ? 'Syncing...' : <><Send className="h-4 w-4 mr-2" /> Post Verified Review</>}
             </Button>

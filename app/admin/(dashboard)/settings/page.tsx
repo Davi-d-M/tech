@@ -397,7 +397,7 @@ export default function AdminSettingsPage() {
                     <p className="text-muted-foreground text-xs lg:text-sm font-medium mt-1">Professional Content Management & Storefront Identity Hub.</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <Button onClick={fetchSettings} variant="outline" className="flex-1 sm:flex-none rounded-xl h-12 px-4 lg:px-6 border-slate-200 bg-white text-foreground font-black uppercase text-[9px] lg:text-[10px] tracking-widest hover:bg-slate-50 transition-all">
+                    <Button onClick={fetchSettings} variant="outline" className="flex-1 sm:flex-none rounded-xl h-12 px-4 lg:px-6 border-slate-200 bg-white text-foreground font-black uppercase text-[9px] lg:text-[10px] tracking-widest hover:bg-slate-50 transition-all active:scale-95">
                         <RefreshCcw className="h-4 w-4 mr-2" /> Sync Records
                     </Button>
                     <Button
