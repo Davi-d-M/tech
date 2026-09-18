@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
-import { Product } from '@/lib/useSettings';
+import { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown, X, Zap } from 'lucide-react';
 import CompareModal from './CompareModal';

@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { supabase } from './supabaseClient';
-import { SettingsRow, Post, Product } from './useSettings';
+import { SettingsRow, Post, Product } from './types';
 
 /**
  * Apex Resilience: Utility to execute a promise with a timeout and clean up timers.

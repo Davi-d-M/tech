@@ -7,7 +7,8 @@ import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { getCachedHomeData } from "@/lib/cachedData";
-import { type StoreSettings, DEFAULT_SETTINGS, SettingsRow, Post, Product } from "@/lib/useSettings";
+import { DEFAULT_SETTINGS } from "@/lib/useSettings";
+import { type StoreSettings, SettingsRow, Post, Product } from "@/lib/types";
 
 export const revalidate = 300; // Shared with cache
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Product } from "@/lib/useSettings";
+import { Product } from "@/lib/types";
 
 export interface CartItem {
   id: number;

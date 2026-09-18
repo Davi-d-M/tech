@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from '@/components/home/ProductCard';
-import { Product } from '@/lib/useSettings';
+import { Product } from '@/lib/types';
 
 export default function AllProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);

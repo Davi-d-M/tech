@@ -57,7 +57,8 @@ export const metadata: Metadata = {
 import PublicLayoutShield from "@/components/layout/PublicLayoutShield";
 import JsonLd from "@/components/seo/JsonLd";
 import SignalTracker from "@/components/analytics/SignalTracker";
-import { type StoreSettings, DEFAULT_SETTINGS, SettingsRow } from "@/lib/useSettings";
+import { DEFAULT_SETTINGS } from "@/lib/useSettings";
+import { type StoreSettings, SettingsRow } from "@/lib/types";
 import { getCachedSettings } from "@/lib/cachedData";
 
 export default async function RootLayout({

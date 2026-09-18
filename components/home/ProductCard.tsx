@@ -10,15 +10,12 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import RestockNotifyButton from "@/components/product/RestockNotifyButton";
 import { useWishlist } from "@/context/WishlistContext";
-import { useSettings, Product } from "@/lib/useSettings";
+import { useSettings } from "@/lib/useSettings";
+import { Product } from "@/lib/types";
 import { supabase } from "@/lib/supabaseClient";
 import { signalService } from "@/lib/signalService";
 
 declare global {
-  interface Window {
-    fbq?: (action: string, eventName: string, params?: Record<string, unknown>) => void;
-  }
-}
   interface Window {
     fbq?: (action: string, eventName: string, params?: Record<string, unknown>) => void;
   }

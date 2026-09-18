@@ -5,7 +5,7 @@ import { X, Zap, Trophy, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils';
 import Image from 'next/image';
-import { Product } from '@/lib/useSettings';
+import { Product } from '@/lib/types';
 
 export default function CompareModal({
     p1,
