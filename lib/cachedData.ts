@@ -12,7 +12,7 @@ export const getCachedSettings = unstable_cache(
         const result = await Promise.race([
             supabase.from('settings').select('*'),
             timeout
-        ]) as { data: any[] | null };
+        ]) as { data: { key: string; value: any }[] | null };
 
         return { data: result.data || [] };
     } catch (e) {
@@ -39,7 +39,7 @@ export const getCachedHomeData = unstable_cache(
                 supabase.from('settings').select('*')
             ]),
             timeout
-        ]) as any;
+        ]) as [{ data: any[] }, { data: any[] }, { data: any[] }];
     } catch (e) {
         console.error("Cached Home Data Timeout/Error:", e);
         return [ { data: [] }, { data: [] }, { data: [] } ];

@@ -35,46 +35,46 @@ interface Product {
 
 export default async function Home() {
   // 1. Fetch All Data in Parallel on Server (Shared Cache) with Defensive Try-Catch
-  let postsRes = { data: [] };
-  let productsRes = { data: [] };
-  let settingsRes = { data: [] };
+  let postsRes: { data: Post[] } = { data: [] };
+  let productsRes: { data: Product[] } = { data: [] };
+  let settingsRes: { data: { key: string; value: any }[] } = { data: [] };
 
   try {
       const results = await getCachedHomeData();
       if (results && results.length === 3) {
-          postsRes = results[0];
-          productsRes = results[1];
-          settingsRes = results[2];
+          postsRes = results[0] as { data: Post[] };
+          productsRes = results[1] as { data: Product[] };
+          settingsRes = results[2] as { data: { key: string; value: any }[] };
       }
   } catch (err) {
       console.error("Home Server Data Fetch Crash:", err);
   }
 
-  const posts = (postsRes.data || []) as Post[];
-  const initialProducts = (productsRes.data || []) as Product[];
+  const posts = postsRes.data || [];
+  const initialProducts = productsRes.data || [];
 
   // Process Settings - Start with DEFAULTS to prevent null crashes
   const settingsData = settingsRes.data || [];
   const settings: StoreSettings = { ...DEFAULT_SETTINGS };
 
   settingsData.forEach(item => {
-      const key = (item as any).key as keyof StoreSettings;
-      if (key === 'contact') settings.contact = { ...settings.contact, ...(item as any).value };
-      else if (key === 'branding') settings.branding = { ...settings.branding, ...(item as any).value };
-      else if (key === 'homepage') settings.homepage = { ...settings.homepage, ...(item as any).value };
-      else if (key === 'catalog') settings.catalog = { ...settings.catalog, ...(item as any).value };
-      else if (key === 'shipping') settings.shipping = { ...settings.shipping, ...(item as any).value };
-      else if (key === 'logistics') settings.logistics = { ...settings.logistics, ...(item as any).value };
-      else if (key === 'theme_config') settings.theme_config = { ...settings.theme_config, ...(item as any).value };
-      else if (key === 'seo_config') settings.seo_config = { ...settings.seo_config, ...(item as any).value };
-      else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...(item as any).value };
-      else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...(item as any).value };
-      else if (key === 'features') settings.features = { ...settings.features, ...(item as any).value };
-      else if (key === 'promotions') settings.promotions = { ...settings.promotions, ...(item as any).value };
-      else if (key === 'layout') settings.layout = { ...settings.layout, ...(item as any).value };
-      else if (key === 'navigation') settings.navigation = { ...settings.navigation, ...(item as any).value };
-      else if (key === 'globals') settings.globals = { ...settings.globals, ...(item as any).value };
-      else if (key === 'content') settings.content = { ...settings.content, ...(item as any).value };
+      const key = item.key as keyof StoreSettings;
+      if (key === 'contact') settings.contact = { ...settings.contact, ...item.value };
+      else if (key === 'branding') settings.branding = { ...settings.branding, ...item.value };
+      else if (key === 'homepage') settings.homepage = { ...settings.homepage, ...item.value };
+      else if (key === 'catalog') settings.catalog = { ...settings.catalog, ...item.value };
+      else if (key === 'shipping') settings.shipping = { ...settings.shipping, ...item.value };
+      else if (key === 'logistics') settings.logistics = { ...settings.logistics, ...item.value };
+      else if (key === 'theme_config') settings.theme_config = { ...settings.theme_config, ...item.value };
+      else if (key === 'seo_config') settings.seo_config = { ...settings.seo_config, ...item.value };
+      else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...item.value };
+      else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...item.value };
+      else if (key === 'features') settings.features = { ...settings.features, ...item.value };
+      else if (key === 'promotions') settings.promotions = { ...settings.promotions, ...item.value };
+      else if (key === 'layout') settings.layout = { ...settings.layout, ...item.value };
+      else if (key === 'navigation') settings.navigation = { ...settings.navigation, ...item.value };
+      else if (key === 'globals') settings.globals = { ...settings.globals, ...item.value };
+      else if (key === 'content') settings.content = { ...settings.content, ...item.value };
   });
 
   const sections = settings?.layout?.homepage_sections?.filter(s => s.visible).sort((a, b) => a.order - b.order) || [

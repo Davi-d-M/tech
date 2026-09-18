@@ -4,7 +4,6 @@ import { ShieldAlert, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Error({
-  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -22,7 +21,7 @@ export default function Error({
             Module <span className="text-amber-500">Hang</span>
           </h2>
           <p className="text-slate-500 text-sm font-medium leading-relaxed px-4">
-            We couldn't load this part of the shop. This usually happens when the data node times out.
+            We couldn&apos;t load this part of the shop. This usually happens when the data node times out.
           </p>
         </div>
 
