@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from '@/components/home/ProductCard';
 import { Product } from '@/lib/types';
+import { withTimeout } from '@/lib/apexResilience';
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -35,7 +36,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   if (supabase && categorySlug) {
     try {
-      // 1. Try fetching with specific filters
+      // 1. Try fetching with specific filters & Timeout Protocol
       let query = supabase.from('products').select('*');
 
       if (categorySlug === 'new-arrivals') {
@@ -48,7 +49,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         query = query.eq('category', categorySlug);
       }
 
-      const { data, error } = await query.order('created_at', { ascending: false });
+      const { data, error } = await withTimeout(query.order('created_at', { ascending: false }));
 
       if (error) {
         console.warn(`Initial fetch failed for category "${categorySlug}":`, error.message);
@@ -56,7 +57,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         // 2. Defensive Fallback: If column doesn't exist, fetch all and filter in memory if possible
         if (error.message.includes('does not exist')) {
            console.log('Retrying with simple query due to missing columns...');
-           const { data: allData, error: allErr } = await supabase.from('products').select('*');
+           const { data: allData, error: allErr } = await withTimeout(supabase.from('products').select('*'));
 
            if (!allErr && allData) {
               const typedAllData = allData as Product[];
@@ -86,7 +87,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       }
     } catch (err) {
       console.error('Category page logic crash:', err);
-      fetchError = { message: "Internal application error" };
+      fetchError = { message: err instanceof Error ? err.message : "Internal application error" };
     }
   }
 

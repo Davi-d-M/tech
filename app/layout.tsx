@@ -61,6 +61,7 @@ import SignalTracker from "@/components/analytics/SignalTracker";
 import { DEFAULT_SETTINGS } from "@/lib/useSettings";
 import { type StoreSettings, SettingsRow } from "@/lib/types";
 import { getCachedSettings } from "@/lib/cachedData";
+import { SettingsProvider } from "@/context/SettingsContext";
 
 export default async function RootLayout({
   children,
@@ -108,49 +109,51 @@ export default async function RootLayout({
         className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}
       >
         <PublicErrorBoundary>
-            <JsonLd />
-            <SignalTracker />
-            {/* Enterprise Marketing Scripts */}
-        {process.env.NEXT_PUBLIC_GA_ID && (
-            <Script
-                strategy="afterInteractive"
-                src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-            />
-        )}
-        {process.env.NEXT_PUBLIC_GA_ID && (
-            <Script id="google-analytics" strategy="afterInteractive">
-                {`
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-                    gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
-                `}
-            </Script>
-        )}
+            <SettingsProvider initialSettings={settings}>
+                <JsonLd />
+                <SignalTracker />
+                {/* Enterprise Marketing Scripts */}
+                {process.env.NEXT_PUBLIC_GA_ID && (
+                    <Script
+                        strategy="afterInteractive"
+                        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+                    />
+                )}
+                {process.env.NEXT_PUBLIC_GA_ID && (
+                    <Script id="google-analytics" strategy="afterInteractive">
+                        {`
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag(){dataLayer.push(arguments);}
+                            gtag('js', new Date());
+                            gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+                        `}
+                    </Script>
+                )}
 
-        {/* Meta Pixel Protocol */}
-        <Script id="fb-pixel" strategy="afterInteractive">
-            {`
-                !function(f,b,e,v,n,t,s)
-                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                n.queue=[];t=b.createElement(e);t.async=!0;
-                t.src=v;s=b.getElementsByTagName(e)[0];
-                s.parentNode.insertBefore(t,s)}(window, document,'script',
-                'https://connect.facebook.net/en_US/fbevents.js');
-                fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID || 'YOUR_PIXEL_ID'}');
-                fbq('track', 'PageView');
-            `}
-        </Script>
+                {/* Meta Pixel Protocol */}
+                <Script id="fb-pixel" strategy="afterInteractive">
+                    {`
+                        !function(f,b,e,v,n,t,s)
+                        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                        n.queue=[];t=b.createElement(e);t.async=!0;
+                        t.src=v;s=b.getElementsByTagName(e)[0];
+                        s.parentNode.insertBefore(t,s)}(window, document,'script',
+                        'https://connect.facebook.net/en_US/fbevents.js');
+                        fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID || 'YOUR_PIXEL_ID'}');
+                        fbq('track', 'PageView');
+                    `}
+                </Script>
 
-        <CartProvider>
-          <WishlistProvider>
-            <PublicLayoutShield initialSettings={settings}>
-                {children}
-            </PublicLayoutShield>
-          </WishlistProvider>
-        </CartProvider>
+                <CartProvider>
+                  <WishlistProvider>
+                    <PublicLayoutShield initialSettings={settings}>
+                        {children}
+                    </PublicLayoutShield>
+                  </WishlistProvider>
+                </CartProvider>
+            </SettingsProvider>
         </PublicErrorBoundary>
       </body>
     </html>

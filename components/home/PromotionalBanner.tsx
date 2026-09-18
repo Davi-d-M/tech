@@ -1,13 +1,13 @@
 'use client';
 
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import { Button } from "@/components/ui/button";
 import { Zap, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import CountdownTimer from "./CountdownTimer";
 
 export default function PromotionalBanner() {
-  const { settings } = useSettings();
+  const settings = useSettingsContext();
 
   const promo = settings.promotions || { flash_sale_text: 'Flash Sale: 20% OFF All Tech!', discount_percent: 20, is_active: true, flash_sale_end: '' };
 

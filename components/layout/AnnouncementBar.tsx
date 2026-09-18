@@ -1,15 +1,15 @@
 "use client";
 
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import { X, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function AnnouncementBar() {
-    const { settings, loading } = useSettings();
+    const settings = useSettingsContext();
     const [isVisible, setIsVisible] = useState(true);
 
-    if (loading || !settings.globals?.announcement_bar?.enabled || !isVisible) return null;
+    if (!settings.globals?.announcement_bar?.enabled || !isVisible) return null;
 
     const { text, bg_color, text_color, link } = settings.globals.announcement_bar;
 

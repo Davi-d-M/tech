@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { cn, formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
-import { useSettings } from '@/lib/useSettings';
+import { useSettingsContext } from '@/context/SettingsContext';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -28,7 +28,7 @@ interface Suggestion {
 }
 
 export default function AIConcierge() {
-    const { settings } = useSettings();
+    const settings = useSettingsContext();
     const [isOpen, setIsOpen] = React.useState(false);
     const [query, setQuery] = React.useState('');
     const [messages, setMessages] = React.useState<{ role: 'user' | 'assistant', text: string, suggestions?: Suggestion[] }[]>([]);

@@ -1,25 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { supabase } from './supabaseClient';
 import { SettingsRow, Post, Product } from './types';
-
-/**
- * Apex Resilience: Utility to execute a promise with a timeout and clean up timers.
- */
-async function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number = 10000): Promise<T> {
-    let timeoutHandle: NodeJS.Timeout;
-    const timeoutPromise = new Promise<never>((_, reject) => {
-        timeoutHandle = setTimeout(() => reject(new Error('DB_TIMEOUT')), timeoutMs);
-    });
-
-    try {
-        const result = await Promise.race([Promise.resolve(promise), timeoutPromise]);
-        clearTimeout(timeoutHandle!);
-        return result;
-    } catch (error) {
-        clearTimeout(timeoutHandle!);
-        throw error;
-    }
-}
+import { withTimeout } from './apexResilience';
 
 export const getCachedSettings = unstable_cache(
   async (): Promise<{ data: SettingsRow[] }> => {

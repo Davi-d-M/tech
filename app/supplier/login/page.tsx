@@ -6,13 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lock, Mail, Briefcase, Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { useSettings } from '@/lib/useSettings';
-
-interface LoginError {
-    error: string;
-    is_new_device?: boolean;
-    node_id?: string;
-}
+import { useSettingsContext } from '@/context/SettingsContext';
 
 interface LoginError {
     error: string;
@@ -22,7 +16,7 @@ interface LoginError {
 
 export default function SupplierLogin() {
     const router = useRouter();
-    const { settings } = useSettings();
+    const settings = useSettingsContext();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);

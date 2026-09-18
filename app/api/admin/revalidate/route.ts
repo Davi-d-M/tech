@@ -23,12 +23,12 @@ export async function POST(request: Request) {
 
         if (type === 'all' || type === 'settings') {
             revalidateTag('settings');
-            revalidateTag('store-settings-v3');
+            revalidateTag('store-settings-v5');
         }
 
         if (type === 'all' || type === 'products') {
             revalidateTag('products');
-            revalidateTag('home-data-v3');
+            revalidateTag('home-data-v5');
         }
 
         if (type === 'all') {
