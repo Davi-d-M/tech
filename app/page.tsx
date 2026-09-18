@@ -59,7 +59,7 @@ export default async function Home() {
 
   settingsData.forEach(item => {
       const key = item.key as keyof StoreSettings;
-      const value = item.value;
+      const value = item.value || {};
       if (key === 'contact') settings.contact = { ...settings.contact, ...(value as StoreSettings['contact']) };
       else if (key === 'branding') settings.branding = { ...settings.branding, ...(value as StoreSettings['branding']) };
       else if (key === 'homepage') settings.homepage = { ...settings.homepage, ...(value as StoreSettings['homepage']) };
