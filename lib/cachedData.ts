@@ -5,14 +5,14 @@ import { SettingsRow } from './useSettings';
 /**
  * Apex Resilience: Utility to execute a promise with a timeout and clean up timers.
  */
-async function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 10000): Promise<T> {
+async function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number = 10000): Promise<T> {
     let timeoutHandle: NodeJS.Timeout;
     const timeoutPromise = new Promise<never>((_, reject) => {
         timeoutHandle = setTimeout(() => reject(new Error('DB_TIMEOUT')), timeoutMs);
     });
 
     try {
-        const result = await Promise.race([promise, timeoutPromise]);
+        const result = await Promise.race([Promise.resolve(promise), timeoutPromise]);
         clearTimeout(timeoutHandle!);
         return result;
     } catch (error) {
