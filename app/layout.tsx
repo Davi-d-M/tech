@@ -57,7 +57,7 @@ export const metadata: Metadata = {
 import PublicLayoutShield from "@/components/layout/PublicLayoutShield";
 import JsonLd from "@/components/seo/JsonLd";
 import SignalTracker from "@/components/analytics/SignalTracker";
-import { type StoreSettings, DEFAULT_SETTINGS } from "@/lib/useSettings";
+import { type StoreSettings, DEFAULT_SETTINGS, SettingsRow } from "@/lib/useSettings";
 import { getCachedSettings } from "@/lib/cachedData";
 
 export default async function RootLayout({
@@ -66,10 +66,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Fetch settings with shared cache & Defensive try-catch
-  let settingsRes: { data: { key: string; value: any }[] } = { data: [] };
+  let settingsRes: { data: SettingsRow[] } = { data: [] };
   try {
       const res = await getCachedSettings();
-      if (res) settingsRes = res as { data: { key: string; value: any }[] };
+      if (res) settingsRes = res as { data: SettingsRow[] };
   } catch (err) {
       console.error("RootLayout Settings Fetch Crash:", err);
   }
@@ -80,22 +80,23 @@ export default async function RootLayout({
   if (settingsRes?.data) {
       (settingsRes.data || []).forEach(item => {
           const key = item.key as keyof StoreSettings;
-          if (key === 'contact') settings.contact = { ...settings.contact, ...item.value };
-          else if (key === 'branding') settings.branding = { ...settings.branding, ...item.value };
-          else if (key === 'homepage') settings.homepage = { ...settings.homepage, ...item.value };
-          else if (key === 'catalog') settings.catalog = { ...settings.catalog, ...item.value };
-          else if (key === 'shipping') settings.shipping = { ...settings.shipping, ...item.value };
-          else if (key === 'logistics') settings.logistics = { ...settings.logistics, ...item.value };
-          else if (key === 'theme_config') settings.theme_config = { ...settings.theme_config, ...item.value };
-          else if (key === 'seo_config') settings.seo_config = { ...settings.seo_config, ...item.value };
-          else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...item.value };
-          else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...item.value };
-          else if (key === 'features') settings.features = { ...settings.features, ...item.value };
-          else if (key === 'promotions') settings.promotions = { ...settings.promotions, ...item.value };
-          else if (key === 'layout') settings.layout = { ...settings.layout, ...item.value };
-          else if (key === 'navigation') settings.navigation = { ...settings.navigation, ...item.value };
-          else if (key === 'globals') settings.globals = { ...settings.globals, ...item.value };
-          else if (key === 'content') settings.content = { ...settings.content, ...item.value };
+          const value = item.value;
+          if (key === 'contact') settings.contact = { ...settings.contact, ...(value as StoreSettings['contact']) };
+          else if (key === 'branding') settings.branding = { ...settings.branding, ...(value as StoreSettings['branding']) };
+          else if (key === 'homepage') settings.homepage = { ...settings.homepage, ...(value as StoreSettings['homepage']) };
+          else if (key === 'catalog') settings.catalog = { ...settings.catalog, ...(value as StoreSettings['catalog']) };
+          else if (key === 'shipping') settings.shipping = { ...settings.shipping, ...(value as StoreSettings['shipping']) };
+          else if (key === 'logistics') settings.logistics = { ...settings.logistics, ...(value as StoreSettings['logistics']) };
+          else if (key === 'theme_config') settings.theme_config = { ...settings.theme_config, ...(value as StoreSettings['theme_config']) };
+          else if (key === 'seo_config') settings.seo_config = { ...settings.seo_config, ...(value as StoreSettings['seo_config']) };
+          else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...(value as StoreSettings['social_links']) };
+          else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...(value as StoreSettings['store_info']) };
+          else if (key === 'features') settings.features = { ...settings.features, ...(value as StoreSettings['features']) };
+          else if (key === 'promotions') settings.promotions = { ...settings.promotions, ...(value as StoreSettings['promotions']) };
+          else if (key === 'layout') settings.layout = { ...settings.layout, ...(value as StoreSettings['layout']) };
+          else if (key === 'navigation') settings.navigation = { ...settings.navigation, ...(value as StoreSettings['navigation']) };
+          else if (key === 'globals') settings.globals = { ...settings.globals, ...(value as StoreSettings['globals']) };
+          else if (key === 'content') settings.content = { ...settings.content, ...(value as StoreSettings['content']) };
       });
   }
 

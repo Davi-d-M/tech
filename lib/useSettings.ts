@@ -103,6 +103,11 @@ export interface StoreSettings {
     };
 }
 
+export interface SettingsRow {
+    key: string;
+    value: Record<string, unknown>;
+}
+
 export const DEFAULT_SETTINGS: StoreSettings = {
     contact: {
         whatsapp: "254700000000",

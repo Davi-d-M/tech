@@ -16,7 +16,7 @@ export interface CartItem {
 
 interface CartContextProps {
   cart: CartItem[];
-  compareList: any[];
+  compareList: CartItem[];
   gifting: {
     isGift: boolean;
     message: string;
@@ -26,18 +26,24 @@ interface CartContextProps {
   };
   addToCart: (item: CartItem) => void;
   addBundleToCart: (items: CartItem[]) => void;
-  toggleCompare: (item: any) => void;
+  toggleCompare: (item: CartItem) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
   updateQuantity: (id: number, quantity: number) => void;
   updateGifting: (data: Partial<CartContextProps['gifting']>) => void;
 }
 
+declare global {
+  interface Window {
+    fbq?: (command: string, eventName: string, options?: Record<string, unknown>) => void;
+  }
+}
+
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [compareList, setCompareList] = useState<any[]>([]);
+  const [compareList, setCompareList] = useState<CartItem[]>([]);
   const [gifting, setGifting] = useState<CartContextProps['gifting']>({
       isGift: false,
       message: '',
@@ -67,8 +73,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addToCart = (item: CartItem) => {
     // Meta Tracking
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'AddToCart', {
+    if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'AddToCart', {
             content_name: item.name,
             content_ids: [item.id],
             content_type: 'product',
@@ -148,7 +154,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
-  const toggleCompare = (item: any) => {
+  const toggleCompare = (item: CartItem) => {
       setCompareList(prev => {
           const exists = prev.find(p => p.id === item.id);
           if (exists) return prev.filter(p => p.id !== item.id);
