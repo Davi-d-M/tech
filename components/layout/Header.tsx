@@ -85,7 +85,7 @@ function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
                     "text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-foreground transition-colors",
                     isMobileMenu ? "inline-block" : "hidden lg:inline-block"
                 )}>
-                  {displayEmail?.split('@')?.[0] || 'Member'}
+                  {(displayEmail?.split('@') || [])[0] || 'Member'}
                 </Link>
                 {points !== null && (
                     <div className="flex items-center gap-2 mt-1">

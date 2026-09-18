@@ -64,28 +64,36 @@ export default function PersonalizedFeed() {
                         .from('profiles')
                         .select('next_purchase_category')
                         .eq('id', session.user.id)
-                        .single();
+                        .maybeSingle();
 
                     if (profile?.next_purchase_category) {
                         setPredictiveCategory(profile.next_purchase_category);
-                        const { data: categorySuggestions } = await supabase
+                        let query = supabase
                             .from('products')
                             .select('*')
-                            .eq('category', profile.next_purchase_category)
-                            .not('id', 'in', `(${viewedIds.join(',')})`)
-                            .limit(4);
+                            .eq('category', profile.next_purchase_category);
+
+                        if (viewedIds.length > 0) {
+                            query = query.not('id', 'in', `(${viewedIds.join(',')})`);
+                        }
+
+                        const { data: categorySuggestions } = await query.limit(4);
                         if (categorySuggestions) setSuggestedProducts(categorySuggestions as Product[]);
                     }
                 }
 
                 // 3. FALLBACK RECOMMENDATIONS
                 if (recommendedProducts.length === 0) {
-                    const { data: fallbacks } = await supabase
+                    let query = supabase
                         .from('products')
                         .select('*')
-                        .not('id', 'in', `(${viewedIds.join(',')})`)
-                        .order('price', { ascending: false }) // High end tech
-                        .limit(4);
+                        .order('price', { ascending: false }); // High end tech
+
+                    if (viewedIds.length > 0) {
+                        query = query.not('id', 'in', `(${viewedIds.join(',')})`);
+                    }
+
+                    const { data: fallbacks } = await query.limit(4);
                     if (fallbacks) setSuggestedProducts(fallbacks as Product[]);
                 }
 

@@ -18,7 +18,7 @@ export default function TierThemeNode() {
                     .from('profiles')
                     .select('loyalty_points')
                     .eq('id', session.user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (data) {
                     setTier(getTierFromPoints(data.loyalty_points || 0));

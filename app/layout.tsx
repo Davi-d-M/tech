@@ -55,6 +55,7 @@ export const metadata: Metadata = {
 };
 
 import PublicLayoutShield from "@/components/layout/PublicLayoutShield";
+import PublicErrorBoundary from "@/components/layout/PublicErrorBoundary";
 import JsonLd from "@/components/seo/JsonLd";
 import SignalTracker from "@/components/analytics/SignalTracker";
 import { DEFAULT_SETTINGS } from "@/lib/useSettings";
@@ -144,9 +145,11 @@ export default async function RootLayout({
 
         <CartProvider>
           <WishlistProvider>
-            <PublicLayoutShield initialSettings={settings}>
-                {children}
-            </PublicLayoutShield>
+            <PublicErrorBoundary>
+                <PublicLayoutShield initialSettings={settings}>
+                    {children}
+                </PublicLayoutShield>
+            </PublicErrorBoundary>
           </WishlistProvider>
         </CartProvider>
       </body>
