@@ -62,6 +62,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RocketLaunch
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.foundation.layout.Arrangement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -258,7 +259,7 @@ class MainActivity : FragmentActivity() {
                                 provisioningSuccess = false
                             })
                         } else {
-                            apexHubWebBridge(appUrl, onWebViewCreated = { apexWebView = it })
+                            ApexHubWebBridge(appUrl, onWebViewCreated = { apexWebView = it })
 
                             // Handle Intent after WebView is ready or via URL change
                             LaunchedEffect(intent) {
@@ -337,6 +338,22 @@ class MainActivity : FragmentActivity() {
                         }
                     } else {
                         // Fallback or retry UI
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    "Shield Access Denied",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Button(onClick = {
+                                    isAuthenticating = true
+                                    biometricPrompt.authenticate(promptInfo)
+                                }) {
+                                    Text("Retry Authorization")
+                                }
+                            }
+                        }
                     }
                 }
             }
