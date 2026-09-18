@@ -65,31 +65,39 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch settings with shared cache
-  const { data: settingsRes } = await getCachedSettings();
+  // Fetch settings with shared cache & Defensive try-catch
+  let settingsRes = { data: [] };
+  try {
+      const res = await getCachedSettings();
+      if (res) settingsRes = res;
+  } catch (err) {
+      console.error("RootLayout Settings Fetch Crash:", err);
+  }
 
   // Process Settings - Start with DEFAULTS to prevent null crashes
   const settings: StoreSettings = { ...DEFAULT_SETTINGS };
 
-  (settingsRes || []).forEach(item => {
-      const key = item.key as keyof StoreSettings;
-      if (key === 'contact') settings.contact = { ...settings.contact, ...item.value };
-      else if (key === 'branding') settings.branding = { ...settings.branding, ...item.value };
-      else if (key === 'homepage') settings.homepage = { ...settings.homepage, ...item.value };
-      else if (key === 'catalog') settings.catalog = { ...settings.catalog, ...item.value };
-      else if (key === 'shipping') settings.shipping = { ...settings.shipping, ...item.value };
-      else if (key === 'logistics') settings.logistics = { ...settings.logistics, ...item.value };
-      else if (key === 'theme_config') settings.theme_config = { ...settings.theme_config, ...item.value };
-      else if (key === 'seo_config') settings.seo_config = { ...settings.seo_config, ...item.value };
-      else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...item.value };
-      else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...item.value };
-      else if (key === 'features') settings.features = { ...settings.features, ...item.value };
-      else if (key === 'promotions') settings.promotions = { ...settings.promotions, ...item.value };
-      else if (key === 'layout') settings.layout = { ...settings.layout, ...item.value };
-      else if (key === 'navigation') settings.navigation = { ...settings.navigation, ...item.value };
-      else if (key === 'globals') settings.globals = { ...settings.globals, ...item.value };
-      else if (key === 'content') settings.content = { ...settings.content, ...item.value };
-  });
+  if (settingsRes?.data) {
+      (settingsRes.data || []).forEach(item => {
+          const key = (item as any).key as keyof StoreSettings;
+          if (key === 'contact') settings.contact = { ...settings.contact, ...(item as any).value };
+          else if (key === 'branding') settings.branding = { ...settings.branding, ...(item as any).value };
+          else if (key === 'homepage') settings.homepage = { ...settings.homepage, ...(item as any).value };
+          else if (key === 'catalog') settings.catalog = { ...settings.catalog, ...(item as any).value };
+          else if (key === 'shipping') settings.shipping = { ...settings.shipping, ...(item as any).value };
+          else if (key === 'logistics') settings.logistics = { ...settings.logistics, ...(item as any).value };
+          else if (key === 'theme_config') settings.theme_config = { ...settings.theme_config, ...(item as any).value };
+          else if (key === 'seo_config') settings.seo_config = { ...settings.seo_config, ...(item as any).value };
+          else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...(item as any).value };
+          else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...(item as any).value };
+          else if (key === 'features') settings.features = { ...settings.features, ...(item as any).value };
+          else if (key === 'promotions') settings.promotions = { ...settings.promotions, ...(item as any).value };
+          else if (key === 'layout') settings.layout = { ...settings.layout, ...(item as any).value };
+          else if (key === 'navigation') settings.navigation = { ...settings.navigation, ...(item as any).value };
+          else if (key === 'globals') settings.globals = { ...settings.globals, ...(item as any).value };
+          else if (key === 'content') settings.content = { ...settings.content, ...(item as any).value };
+      });
+  }
 
   return (
     <html lang="en">

@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useSettings, type StoreSettings } from '@/lib/useSettings';
+import { Smartphone } from 'lucide-react';
 
 // Lazy Load Non-Critical Components
 const LiveTicker = dynamic(() => import('./LiveTicker'), { ssr: false });
@@ -21,9 +22,17 @@ const ThemeSynchronizer = dynamic(() => import('./ThemeSynchronizer'), { ssr: fa
 const TierThemeNode = dynamic(() => import('./TierThemeNode'), { ssr: false });
 const AchievementPopup = dynamic(() => import('../ui/AchievementPopup'), { ssr: false });
 
+function ShieldLoading() {
+    return (
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+            <Smartphone className="h-8 w-8 text-primary animate-pulse" />
+        </div>
+    );
+}
+
 export default function PublicLayoutShield({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-white" />}>
+        <Suspense fallback={<ShieldLoading />}>
             <ShieldContent initialSettings={initialSettings}>{children}</ShieldContent>
         </Suspense>
     );
