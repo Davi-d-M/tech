@@ -54,13 +54,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-    const savedGifting = localStorage.getItem("apex_gifting");
-    if (savedGifting) {
-        setGifting(JSON.parse(savedGifting));
+    try {
+        const savedCart = localStorage.getItem("cart");
+        if (savedCart) {
+          setCart(JSON.parse(savedCart));
+        }
+        const savedGifting = localStorage.getItem("apex_gifting");
+        if (savedGifting) {
+            setGifting(JSON.parse(savedGifting));
+        }
+    } catch (e) {
+        console.error("Cart Context Restoration Failure:", e);
     }
   }, []);
 

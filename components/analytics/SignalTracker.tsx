@@ -67,6 +67,8 @@ export default function SignalTracker() {
         window.addEventListener('unhandledrejection', handleUnhandledRejection);
 
         // Setup observer for sections
+        if (typeof IntersectionObserver === 'undefined') return;
+
         const sections = document.querySelectorAll('[data-signal-section]');
 
         const observer = new IntersectionObserver((entries) => {

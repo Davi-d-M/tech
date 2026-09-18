@@ -58,25 +58,28 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
 
     // 1. Referral & Affiliate Tracking
     useEffect(() => {
-        const ref = searchParams.get('ref');
-        if (ref && supabase) {
-            // 1. Save to session storage & cookie (30 days)
-            sessionStorage.setItem('apex_referral_code', ref);
+        try {
+            const ref = searchParams.get('ref');
+            if (ref && supabase) {
+                // 1. Save to session storage & cookie (30 days)
+                sessionStorage.setItem('apex_referral_code', ref);
 
-            // Standard cookie set
-            const expiry = new Date();
-            expiry.setDate(expiry.getDate() + 30);
-            document.cookie = `apex_ref_code=${ref}; path=/; expires=${expiry.toUTCString()}; SameSite=Lax`;
+                // Standard cookie set
+                const expiry = new Date();
+                expiry.setDate(expiry.getDate() + 30);
+                document.cookie = `apex_ref_code=${ref}; path=/; expires=${expiry.toUTCString()}; SameSite=Lax`;
 
-            // 2. Increment clicks (Idempotent per session)
-            const tracked = sessionStorage.getItem(`tracked_${ref}`);
-            if (!tracked) {
-                // Call both standard and affiliate RPCs
-                Promise.all([
-                    supabase.rpc('increment_referral_clicks', { code_input: ref }),
-                    supabase.rpc('increment_affiliate_clicks', { code_input: ref })
-                ]).then(() => sessionStorage.setItem(`tracked_${ref}`, 'true'));
+                // 2. Increment clicks (Idempotent per session)
+                const tracked = sessionStorage.getItem(`tracked_${ref}`);
+                if (!tracked) {
+                    // Call both standard and affiliate RPCs (Non-blocking)
+                    void supabase.rpc('increment_referral_clicks', { code_input: ref });
+                    void supabase.rpc('increment_affiliate_clicks', { code_input: ref });
+                    sessionStorage.setItem(`tracked_${ref}`, 'true');
+                }
             }
+        } catch (error) {
+            console.warn("Referral Tracking Failure:", error);
         }
     }, [searchParams]);
 
@@ -84,70 +87,83 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
     useEffect(() => {
         if (!supabase || isAdmin || isRider) return;
 
-        let sessionId = localStorage.getItem('apex_session_id');
-        if (!sessionId) {
-            sessionId = `session_${Math.random().toString(36).substring(2, 15)}`;
-            localStorage.setItem('apex_session_id', sessionId);
+        let sessionId: string | null = null;
+        try {
+            sessionId = localStorage.getItem('apex_session_id');
+            if (!sessionId) {
+                sessionId = `session_${Math.random().toString(36).substring(2, 15)}`;
+                localStorage.setItem('apex_session_id', sessionId);
+            }
+        } catch {
+            sessionId = `session-fallback-${Math.random().toString(36).substring(2, 8)}`;
         }
 
         const isOperational = true;
 
         const sendHeartbeat = async () => {
-            if (!supabase || !isOperational) return;
+            if (!supabase || !isOperational || !sessionId) return;
 
             // Non-blocking heartbeat
             if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
                 (window as Window & { requestIdleCallback: (callback: IdleRequestCallback) => number }).requestIdleCallback(async () => {
                     if (!supabase) return;
-                    const { data: { session } } = await supabase.auth.getSession();
-                    const cartData = localStorage.getItem('cart');
-                    let cartValue = 0;
-                    if (cartData) {
-                        try {
-                            const parsed = JSON.parse(cartData);
-                            cartValue = parsed.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
-                        } catch { }
-                    }
+                    try {
+                        const { data: sessionData } = await supabase.auth.getSession();
+                        const session = sessionData.session;
+                        const cartData = localStorage.getItem('cart');
+                        let cartValue = 0;
+                        if (cartData) {
+                            try {
+                                const parsed = JSON.parse(cartData);
+                                cartValue = parsed.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
+                            } catch { }
+                        }
 
-                    await supabase.from('active_visitors').upsert({
-                        session_id: sessionId,
-                        visitor_id: localStorage.getItem('apex_visitor_id'), // Link to Intelligence identity
-                        customer_name: session?.user?.email?.split('@')[0] || null,
-                        current_page: pathname,
-                        last_active_at: new Date().toISOString(),
-                        cart_value: cartValue,
-                        status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
-                    });
+                        await supabase.from('active_visitors').upsert({
+                            session_id: sessionId,
+                            visitor_id: localStorage.getItem('apex_visitor_id'), // Link to Intelligence identity
+                            customer_name: session?.user?.email?.split('@')[0] || null,
+                            current_page: pathname,
+                            last_active_at: new Date().toISOString(),
+                            cart_value: cartValue,
+                            status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
+                        });
+                    } catch { }
                 });
             } else {
                 // Fallback for Safari
                 setTimeout(async () => {
                     if (!supabase) return;
-                    const { data: { session } } = await supabase.auth.getSession();
-                    const cartData = localStorage.getItem('cart');
-                    let cartValue = 0;
-                    if (cartData) {
-                        try {
-                            const parsed = JSON.parse(cartData);
-                            cartValue = parsed.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
-                        } catch { }
-                    }
+                    try {
+                        const { data: sessionData } = await supabase.auth.getSession();
+                        const session = sessionData.session;
+                        const cartData = localStorage.getItem('cart');
+                        let cartValue = 0;
+                        if (cartData) {
+                            try {
+                                const parsed = JSON.parse(cartData);
+                                cartValue = parsed.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
+                            } catch { }
+                        }
 
-                    await supabase.from('active_visitors').upsert({
-                        session_id: sessionId,
-                        visitor_id: localStorage.getItem('apex_visitor_id'), // Link to Intelligence identity
-                        customer_name: session?.user?.email?.split('@')[0] || null,
-                        current_page: pathname,
-                        last_active_at: new Date().toISOString(),
-                        cart_value: cartValue,
-                        status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
-                    });
+                        await supabase.from('active_visitors').upsert({
+                            session_id: sessionId,
+                            visitor_id: localStorage.getItem('apex_visitor_id'), // Link to Intelligence identity
+                            customer_name: session?.user?.email?.split('@')[0] || null,
+                            current_page: pathname,
+                            last_active_at: new Date().toISOString(),
+                            cart_value: cartValue,
+                            status: pathname === '/checkout' ? 'Checkout' : cartValue > 0 ? 'Browsing' : 'Idle'
+                        });
+                    } catch { }
                 }, 1);
             }
         };
 
         sendHeartbeat();
-        const interval = setInterval(sendHeartbeat, 300000); // Pulse every 5 minutes (300s) to save battery
+        const interval = setInterval(() => {
+            sendHeartbeat().catch(() => {});
+        }, 300000); // Pulse every 5 minutes (300s) to save battery
         return () => clearInterval(interval);
     }, [pathname, isAdmin, isRider]);
 

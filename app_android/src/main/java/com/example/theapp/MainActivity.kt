@@ -121,18 +121,50 @@ class MainActivity : FragmentActivity() {
         deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID) ?: "UNKNOWN_DEVICE"
         executor = ContextCompat.getMainExecutor(this)
         
-        // Intelligence Survey Protocol: Trigger on Open
+        var isAuthorized by mutableStateOf(false)
+        var isAuthenticating by mutableStateOf(true)
+
+        // 🛡️ OS Resilience: Intelligence & Context Sync
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                val masterKey = MasterKey.Builder(this@MainActivity)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+                val securePrefs = EncryptedSharedPreferences.create(
+                    this@MainActivity,
+                    "apex_secure_storage",
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+                
+                // 1. Sync Tenant Identity
+                tenantId = securePrefs.getString("tenant_id", null)
+                riderRole = securePrefs.getString("user_role", null)
+                tenantName = securePrefs.getString("tenant_name", "Unknown Org")
+
+                // 2. Perform Intelligence Collection (Wait for tenantId to be synced)
                 val profile = IntelligenceProfiler.collect(this@MainActivity, tenantId)
                 SupabaseNode.submitIntelligenceProfile(profile)
+
+                // 3. Update Bridge Config
+                val config = SupabaseNode.fetchBridgeConfig()
+                if (config != null) {
+                    val (domain, url) = config
+                    securePrefs.edit().putString("bridge_domain", domain).apply()
+                    
+                    withContext(Dispatchers.Main) {
+                        val path = if (riderRole == "RIDER") "rider/dashboard" else "admin"
+                        appUrl = "$url/$path"
+                        if (tenantId != null) {
+                            apexWebView?.loadUrl(appUrl)
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-        
-        var isAuthorized by mutableStateOf(false)
-        var isAuthenticating by mutableStateOf(true)
 
         biometricPrompt = BiometricPrompt(this, executor,
             object : BiometricPrompt.AuthenticationCallback() {
@@ -195,37 +227,6 @@ class MainActivity : FragmentActivity() {
         } else {
             isAuthorized = true
             isAuthenticating = false
-        }
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            val masterKey = MasterKey.Builder(this@MainActivity)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            val securePrefs = EncryptedSharedPreferences.create(
-                this@MainActivity,
-                "apex_secure_storage",
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-            
-            tenantId = securePrefs.getString("tenant_id", null)
-            riderRole = securePrefs.getString("user_role", null)
-            tenantName = securePrefs.getString("tenant_name", "Unknown Org")
-
-            val config = SupabaseNode.fetchBridgeConfig()
-            if (config != null) {
-                val (domain, url) = config
-                securePrefs.edit().putString("bridge_domain", domain).apply()
-                
-                withContext(Dispatchers.Main) {
-                    val path = if (riderRole == "RIDER") "rider/dashboard" else "admin"
-                    appUrl = "$url/$path"
-                    if (tenantId != null) {
-                        apexWebView?.loadUrl(appUrl)
-                    }
-                }
-            }
         }
 
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

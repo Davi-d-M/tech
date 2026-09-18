@@ -51,6 +51,16 @@ interface UserSignal {
     url?: string;
 }
 
+interface SignalPayload {
+    session_id: string;
+    visitor_id: string;
+    user_id: string | null;
+    event_type: string;
+    target?: string;
+    metadata?: Record<string, unknown>;
+    url?: string;
+}
+
 class SignalService {
     private queue: UserSignal[] = [];
     private sessionId: string = '';
@@ -62,120 +72,164 @@ class SignalService {
 
     constructor() {
         if (typeof window !== 'undefined') {
-            this.sessionId = this.getOrCreateSessionId();
-            this.visitorId = this.getOrCreateVisitorId();
-            this.setupAutoFlush();
-            this.setupHeartbeat();
-            this.captureUTMs();
-            this.initializeSession();
+            try {
+                this.sessionId = this.getOrCreateSessionId();
+                this.visitorId = this.getOrCreateVisitorId();
+                this.setupAutoFlush();
+                this.setupHeartbeat();
+                this.captureUTMs();
+                this.initializeSession().catch(() => {});
+            } catch (error) {
+                console.error("SignalService Initialization Failure:", error);
+            }
         }
     }
 
     private getOrCreateSessionId(): string {
-        let sid = sessionStorage.getItem('apex_signal_session');
-        if (!sid) {
-            sid = `ses-${Math.random().toString(36).substring(2, 15)}-${Date.now()}`;
-            sessionStorage.setItem('apex_signal_session', sid);
+        try {
+            let sid = sessionStorage.getItem('apex_signal_session');
+            if (!sid) {
+                sid = `ses-${Math.random().toString(36).substring(2, 15)}-${Date.now()}`;
+                sessionStorage.setItem('apex_signal_session', sid);
+            }
+            return sid;
+        } catch {
+            return `ses-fallback-${Math.random().toString(36).substring(2, 8)}`;
         }
-        return sid;
     }
 
     private getOrCreateVisitorId(): string {
-        let vid = localStorage.getItem('apex_visitor_id');
-        if (!vid) {
-            vid = `vis-${Math.random().toString(36).substring(2, 15)}-${Date.now()}`;
-            localStorage.setItem('apex_visitor_id', vid);
+        try {
+            let vid = localStorage.getItem('apex_visitor_id');
+            if (!vid) {
+                vid = `vis-${Math.random().toString(36).substring(2, 15)}-${Date.now()}`;
+                localStorage.setItem('apex_visitor_id', vid);
+            }
+            return vid;
+        } catch {
+            return `vis-fallback-${Math.random().toString(36).substring(2, 8)}`;
         }
-        return vid;
     }
 
     private captureUTMs() {
-        const params = new URLSearchParams(window.location.search);
-        const utms = {
-            utm_source: params.get('utm_source'),
-            utm_medium: params.get('utm_medium'),
-            utm_campaign: params.get('utm_campaign'),
-            utm_content: params.get('utm_content'),
-            ref: params.get('ref') || params.get('affiliate')
-        };
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const utms: Record<string, string | null> = {
+                utm_source: params.get('utm_source'),
+                utm_medium: params.get('utm_medium'),
+                utm_campaign: params.get('utm_campaign'),
+                utm_content: params.get('utm_content'),
+                ref: params.get('ref') || params.get('affiliate')
+            };
 
-        if (utms.utm_source || utms.ref) {
-            sessionStorage.setItem('apex_utms', JSON.stringify(utms));
+            if (utms.utm_source || utms.ref) {
+                sessionStorage.setItem('apex_utms', JSON.stringify(utms));
 
-            // ELITE ATTRIBUTION: Link to affiliate in cookie for long-term tracking
-            if (utms.ref) {
-                document.cookie = `apex_affiliate_id=${utms.ref}; path=/; max-age=${60 * 60 * 24 * 30}; sameSite=lax`;
+                // ELITE ATTRIBUTION: Link to affiliate in cookie for long-term tracking
+                if (utms.ref) {
+                    document.cookie = `apex_affiliate_id=${utms.ref}; path=/; max-age=${60 * 60 * 24 * 30}; sameSite=lax`;
+                }
             }
+        } catch (error) {
+            console.warn("SignalService UTM Capture Failure:", error);
         }
     }
 
     private async initializeSession() {
         if (!supabase) return;
 
-        const utms = JSON.parse(sessionStorage.getItem('apex_utms') || '{}');
-        const { data: { session } } = await supabase.auth.getSession();
+        try {
+            let utms: Record<string, unknown> = {};
+            try {
+                const stored = sessionStorage.getItem('apex_utms');
+                if (stored) utms = JSON.parse(stored) as Record<string, unknown>;
+            } catch {
+                // Ignore parse errors
+            }
 
-        // 1. Ensure Visitor Identity exists with extended attribution
-        await supabase.from('visitor_identity').upsert({
-            visitor_id: this.visitorId,
-            user_id: session?.user?.id || null,
-            acquisition_source: utms.utm_source,
-            acquisition_campaign: utms.utm_campaign,
-            acquisition_medium: utms.utm_medium,
-            acquisition_content: utms.utm_content,
-            last_seen: new Date().toISOString()
-        }, { onConflict: 'visitor_id' });
+            const { data: sessionData } = await supabase.auth.getSession();
+            const session = sessionData.session;
 
-        // 2. Create User Session
-        await supabase.from('user_sessions').upsert({
-            session_id: this.sessionId,
-            visitor_id: this.visitorId,
-            user_id: session?.user?.id || null,
-            utm_source: utms.utm_source,
-            utm_medium: utms.utm_medium,
-            utm_campaign: utms.utm_campaign,
-            utm_content: utms.utm_content,
-            affiliate_id: utms.ref,
-            entry_url: window.location.pathname,
-            device_type: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
-            browser: navigator.userAgent.substring(0, 50)
-        }, { onConflict: 'session_id' });
+            // 1. Ensure Visitor Identity exists with extended attribution
+            await supabase.from('visitor_identity').upsert({
+                visitor_id: this.visitorId,
+                user_id: session?.user?.id || null,
+                acquisition_source: utms.utm_source || null,
+                acquisition_campaign: utms.utm_campaign || null,
+                acquisition_medium: utms.utm_medium || null,
+                acquisition_content: utms.utm_content || null,
+                last_seen: new Date().toISOString()
+            }, { onConflict: 'visitor_id' });
+
+            // 2. Create User Session
+            await supabase.from('user_sessions').upsert({
+                session_id: this.sessionId,
+                visitor_id: this.visitorId,
+                user_id: session?.user?.id || null,
+                utm_source: utms.utm_source || null,
+                utm_medium: utms.utm_medium || null,
+                utm_campaign: utms.utm_campaign || null,
+                utm_content: utms.utm_content || null,
+                affiliate_id: utms.ref || null,
+                entry_url: window.location.pathname,
+                device_type: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+                browser: navigator.userAgent.substring(0, 50)
+            }, { onConflict: 'session_id' });
+        } catch (error) {
+            console.error("SignalService initializeSession Failure:", error);
+        }
     }
 
     private setupAutoFlush() {
         if (typeof window === 'undefined') return;
-        this.timer = setInterval(() => this.flush(), this.flushInterval);
-        window.addEventListener('beforeunload', () => this.flush());
+        try {
+            this.timer = setInterval(() => {
+                this.flush().catch(() => {});
+            }, this.flushInterval);
+            window.addEventListener('beforeunload', () => {
+                this.flush().catch(() => {});
+            });
+        } catch {
+            // Ignore timer failures
+        }
     }
 
     private setupHeartbeat() {
         if (typeof window === 'undefined') return;
-        this.heartbeatTimer = setInterval(() => {
-            if (!document.hidden) {
-                this.track({ event_type: 'HEARTBEAT', metadata: { active: true } });
-            }
-        }, this.heartbeatInterval);
+        try {
+            this.heartbeatTimer = setInterval(() => {
+                if (!document.hidden) {
+                    this.track({ event_type: 'HEARTBEAT', metadata: { active: true } });
+                }
+            }, this.heartbeatInterval);
+        } catch {
+            // Ignore timer failures
+        }
     }
 
     public track(signal: UserSignal) {
         if (typeof window === 'undefined') return;
 
-        // Capture approximate location hints if available in sessionStorage/localStorage
-        const lat = localStorage.getItem('apex_lat');
-        const lng = localStorage.getItem('apex_lng');
+        try {
+            // Capture approximate location hints if available in sessionStorage/localStorage
+            const lat = localStorage.getItem('apex_lat');
+            const lng = localStorage.getItem('apex_lng');
 
-        this.queue.push({
-            ...signal,
-            url: window.location.pathname,
-            metadata: {
-                ...signal.metadata,
-                timestamp: Date.now(),
-                geo_hint: lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined
+            this.queue.push({
+                ...signal,
+                url: window.location.pathname,
+                metadata: {
+                    ...signal.metadata,
+                    timestamp: Date.now(),
+                    geo_hint: lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined
+                }
+            });
+
+            if (['ADD_TO_BAG', 'CLICK', 'IDENTITY_BRIDGE', 'CHECKOUT_START'].includes(signal.event_type)) {
+                this.flush().catch(() => {});
             }
-        });
-
-        if (['ADD_TO_BAG', 'CLICK', 'IDENTITY_BRIDGE', 'CHECKOUT_START'].includes(signal.event_type)) {
-            this.flush();
+        } catch (error) {
+            console.warn("Signal tracking failure:", error);
         }
     }
 
@@ -186,9 +240,10 @@ class SignalService {
         this.queue = [];
 
         try {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: sessionData } = await supabase.auth.getSession();
+            const session = sessionData.session;
 
-            const payload = signalsToFlush.map(s => ({
+            const payload: SignalPayload[] = signalsToFlush.map(s => ({
                 session_id: this.sessionId,
                 visitor_id: this.visitorId,
                 user_id: session?.user?.id || null,

@@ -26,9 +26,13 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) {
-      setWishlist(JSON.parse(savedWishlist));
+    try {
+        const savedWishlist = localStorage.getItem("wishlist");
+        if (savedWishlist) {
+          setWishlist(JSON.parse(savedWishlist));
+        }
+    } catch (e) {
+        console.error("Wishlist Context Restoration Failure:", e);
     }
 
     async function checkUser() {
