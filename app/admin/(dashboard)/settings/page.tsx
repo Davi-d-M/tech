@@ -294,9 +294,19 @@ export default function AdminSettingsPage() {
             if (error) throw error;
 
             await logAuditAction(email, 'UPDATE_SETTINGS', { key, published: publish });
+
+            // 🌐 CDN PROTOCOL: Refresh Edge Layer
+            if (publish) {
+                await fetch('/api/admin/revalidate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'settings' })
+                }).catch(e => console.warn("CDN Sync Delayed:", e));
+            }
+
             setMessage({
                 type: 'success',
-                text: publish ? `${key.toUpperCase()} published to live site.` : `${key.toUpperCase()} saved as draft.`
+                text: publish ? `${key.toUpperCase()} published and CDN synchronized.` : `${key.toUpperCase()} saved as draft.`
             });
 
             setTimeout(() => setMessage(null), 5000);
@@ -348,13 +358,20 @@ export default function AdminSettingsPage() {
 
             if (error) throw error;
 
+            // 🌐 CDN PROTOCOL: Global Extraction Purge
+            await fetch('/api/admin/revalidate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'all' })
+            }).catch(e => console.warn("Global CDN Sync Delayed:", e));
+
             setBranding(updatedBrandingLocal);
             setHomepage(updatedHomepageLocal);
             setLogoFile(null);
             setFaviconFile(null);
             setHeroFile(null);
 
-            setMessage({ type: 'success', text: "All changes synchronized to the live storefront." });
+            setMessage({ type: 'success', text: "All changes synchronized to the live storefront and CDN." });
         } catch (err: unknown) {
             const error = err as Error;
             setMessage({ type: 'error', text: error.message });

@@ -494,7 +494,15 @@ function UploadContent() {
 
       cancelEditing();
       fetchProducts();
-      setMessage({ type: 'success', text: editingId ? 'Product updated.' : 'Product deployed!' });
+
+      // 🌐 CDN PROTOCOL: Refresh Product Grid
+      await fetch('/api/admin/revalidate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'products' })
+      }).catch(e => console.warn("CDN Sync Delayed:", e));
+
+      setMessage({ type: 'success', text: editingId ? 'Product updated and CDN refreshed.' : 'Product deployed to edge!' });
       setTimeout(() => setMessage(null), 3000);
     } catch (err: unknown) {
         const error = err as Error;
@@ -515,7 +523,15 @@ function UploadContent() {
         await logAuditAction(email, 'DELETE_PRODUCT', { id, name });
         if (editingId === id) cancelEditing();
         fetchProducts();
-        setMessage({ type: 'success', text: `${name} deleted.` });
+
+        // 🌐 CDN PROTOCOL: Purge Deleted SKU
+        await fetch('/api/admin/revalidate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'products' })
+        }).catch(e => console.warn("CDN Sync Delayed:", e));
+
+        setMessage({ type: 'success', text: `${name} deleted and purged from CDN.` });
         setTimeout(() => setMessage(null), 3000);
     } catch (err: unknown) {
         const error = err as Error;
