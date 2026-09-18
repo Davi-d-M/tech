@@ -14,9 +14,18 @@ export interface CartItem {
   wholesale_min_qty?: number;
 }
 
+export interface CompareItem {
+  id: number;
+  name: string;
+  price: number;
+  image?: string;
+  image_url?: string;
+  tech_specs?: Record<string, string>;
+}
+
 interface CartContextProps {
   cart: CartItem[];
-  compareList: CartItem[];
+  compareList: CompareItem[];
   gifting: {
     isGift: boolean;
     message: string;
@@ -26,7 +35,7 @@ interface CartContextProps {
   };
   addToCart: (item: CartItem) => void;
   addBundleToCart: (items: CartItem[]) => void;
-  toggleCompare: (item: CartItem) => void;
+  toggleCompare: (item: CompareItem) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
   updateQuantity: (id: number, quantity: number) => void;
@@ -43,7 +52,7 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [compareList, setCompareList] = useState<CartItem[]>([]);
+  const [compareList, setCompareList] = useState<CompareItem[]>([]);
   const [gifting, setGifting] = useState<CartContextProps['gifting']>({
       isGift: false,
       message: '',
@@ -154,7 +163,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
-  const toggleCompare = (item: CartItem) => {
+  const toggleCompare = (item: CompareItem) => {
       setCompareList(prev => {
           const exists = prev.find(p => p.id === item.id);
           if (exists) return prev.filter(p => p.id !== item.id);
