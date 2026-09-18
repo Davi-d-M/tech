@@ -62,7 +62,11 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    try {
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    } catch (e) {
+        console.warn("localStorage setItem failure (wishlist):", e);
+    }
   }, [wishlist]);
 
   const addToWishlist = async (item: WishlistItem) => {
@@ -91,7 +95,11 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
 
   const clearWishlist = () => {
     setWishlist([]);
-    localStorage.removeItem("wishlist");
+    try {
+        localStorage.removeItem("wishlist");
+    } catch (e) {
+        console.warn("localStorage removeItem failure (wishlist):", e);
+    }
   };
 
   return (

@@ -10,15 +10,17 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  error: Error | null;
 }
 
 export default class PublicErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false
+    hasError: false,
+    error: null
   };
 
-  public static getDerivedStateFromError(_: Error): State {
-    return { hasError: true };
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -41,6 +43,11 @@ export default class PublicErrorBoundary extends Component<Props, State> {
                 <p className="text-slate-500 font-medium text-sm italic leading-relaxed">
                     The OS detected a client-side exception. We need to re-initialize your session to restore stability.
                 </p>
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mt-4">
+                    <code className="text-[10px] text-rose-500 font-bold break-words block">
+                        {this.state.error?.message || "Unexpected failure"}
+                    </code>
+                </div>
             </div>
 
             <div className="pt-4 space-y-4">

@@ -107,9 +107,10 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}
       >
-        <JsonLd />
-        <SignalTracker />
-        {/* Enterprise Marketing Scripts */}
+        <PublicErrorBoundary>
+            <JsonLd />
+            <SignalTracker />
+            {/* Enterprise Marketing Scripts */}
         {process.env.NEXT_PUBLIC_GA_ID && (
             <Script
                 strategy="afterInteractive"
@@ -145,13 +146,12 @@ export default async function RootLayout({
 
         <CartProvider>
           <WishlistProvider>
-            <PublicErrorBoundary>
-                <PublicLayoutShield initialSettings={settings}>
-                    {children}
-                </PublicLayoutShield>
-            </PublicErrorBoundary>
+            <PublicLayoutShield initialSettings={settings}>
+                {children}
+            </PublicLayoutShield>
           </WishlistProvider>
         </CartProvider>
+        </PublicErrorBoundary>
       </body>
     </html>
   );

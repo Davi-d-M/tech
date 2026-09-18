@@ -69,11 +69,19 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    try {
+        localStorage.setItem("cart", JSON.stringify(cart));
+    } catch (e) {
+        console.warn("localStorage setItem failure (cart):", e);
+    }
   }, [cart]);
 
   useEffect(() => {
-      localStorage.setItem("apex_gifting", JSON.stringify(gifting));
+      try {
+          localStorage.setItem("apex_gifting", JSON.stringify(gifting));
+      } catch (e) {
+          console.warn("localStorage setItem failure (gifting):", e);
+      }
   }, [gifting]);
 
   const addToCart = (item: CartItem) => {
@@ -138,7 +146,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   const clearCart = () => {
     setCart([]);
-    localStorage.removeItem("cart");
+    try {
+        localStorage.removeItem("cart");
+    } catch (e) {
+        console.warn("localStorage removeItem failure (cart):", e);
+    }
   };
 
   const updateQuantity = (id: number, quantity: number) => {
