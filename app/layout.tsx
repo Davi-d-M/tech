@@ -92,11 +92,11 @@ export default async function RootLayout({
           else if (key === 'social_links') settings.social_links = { ...settings.social_links, ...(value as StoreSettings['social_links']) };
           else if (key === 'store_info') settings.store_info = { ...settings.store_info, ...(value as StoreSettings['store_info']) };
           else if (key === 'features') settings.features = { ...settings.features, ...(value as StoreSettings['features']) };
-          else if (key === 'promotions') settings.promotions = { ...(settings.promotions || {}), ...(value as any) };
-          else if (key === 'layout') settings.layout = { ...(settings.layout || {}), ...(value as any) };
-          else if (key === 'navigation') settings.navigation = { ...(settings.navigation || {}), ...(value as any) };
-          else if (key === 'globals') settings.globals = { ...(settings.globals || {}), ...(value as any) };
-          else if (key === 'content') settings.content = { ...(settings.content || {}), ...(value as any) };
+          else if (key === 'promotions') settings.promotions = { ...(settings.promotions || {}), ...(value as NonNullable<StoreSettings['promotions']>) } as StoreSettings['promotions'];
+          else if (key === 'layout') settings.layout = { ...(settings.layout || {}), ...(value as NonNullable<StoreSettings['layout']>) } as StoreSettings['layout'];
+          else if (key === 'navigation') settings.navigation = { ...(settings.navigation || {}), ...(value as NonNullable<StoreSettings['navigation']>) } as StoreSettings['navigation'];
+          else if (key === 'globals') settings.globals = { ...(settings.globals || {}), ...(value as NonNullable<StoreSettings['globals']>) } as StoreSettings['globals'];
+          else if (key === 'content') settings.content = { ...(settings.content || {}), ...(value as NonNullable<StoreSettings['content']>) } as StoreSettings['content'];
       });
   }
 
