@@ -142,10 +142,10 @@ class SignalService {
         if (!supabase) return;
 
         try {
-            let utms: Record<string, any> = {};
+            let utms: Record<string, unknown> = {};
             try {
                 const stored = sessionStorage.getItem('apex_utms');
-                if (stored) utms = JSON.parse(stored) as Record<string, any>;
+                if (stored) utms = JSON.parse(stored) as Record<string, unknown>;
             } catch {
                 // Ignore parse errors
             }

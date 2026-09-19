@@ -129,7 +129,7 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
             window.location.href = '/onboarding';
         } catch (error: unknown) {
             console.error('[AUTH] Critical failure:', error);
-            const errorMsg = (error as any)?.message || 'An error occurred. Please check your connection.';
+            const errorMsg = error instanceof Error ? error.message : 'An error occurred. Please check your connection.';
 
             if (errorMsg.includes('email rate limit') || errorMsg.includes('rate limit')) {
                 setCooldownSeconds(COOLDOWN_DURATION);

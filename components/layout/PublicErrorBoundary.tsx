@@ -64,7 +64,7 @@ export default class PublicErrorBoundary extends Component<Props, State> {
                         try {
                             sessionStorage.clear();
                             window.location.href = '/';
-                        } catch (e) {
+                        } catch {
                             window.location.reload();
                         }
                     }}
