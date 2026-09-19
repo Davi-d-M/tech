@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useEffect, useState, useMemo } from 'react';
 import { Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useSettings } from '@/lib/useSettings';
+import { useSettingsContext } from '@/context/SettingsContext';
 
 interface TickerItem {
     text: string;
@@ -14,7 +14,7 @@ interface TickerItem {
 const DEFAULT_TICKER: TickerItem[] = [];
 
 export default function LiveTicker() {
-    const { settings } = useSettings();
+    const settings = useSettingsContext();
     const promotions = (settings as { promotions?: { is_active?: boolean; flash_sale_text?: string } }).promotions || {};
     const [currentIndex, setCurrentIndex] = useState(0);
 

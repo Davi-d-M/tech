@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { useSettings, type StoreSettings } from '@/lib/useSettings';
+import { useSettingsContext } from '@/context/SettingsContext';
 import { Smartphone } from 'lucide-react';
 
 // Lazy Load Non-Critical Components
@@ -65,18 +65,17 @@ function ReferralTracker() {
     return null;
 }
 
-export default function PublicLayoutShield({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
+export default function PublicLayoutShield({ children }: { children: React.ReactNode }) {
     return (
         <Suspense fallback={<ShieldLoading />}>
-            <ShieldContent initialSettings={initialSettings}>{children}</ShieldContent>
+            <ShieldContent>{children}</ShieldContent>
         </Suspense>
     );
 }
 
-function ShieldContent({ children, initialSettings }: { children: React.ReactNode, initialSettings?: StoreSettings }) {
+function ShieldContent({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const { settings: hookSettings } = useSettings();
-    const settings = initialSettings || hookSettings;
+    const settings = useSettingsContext();
     const isAdmin = pathname?.startsWith('/admin');
     const isRider = pathname?.startsWith('/rider');
 
@@ -188,9 +187,9 @@ function ShieldContent({ children, initialSettings }: { children: React.ReactNod
             <AchievementPopup />
             <LiveTicker />
             <AbandonedCartBar />
-            <Header initialSettings={settings} />
+            <Header />
             <main className="flex-grow">{children}</main>
-            <Footer initialSettings={settings} />
+            <Footer />
             <ExitIntentPopup />
             <CompareBar />
             <SupportBubble />

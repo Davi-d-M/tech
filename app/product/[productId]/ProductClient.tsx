@@ -32,7 +32,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import RestockRadar from "@/components/product/RestockRadar";
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import JsonLd from "@/components/seo/JsonLd";
 
 const Product3DViewer = dynamic(() => import("@/components/product/3d/Product3DViewer"), {
@@ -57,7 +57,7 @@ export default function ProductClient({
 }) {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { settings } = useSettings();
+  const settings = useSettingsContext();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [quantity, setQuantity] = useState(1);

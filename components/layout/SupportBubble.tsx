@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MessageCircle, X, Zap, ChevronRight, Package, ArrowLeft, Search, Loader2, CheckCircle, Send } from 'lucide-react';
-import { useSettings } from '@/lib/useSettings';
+import { useSettingsContext } from '@/context/SettingsContext';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
@@ -12,7 +12,7 @@ interface UserProfile {
 }
 
 export default function SupportBubble() {
-    const { settings } = useSettings();
+    const settings = useSettingsContext();
     const [showLabel, setShowLabel] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [mode, setMode] = useState<'menu' | 'track' | 'message' | 'ai'>('menu');

@@ -17,12 +17,11 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
-import { useSettings, type StoreSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import { cn } from "@/lib/utils";
 
-export default function Footer({ initialSettings }: { initialSettings?: StoreSettings }) {
-  const { settings: hookSettings, loading } = useSettings();
-  const settings = initialSettings || hookSettings;
+export default function Footer() {
+  const settings = useSettingsContext();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'idle', message: string }>({ type: 'idle', message: "" });
@@ -184,15 +183,15 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
                     <MapPin className="h-3 w-3 text-primary" />
-                    <span>{loading ? '...' : settings.contact.address}</span>
+                    <span>{settings.contact.address}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
                     <Phone className="h-3 w-3 text-primary" />
-                    <span>+{loading ? '...' : settings.contact.whatsapp}</span>
+                    <span>+{settings.contact.whatsapp}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
                     <Mail className="h-3 w-3 text-primary" />
-                    <span>{loading ? '...' : settings.contact.email}</span>
+                    <span>{settings.contact.email}</span>
                   </div>
                 </div>
               </div>
@@ -345,7 +344,7 @@ export default function Footer({ initialSettings }: { initialSettings?: StoreSet
               <span>All Rights Reserved.</span>
             </div>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-2">
-                Developed by <a href={loading ? "#" : (settings.branding.portfolio_url || "https://tech-paxv.onrender.com")} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{loading ? "..." : (settings.branding.owner_name || "Apex stores")}</a>
+                Developed by <a href={settings.branding.portfolio_url || "https://tech-paxv.onrender.com"} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{settings.branding.owner_name || "Apex stores"}</a>
             </p>
           </div>
 

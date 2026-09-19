@@ -1,6 +1,6 @@
 "use client";
 
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import { Product } from "@/lib/types";
 
 interface JsonLdProps {
@@ -10,7 +10,7 @@ interface JsonLdProps {
 }
 
 export default function JsonLd({ product, breadcrumbs, hideOrganization }: JsonLdProps) {
-  const { settings } = useSettings();
+  const settings = useSettingsContext();
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://tech-paxv.onrender.com';
 

@@ -73,7 +73,7 @@ export default async function Home() {
               case 'hero':
                   return (
                       <div key="hero" id="hero-section" data-signal-section="hero">
-                        <DynamicHero initialSettings={settings} />
+                        <DynamicHero />
                       </div>
                   );
               case 'promotions':

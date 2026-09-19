@@ -17,7 +17,7 @@ import { ArrowLeft, CreditCard, Shield, Truck, Smartphone, Loader2, MapPin, Tag,
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import dynamic from "next/dynamic";
 
 const LocationPicker = dynamic(() => import("@/components/profile/LocationPicker"), {
@@ -65,7 +65,7 @@ declare global {
 
 function CheckoutContent() {
   const { cart, clearCart } = useCart();
-  const { settings } = useSettings();
+  const settings = useSettingsContext();
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");

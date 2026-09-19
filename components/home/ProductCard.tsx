@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import RestockNotifyButton from "@/components/product/RestockNotifyButton";
 import { useWishlist } from "@/context/WishlistContext";
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import { Product } from "@/lib/types";
 import { supabase } from "@/lib/supabaseClient";
 import { signalService } from "@/lib/signalService";
@@ -39,7 +39,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const { addToCart, toggleCompare, compareList } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { settings } = useSettings();
+  const settings = useSettingsContext();
 
   useEffect(() => {
       async function checkTier() {

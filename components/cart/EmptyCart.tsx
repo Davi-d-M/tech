@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import { Shield, ShoppingBag, Truck } from "lucide-react";
 import Link from "next/link";
 
 export default function EmptyCart() {
-  const { settings } = useSettings();
+  const settings = useSettingsContext();
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-32 text-left">

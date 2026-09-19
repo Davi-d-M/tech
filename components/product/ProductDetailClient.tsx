@@ -9,10 +9,10 @@ import { formatPrice, cn, getReferralLink } from '@/lib/utils';
 import ReviewSection from '@/components/product/ReviewSection';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useSettingsContext } from '@/context/SettingsContext';
 import BundleUpsell from './BundleUpsell';
 import RestockNotifyButton from './RestockNotifyButton';
 import { supabase } from '@/lib/supabaseClient';
-import { useSettings } from '@/lib/useSettings';
 import UrgencyPopup from './UrgencyPopup';
 import Image from 'next/image';
 
@@ -51,7 +51,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const router = useRouter();
-  const { settings } = useSettings();
+  const settings = useSettingsContext();
 
   // 1. Browsing History & Affiliate Logic
   React.useEffect(() => {

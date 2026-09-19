@@ -135,6 +135,9 @@ export function useSettings() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            console.warn("[APEX] useSettings hook invoked. This triggers a redundant database fetch. Use useSettingsContext() where possible.");
+        }
         async function loadSettings() {
             if (!supabase) {
                 setLoading(false);

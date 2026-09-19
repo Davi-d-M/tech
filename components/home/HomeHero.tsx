@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, ShieldCheck, Trophy, Sparkles, Smartphone } from "lucide-react";
 import Link from "next/link";
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import CountdownTimer from "./CountdownTimer";
 
 export default function HomeHero() {
-  const { settings } = useSettings();
+  const settings = useSettingsContext();
   const promotions = settings.promotions;
 
   return (

@@ -3,15 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, ShieldCheck, Trophy, Sparkles, Smartphone } from "lucide-react";
 import Link from "next/link";
-import { useSettings, type StoreSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 import { formatPrice } from "@/lib/utils";
 
 import Image from "next/image";
 
-export default function DynamicHero({ initialSettings }: { initialSettings?: StoreSettings }) {
-  const { settings: hookSettings } = useSettings();
-
-  const settings = initialSettings || hookSettings;
+export default function DynamicHero() {
+  const settings = useSettingsContext();
 
   return (
     <section className="relative pt-12 pb-16 lg:pt-28 lg:pb-40 overflow-hidden bg-white text-left">

@@ -1,0 +1,9 @@
+- [ ] Simplify `AuthForm.tsx` (Remove redundant `onClick`, re-add `router`)
+- [ ] Migrate `PublicLayoutShield.tsx` to `useSettingsContext`
+- [ ] Migrate `Header.tsx` to `useSettingsContext`
+- [ ] Migrate `Footer.tsx` to `useSettingsContext`
+- [ ] Migrate `ProductCard.tsx` to `useSettingsContext`
+- [ ] Migrate `ProductDetailClient.tsx` to `useSettingsContext`
+- [ ] Migrate `app/checkout/page.tsx` to `useSettingsContext`
+- [ ] Run build verification
+- [ ] Push changes to GitHub

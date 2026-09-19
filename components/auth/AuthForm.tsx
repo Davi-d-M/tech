@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 interface AuthFormProps {
@@ -8,6 +9,7 @@ interface AuthFormProps {
 }
 
 export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
+    const router = useRouter();
     const [fullName, setFullName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
@@ -22,7 +24,6 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
 
     useEffect(() => {
         setIsSignUp(initialMode === 'signup');
-        // Check DB Connectivity
         if (!supabase) setDbOnline(false);
     }, [initialMode]);
 
@@ -82,7 +83,7 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
                 if (data?.session) {
                     console.log("[AUTH] Sign up success (Immediate session)");
                     setMessage('Account created! Welcome to Apex stores. 🚀');
-                    window.location.href = '/onboarding';
+                    router.push('/onboarding');
                 } else {
                     console.log("[AUTH] Sign up success (Verification pending)");
                     setMessage('Account created! Please check your email to verify your identity.');
@@ -127,9 +128,9 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
             }, 10);
 
             setMessage('Logged in successfully!');
-
-            // Hard redirect to ensure session is fully picked up by middleware
-            window.location.href = '/onboarding';
+            router.push('/onboarding');
+            // Fallback for session sync
+            setTimeout(() => { if (window.location.pathname !== '/onboarding') window.location.href = '/onboarding'; }, 2000);
         } catch (error: unknown) {
             console.error('[AUTH] Critical failure:', error);
             const errorMsg = error instanceof Error ? error.message : 'An error occurred. Please check your connection.';
@@ -159,7 +160,7 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
                 </div>
             )}
 
-            <form onSubmit={handleAuth} noValidate className="space-y-4">
+            <form onSubmit={handleAuth} className="space-y-4">
                 {isSignUp && (
                     <>
                         <div>
@@ -216,10 +217,6 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
 
                 <button
                     type="submit"
-                    onClick={(e) => {
-                        // Backup trigger if onSubmit is swallowed
-                        if (!loading && dbOnline) handleAuth(e as any);
-                    }}
                     disabled={loading || (isSignUp && cooldownSeconds > 0) || !dbOnline}
                     className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3.5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
                 >

@@ -148,7 +148,7 @@ export default async function RootLayout({
 
                 <CartProvider>
                   <WishlistProvider>
-                    <PublicLayoutShield initialSettings={settings}>
+                    <PublicLayoutShield>
                         {children}
                     </PublicLayoutShield>
                   </WishlistProvider>

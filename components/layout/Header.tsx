@@ -9,7 +9,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { formatPrice, cn } from "@/lib/utils";
-import { useSettings, type StoreSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 
 interface SearchResult {
   id: number;
@@ -144,11 +144,10 @@ function UserMenu({ isMobileMenu = false }: { isMobileMenu?: boolean }) {
 
 import AnnouncementBar from "./AnnouncementBar";
 
-export default function Header({ initialSettings }: { initialSettings?: StoreSettings }) {
+export default function Header() {
   const { cart } = useCart();
   const { wishlist } = useWishlist();
-  const { settings: hookSettings } = useSettings();
-  const settings = initialSettings || hookSettings;
+  const settings = useSettingsContext();
 
   const cartCount =
     cart?.reduce((total, item) => total + item.quantity, 0) || 0;
