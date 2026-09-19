@@ -10,7 +10,7 @@ export const getCachedSettings = unstable_cache(
     try {
         const result = await withTimeout(
             supabase.from('settings').select('*'),
-            5000, // FAST FAIL: Only wait 5s for root settings
+            3000, // HYPER FAIL: Only wait 3s for root settings to avoid white screen
             'Root Settings Query'
         );
         return { data: (result.data as SettingsRow[]) || [] };
@@ -30,7 +30,7 @@ export const getCachedHomeData = unstable_cache(
     // Granular Recovery: Wrap each query individually so one stall doesn't kill the whole page
     const fetchPosts = async () => {
         try {
-            const res = await withTimeout(supabase!.from('blog_posts').select('*').eq('is_published', true).limit(2), 10000, 'Blog Query');
+            const res = await withTimeout(supabase!.from('blog_posts').select('*').eq('is_published', true).limit(2), 5000, 'Blog Query');
             return { data: (res.data as Post[]) || [] };
         } catch (e) {
             console.warn("Home Data Recovery (Posts):", e);
@@ -40,7 +40,7 @@ export const getCachedHomeData = unstable_cache(
 
     const fetchProducts = async () => {
         try {
-            const res = await withTimeout(supabase!.from('products').select('*').order('created_at', { ascending: false }), 12000, 'Products Query');
+            const res = await withTimeout(supabase!.from('products').select('*').order('created_at', { ascending: false }), 7000, 'Products Query');
             return { data: (res.data as Product[]) || [] };
         } catch (e) {
             console.warn("Home Data Recovery (Products):", e);
@@ -50,7 +50,7 @@ export const getCachedHomeData = unstable_cache(
 
     const fetchSettings = async () => {
         try {
-            const res = await withTimeout(supabase!.from('settings').select('*'), 10000, 'Settings Query');
+            const res = await withTimeout(supabase!.from('settings').select('*'), 5000, 'Settings Query');
             return { data: (res.data as SettingsRow[]) || [] };
         } catch (e) {
             console.warn("Home Data Recovery (Settings):", e);

@@ -274,7 +274,7 @@ export default function IntelligenceHub() {
                                     {sig.target || sig.url || 'Internal Operation'}
                                 </p>
                             </div>
-                            <Link href={`/admin/customers/${sig.metadata?.phone || '0700000000'}/journey`}>
+                            <Link href={`/admin/customers/${sig.metadata?.phone || sig.metadata?.email || '0700000000'}/journey`}>
                                 <button className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline flex items-center gap-2">Trace Journey <MousePointer2 size={12} /></button>
                             </Link>
                         </div>

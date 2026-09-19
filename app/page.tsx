@@ -9,10 +9,15 @@ import Image from "next/image";
 import { getCachedHomeData } from "@/lib/cachedData";
 import { DEFAULT_SETTINGS } from "@/lib/useSettings";
 import { type StoreSettings, SettingsRow, Post, Product } from "@/lib/types";
+import { Suspense } from 'react';
 
 export const revalidate = 300; // Shared with cache
 
-export default async function Home() {
+/**
+ * Apex OS: Streaming Home Protocol
+ * Separates the static shell from the dynamic data extraction.
+ */
+async function HomeContent() {
   // 1. Fetch All Data in Parallel on Server (Shared Cache) with Defensive Try-Catch
   let postsRes: { data: Post[] } = { data: [] };
   let productsRes: { data: Product[] } = { data: [] };
@@ -172,4 +177,17 @@ export default async function Home() {
       })}
     </div>
   );
+}
+
+export default function Home() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-white flex flex-col items-center justify-center p-12 text-center">
+                <div className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Initializing Grid...</p>
+            </div>
+        }>
+            <HomeContent />
+        </Suspense>
+    );
 }

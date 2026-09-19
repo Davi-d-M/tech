@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 export default function SignalTracker() {
     const pathname = usePathname();
     const dwellTimes = useRef<Map<string, number>>(new Map());
+    const scrollMilestones = useRef<Set<number>>(new Set());
 
     useEffect(() => {
         // 📱 PWA: Register Service Worker
@@ -17,6 +18,9 @@ export default function SignalTracker() {
         }
 
         const currentDwellTimes = dwellTimes.current;
+        const currentMilestones = scrollMilestones.current;
+        currentMilestones.clear(); // Reset for new page
+
         // Track page view
         signalService.track({ event_type: 'VIEW', target: pathname });
 
@@ -37,7 +41,28 @@ export default function SignalTracker() {
             }
         };
 
+        // 📜 Scroll Depth Monitor
+        const handleScrollDepth = () => {
+            const h = document.documentElement;
+            const b = document.body;
+            const st = 'scrollTop';
+            const sh = 'scrollHeight';
+            const percent = ((h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight)) * 100;
+
+            [25, 50, 75, 100].forEach(milestone => {
+                if (percent >= milestone && !currentMilestones.has(milestone)) {
+                    currentMilestones.add(milestone);
+                    signalService.track({
+                        event_type: 'SCROLL',
+                        target: `${milestone}%`,
+                        metadata: { depth_percent: milestone }
+                    });
+                }
+            });
+        };
+
         window.addEventListener('click', handleGlobalClick);
+        window.addEventListener('scroll', handleScrollDepth, { passive: true });
 
         // 🛡️ Technical Resilience: Global Error Capture
         const handleGlobalError = (event: ErrorEvent) => {
@@ -101,6 +126,7 @@ export default function SignalTracker() {
         return () => {
             observer.disconnect();
             window.removeEventListener('click', handleGlobalClick);
+            window.removeEventListener('scroll', handleScrollDepth);
             window.removeEventListener('error', handleGlobalError);
             window.removeEventListener('unhandledrejection', handleUnhandledRejection);
             // Flush any remaining dwell times

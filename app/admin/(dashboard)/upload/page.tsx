@@ -413,25 +413,41 @@ function UploadContent() {
     }
 
     setIsSubmitting(true);
+    setMessage({ type: 'success', text: 'Initializing secure media uplink...' });
 
     try {
       let imageUrls = [...existingImages];
       let videoUrl = videoPreviewUrl || '';
       const BUCKET = 'apexstores-assets';
 
+      // 1. PRE-FLIGHT: Check Bucket Access
+      const { error: preflightError } = await supabase.storage.from(BUCKET).list('preflight', { limit: 1 });
+      if (preflightError) {
+          throw new Error(`Media Node Access Denied: ${preflightError.message}. Check Storage RLS.`);
+      }
+
       if (selectedVideo) {
-          if (!supabase) throw new Error("Database not connected");
-          const path = `videos/${Date.now()}-${selectedVideo.name}`;
-          await supabase.storage.from(BUCKET).upload(path, selectedVideo);
+          const fileExt = selectedVideo.name.split('.').pop();
+          const fileName = `${Math.random().toString(36).substring(2, 10)}-${Date.now()}.${fileExt}`;
+          const path = `videos/${fileName}`;
+
+          const { error: uploadErr } = await supabase.storage.from(BUCKET).upload(path, selectedVideo);
+          if (uploadErr) throw new Error(`Video Upload Failed: ${uploadErr.message}`);
+
           const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
           videoUrl = data.publicUrl;
       }
 
-      if (selectedFiles.length > 0 && supabase) {
+      if (selectedFiles.length > 0) {
           const client = supabase;
           const uploads = selectedFiles.map(async f => {
-              const path = `products/${Date.now()}-${f.name}`;
-              await client.storage.from(BUCKET).upload(path, f);
+              const fileExt = f.name.split('.').pop();
+              const fileName = `${Math.random().toString(36).substring(2, 10)}-${Date.now()}.${fileExt}`;
+              const path = `products/${fileName}`;
+
+              const { error: uploadErr } = await client.storage.from(BUCKET).upload(path, f);
+              if (uploadErr) throw new Error(`Image Upload Failed (${f.name}): ${uploadErr.message}`);
+
               return client.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
           });
           const newUrls = await Promise.all(uploads);
@@ -485,10 +501,12 @@ function UploadContent() {
       };
 
       if (editingId) {
-          await supabase.from('products').update(productData).eq('id', editingId);
+          const { error: dbErr } = await supabase.from('products').update(productData).eq('id', editingId);
+          if (dbErr) throw dbErr;
           await logAuditAction(email, 'UPDATE_PRODUCT', { id: editingId, name: productData.name });
       } else {
-          await supabase.from('products').insert([productData]);
+          const { error: dbErr } = await supabase.from('products').insert([productData]);
+          if (dbErr) throw dbErr;
           await logAuditAction(email, 'CREATE_PRODUCT', { name: productData.name });
       }
 
@@ -502,12 +520,12 @@ function UploadContent() {
           body: JSON.stringify({ type: 'products' })
       }).catch(e => console.warn("CDN Sync Delayed:", e));
 
-      setMessage({ type: 'success', text: editingId ? 'Product updated and CDN refreshed.' : 'Product deployed to edge!' });
+      setMessage({ type: 'success', text: editingId ? 'Payload updated. Grid Synced.' : 'New hardware deployed to the grid!' });
       setTimeout(() => setMessage(null), 3000);
     } catch (err: unknown) {
-        const error = err as Error;
-        setMessage({ type: 'error', text: error.message });
-        setTimeout(() => setMessage(null), 5000);
+        console.error("Stock Control Failure:", err);
+        setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Uplink synchronization failed.' });
+        // Don't clear error too fast so admin can read it
     } finally {
         setIsSubmitting(false);
     }

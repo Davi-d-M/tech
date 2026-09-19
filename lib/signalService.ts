@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { withTimeout } from './apexResilience';
 
 export type SignalType =
     | 'SESSION_START'
@@ -65,6 +66,8 @@ class SignalService {
     private queue: UserSignal[] = [];
     private sessionId: string = '';
     private visitorId: string = '';
+    private userEmail: string | null = null;
+    private userPhone: string | null = null;
     private flushInterval: number = 10000; // 10 seconds
     private heartbeatInterval: number = 30000; // 30 seconds
     private timer: NodeJS.Timeout | null = null;
@@ -153,6 +156,17 @@ class SignalService {
             const { data: sessionData } = await supabase.auth.getSession();
             const session = sessionData.session;
 
+            if (session) {
+                this.userEmail = session.user.email || null;
+                // Fetch extra metadata (Phone) for journey mapping
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('phone_number')
+                    .eq('id', session.user.id)
+                    .maybeSingle();
+                if (profile) this.userPhone = profile.phone_number || null;
+            }
+
             // 1. Ensure Visitor Identity exists with extended attribution
             await supabase.from('visitor_identity').upsert({
                 visitor_id: this.visitorId,
@@ -223,6 +237,8 @@ class SignalService {
                 url: window.location.pathname,
                 metadata: {
                     ...signal.metadata,
+                    email: this.userEmail,
+                    phone: this.userPhone,
                     timestamp: Date.now(),
                     geo_hint: lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined
                 }
@@ -243,8 +259,8 @@ class SignalService {
         this.queue = [];
 
         try {
-            const { data: sessionData } = await supabase.auth.getSession();
-            const session = sessionData.session;
+            const { data: sessionData } = await withTimeout(supabase.auth.getSession(), 5000, 'Signal Flush Auth');
+            const session = sessionData?.session;
 
             const payload: SignalPayload[] = signalsToFlush.map(s => ({
                 session_id: this.sessionId,
@@ -256,15 +272,19 @@ class SignalService {
                 url: s.url
             }));
 
-            const { error } = await supabase.from('user_signals').insert(payload);
+            const { error } = await withTimeout(supabase.from('user_signals').insert(payload), 8000, 'Signal Insert');
 
             // If heartbeat, also update session dwell time
             const heartbeats = signalsToFlush.filter(s => s.event_type === 'HEARTBEAT').length;
             if (heartbeats > 0) {
-                await supabase.rpc('increment_session_dwell', {
-                    sid: this.sessionId,
-                    inc: heartbeats * (this.heartbeatInterval / 1000)
-                });
+                try {
+                    await supabase.rpc('increment_session_dwell', {
+                        sid: this.sessionId,
+                        inc: heartbeats * (this.heartbeatInterval / 1000)
+                    });
+                } catch {
+                    // Ignore rpc failure
+                }
             }
 
             if (error) {

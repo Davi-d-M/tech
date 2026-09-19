@@ -1,4 +1,6 @@
-- [ ] Increase timeout and add context to `lib/apexResilience.ts`
-- [ ] Refactor `lib/cachedData.ts` for granular timeout handling
-- [ ] Fix error handling in `app/admin/(dashboard)/payouts/page.tsx`
-- [ ] Verify build and dev server stability
+- [ ] Enrich `lib/signalService.ts` with user metadata (Phone/Email injection)
+- [ ] Add scroll depth milestones to `components/analytics/SignalTracker.tsx`
+- [ ] Harden image upload logic and unique naming in `app/admin/(dashboard)/upload/page.tsx`
+- [ ] Update `app/admin/(dashboard)/analytics/intelligence/page.tsx` to use enriched data
+- [ ] Run final build verification
+- [ ] Push changes to GitHub

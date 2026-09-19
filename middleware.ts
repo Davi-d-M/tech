@@ -58,7 +58,6 @@ export async function middleware(request: NextRequest) {
   if ((isAdminPath || isSupplierPath || isRiderPath) && !pathname.includes('.') && !isLoginPath) {
     try {
       const sessionCookie = request.cookies.get('admin_session')?.value;
-      // No timeout needed here - verifySessionCookie is pure logic
       const sessionData = await verifySessionCookie(sessionCookie);
 
       if (!sessionData) {
@@ -100,3 +99,4 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: ['/admin/:path*', '/supplier/:path*', '/rider/:path*', '/apex-portal/:path*'],
 };
+

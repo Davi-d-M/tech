@@ -32,18 +32,8 @@ export default async function AdminLayout({
     redirect('/apex-portal');
   }
 
-  // Fetch the current user session (Server-side) with safety timeout
-  let userEmail = sessionData.email || 'Master Admin';
-  if (supabase) {
-      try {
-          const { data: userData } = await withTimeout(supabase.auth.getUser(), 5000);
-          if (userData?.user?.email) {
-              userEmail = userData.user.email;
-          }
-      } catch {
-          console.warn("Layout user fetch stall - using session email fallback.");
-      }
-  }
+  // Use session data for identity fallback
+  const userEmail = sessionData.email || 'Master Admin';
 
   return (
     <AdminLayoutClient
