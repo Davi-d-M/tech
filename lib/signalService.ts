@@ -73,6 +73,10 @@ class SignalService {
     private timer: NodeJS.Timeout | null = null;
     private heartbeatTimer: NodeJS.Timeout | null = null;
 
+    // Recursion Guard
+    private isFlushing: boolean = false;
+    private isTrackingError: boolean = false;
+
     constructor() {
         if (typeof window !== 'undefined') {
             try {
@@ -227,33 +231,40 @@ class SignalService {
     public track(signal: UserSignal) {
         if (typeof window === 'undefined') return;
 
-        try {
-            // Capture approximate location hints if available in sessionStorage/localStorage
-            const lat = localStorage.getItem('apex_lat');
-            const lng = localStorage.getItem('apex_lng');
+        // Recursion Guard for errors
+        if (signal.event_type === 'TECHNICAL_ERROR') {
+            if (this.isTrackingError) return;
+            this.isTrackingError = true;
+        }
 
+        try {
+            // Batch Capture: We no longer inject user data here.
+            // We inject it during flush() to ensure we have the very latest user state.
             this.queue.push({
                 ...signal,
                 url: window.location.pathname,
                 metadata: {
                     ...signal.metadata,
-                    email: this.userEmail,
-                    phone: this.userPhone,
-                    timestamp: Date.now(),
-                    geo_hint: lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined
+                    timestamp: Date.now()
                 }
             });
 
-            if (['ADD_TO_BAG', 'CLICK', 'IDENTITY_BRIDGE', 'CHECKOUT_START'].includes(signal.event_type)) {
+            // Priority Flush
+            if (['ADD_TO_BAG', 'CLICK', 'IDENTITY_BRIDGE', 'CHECKOUT_START', 'TECHNICAL_ERROR'].includes(signal.event_type)) {
                 this.flush().catch(() => {});
             }
         } catch (error) {
             console.warn("Signal tracking failure:", error);
+        } finally {
+            if (signal.event_type === 'TECHNICAL_ERROR') {
+                this.isTrackingError = false;
+            }
         }
     }
 
     public async flush() {
-        if (this.queue.length === 0 || !supabase) return;
+        if (this.queue.length === 0 || !supabase || this.isFlushing) return;
+        this.isFlushing = true;
 
         const signalsToFlush = [...this.queue];
         this.queue = [];
@@ -262,13 +273,26 @@ class SignalService {
             const { data: sessionData } = await withTimeout(supabase.auth.getSession(), 5000, 'Signal Flush Auth');
             const session = sessionData?.session;
 
+            // Enrich with latest user state before sending
+            const currentEmail = session?.user?.email || this.userEmail;
+
+            // If phone still missing, try one last fetch (cached)
+            if (!this.userPhone && session) {
+                const { data: profile } = await supabase.from('profiles').select('phone_number').eq('id', session.user.id).maybeSingle();
+                if (profile) this.userPhone = profile.phone_number;
+            }
+
             const payload: SignalPayload[] = signalsToFlush.map(s => ({
                 session_id: this.sessionId,
                 visitor_id: this.visitorId,
                 user_id: session?.user?.id || null,
                 event_type: s.event_type,
                 target: s.target,
-                metadata: s.metadata,
+                metadata: {
+                    ...s.metadata,
+                    email: currentEmail,
+                    phone: this.userPhone
+                },
                 url: s.url
             }));
 
@@ -293,7 +317,10 @@ class SignalService {
             }
         } catch (err) {
             console.error("[SIGNAL] Critical failure:", err);
+            // Re-queue signals to try again later
             this.queue = [...signalsToFlush, ...this.queue];
+        } finally {
+            this.isFlushing = false;
         }
     }
 }

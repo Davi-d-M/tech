@@ -12,17 +12,21 @@ export default function TierThemeNode() {
 
         async function fetchUserTier() {
             if (!supabase) return;
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                const { data } = await supabase
-                    .from('profiles')
-                    .select('loyalty_points')
-                    .eq('id', session.user.id)
-                    .maybeSingle();
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    const { data } = await supabase
+                        .from('profiles')
+                        .select('loyalty_points')
+                        .eq('id', session.user.id)
+                        .maybeSingle();
 
-                if (data) {
-                    setTier(getTierFromPoints(data.loyalty_points || 0));
+                    if (data) {
+                        setTier(getTierFromPoints(data.loyalty_points || 0));
+                    }
                 }
+            } catch (err) {
+                console.warn("Tier Node Sync inhibited:", err);
             }
         }
 
@@ -30,7 +34,7 @@ export default function TierThemeNode() {
 
         // Listen for Auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-            fetchUserTier();
+            fetchUserTier().catch(() => {});
         });
 
         return () => subscription.unsubscribe();

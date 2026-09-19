@@ -1,6 +1,6 @@
-- [ ] Enrich `lib/signalService.ts` with user metadata (Phone/Email injection)
-- [ ] Add scroll depth milestones to `components/analytics/SignalTracker.tsx`
-- [ ] Harden image upload logic and unique naming in `app/admin/(dashboard)/upload/page.tsx`
-- [ ] Update `app/admin/(dashboard)/analytics/intelligence/page.tsx` to use enriched data
+- [ ] Refactor `lib/signalService.ts` (Batch metadata injection & recursion shield)
+- [ ] Harden `app/layout.tsx` (Deep null-safety for settings)
+- [ ] Harden `components/layout/ThemeSynchronizer.tsx` (Error guards)
+- [ ] Harden `components/layout/TierThemeNode.tsx` (Error guards)
 - [ ] Run final build verification
 - [ ] Push changes to GitHub
