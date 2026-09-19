@@ -2,12 +2,15 @@
 
 import React, { createContext, useContext } from "react";
 import { StoreSettings } from "@/lib/types";
+import { DEFAULT_SETTINGS } from "@/lib/useSettings";
 
 interface SettingsContextProps {
   settings: StoreSettings;
 }
 
-const SettingsContext = createContext<SettingsContextProps | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextProps>({
+    settings: DEFAULT_SETTINGS
+});
 
 export const SettingsProvider = ({
     children,
@@ -17,7 +20,7 @@ export const SettingsProvider = ({
     initialSettings: StoreSettings
 }) => {
   return (
-    <SettingsContext.Provider value={{ settings: initialSettings }}>
+    <SettingsContext.Provider value={{ settings: initialSettings || DEFAULT_SETTINGS }}>
       {children}
     </SettingsContext.Provider>
   );
@@ -25,8 +28,5 @@ export const SettingsProvider = ({
 
 export const useSettingsContext = () => {
   const context = useContext(SettingsContext);
-  if (!context) {
-    throw new Error("useSettingsContext must be used within a SettingsProvider");
-  }
-  return context.settings;
+  return context?.settings || DEFAULT_SETTINGS;
 };

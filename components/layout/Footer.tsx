@@ -183,15 +183,15 @@ export default function Footer() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
                     <MapPin className="h-3 w-3 text-primary" />
-                    <span>{settings.contact.address}</span>
+                    <span>{settings?.contact?.address || "Nairobi, Kenya"}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
                     <Phone className="h-3 w-3 text-primary" />
-                    <span>+{settings.contact.whatsapp}</span>
+                    <span>+{settings?.contact?.whatsapp || "254700000000"}</span>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium">
                     <Mail className="h-3 w-3 text-primary" />
-                    <span>{settings.contact.email}</span>
+                    <span>{settings?.contact?.email || "support@onlinebar.co.ke"}</span>
                   </div>
                 </div>
               </div>
@@ -344,7 +344,7 @@ export default function Footer() {
               <span>All Rights Reserved.</span>
             </div>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-2">
-                Developed by <a href={settings.branding.portfolio_url || "https://tech-paxv.onrender.com"} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{settings.branding.owner_name || "Apex stores"}</a>
+                Developed by <a href={settings?.branding?.portfolio_url || "https://tech-paxv.onrender.com"} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{settings?.branding?.owner_name || "Apex stores"}</a>
             </p>
           </div>
 

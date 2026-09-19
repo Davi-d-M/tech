@@ -53,8 +53,9 @@ export default function UnifiedPayoutHub() {
 
             if (error) throw error;
             setPayouts(data || []);
-        } catch (err) {
-            console.error(err);
+        } catch (err: unknown) {
+            const errorMsg = err instanceof Error ? err.message : String(err);
+            console.error("Payout Queue Sync Failure:", errorMsg);
         } finally {
             setLoading(false);
         }
@@ -76,8 +77,8 @@ export default function UnifiedPayoutHub() {
 
             await logAuditAction(adminEmail, 'UPDATE_PAYOUT_STATUS', { id, status });
             setPayouts(payouts.map(p => p.id === id ? { ...p, status } : p));
-        } catch (err) {
-            console.error(err);
+        } catch (err: unknown) {
+            console.error("Payout Update Stall:", err);
         }
     };
 
@@ -89,8 +90,8 @@ export default function UnifiedPayoutHub() {
 
             await logAuditAction(adminEmail, 'DELETE_PAYOUT_REQUEST', { id });
             setPayouts(prev => prev.filter(p => p.id !== id));
-        } catch (err) {
-            console.error(err);
+        } catch (err: unknown) {
+            console.error("Payout Removal Error:", err);
         }
     };
 

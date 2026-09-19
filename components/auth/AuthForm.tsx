@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { withTimeout } from '@/lib/apexResilience';
 
 interface AuthFormProps {
     initialMode?: 'signin' | 'signup';
@@ -67,16 +68,19 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
             }
 
             if (isSignUp) {
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            full_name: fullName,
-                            phone_number: phoneNumber
+                const { data, error } = await withTimeout(
+                    supabase.auth.signUp({
+                        email,
+                        password,
+                        options: {
+                            data: {
+                                full_name: fullName,
+                                phone_number: phoneNumber
+                            }
                         }
-                    }
-                });
+                    }),
+                    10000
+                );
 
                 if (error) throw error;
 
@@ -92,10 +96,13 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
                 return;
             }
 
-            const { error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
+            const { error } = await withTimeout(
+                supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                }),
+                10000
+            );
 
             if (error) throw error;
 
@@ -160,7 +167,7 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
                 </div>
             )}
 
-            <form onSubmit={handleAuth} className="space-y-4">
+            <form onSubmit={handleAuth} noValidate className="space-y-4">
                 {isSignUp && (
                     <>
                         <div>
@@ -217,6 +224,13 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
 
                 <button
                     type="submit"
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                        // Backup trigger if onSubmit is swallowed
+                        if (!loading && dbOnline) {
+                            console.log("[AUTH] Backup click trigger activated");
+                            handleAuth(e as unknown as React.FormEvent);
+                        }
+                    }}
                     disabled={loading || (isSignUp && cooldownSeconds > 0) || !dbOnline}
                     className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3.5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
                 >

@@ -17,12 +17,12 @@ export default function JsonLd({ product, breadcrumbs, hideOrganization }: JsonL
   const organizationSchema = !hideOrganization ? {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": settings.store_info.name || "Apexstores Tech",
+    "name": settings?.store_info?.name || "Apexstores Tech",
     "url": baseUrl,
     "logo": `${baseUrl}/favicon.svg`,
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": `+${settings.contact.whatsapp}`,
+      "telephone": `+${settings?.contact?.whatsapp || "254700000000"}`,
       "customerService": "customer service",
       "areaServed": "KE",
       "availableLanguage": "English"
@@ -38,7 +38,7 @@ export default function JsonLd({ product, breadcrumbs, hideOrganization }: JsonL
       "sku": product.sku || product.id,
       "brand": {
           "@type": "Brand",
-          "name": product.brand || settings.store_info.name
+          "name": product.brand || settings?.store_info?.name || "Apexstores"
       },
       "offers": {
           "@type": "Offer",

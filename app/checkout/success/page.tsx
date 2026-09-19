@@ -8,7 +8,7 @@ import { CheckCircle2, Package, Smartphone, MessageSquare, ArrowRight, Truck, Sh
 import Link from "next/link";
 import { formatPrice, getReferralLink } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 
 interface Order {
     id: number;
@@ -25,7 +25,7 @@ function SuccessContent() {
     const [order, setOrder] = useState<Order | null>(null);
     const [referralCode, setReferralCode] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const { settings } = useSettings();
+    const settings = useSettingsContext();
 
     useEffect(() => {
         const client = supabase;

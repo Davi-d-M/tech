@@ -42,52 +42,63 @@ export async function POST(request: Request) {
         }
 
     } catch (error: unknown) {
-        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+        console.error("[GAMIFICATION_API_CRASH]:", error);
+        return NextResponse.json({
+            error: error instanceof Error ? error.message : "Internal System Failure",
+            stack: process.env.NODE_ENV === 'development' ? (error as Error).stack : undefined
+        }, { status: 500 });
     }
 }
 
 async function handleUpdateStreak(userId: string) {
     if (!supabase) throw new Error("DB not connected");
-    const { data: profile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('current_streak, last_streak_update')
-        .eq('id', userId)
-        .single();
+    try {
+        const { data: profile, error: fetchError } = await supabase
+            .from('profiles')
+            .select('current_streak, last_streak_update')
+            .eq('id', userId)
+            .limit(1)
+            .maybeSingle();
 
-    if (fetchError) throw fetchError;
+        if (fetchError) throw new Error(`Profile Fetch Error: ${fetchError.message}`);
+        if (!profile) return NextResponse.json({ ok: false, error: "Profile not found" }, { status: 404 });
 
-    const lastUpdate = profile.last_streak_update ? new Date(profile.last_streak_update) : null;
-    const now = new Date();
+        const lastUpdate = profile.last_streak_update ? new Date(profile.last_streak_update) : null;
+        const now = new Date();
 
-    // Check if updated today already (Kenya Time focus)
-    if (lastUpdate && lastUpdate.toDateString() === now.toDateString()) {
-        return NextResponse.json({ ok: true, streak: profile.current_streak, message: "Already updated today" });
-    }
-
-    let newStreak = 1;
-    if (lastUpdate) {
-        const diffDays = Math.floor((now.getTime() - lastUpdate.getTime()) / (1000 * 3600 * 24));
-        if (diffDays === 1) {
-            newStreak = (profile.current_streak || 0) + 1;
+        // Check if updated today already (Kenya Time focus)
+        if (lastUpdate && lastUpdate.toDateString() === now.toDateString()) {
+            return NextResponse.json({ ok: true, streak: profile.current_streak, message: "Already updated today" });
         }
+
+        let newStreak = 1;
+        if (lastUpdate) {
+            const diffDays = Math.floor((now.getTime() - lastUpdate.getTime()) / (1000 * 3600 * 24));
+            if (diffDays === 1) {
+                newStreak = (profile.current_streak || 0) + 1;
+            }
+        }
+
+        const { error: updateError } = await supabase
+            .from('profiles')
+            .update({
+                current_streak: newStreak,
+                last_streak_update: now.toISOString()
+            })
+            .eq('id', userId);
+
+        if (updateError) throw new Error(`Streak Update Error: ${updateError.message}`);
+
+        return NextResponse.json({ ok: true, newStreak });
+    } catch (err: unknown) {
+        console.warn("[GAMIFICATION] Streak sync inhibited:", err instanceof Error ? err.message : String(err));
+        return NextResponse.json({ ok: false, error: "Streak sync failed" }, { status: 202 });
     }
-
-    const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-            current_streak: newStreak,
-            last_streak_update: now.toISOString()
-        })
-        .eq('id', userId);
-
-    if (updateError) throw updateError;
-
-    return NextResponse.json({ ok: true, newStreak });
 }
 
 async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
     if (!supabase) throw new Error("DB not connected");
-    const { data: lastClaim } = await supabase
+    const { data: lastClaim, error: logErr } = await supabase
         .from('daily_rewards_log')
         .select('created_at')
         .eq('user_id', userId)
@@ -95,6 +106,10 @@ async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
+
+    if (logErr) {
+        console.warn("[GAMIFICATION] Rewards log query failed:", logErr.message);
+    }
 
     if (lastClaim) {
         const lastDate = new Date(lastClaim.created_at);
@@ -106,8 +121,7 @@ async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
         }
     }
 
-    // Logic to select reward based on admin settings (to be added in admin phase)
-    // For now, simple random reward
+    // Logic to select reward based on admin settings
     const rewards = [
         { type: 'xp', amount: 50, label: '50 XP' },
         { type: 'xp', amount: 100, label: '100 XP' },
@@ -115,7 +129,7 @@ async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
     ];
     const prize = rewards[Math.floor(Math.random() * rewards.length)];
 
-    const { error: logError } = await supabase
+    const { error: insertErr } = await supabase
         .from('daily_rewards_log')
         .insert([{
             user_id: userId,
@@ -124,12 +138,16 @@ async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
             reward_value: prize.amount
         }]);
 
-    if (logError) throw logError;
+    if (insertErr) {
+        console.warn("[GAMIFICATION] Failed to log prize:", insertErr.message);
+    }
 
     if (prize.type === 'xp') {
-        const { data: profile } = await supabase.from('profiles').select('loyalty_points').eq('id', userId).single();
-        await supabase.from('profiles').update({ loyalty_points: (profile?.loyalty_points || 0) + prize.amount }).eq('id', userId);
-        await supabase.from('loyalty_ledger').insert([{ profile_id: userId, amount: prize.amount, description: `Daily ${type} reward: ${prize.label}` }]);
+        const { data: profile } = await supabase.from('profiles').select('loyalty_points').eq('id', userId).maybeSingle();
+        if (profile) {
+            await supabase.from('profiles').update({ loyalty_points: (profile.loyalty_points || 0) + prize.amount }).eq('id', userId);
+            await supabase.from('loyalty_ledger').insert([{ profile_id: userId, amount: prize.amount, description: `Daily ${type} reward: ${prize.label}` }]);
+        }
     }
 
     return NextResponse.json({ ok: true, prize });
@@ -137,12 +155,14 @@ async function handleClaimDailyReward(userId: string, type: 'spin' | 'box') {
 
 async function handleUpdateMissionProgress(userId: string, type: string, increment: number) {
     if (!supabase) throw new Error("DB not connected");
-    const { data: mission } = await supabase
+    const { data: mission, error: missionErr } = await supabase
         .from('user_missions')
         .select('*')
         .eq('user_id', userId)
         .eq('mission_type', type)
         .maybeSingle();
+
+    if (missionErr) throw new Error(`Mission Query Error: ${missionErr.message}`);
 
     // Mission targets
     const targets: Record<string, number> = {
@@ -163,7 +183,7 @@ async function handleUpdateMissionProgress(userId: string, type: string, increme
         completed = true;
     }
 
-    const { error } = await supabase
+    const { error: upsertErr } = await supabase
         .from('user_missions')
         .upsert({
             user_id: userId,
@@ -173,7 +193,11 @@ async function handleUpdateMissionProgress(userId: string, type: string, increme
             updated_at: new Date().toISOString()
         }, { onConflict: 'user_id,mission_type' });
 
-    if (error) throw error;
+    if (upsertErr) {
+        console.warn("[GAMIFICATION] Mission upsert failed, likely table missing:", upsertErr.message);
+        // Don't throw if it's just a mission log failing, but we should know
+        return NextResponse.json({ ok: false, error: "Mission storage offline" }, { status: 202 });
+    }
 
     if (completed) {
         const xpMap: Record<string, number> = {
@@ -185,9 +209,11 @@ async function handleUpdateMissionProgress(userId: string, type: string, increme
             'share-product': 25,
         };
         const xp = xpMap[type] || 0;
-        const { data: profile } = await supabase.from('profiles').select('loyalty_points').eq('id', userId).single();
-        await supabase.from('profiles').update({ loyalty_points: (profile?.loyalty_points || 0) + xp }).eq('id', userId);
-        await supabase.from('loyalty_ledger').insert([{ profile_id: userId, amount: xp, description: `Completed mission: ${type}` }]);
+        const { data: profile } = await supabase.from('profiles').select('loyalty_points').eq('id', userId).maybeSingle();
+        if (profile) {
+            await supabase.from('profiles').update({ loyalty_points: (profile.loyalty_points || 0) + xp }).eq('id', userId);
+            await supabase.from('loyalty_ledger').insert([{ profile_id: userId, amount: xp, description: `Completed mission: ${type}` }]);
+        }
     }
 
     return NextResponse.json({ ok: true, progress: newProgress, completed });

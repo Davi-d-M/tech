@@ -21,10 +21,10 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useSettings } from "@/lib/useSettings";
+import { useSettingsContext } from "@/context/SettingsContext";
 
 export default function Contact() {
-  const { settings, loading } = useSettings();
+  const settings = useSettingsContext();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -75,19 +75,19 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email Us",
-      details: [loading ? '...' : settings.contact.email],
+      details: [settings.contact.email],
       description: "Send us an email anytime",
     },
     {
       icon: Phone,
       title: "Call Us",
-      details: [loading ? '...' : `+${settings.contact.whatsapp}`],
+      details: [`+${settings.contact.whatsapp}`],
       description: "Mon-Fri from 8am to 5pm",
     },
     {
       icon: MapPin,
       title: "Visit Us",
-      details: [loading ? '...' : settings.contact.address],
+      details: [settings.contact.address],
       description: "Come say hello at our office",
     },
     {
@@ -385,14 +385,14 @@ export default function Contact() {
                   className="h-16 px-10 rounded-2xl bg-white text-primary hover:bg-slate-50 font-black uppercase tracking-widest text-xs shadow-xl shadow-black/10"
                   asChild
                 >
-                    <a href={loading ? "#" : `tel:+${settings.contact.whatsapp}`}>
+                    <a href={`tel:+${settings.contact.whatsapp}`}>
                         <Phone className="h-4 w-4 mr-2" />
                         Call Us Now
                     </a>
                 </Button>
 
                 <Button className="h-16 px-10 rounded-2xl bg-white text-primary hover:bg-slate-50 font-black uppercase tracking-widest text-xs shadow-xl shadow-black/10" asChild>
-                    <a href={loading ? "#" : `https://wa.me/${settings.contact.whatsapp}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`https://wa.me/${settings.contact.whatsapp}`} target="_blank" rel="noopener noreferrer">
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Chat on WhatsApp
                     </a>

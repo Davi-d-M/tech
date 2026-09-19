@@ -1,9 +1,4 @@
-- [ ] Simplify `AuthForm.tsx` (Remove redundant `onClick`, re-add `router`)
-- [ ] Migrate `PublicLayoutShield.tsx` to `useSettingsContext`
-- [ ] Migrate `Header.tsx` to `useSettingsContext`
-- [ ] Migrate `Footer.tsx` to `useSettingsContext`
-- [ ] Migrate `ProductCard.tsx` to `useSettingsContext`
-- [ ] Migrate `ProductDetailClient.tsx` to `useSettingsContext`
-- [ ] Migrate `app/checkout/page.tsx` to `useSettingsContext`
-- [ ] Run build verification
-- [ ] Push changes to GitHub
+- [ ] Increase timeout and add context to `lib/apexResilience.ts`
+- [ ] Refactor `lib/cachedData.ts` for granular timeout handling
+- [ ] Fix error handling in `app/admin/(dashboard)/payouts/page.tsx`
+- [ ] Verify build and dev server stability

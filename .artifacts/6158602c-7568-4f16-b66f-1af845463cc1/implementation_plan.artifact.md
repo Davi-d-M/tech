@@ -1,53 +1,34 @@
-# Implementation Plan - Universal Settings Consolidation & Unblocking
+# Implementation Plan - System Resilience & Performance Recovery
 
-The application is experiencing performance degradation and "loading hangs" due to redundant data fetching. Multiple components are independently invoking the `useSettings` hook, triggering dozens of concurrent Supabase requests on every page load. This plan migrates all public storefront components to use the centralized `SettingsProvider` context, eliminating the redundant traffic and resolving the hydration hangs.
+The system is currently experiencing significant database latency (stalls > 10s) and minor development-mode CSS 404s. This plan hardens the resilience protocols, improves diagnostic visibility, and optimizes the high-level data fetching strategy to recover from stalls and ensure a stable UI.
 
 ## Proposed Changes
 
-### 🛡️ Core Infrastructure
+### 🛡️ Resilience Hardening
 
-#### [MODIFY] [lib/useSettings.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/useSettings.ts)
-- Add a warning log to the `useSettings` hook to detect any remaining redundant usage in production.
+#### [MODIFY] [lib/apexResilience.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/apexResilience.ts)
+- **Increase Timeout**: Boost the safety limit from 10s to 15s to accommodate high-latency network conditions on Supabase.
+- **Improved Diagnostics**: Update the error message to include the specific context of the stall, making it easier to pinpoint which query is failing in the logs.
 
-### 🧬 Storefront Migration (Unblocking UI)
+### 🚀 Data Fetching Optimization
 
-#### [MODIFY] [PublicLayoutShield.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/layout/PublicLayoutShield.tsx)
-- Replace `useSettings()` with `useSettingsContext()`.
-- Remove the `initialSettings` prop fallback logic since the context is now guaranteed.
+#### [MODIFY] [lib/cachedData.ts](file:///C:/Users/hp/AndroidStudioProjects/BARR/lib/cachedData.ts)
+- **Sequential Fallback**: Modify `getCachedHomeData` to use individual `withTimeout` wrappers for each query instead of a single wrapper for `Promise.all`. This allows us to recover partial data (e.g., show products even if blog posts stall) instead of the whole page failing.
+- **Logging**: Add timestamps to queries to track which specific table is causing the most contention.
 
-#### [MODIFY] [Header.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/layout/Header.tsx)
-- Replace `useSettings()` with `useSettingsContext()`.
+### 🎨 UI & Asset Stability
 
-#### [MODIFY] [Footer.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/layout/Footer.tsx)
-- Replace `useSettings()` with `useSettingsContext()`.
-
-#### [MODIFY] [ProductCard.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/home/ProductCard.tsx)
-- Replace `useSettings()` with `useSettingsContext()`.
-
-#### [MODIFY] [ProductDetailClient.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/product/ProductDetailClient.tsx)
-- Replace `useSettings()` with `useSettingsContext()`.
-
-#### [MODIFY] [app/checkout/page.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/checkout/page.tsx)
-- Replace `useSettings()` with `useSettingsContext()`.
-
-#### [MODIFY] [LiveTicker.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/layout/LiveTicker.tsx)
-- Replace `useSettings()` with `useSettingsContext()`.
-
-### 🛡️ Auth Hardening Fix
-
-#### [MODIFY] [AuthForm.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/components/auth/AuthForm.tsx)
-- **Remove redundant `onClick`**: Rely solely on `onSubmit` for form processing.
-- **Re-insert `router`**: Use `router.push` for smoother SPA transitions while keeping `window.location.href` as a fallback for catastrophic session sync issues.
+#### [MODIFY] [app/layout.tsx](file:///C:/Users/hp/AndroidStudioProjects/BARR/app/layout.tsx)
+- **CSS Import Guard**: Ensure the `globals.css` import is isolated and check for any dynamic style injections that might be triggering the dev-mode 404s.
+- **Root Loading State**: Simplify the server-to-client settings handoff to minimize the window where the UI is in an indeterminate state.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run build` to ensure all context hooks are correctly placed within the `SettingsProvider` tree.
+- Run `npm run build` to ensure the new resilience logic doesn't block the static generation phase on Render.
 
 ### Manual Verification
-- Deploy to Render.
-- Verify that the "ApexOS" loading pulse disappears almost immediately as the server-fetched settings are shared.
-- Confirm that the "Log In" button works reliably without double-firing or conflicting with browser validation.
-- Verify that the store theme and configurations (banners, WhatsApp link) are correctly pulled from the Admin settings.
+- Observe the `npm run dev` console. The "APEX_STALL_DETECTED" warnings should now specifically name the failing query.
+- Verify that the storefront remains interactive even if one background query (like Blog Posts) exceeds the timeout limit.

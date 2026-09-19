@@ -19,12 +19,12 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatPrice, cn } from '@/lib/utils';
-import { useSettings } from '@/lib/useSettings';
+import { useSettingsContext } from '@/context/SettingsContext';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function AffiliateDashboard() {
-    const { settings } = useSettings();
+    const settings = useSettingsContext();
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
     const [stats, setStats] = useState({ clicks: 0, conversions: 0, earnings: 0 });

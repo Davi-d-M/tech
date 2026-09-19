@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { withTimeout } from '@/lib/apexResilience';
 
 import { verifySessionCookie } from '@/lib/adminAuth';
 import AdminLayoutClient from './layout-client';
@@ -21,7 +22,7 @@ export default async function AdminLayout({
   let sessionData = null;
   try {
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('admin_session')?.value;
+    const sessionCookie = (await cookieStore).get('admin_session')?.value;
     sessionData = await verifySessionCookie(sessionCookie);
   } catch (err) {
     console.error("Layout Session Verification Error:", err);
@@ -31,12 +32,16 @@ export default async function AdminLayout({
     redirect('/apex-portal');
   }
 
-  // Fetch the current user session (Server-side)
-  let userEmail = 'Master Admin';
+  // Fetch the current user session (Server-side) with safety timeout
+  let userEmail = sessionData.email || 'Master Admin';
   if (supabase) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-          userEmail = user.email;
+      try {
+          const { data: userData } = await withTimeout(supabase.auth.getUser(), 5000);
+          if (userData?.user?.email) {
+              userEmail = userData.user.email;
+          }
+      } catch {
+          console.warn("Layout user fetch stall - using session email fallback.");
       }
   }
 

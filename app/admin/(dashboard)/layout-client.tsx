@@ -190,7 +190,7 @@ export default function AdminLayoutClient({
   })).filter(group => group.items.length > 0);
 
   const isActive = (href: string) => {
-    if (href === '/admin') return pathname === '/admin';
+    if (href === '/admin') return pathname === '/admin' || pathname === '/admin/';
     return pathname.startsWith(href);
   };
 
