@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, User, ArrowRight, BookOpen } from 'lucide-react';
+import { withTimeout } from '@/lib/apexResilience';
 
 interface BlogPost {
   id: number;
@@ -21,19 +22,27 @@ interface BlogPost {
 export default function BlogListPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadPosts() {
-      if (!supabase) return;
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       try {
-        const { data } = await supabase
-          .from('blog_posts')
-          .select('*')
-          .eq('is_published', true)
-          .order('created_at', { ascending: false });
+        const { data } = await withTimeout(
+            supabase
+              .from('blog_posts')
+              .select('*')
+              .eq('is_published', true)
+              .order('created_at', { ascending: false }),
+            10000
+        );
         setPosts(data || []);
       } catch (err) {
-        console.error(err);
+        console.error("Library stall detected:", err);
+        setError("Network latency exceeded safety limits.");
       } finally {
         setLoading(false);
       }
@@ -67,10 +76,15 @@ export default function BlogListPage() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
+        {error && (
+            <div className="mb-12 p-4 bg-rose-50 border border-rose-100 rounded-2xl text-center">
+                <p className="text-[10px] font-black uppercase text-rose-500 tracking-widest">{error}</p>
+            </div>
+        )}
         {posts.length === 0 ? (
           <div className="text-center py-24 bg-slate-50 rounded-[3rem] border border-slate-100 border-dashed">
             <BookOpen className="h-12 w-12 text-slate-200 mx-auto mb-4" />
-            <p className="text-slate-400 font-black uppercase text-xs tracking-widest">New guides are being written...</p>
+            <p className="text-slate-400 font-black uppercase text-xs tracking-widest">{error ? "Archive temporarily offline." : "New guides are being written..."}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">

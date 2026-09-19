@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 interface AuthFormProps {
@@ -9,7 +8,6 @@ interface AuthFormProps {
 }
 
 export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
-    const router = useRouter();
     const [fullName, setFullName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');

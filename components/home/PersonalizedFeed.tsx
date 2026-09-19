@@ -7,6 +7,7 @@ import { Zap, ArrowRight, History, Sparkles, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { withTimeout } from '@/lib/apexResilience';
 
 interface Product {
   id: number;
@@ -32,7 +33,7 @@ export default function PersonalizedFeed() {
             }
 
             try {
-                const { data: { session } } = await supabase.auth.getSession();
+                const { data: { session } } = await withTimeout(supabase.auth.getSession(), 5000);
                 let viewedIds: number[] = [];
 
                 // 1. GET RECENTLY VIEWED (Continue Shopping)
@@ -51,20 +52,26 @@ export default function PersonalizedFeed() {
                 }
 
                 if (viewedIds.length > 0) {
-                    const { data: recents } = await supabase
-                        .from('products')
-                        .select('*')
-                        .in('id', viewedIds.slice(0, 4));
+                    const { data: recents } = await withTimeout(
+                        supabase
+                            .from('products')
+                            .select('*')
+                            .in('id', viewedIds.slice(0, 4)),
+                        8000
+                    );
                     if (recents) setRecentProducts(recents as Product[]);
                 }
 
                 // 2. GET PREDICTIVE DATA (Because you liked)
                 if (session) {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('next_purchase_category')
-                        .eq('id', session.user.id)
-                        .maybeSingle();
+                    const { data: profile } = await withTimeout(
+                        supabase
+                            .from('profiles')
+                            .select('next_purchase_category')
+                            .eq('id', session.user.id)
+                            .maybeSingle(),
+                        5000
+                    );
 
                     if (profile?.next_purchase_category) {
                         setPredictiveCategory(profile.next_purchase_category);
@@ -77,7 +84,7 @@ export default function PersonalizedFeed() {
                             query = query.not('id', 'in', `(${viewedIds.join(',')})`);
                         }
 
-                        const { data: categorySuggestions } = await query.limit(4);
+                        const { data: categorySuggestions } = await withTimeout(query.limit(4), 8000);
                         if (categorySuggestions) setSuggestedProducts(categorySuggestions as Product[]);
                     }
                 }
@@ -93,12 +100,12 @@ export default function PersonalizedFeed() {
                         query = query.not('id', 'in', `(${viewedIds.join(',')})`);
                     }
 
-                    const { data: fallbacks } = await query.limit(4);
+                    const { data: fallbacks } = await withTimeout(query.limit(4), 8000);
                     if (fallbacks) setSuggestedProducts(fallbacks as Product[]);
                 }
 
             } catch (err) {
-                console.error("Personalization Engine Error:", err);
+                console.error("Personalization Engine Stall:", err);
             } finally {
                 setLoading(false);
             }

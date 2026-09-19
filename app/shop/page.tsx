@@ -4,14 +4,17 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from '@/components/home/ProductCard';
 import { Product } from '@/lib/types';
+import { withTimeout } from '@/lib/apexResilience';
 
 export default function AllProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadInventory() {
       setLoading(true);
+      setError(null);
 
       if (!supabase) {
           setProducts([]);
@@ -20,14 +23,17 @@ export default function AllProductsPage() {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: false });
+        const { data, error: dbErr } = await withTimeout(
+            supabase
+              .from('products')
+              .select('*')
+              .order('created_at', { ascending: false }),
+            10000
+        );
 
-        if (error) {
-          console.warn('Unable to load products from Supabase:', error.message);
-          // Fallback handled below
+        if (dbErr) {
+          console.warn('Unable to load products from Supabase:', dbErr.message);
+          setError("Database node busy. Please refresh.");
         }
 
         if (data && data.length > 0) {
@@ -36,7 +42,8 @@ export default function AllProductsPage() {
           setProducts([]);
         }
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error('Fetch stall:', err);
+        setError("Network latency exceeded safety limits.");
         setProducts([]);
       } finally {
         setLoading(false);
@@ -62,16 +69,17 @@ export default function AllProductsPage() {
             <h1 className="text-5xl font-black tracking-tighter text-foreground uppercase">Our Collection</h1>
             <p className="text-slate-500 mt-2 font-medium text-lg">Premium technology and authentic gadgets for every lifestyle.</p>
           </div>
-          <div className="text-right">
+          <div className="text-right flex flex-col items-end gap-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
                   {products.length} Products Found
               </span>
+              {error && <span className="text-[8px] font-bold text-rose-500 uppercase italic">{error}</span>}
           </div>
         </header>
 
         {products.length === 0 ? (
           <div className="text-center py-32 bg-slate-50 rounded-[3rem] border border-slate-100 shadow-inner">
-            <p className="text-slate-400 font-black uppercase tracking-[0.2em]">The warehouse is currently empty.</p>
+            <p className="text-slate-400 font-black uppercase tracking-[0.2em]">{error || 'The warehouse is currently empty.'}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 sm:gap-x-8 gap-y-8 sm:gap-y-12">

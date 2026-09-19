@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import ProductCard from './ProductCard';
+import { withTimeout } from '@/lib/apexResilience';
 import {
   LayoutGrid,
   Smartphone,
@@ -68,14 +69,18 @@ export default function ProductList({ initialProducts }: { initialProducts?: Pro
           return;
         }
 
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: false });
+        const { data, error: dbErr } = await withTimeout(
+            supabase
+              .from('products')
+              .select('*')
+              .order('created_at', { ascending: false }),
+            10000
+        );
 
-        if (error) {
-          console.error('Supabase fetch error:', error.message || error);
+        if (dbErr) {
+          console.error('Supabase fetch error:', dbErr.message || dbErr);
           setProducts([]);
+          setError("Storage node synchronization delayed.");
         } else if (data && data.length > 0) {
           setProducts(data as Product[]);
         } else {
@@ -83,7 +88,7 @@ export default function ProductList({ initialProducts }: { initialProducts?: Pro
         }
       } catch (err) {
         console.error('Error fetching products:', err);
-        setError('Failed to load products');
+        setError('Synchronicity failure. Network node unstable.');
         setProducts([]);
       } finally {
         setLoading(false);
