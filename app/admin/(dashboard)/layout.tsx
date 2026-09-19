@@ -1,7 +1,5 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-import { withTimeout } from '@/lib/apexResilience';
 
 import { verifySessionCookie } from '@/lib/adminAuth';
 import AdminLayoutClient from './layout-client';
