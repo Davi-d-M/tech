@@ -75,19 +75,19 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email Us",
-      details: [settings.contact.email],
+      details: [settings?.contact?.email || 'support@apexstores.com'],
       description: "Send us an email anytime",
     },
     {
       icon: Phone,
       title: "Call Us",
-      details: [`+${settings.contact.whatsapp}`],
+      details: [`+${settings?.contact?.whatsapp || '254700000000'}`],
       description: "Mon-Fri from 8am to 5pm",
     },
     {
       icon: MapPin,
       title: "Visit Us",
-      details: [settings.contact.address],
+      details: [settings?.contact?.address || 'Nairobi, Kenya'],
       description: "Come say hello at our office",
     },
     {
@@ -385,14 +385,14 @@ export default function Contact() {
                   className="h-16 px-10 rounded-2xl bg-white text-primary hover:bg-slate-50 font-black uppercase tracking-widest text-xs shadow-xl shadow-black/10"
                   asChild
                 >
-                    <a href={`tel:+${settings.contact.whatsapp}`}>
+                    <a href={`tel:+${settings?.contact?.whatsapp || '254700000000'}`}>
                         <Phone className="h-4 w-4 mr-2" />
                         Call Us Now
                     </a>
                 </Button>
 
                 <Button className="h-16 px-10 rounded-2xl bg-white text-primary hover:bg-slate-50 font-black uppercase tracking-widest text-xs shadow-xl shadow-black/10" asChild>
-                    <a href={`https://wa.me/${settings.contact.whatsapp}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`https://wa.me/${settings?.contact?.whatsapp || '254700000000'}`} target="_blank" rel="noopener noreferrer">
                         <MessageSquare className="h-4 w-4 mr-2" />
                         Chat on WhatsApp
                     </a>

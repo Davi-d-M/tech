@@ -8,7 +8,6 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useSettingsContext } from '@/context/SettingsContext';
-import { Smartphone } from 'lucide-react';
 
 // Lazy Load Non-Critical Components
 const LiveTicker = dynamic(() => import('./LiveTicker'), { ssr: false });
@@ -21,14 +20,6 @@ const AIConcierge = dynamic(() => import('../home/AIConcierge'), { ssr: false })
 const ThemeSynchronizer = dynamic(() => import('./ThemeSynchronizer'), { ssr: false });
 const TierThemeNode = dynamic(() => import('./TierThemeNode'), { ssr: false });
 const AchievementPopup = dynamic(() => import('../ui/AchievementPopup'), { ssr: false });
-
-function ShieldLoading() {
-    return (
-        <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-            <Smartphone className="h-8 w-8 text-primary animate-pulse" />
-        </div>
-    );
-}
 
 /**
  * Isolates useSearchParams to prevent blocking the entire root layout
@@ -66,11 +57,7 @@ function ReferralTracker() {
 }
 
 export default function PublicLayoutShield({ children }: { children: React.ReactNode }) {
-    return (
-        <Suspense fallback={<ShieldLoading />}>
-            <ShieldContent>{children}</ShieldContent>
-        </Suspense>
-    );
+    return <ShieldContent>{children}</ShieldContent>;
 }
 
 function ShieldContent({ children }: { children: React.ReactNode }) {

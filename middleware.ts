@@ -58,23 +58,18 @@ export async function middleware(request: NextRequest) {
   if ((isAdminPath || isSupplierPath || isRiderPath) && !pathname.includes('.') && !isLoginPath) {
     try {
       const sessionCookie = request.cookies.get('admin_session')?.value;
+      // No timeout needed here - verifySessionCookie is pure logic
       const sessionData = await verifySessionCookie(sessionCookie);
 
       if (!sessionData) {
         // 🛡️ APEX OS: Stealth Protocol Refined
-        // If hitting the root /admin, redirect to portal for convenience.
-        // If hitting sub-paths, return a rewrite to /404 ONLY IF NOT David
         if (isAdminPath) {
           if (pathname === '/admin' || pathname === '/admin/' || ghostCookie === 'authorized') {
             return NextResponse.redirect(new URL('/apex-portal', request.url));
           }
-          // Deep stealth: Rewrite to a non-existent path to trigger a clean 404
           return NextResponse.rewrite(new URL('/not-found-stealth', request.url));
         }
-        // RIDER & SUPPLIER: Easy access redirect
         const loginPath = isRiderPath ? '/rider/login' : '/supplier/login';
-
-        // If we are redirecting, we still want to keep the cookie we might have set
         const redirectRes = NextResponse.redirect(new URL(loginPath, request.url));
         if (refCode) redirectRes.cookies.set('apex_ref_code', refCode, { path: '/', maxAge: 60 * 60 * 24 * 30 });
         return redirectRes;
@@ -86,12 +81,9 @@ export async function middleware(request: NextRequest) {
       }
 
       // 2. Role-Based Routing
-      // Prevent Suppliers from entering Admin
       if (isAdminPath && sessionData.role === 'supplier') {
         return NextResponse.redirect(new URL('/supplier', request.url));
       }
-
-      // Prevent Staff from entering Supplier (unless Owner/Admin)
       if (isSupplierPath && sessionData.role === 'staff') {
         return NextResponse.redirect(new URL('/admin', request.url));
       }

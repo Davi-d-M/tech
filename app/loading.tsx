@@ -1,29 +1,32 @@
-import { Smartphone } from "lucide-react";
+import { Smartphone } from 'lucide-react';
 
-export default function Loading() {
+/**
+ * Root Loading State: Apex OS Stealth Pulse
+ * Shown when the server is preparing the initial data payload.
+ */
+export default function RootLoading() {
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
-      <div className="relative mb-8">
-        <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse scale-150"></div>
-        <div className="relative bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl">
-          <Smartphone className="h-12 w-12 text-primary animate-bounce" />
+    <div className="min-h-[100dvh] bg-white flex flex-col items-center justify-center p-6 text-center antialiased">
+        <div className="relative">
+            <div className="h-16 w-16 rounded-3xl bg-primary/5 flex items-center justify-center text-primary shadow-inner border border-primary/5 animate-pulse">
+                <Smartphone className="h-8 w-8" />
+            </div>
+            {/* Spinning orbit */}
+            <div className="absolute inset-0 h-16 w-16 rounded-3xl border-2 border-primary/20 border-t-primary animate-spin"></div>
         </div>
-      </div>
 
-      <div className="text-center space-y-3">
-        <h2 className="text-xl font-black uppercase tracking-tighter text-foreground">
-          Apex<span className="text-primary">OS</span>
-        </h2>
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 animate-pulse">
-          Synchronizing Neural Hub...
-        </p>
-      </div>
-
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2">
-        <div className="w-48 h-1 bg-slate-100 rounded-full overflow-hidden">
-          <div className="w-1/2 h-full bg-primary animate-[shimmer_2s_infinite_linear]"></div>
+        <div className="mt-8 space-y-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 animate-pulse">
+                Apex OS Resilience Protocol
+            </p>
+            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-200">
+                Synchronizing Secure Neural Hub...
+            </p>
         </div>
-      </div>
+
+        {/* Decorative corner accents */}
+        <div className="fixed top-8 left-8 h-4 w-4 border-t-2 border-l-2 border-slate-50"></div>
+        <div className="fixed bottom-8 right-8 h-4 w-4 border-b-2 border-r-2 border-slate-50"></div>
     </div>
   );
 }

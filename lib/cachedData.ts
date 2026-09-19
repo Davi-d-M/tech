@@ -10,12 +10,12 @@ export const getCachedSettings = unstable_cache(
     try {
         const result = await withTimeout(
             supabase.from('settings').select('*'),
-            15000,
-            'Settings Query'
+            5000, // FAST FAIL: Only wait 5s for root settings
+            'Root Settings Query'
         );
         return { data: (result.data as SettingsRow[]) || [] };
     } catch (e) {
-        console.error("Cached Settings Recovery Protocol:", e);
+        console.error("Cached Settings Recovery Protocol (Root):", e);
         return { data: [] as SettingsRow[] };
     }
   },
