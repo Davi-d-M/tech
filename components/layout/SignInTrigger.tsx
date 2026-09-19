@@ -5,16 +5,18 @@ import { supabase } from "@/lib/supabaseClient";
 import { Button } from "../ui/button";
 import { X, Zap, Crown, ShieldCheck, TrendingUp, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export default function SignInTrigger() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsMounted(true);
     const checkAuthAndTrigger = async () => {
-      if (!supabase) return;
+      if (!supabase || pathname === '/auth') return;
 
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -32,14 +34,14 @@ export default function SignInTrigger() {
     };
 
     checkAuthAndTrigger();
-  }, []);
+  }, [pathname]);
 
   const handleClose = () => {
     setIsVisible(false);
     localStorage.setItem("apex_signin_trigger_shown", "true");
   };
 
-  if (!isMounted || !isVisible) return null;
+  if (!isMounted || !isVisible || pathname === '/auth') return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-white/70 backdrop-blur-xl animate-in fade-in duration-500">

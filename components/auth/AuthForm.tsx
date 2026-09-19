@@ -16,11 +16,14 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [cooldownSeconds, setCooldownSeconds] = useState(0);
+    const [dbOnline, setDbOnline] = useState(true);
 
     const COOLDOWN_DURATION = 60;
 
     useEffect(() => {
         setIsSignUp(initialMode === 'signup');
+        // Check DB Connectivity
+        if (!supabase) setDbOnline(false);
     }, [initialMode]);
 
     useEffect(() => {
@@ -150,7 +153,13 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
                 {isSignUp ? 'Create an Account' : 'Welcome Back'}
             </h2>
 
-            <form onSubmit={handleAuth} className="space-y-4">
+            {!dbOnline && (
+                <div className="mb-6 p-3 bg-rose-50 border border-rose-100 rounded-xl text-center">
+                    <p className="text-[10px] font-black uppercase text-rose-500 tracking-widest">⚠️ Database Node Offline</p>
+                </div>
+            )}
+
+            <form onSubmit={handleAuth} noValidate className="space-y-4">
                 {isSignUp && (
                     <>
                         <div>
@@ -207,7 +216,11 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
 
                 <button
                     type="submit"
-                    disabled={loading || (isSignUp && cooldownSeconds > 0)}
+                    onClick={(e) => {
+                        // Backup trigger if onSubmit is swallowed
+                        if (!loading && dbOnline) handleAuth(e as any);
+                    }}
+                    disabled={loading || (isSignUp && cooldownSeconds > 0) || !dbOnline}
                     className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3.5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
                 >
                     {loading

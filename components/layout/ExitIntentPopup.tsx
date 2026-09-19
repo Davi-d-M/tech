@@ -3,12 +3,16 @@
 import { useState, useEffect } from 'react';
 import { X, Gift, ArrowRight, Zap } from 'lucide-react';
 import { Button } from '../ui/button';
+import { usePathname } from 'next/navigation';
 
 export default function ExitIntentPopup() {
     const [isVisible, setIsVisible] = useState(false);
     const [hasBeenShown, setHasBeenShown] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
+        if (pathname === '/auth') return;
+
         // Check if already shown in this session
         const shown = sessionStorage.getItem('exit_popup_shown');
         if (shown) {
@@ -26,9 +30,9 @@ export default function ExitIntentPopup() {
 
         document.addEventListener('mouseleave', handleMouseLeave);
         return () => document.removeEventListener('mouseleave', handleMouseLeave);
-    }, [hasBeenShown]);
+    }, [hasBeenShown, pathname]);
 
-    if (!isVisible) return null;
+    if (!isVisible || pathname === '/auth') return null;
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-500/10 backdrop-blur-md animate-in fade-in duration-300">
