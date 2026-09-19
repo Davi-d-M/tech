@@ -81,7 +81,7 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
                 if (data?.session) {
                     console.log("[AUTH] Sign up success (Immediate session)");
                     setMessage('Account created! Welcome to Apex stores. 🚀');
-                    router.push('/onboarding');
+                    window.location.href = '/onboarding';
                 } else {
                     console.log("[AUTH] Sign up success (Verification pending)");
                     setMessage('Account created! Please check your email to verify your identity.');
@@ -126,7 +126,9 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
             }, 10);
 
             setMessage('Logged in successfully!');
-            router.push('/onboarding');
+
+            // Hard redirect to ensure session is fully picked up by middleware
+            window.location.href = '/onboarding';
         } catch (error: unknown) {
             console.error('[AUTH] Critical failure:', error);
             const errorMsg = (error as any)?.message || 'An error occurred. Please check your connection.';
